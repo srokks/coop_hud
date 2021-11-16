@@ -72,6 +72,159 @@ function getCharge(player)
   end
   return thissprite
 end
+--get type of heart to render
+function HUDAPI.GetHeartType(heartnum)
+	local subcharacter = false
+	local hearttype = "None"
+	local overlaytype = "None"
+	local curse = Game():GetLevel():GetCurseName()
+	if player:GetPlayerType() == 10 then
+		if heartnum == 0 then
+			hearttype = "None"
+			overlaytype = "None"
+		end
+	elseif curse == "Curse of the Unknown" then
+		if heartnum == 0 then
+			hearttype = "Curse"
+			overlaytype = "None"
+		end
+	else
+		local prevsoulcount = 0
+		
+		if (player:GetName() == "The Forgotten" or player:GetName() == "The Soul") and heartnum > 5 then
+			if heartnum < 12 then
+				player = player:GetSubPlayer()
+				subcharacter = true
+			end
+			heartnum = heartnum - 6
+		end
+		local totalhearts = math.ceil((player:GetEffectiveMaxHearts() + player:GetSoulHearts())/2)
+		if heartnum >= totalhearts and NoHealthCapModEnabled then
+			hearttype, overlaytype = NoHealthCapGetHeartTypeAtPos(heartnum)
+		else
+			local emptyhearts = math.floor((player:GetMaxHearts()-player:GetHearts())/2)
+			if emptyhearts < 0 then emptyhearts = 0 end
+			local eternal = false
+			local goldheart = false
+			--gold hearts
+			if player:GetGoldenHearts() > 0 and heartnum >= totalhearts - (player:GetGoldenHearts()+emptyhearts) then
+				goldheart = true
+			end
+			--red heart containers
+			if player:GetMaxHearts()/2 > heartnum then
+				if player:GetName() == "Keeper" then
+					--coin hearts
+					goldheart = false
+					if player:GetHearts()-(heartnum*2) > 1 then
+						hearttype = "CoinFull"
+					elseif player:GetHearts()-(heartnum*2) == 1 then
+						hearttype = "CoinHalf"
+					else
+						hearttype = "CoinEmpty"
+					end
+				else
+					if player:GetHearts()-(heartnum*2) > 1 then
+						hearttype = "RedFull"
+					elseif player:GetHearts()-(heartnum*2) == 1 then
+						hearttype = "RedHalf"
+					else
+						hearttype = "RedEmpty"
+						goldheart = false
+					end
+				end
+				--eternal heart overlay
+				if player:GetEternalHearts() > 0 and heartnum+1 == player:GetMaxHearts()/2 and player:GetHearts()-(heartnum*2) < 3 then
+					eternal = true
+				end
+			--if there are any soul/bone hearts
+			elseif player:GetSoulHearts() > 0 or player:GetBoneHearts() > 0 then
+				local redheartsoffset = heartnum-(player:GetMaxHearts()/2)
+				--if there are no soul/bone hearts left
+				if math.ceil(player:GetSoulHearts()/2) + player:GetBoneHearts() <= redheartsoffset then
+					hearttype = "None"
+				else
+					--bone hearts
+					if player:IsBoneHeart(redheartsoffset) then
+						prevsoulcount = 0
+						if redheartsoffset > 0 then
+							for i = 0, redheartsoffset do
+								if player:IsBoneHeart(i) == false then
+									prevsoulcount = prevsoulcount + 2
+								end
+							end
+						end
+						local remainingred = player:GetHearts()+prevsoulcount-(heartnum*2)
+						if remainingred > 1 then
+							hearttype = "BoneFull"
+						elseif remainingred == 1 then
+							hearttype = "BoneHalf"
+						else
+							hearttype = "BoneEmpty"
+						end
+						--eternal heart overlay
+						if player:GetEternalHearts() > 0 and player:GetHearts() > player:GetMaxHearts() and player:GetHearts()-(heartnum*2) > 0 and player:GetHearts()-(heartnum*2) < 3 then
+							eternal = true
+						end
+					else--soul/black hearts
+						local prevbonecount = 0
+						if redheartsoffset > 0 then
+							for i = 0, redheartsoffset do
+								if player:IsBoneHeart(i) then
+									prevbonecount = prevbonecount + 1
+								end
+							end
+						end
+						local blackheartcheck = (redheartsoffset*2 + 1)-(2*prevbonecount)
+						local remainingsoul = player:GetSoulHearts() + (2*prevbonecount) - (redheartsoffset*2)
+						if player:IsBlackHeart(blackheartcheck) then
+							if remainingsoul > 1 then
+								hearttype = "BlackFull"
+							else
+								hearttype = "BlackHalf"
+							end
+						else
+							if remainingsoul > 1 then
+								hearttype = "BlueFull"
+							else
+								hearttype = "BlueHalf"
+							end
+						end
+						--eternal heart overlay
+						if player:GetEternalHearts() > 0 and heartnum == 0 then
+							eternal = true
+						end
+					end
+				end
+			else
+				hearttype = "None"
+			end
+			if eternal and goldheart then
+				overlaytype = "Gold&Eternal"
+			elseif eternal then
+				overlaytype = "Eternal"
+			elseif goldheart then
+				overlaytype = "Gold"
+			end
+		end
+		if REPENTANCE and player:GetRottenHearts() > 0 then
+			local nonrottenreds = player:GetHearts()/2 - player:GetRottenHearts()
+			if hearttype == "RedFull" then
+				if heartnum >= nonrottenreds then
+					hearttype = "Rotten"
+				end
+			elseif hearttype == "BoneFull" then
+				local remainingred = player:GetHearts()+prevsoulcount-(heartnum*2)
+				if remainingred - player:GetRottenHearts()*2 <= 0 then
+					hearttype = "RottenBone"
+				end
+			end
+		end
+	end
+	return hearttype, overlaytype, subcharacter
+end
+
+
+end
 function testMod:render()
   pos = Vector(100,50)
   z = Vector(0,0)
