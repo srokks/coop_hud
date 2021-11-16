@@ -54,6 +54,24 @@ function getActiveItemSprite(player)
   -- bethany check
 return thissprite
 end
+function getCharge(player)
+  Anim = "gfx/hudgfx/activechargebar.anm2"
+  local activeitem = player:GetActiveItem()
+  if activeitem == 0 then return false end
+  local itemcharge = Isaac.GetItemConfig():GetCollectible(activeitem).MaxCharges
+  if itemcharge == 0 then return false end
+  local thissprite = Sprite()
+  thissprite:Load(Anim,true)
+  local charges = player:GetActiveCharge() + player:GetBatteryCharge()
+  local step = math.floor((charges/(itemcharge*2))*46)
+  thissprite:SetFrame("ChargeBar", step)
+  if (itemcharge > 1 and itemcharge < 5) or itemcharge == 6 or itemcharge == 12 then
+    thissprite:PlayOverlay("BarOverlay" .. itemcharge, true)
+  else
+    thissprite:PlayOverlay("BarOverlay1", true)
+  end
+  return thissprite
+end
 function testMod:render()
   pos = Vector(100,50)
   z = Vector(0,0)
