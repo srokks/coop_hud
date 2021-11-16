@@ -73,7 +73,7 @@ function getCharge(player)
   return thissprite
 end
 --get type of heart to render
-function HUDAPI.GetHeartType(heartnum)
+function HUDAPI.GetHeartType(player,heartnum)
 	local subcharacter = false
 	local hearttype = "None"
 	local overlaytype = "None"
@@ -222,8 +222,33 @@ function HUDAPI.GetHeartType(heartnum)
 	end
 	return hearttype, overlaytype, subcharacter
 end
-
-
+function getHeartSprite(player,heartpos)
+  Anim = "gfx/hudgfx/ui_hearts.anm2"
+  local thissprite = Sprite()
+  thissprite:Load(Anim,true)
+  thissprite:RemoveOverlay()
+  local hearttype, overlaytype, sub = HUDAPI.GetHeartType(player,heartpos)
+  local opacity = 1
+  if heartpos > 23 then
+    opacity = 0.2
+  elseif heartpos > 17 then
+    opacity = 0.4
+  elseif heartpos > 11 then
+    opacity = 0.6
+  end
+  if sub then
+    opacity = opacity/2
+  end
+  thissprite.Color = Color(1, 1, 1, opacity, 0, 0, 0)
+  if hearttype == "None" then
+    return false
+  else
+    thissprite:SetFrame(hearttype, 0)
+  end
+  if overlaytype ~= "None" then
+    thissprite:SetOverlayFrame(overlaytype, 0)
+  end
+  return thissprite
 end
 function testMod:render()
   pos = Vector(100,50)
@@ -234,7 +259,9 @@ function testMod:render()
   charge = getCharge(player)
   if charge then
   charge:Render(Vector(120,50),z,z)
-  end
+end
+  b=getHeartSprite(player,0)
+  b:Render(Vector(130,50),z,z)
 end
 
 testMod:AddCallback(ModCallbacks.MC_POST_RENDER, testMod.render)
