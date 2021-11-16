@@ -76,9 +76,12 @@ function testMod:render()
   pos = Vector(100,50)
   z = Vector(0,0)
   player = Isaac.GetPlayer(0)
-  a = getActiveItemSprite(player)
-  a:Render(pos,z,z)
-  HUDAPI.onUpdate = true
+  item = getActiveItemSprite(player)
+  item:Render(pos,z,z)
+  charge = getCharge(player)
+  if charge then
+  charge:Render(Vector(120,50),z,z)
+  end
 end
 
 testMod:AddCallback(ModCallbacks.MC_POST_RENDER, testMod.render)
