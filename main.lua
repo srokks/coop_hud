@@ -272,7 +272,7 @@ function getPocketItemSprite(player)
   local thissprite = Sprite()
   
   if pocketcheck ~= 0 then
-    Anim = "gfx/ui/test.anm2"
+    Anim = "gfx/ui/hud_card_coop.anm2"
     thissprite:Load(Anim,true)
     thissprite:SetFrame("CardFronts", pocketcheck) -- sets card frame
     print('card',pocketcheck)
@@ -335,14 +335,15 @@ end
   --trinkets
   scale = Vector(0.7,0.7)
   x = init_x --pozycja wyjściowa
-  y = init_y + 30 --poz wyściowa
+  y = init_y + 20  --poz wyściowa
   tri1 = getTrinket(player,0)
   
   if tri1 then
     tri1.Scale = scale
     tri1:Render(Vector(x,y),z,z)
   end
-  
+  x = init_x --pozycja wyjściowa
+  y = init_y + 32  --poz wyściowa
   tri2 = getTrinket(player,1)
   if tri2 then
     tri2.Scale = scale
@@ -352,13 +353,13 @@ end
   
   --main_pocket
   x = init_x + 16--pozycja wyjściowa
-  y = init_y + 30 --poz wyściowa
+  y = init_y + 24 --poz wyściowa
   scale = Vector(0.7,0.7)
   main_pocket = getPocketItemSprite(player)
   if main_pocket then
     print(main_pocket)
     main_pocket.Scale = scale
-    main_pocket:Render(Vector(100,100),z,z)
+    main_pocket:Render(Vector(x,y),z,z)
   end
 end
 --Game():GetSeeds():AddSeedEffect(SeedEffect.SEED_NO_HUD)
