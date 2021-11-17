@@ -7,7 +7,7 @@ else
   a = 'False'
 end
 local ModConfigLoaded, ModConfig = pcall(require, "scripts.modconfig")
-function getActiveItemSprite(player)
+function getActiveItemSprite(player,slot)
   Anim = "gfx/ui/item.anm2"
   local activeitem = player:GetActiveItem()
   if activeitem == 0 then return false end
@@ -268,32 +268,39 @@ end
 function getPocket(player)
   Anim = "gfx/ui/ui_cardspills.anm2"
   local thissprite = Sprite()
-  thissprite:Load(Anim,true)
-  local pocketcheck = player:GetCard(0)
-  if pocketcheck then
-    if pocketcheck < 32 then
       thissprite:SetFrame("CardFronts", pocketcheck)
-    return thissprite
     end
-  else
-  return false
-  end
         
-  
-end
-function test(player)
+function getPocketItemSprite(player)
   -- cards/runes/
   Anim = "gfx/ui/test.anm2"
   local pocketcheck = player:GetCard(0)
   local thissprite = Sprite()
+  thissprite:Load(Anim,true)
   if pocketcheck ~= 0 then
-    thissprite:Load(Anim,true)
-    thissprite:SetFrame("CardFronts", pocketcheck)
-    thissprite:LoadGraphics()
+    thissprite:SetFrame("CardFronts", pocketcheck) -- sets card frame
+    print('card',pocketcheck)
+    return thissprite
   else
-    print(player:GetPill(0))
+    pocketcheck = player:GetPill(0) -- checks if player has pill
+    if pocketcheck ~= 0 then
+      if pocketcheck > 2048 then pocketcheck = pocketcheck - 2048 end -- check if its horse pill and change id to normal
+      thissprite:SetFrame("Pills", pocketcheck) --sets frame to pills with correct id
+      return thissprite
+    else
+      if player:GetActiveItem(2) > 0 or player:GetActiveItem(3) > 0 then
+          pocketitem = true -- do wyjebania
+          if player:GetActiveItem(2) > 0 then
+              thissprite = getActiveItemSprite(player,2)
+          else
+              thissprite = getActiveItemSprite(player,3)
+          end
+          return thissprite
+      else
+          return false
+      end
+    end
   end
-  return thissprite
 end
 function testMod:render()
   init_x = 50
@@ -301,7 +308,7 @@ function testMod:render()
   pos = Vector(100,50)
   z = Vector(0,0)
   player = Isaac.GetPlayer(0)
-  item = getActiveItemSprite(player)
+  item = getActiveItemSprite(player,0)
   if item then
     item:Render(Vector(init_x,init_y),z,z)
   end
@@ -332,15 +339,24 @@ end
   x = init_x --pozycja wyjściowa
   y = init_y + 30 --poz wyściowa
   tri1 = getTrinket(player,0)
-  tri1.Scale = scale
   tri1:Render(Vector(x,y),z,z)
   tri2 = getTrinket(player,1)
-  tri2.Scale = scale
-  tri2:Render(Vector(x,y+14),z,z)
+  if tri2 then
+    tri2.Scale = scale
+    tri2:Render(Vector(x,y),z,z)
+  end
   
-  --pockets
-  a = test(player)
-  a:Render(Vector(100,150),z,z)
+  
+  --main_pocket
+  x = init_x + 16--pozycja wyjściowa
+  y = init_y + 30 --poz wyściowa
+  scale = Vector(0.7,0.7)
+  main_pocket = getPocketItemSprite(player)
+  if main_pocket then
+    print(main_pocket)
+    main_pocket.Scale = scale
+    main_pocket:Render(Vector(100,100),z,z)
+  end
 end
 --Game():GetSeeds():AddSeedEffect(SeedEffect.SEED_NO_HUD)
  --Game():GetSeeds():RemoveSeedEffect(SeedEffect.SEED_NO_HUD)
