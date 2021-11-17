@@ -252,17 +252,35 @@ function getHeartSprite(player,heartpos)
 end
 end
 function testMod:render()
+  x = 16
+  y = 16
   pos = Vector(100,50)
   z = Vector(0,0)
-  player = Isaac.GetPlayer(0)
+  player = Isaac.GetPlayer(1)
   item = getActiveItemSprite(player)
-  item:Render(pos,z,z)
+  if item then
+    item:Render(Vector(x,y),z,z)
+  end
+  
   charge = getCharge(player)
   if charge then
-  charge:Render(Vector(120,50),z,z)
+  charge:Render(Vector(x+20,y),z,z)
 end
-  b=getHeartSprite(player,0)
-  b:Render(Vector(130,50),z,z)
+
+  x = x+ 30 --pozycja wyjściowa
+  y = y -10 --poz wyściowa
+  
+  
+  
+  hearts_row = 3
+  hearts_col = 3
+  for j = 0,12,1 do --iteruje po wszystkich serduszkach jakie ma
+  -- TODO: integracja z no cap 
+  row_no = math.floor(j/hearts_row) -- gets heart row number
+  col_no = j%hearts_col
+  heart_sprite=getHeartSprite(player,j)
+  if heart_sprite then
+    heart_sprite:Render(Vector(x+12*col_no,y+(10*row_no),z,z))
   end
   end
 end
