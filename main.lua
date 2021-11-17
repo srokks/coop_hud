@@ -8,7 +8,7 @@ else
 end
 local ModConfigLoaded, ModConfig = pcall(require, "scripts.modconfig")
 function getActiveItemSprite(player)
-  Anim = "gfx/hudgfx/item.anm2"
+  Anim = "gfx/ui/item.anm2"
   local activeitem = player:GetActiveItem()
   if activeitem == 0 then return false end
   local thissprite = Sprite() -- replaced
@@ -55,7 +55,7 @@ function getActiveItemSprite(player)
 return thissprite
 end
 function getCharge(player)
-  Anim = "gfx/hudgfx/activechargebar.anm2"
+  Anim = "gfx/ui/activechargebar.anm2"
   local activeitem = player:GetActiveItem()
   if activeitem == 0 then return false end
   local itemcharge = Isaac.GetItemConfig():GetCollectible(activeitem).MaxCharges
@@ -223,6 +223,7 @@ function GetHeartType(player,heartnum)
 	return hearttype, overlaytype, subcharacter
 end
 function getHeartSprite(player,heartpos)
+
   Anim = "gfx/ui/ui_hearts.anm2"
   local thissprite = Sprite()
   thissprite:Load(Anim,true)
@@ -251,40 +252,97 @@ function getHeartSprite(player,heartpos)
   return thissprite
 end
 end
+function getTrinket(player,trinket_pos)
+  Anim = "gfx/ui/item.anm2"
+  local trinketid = player:GetTrinket(trinket_pos)
+  if trinketid == 0 then return false end
+  local thissprite = Sprite()
+  thissprite:Load(Anim,true)
+  local itemsprite = Isaac.GetItemConfig():GetTrinket(trinketid).GfxFileName
+  thissprite:ReplaceSpritesheet(0, itemsprite)
+  thissprite:ReplaceSpritesheet(5, itemsprite)
+  thissprite:LoadGraphics()
+  thissprite:SetFrame("Idle", 0)
+  return thissprite
+end
+function getPocket(player)
+  Anim = "gfx/ui/ui_cardspills.anm2"
+  local thissprite = Sprite()
+  thissprite:Load(Anim,true)
+  local pocketcheck = player:GetCard(0)
+  if pocketcheck then
+    if pocketcheck < 32 then
+      thissprite:SetFrame("CardFronts", pocketcheck)
+    return thissprite
+    end
+  else
+  return false
+  end
+        
+  
+end
+function test(player)
+  -- cards/runes/
+  Anim = "gfx/ui/test.anm2"
+  local pocketcheck = player:GetCard(0)
+  local thissprite = Sprite()
+  if pocketcheck ~= 0 then
+    thissprite:Load(Anim,true)
+    thissprite:SetFrame("CardFronts", pocketcheck)
+    thissprite:LoadGraphics()
+  else
+    print(player:GetPill(0))
+  end
+  return thissprite
+end
 function testMod:render()
-  x = 16
-  y = 16
+  init_x = 50
+  init_y = 50
   pos = Vector(100,50)
   z = Vector(0,0)
-  player = Isaac.GetPlayer(1)
+  player = Isaac.GetPlayer(0)
   item = getActiveItemSprite(player)
   if item then
-    item:Render(Vector(x,y),z,z)
+    item:Render(Vector(init_x,init_y),z,z)
   end
-  
+  x = init_x + 17
   charge = getCharge(player)
   if charge then
-  charge:Render(Vector(x+20,y),z,z)
+  charge:Render(Vector(x,init_y),z,z)
 end
-
-  x = x+ 30 --pozycja wyjściowa
-  y = y -10 --poz wyściowa
+  -- hearts
+  x = init_x+ 30 --pozycja wyjściowa
+  y = init_y -10 --poz wyściowa
   
   
   
   hearts_row = 3
   hearts_col = 3
   for j = 0,12,1 do --iteruje po wszystkich serduszkach jakie ma
-  -- TODO: integracja z no cap 
-  row_no = math.floor(j/hearts_row) -- gets heart row number
-  col_no = j%hearts_col
-  heart_sprite=getHeartSprite(player,j)
-  if heart_sprite then
-    heart_sprite:Render(Vector(x+12*col_no,y+(10*row_no),z,z))
+    -- TODO: integracja z no cap 
+    row_no = math.floor(j/hearts_row) -- gets heart row number
+    col_no = j%hearts_col
+    heart_sprite=getHeartSprite(player,j)
+    if heart_sprite then
+      heart_sprite:Render(Vector(x+12*col_no,y+(10*row_no),z,z))
+    end
   end
-  end
+  --trinkets
+  scale = Vector(0.7,0.7)
+  x = init_x --pozycja wyjściowa
+  y = init_y + 30 --poz wyściowa
+  tri1 = getTrinket(player,0)
+  tri1.Scale = scale
+  tri1:Render(Vector(x,y),z,z)
+  tri2 = getTrinket(player,1)
+  tri2.Scale = scale
+  tri2:Render(Vector(x,y+14),z,z)
+  
+  --pockets
+  a = test(player)
+  a:Render(Vector(100,150),z,z)
 end
- Game():GetSeeds():AddSeedEffect(SeedEffect.SEED_NO_HUD)
+--Game():GetSeeds():AddSeedEffect(SeedEffect.SEED_NO_HUD)
  --Game():GetSeeds():RemoveSeedEffect(SeedEffect.SEED_NO_HUD)
 
 testMod:AddCallback(ModCallbacks.MC_POST_RENDER, testMod.render)
