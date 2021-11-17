@@ -347,7 +347,7 @@ end
   -- hearts
   x = init_x+ 30 --pozycja wyjściowa
   y = init_y -10 --poz wyściowa
-  
+  -- @todo Test
   
   
   hearts_row = 4 
