@@ -9,7 +9,7 @@ end
 local ModConfigLoaded, ModConfig = pcall(require, "scripts.modconfig")
 function getActiveItemSprite(player,slot)
   Anim = "gfx/ui/item.anm2"
-  local activeitem = player:GetActiveItem()
+  local activeitem = player:GetActiveItem(slot)
   if activeitem == 0 then return false end
   local thissprite = Sprite() -- replaced
   thissprite:Load(Anim,true)
@@ -39,7 +39,7 @@ function getActiveItemSprite(player,slot)
   local itemcharge = Isaac.GetItemConfig():GetCollectible(activeitem).MaxCharges
   if itemcharge == 0 then
     thissprite:SetFrame("Idle", 0)
-  elseif player:NeedsCharge() == false or player:GetActiveCharge() >= itemcharge then
+  elseif player:NeedsCharge() == false or player:GetActiveCharge(slot) >= itemcharge then
     thissprite:SetFrame("Idle", 1)
   else
     thissprite:SetFrame("Idle", 0)
@@ -265,19 +265,15 @@ function getTrinket(player,trinket_pos)
   thissprite:SetFrame("Idle", 0)
   return thissprite
 end
-function getPocket(player)
-  Anim = "gfx/ui/ui_cardspills.anm2"
-  local thissprite = Sprite()
-      thissprite:SetFrame("CardFronts", pocketcheck)
-    end
-        
 function getPocketItemSprite(player)
   -- cards/runes/
-  Anim = "gfx/ui/test.anm2"
+  
   local pocketcheck = player:GetCard(0)
   local thissprite = Sprite()
-  thissprite:Load(Anim,true)
+  
   if pocketcheck ~= 0 then
+    Anim = "gfx/ui/test.anm2"
+    thissprite:Load(Anim,true)
     thissprite:SetFrame("CardFronts", pocketcheck) -- sets card frame
     print('card',pocketcheck)
     return thissprite
@@ -285,6 +281,8 @@ function getPocketItemSprite(player)
     pocketcheck = player:GetPill(0) -- checks if player has pill
     if pocketcheck ~= 0 then
       if pocketcheck > 2048 then pocketcheck = pocketcheck - 2048 end -- check if its horse pill and change id to normal
+      Anim = "gfx/ui/hud_pills_coop.anm2"
+      thissprite:Load(Anim,true)
       thissprite:SetFrame("Pills", pocketcheck) --sets frame to pills with correct id
       return thissprite
     else
@@ -339,7 +337,12 @@ end
   x = init_x --pozycja wyjściowa
   y = init_y + 30 --poz wyściowa
   tri1 = getTrinket(player,0)
-  tri1:Render(Vector(x,y),z,z)
+  
+  if tri1 then
+    tri1.Scale = scale
+    tri1:Render(Vector(x,y),z,z)
+  end
+  
   tri2 = getTrinket(player,1)
   if tri2 then
     tri2.Scale = scale
