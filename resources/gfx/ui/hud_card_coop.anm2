@@ -1,10 +1,9 @@
 <AnimatedActor>
-	<Info CreatedBy="Unknown" CreatedOn="2021-11-17 17:33:36" Version="21" Fps="30"/>
+	<Info CreatedBy="Unknown" CreatedOn="2021-11-17 17:34:03" Version="21" Fps="30"/>
 	<Content>
 		<Spritesheets>
 			<Spritesheet Path="ui_cardfronts_coop.png" Id="0"/>
-			<Spritesheet Path="..\Effects\Effect_023_StarFlash.png" Id="1"/>
-			<Spritesheet Path="ui_cardspills_coop.png" Id="2"/>
+			<Spritesheet Path="ui_cardspills_coop.png" Id="1"/>
 		</Spritesheets>
 		<Layers>
 			<Layer Name="Pills" Id="0" SpritesheetId="0"/>
