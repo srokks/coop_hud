@@ -265,20 +265,20 @@ function getTrinket(player,trinket_pos)
   thissprite:SetFrame("Idle", 0)
   return thissprite
 end
-function getPocketItemSprite(player)
+function getPocketItemSprite(player,slot)
   -- cards/runes/
   
-  local pocketcheck = player:GetCard(0)
+  local pocketcheck = player:GetCard(slot)
   local thissprite = Sprite()
   
   if pocketcheck ~= 0 then
     Anim = "gfx/ui/hud_card_coop.anm2"
     thissprite:Load(Anim,true)
     thissprite:SetFrame("CardFronts", pocketcheck) -- sets card frame
-    print('card',pocketcheck)
+    
     return thissprite
   else
-    pocketcheck = player:GetPill(0) -- checks if player has pill
+    pocketcheck = player:GetPill(slot) -- checks if player has pill
     if pocketcheck ~= 0 then
       if pocketcheck > 2048 then pocketcheck = pocketcheck - 2048 end -- check if its horse pill and change id to normal
       Anim = "gfx/ui/hud_pills_coop.anm2"
@@ -300,9 +300,38 @@ function getPocketItemSprite(player)
     end
   end
 end
+function getMainPocketDesc(player)
+  desc = 'Error'
+  if player:GetPill(0) < 1 and player:GetCard(0) < 1 then
+    if REPENTANCE == false then return false end
+    if player:GetActiveItem(2) > 0 then
+        desc = Isaac.GetItemConfig():GetCollectible(player:GetActiveItem(2)).Name
+    elseif player:GetActiveItem(3) > 0 then
+        desc = Isaac.GetItemConfig():GetCollectible(player:GetActiveItem(3)).Name
+    else
+        return false
+    end
+    if desc ~= "Error" then desc = desc .. "  " end
+  end
+  if player:GetCard(0) > 0 then
+					desc = Isaac.GetItemConfig():GetCard(player:GetCard(0)).Name .. " "
+					if Input.IsActionPressed(ButtonAction.ACTION_MAP, player.ControllerIndex) then
+						desc = Isaac.GetItemConfig():GetCard(player:GetCard(0)).Description .. " "
+					end
+      
+  elseif player:GetPill(0) > 0 then
+					desc = "???" .. " "
+					local itempool = Game():GetItemPool()
+					if itempool:IsPillIdentified (player:GetPill(0)) then
+						local pilleffect = itempool:GetPillEffect(player:GetPill(0))
+						desc = Isaac.GetItemConfig():GetPillEffect(pilleffect).Name .. " "
+					end
+  end
+  return desc
+end
 function testMod:render()
-  init_x = 50
-  init_y = 50
+  init_x = 50 --
+  init_y = 50 --
   pos = Vector(100,50)
   z = Vector(0,0)
   player = Isaac.GetPlayer(0)
@@ -321,8 +350,8 @@ end
   
   
   
-  hearts_row = 3
-  hearts_col = 3
+  hearts_row = 4 
+  hearts_col = 4 
   for j = 0,12,1 do --iteruje po wszystkich serduszkach jakie ma
     -- TODO: integracja z no cap 
     row_no = math.floor(j/hearts_row) -- gets heart row number
@@ -349,20 +378,51 @@ end
     tri2.Scale = scale
     tri2:Render(Vector(x,y),z,z)
   end
+  --third pocket
+  x = init_x + 48--pozycja wyjściowa
+  y = init_y + 22  --poz wyściowa
+  scale = Vector(0.5,0.5)
+  third_pocket = getPocketItemSprite(player,2 )
+  if third_pocket then
+    third_pocket.Scale = scale
+    third_pocket:Render(Vector(x,y),z,z)
+  end
+  -- ISSUE: shows pocket item 
+  -- FIX: 
   
-  
+   
+  --second_pocket
+  x = init_x + 34--pozycja wyjściowa
+  y = init_y + 22  --poz wyściowa
+  scale = Vector(0.5,0.5)
+  second_pocket = getPocketItemSprite(player,1)
+  if second_pocket then
+    second_pocket.Scale = scale
+    second_pocket:Render(Vector(x,y),z,z)
+  end
   --main_pocket
   x = init_x + 16--pozycja wyjściowa
   y = init_y + 24 --poz wyściowa
   scale = Vector(0.7,0.7)
-  main_pocket = getPocketItemSprite(player)
+  main_pocket = getPocketItemSprite(player,0)
   if main_pocket then
-    print(main_pocket)
     main_pocket.Scale = scale
     main_pocket:Render(Vector(x,y),z,z)
   end
+  -- main_pocket_desc
+  x = init_x + 16--pozycja wyjściowa
+  y = init_y + 24 --poz wyściowa
+  local main_pocket_desc = ""
+  main_pocket_desc = getMainPocketDesc(player)
+  f = Font()
+  f:Load("font/luaminioutlined.fnt")
+  color = KColor(1,0.2,0.2,0.7)
+  if main_pocket_desc then
+    f:DrawString (main_pocket_desc,x,y,color,0,true) end
 end
+
+
 --Game():GetSeeds():AddSeedEffect(SeedEffect.SEED_NO_HUD)
- --Game():GetSeeds():RemoveSeedEffect(SeedEffect.SEED_NO_HUD)
+Game():GetSeeds():RemoveSeedEffect(SeedEffect.SEED_NO_HUD)
 
 testMod:AddCallback(ModCallbacks.MC_POST_RENDER, testMod.render)
