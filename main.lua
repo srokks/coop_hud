@@ -73,7 +73,7 @@ function getCharge(player)
   return thissprite
 end
 --get type of heart to render
-function HUDAPI.GetHeartType(player,heartnum)
+function GetHeartType(player,heartnum)
 	local subcharacter = false
 	local hearttype = "None"
 	local overlaytype = "None"
@@ -85,7 +85,7 @@ function HUDAPI.GetHeartType(player,heartnum)
 		end
 	elseif curse == "Curse of the Unknown" then
 		if heartnum == 0 then
-			hearttype = "Curse"
+			hearttype = "CurseHeart"
 			overlaytype = "None"
 		end
 	else
@@ -116,19 +116,19 @@ function HUDAPI.GetHeartType(player,heartnum)
 					--coin hearts
 					goldheart = false
 					if player:GetHearts()-(heartnum*2) > 1 then
-						hearttype = "CoinFull"
+						hearttype = "CoinHeartFull"
 					elseif player:GetHearts()-(heartnum*2) == 1 then
-						hearttype = "CoinHalf"
+						hearttype = "CoinHeartHalf"
 					else
 						hearttype = "CoinEmpty"
 					end
 				else
 					if player:GetHearts()-(heartnum*2) > 1 then
-						hearttype = "RedFull"
+						hearttype = "RedHeartFull"
 					elseif player:GetHearts()-(heartnum*2) == 1 then
-						hearttype = "RedHalf"
+						hearttype = "RedHeartHalf"
 					else
-						hearttype = "RedEmpty"
+						hearttype = "EmptyHeart"
 						goldheart = false
 					end
 				end
@@ -155,11 +155,11 @@ function HUDAPI.GetHeartType(player,heartnum)
 						end
 						local remainingred = player:GetHearts()+prevsoulcount-(heartnum*2)
 						if remainingred > 1 then
-							hearttype = "BoneFull"
+							hearttype = "BoneHeartFull"
 						elseif remainingred == 1 then
-							hearttype = "BoneHalf"
+							hearttype = "BoneHeartHalf"
 						else
-							hearttype = "BoneEmpty"
+							hearttype = "BoneHeartEmpty"
 						end
 						--eternal heart overlay
 						if player:GetEternalHearts() > 0 and player:GetHearts() > player:GetMaxHearts() and player:GetHearts()-(heartnum*2) > 0 and player:GetHearts()-(heartnum*2) < 3 then
@@ -178,15 +178,15 @@ function HUDAPI.GetHeartType(player,heartnum)
 						local remainingsoul = player:GetSoulHearts() + (2*prevbonecount) - (redheartsoffset*2)
 						if player:IsBlackHeart(blackheartcheck) then
 							if remainingsoul > 1 then
-								hearttype = "BlackFull"
+								hearttype = "BlackHeartFull"
 							else
-								hearttype = "BlackHalf"
+								hearttype = "BlackHeartHalf"
 							end
 						else
 							if remainingsoul > 1 then
-								hearttype = "BlueFull"
+								hearttype = "BlueHeartFull"
 							else
-								hearttype = "BlueHalf"
+								hearttype = "BlueHeartHalf"
 							end
 						end
 						--eternal heart overlay
@@ -201,21 +201,21 @@ function HUDAPI.GetHeartType(player,heartnum)
 			if eternal and goldheart then
 				overlaytype = "Gold&Eternal"
 			elseif eternal then
-				overlaytype = "Eternal"
+				overlaytype = "WhiteHeartOverlay"
 			elseif goldheart then
-				overlaytype = "Gold"
+				overlaytype = "GoldHeartOverlay"
 			end
 		end
 		if REPENTANCE and player:GetRottenHearts() > 0 then
 			local nonrottenreds = player:GetHearts()/2 - player:GetRottenHearts()
 			if hearttype == "RedFull" then
 				if heartnum >= nonrottenreds then
-					hearttype = "Rotten"
+					hearttype = "RottenHeartFull"
 				end
 			elseif hearttype == "BoneFull" then
 				local remainingred = player:GetHearts()+prevsoulcount-(heartnum*2)
 				if remainingred - player:GetRottenHearts()*2 <= 0 then
-					hearttype = "RottenBone"
+					hearttype = "RottenBoneHeartFull"
 				end
 			end
 		end
@@ -223,11 +223,11 @@ function HUDAPI.GetHeartType(player,heartnum)
 	return hearttype, overlaytype, subcharacter
 end
 function getHeartSprite(player,heartpos)
-  Anim = "gfx/hudgfx/ui_hearts.anm2"
+  Anim = "gfx/ui/ui_hearts.anm2"
   local thissprite = Sprite()
   thissprite:Load(Anim,true)
   thissprite:RemoveOverlay()
-  local hearttype, overlaytype, sub = HUDAPI.GetHeartType(player,heartpos)
+  local hearttype, overlaytype, sub = GetHeartType(player,heartpos)
   local opacity = 1
   if heartpos > 23 then
     opacity = 0.2
@@ -243,12 +243,13 @@ function getHeartSprite(player,heartpos)
   if hearttype == "None" then
     return false
   else
-    thissprite:SetFrame(hearttype, 0)
-  end
+
+  thissprite:SetFrame(hearttype, 0)
   if overlaytype ~= "None" then
-    thissprite:SetOverlayFrame(overlaytype, 0)
+					thissprite:SetOverlayFrame(overlaytype, 0)
   end
   return thissprite
+end
 end
 function testMod:render()
   pos = Vector(100,50)
@@ -262,6 +263,10 @@ function testMod:render()
 end
   b=getHeartSprite(player,0)
   b:Render(Vector(130,50),z,z)
+  end
+  end
 end
+ Game():GetSeeds():AddSeedEffect(SeedEffect.SEED_NO_HUD)
+ --Game():GetSeeds():RemoveSeedEffect(SeedEffect.SEED_NO_HUD)
 
 testMod:AddCallback(ModCallbacks.MC_POST_RENDER, testMod.render)
