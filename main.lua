@@ -58,8 +58,8 @@ function getActiveItemSprite(player,slot)
     end
     -- Everything Jar - charges set
     if activeitem == 720  then
-        charge = player:GetActiveCharge()
-        thissprite:SetFrame("EverythingJar", charge+1)
+        fi_charge = player:GetActiveCharge()
+        thissprite:SetFrame("EverythingJar", fi_charge +1)
     end
     -- TODO: Jar of Wisp - charges set sprite
     --if activeitem == 685 then
@@ -68,22 +68,25 @@ function getActiveItemSprite(player,slot)
     --end
     -- TODO:Urn of soul - charges set sprite
     if activeitem == 640 then
-        charge = 0
+        fi_charge = 0
         -- TODO: get charge of urn
-        thissprite:SetFrame("SoulUrn", charge) -- sets frame
+        thissprite:SetFrame("SoulUrn", fi_charge) -- sets frame
     end
 
 return thissprite
 end
-function getCharge(player)
+function getCharge(player,slot) -- Gets charge of item from  player, slot
+    --TODO: item slot
+
+    --TODO: Bethany charge bar
   Anim = "gfx/ui/activechargebar.anm2"
-  local activeitem = player:GetActiveItem()
+  local activeitem = player:GetActiveItem(slot)
   if activeitem == 0 then return false end
   local itemcharge = Isaac.GetItemConfig():GetCollectible(activeitem).MaxCharges
   if itemcharge == 0 then return false end
   local thissprite = Sprite()
   thissprite:Load(Anim,true)
-  local charges = player:GetActiveCharge() + player:GetBatteryCharge()
+  local charges = player:GetActiveCharge(slot) + player:GetBatteryCharge(slot)
   local step = math.floor((charges/(itemcharge*2))*46)
   thissprite:SetFrame("ChargeBar", step)
   if (itemcharge > 1 and itemcharge < 5) or itemcharge == 6 or itemcharge == 12 then
@@ -466,10 +469,10 @@ function coopHUD:render()
     if main_pocket_desc then
         f:DrawString (main_pocket_desc,x,y,color,0,true) end
 
-end
+    end
 
 
---Game():GetSeeds():AddSeedEffect(SeedEffect.SEED_NO_HUD)
+Game():GetSeeds():AddSeedEffect(SeedEffect.SEED_NO_HUD)
 --Game():GetSeeds():RemoveSeedEffect(SeedEffect.SEED_NO_HUD)
 
 coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.render)
