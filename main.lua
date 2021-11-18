@@ -439,6 +439,17 @@ function coopHUD:render()
         main_pocket.Scale = scale
         main_pocket:Render(Vector(x,y), vector_zero, vector_zero)
     end
+    -- main_pocket charge
+    if main_pocket:GetDefaultAnimation() == 'Idle' then
+        x = init_x + 28--pozycja wyjściowa
+        y = init_y + 24
+        scale = Vector(0.5,0.5)
+        local pocket_charge  = getCharge(player,2)
+        if pocket_charge then
+            pocket_charge.Scale = scale
+            pocket_charge:Render(Vector(x,y), vector_zero, vector_zero)
+        end
+    end
     --second_pocket
     x = init_x + 34--pozycja wyjściowa
     y = init_y + 22  --poz wyściowa
