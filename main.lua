@@ -429,6 +429,29 @@ function coopHUD:render()
         tri2.Scale = scale
         tri2:Render(Vector(x,y), vector_zero, vector_zero)
     end
+    --main_pocket
+    x = init_x + 16--pozycja wyjściowa
+    y = init_y + 24 --poz wyściowa
+    scale = Vector(0.7,0.7)
+    local main_pocket = getPocketItemSprite(player,0)
+
+    if main_pocket then
+        main_pocket.Scale = scale
+        main_pocket:Render(Vector(x,y), vector_zero, vector_zero)
+    end
+    --second_pocket
+    x = init_x + 34--pozycja wyjściowa
+    y = init_y + 22  --poz wyściowa
+    scale = Vector(0.5,0.5)
+    local second_pocket = getPocketItemSprite(player,1)
+    if second_pocket then
+            if main_pocket:GetDefaultAnimation() ~= 'Idle' or second_pocket:GetDefaultAnimation() ~= 'Idle' then
+                second_pocket.Scale = scale
+                second_pocket:Render(Vector(x,y), vector_zero, vector_zero)
+            end
+            print(main_pocket:GetDefaultAnimation(),second_pocket:GetDefaultAnimation())
+
+    end
     --third pocket
     x = init_x + 48--pozycja wyjściowa
     y = init_y + 22  --poz wyściowa
