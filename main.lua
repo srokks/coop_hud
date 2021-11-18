@@ -1,4 +1,4 @@
-local testMod = RegisterMod("Coop HUD", 1)
+local coopHUD = RegisterMod("Coop HUD", 1)
 -- if HUDAPI  then
 --	isminimapmod = true
 --  a = 'True'
@@ -6,7 +6,7 @@ local testMod = RegisterMod("Coop HUD", 1)
 --	isminimapmod = false
 --  a = 'False'
 --end
-local ModConfigLoaded, ModConfig = pcall(require, "scripts.modconfig")
+
 function getActiveItemSprite(player,slot)
   Anim = "gfx/ui/item.anm2"
   local activeitem = player:GetActiveItem(slot)
@@ -26,9 +26,9 @@ function getActiveItemSprite(player,slot)
       itemsprite = "gfx/characters/costumes/costume_434_jarofflies.png"
     end
     -- Everything Jar
-    -- TODO: virtuoses render
+    -- TODO: Everything Jar render
     if activeitem == 720 then
-      itemsprite = "gfx/ui/hud_everythingjar.png" -- TODO: add 
+      itemsprite = "gfx/ui/hud_everythingjar.png"
     end
     -- 
     thissprite:ReplaceSpritesheet(0, itemsprite)
@@ -53,7 +53,7 @@ function getActiveItemSprite(player,slot)
     if activeitem == 434 then frame = player:GetJarFlies() end
     thissprite:SetFrame("Jar", frame)
   end
-  -- bethany check
+  -- TODO: Everything Jar - charge
 return thissprite
 end
 function getCharge(player)
@@ -331,7 +331,7 @@ function getMainPocketDesc(player)
   end
   return desc
 end
-function testMod:render()
+function coopHUD:render()
   init_x = 50 --
   init_y = 50 --
   pos = Vector(100,50)
@@ -349,8 +349,7 @@ end
   -- hearts
   x = init_x+ 30 --pozycja wyjściowa
   y = init_y -10 --poz wyściowa
-  -- @todo Test
-  
+
   
   hearts_row = 4 
   hearts_col = 4 
@@ -427,4 +426,4 @@ end
 --Game():GetSeeds():AddSeedEffect(SeedEffect.SEED_NO_HUD)
 Game():GetSeeds():RemoveSeedEffect(SeedEffect.SEED_NO_HUD)
 
-testMod:AddCallback(ModCallbacks.MC_POST_RENDER, testMod.render)
+coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.render)
