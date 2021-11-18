@@ -29,10 +29,9 @@ function getActiveItemSprite(player,slot)
     --if activeitem == 584 then
     --  itemsprite = "gfx/characters/costumes/costume_434_jarofflies.png"
     --end
-     --Everything Jar
-     --TODO: Everything Jar render
-    if activeitem == 720 then
-      itemsprite = "gfx/ui/hud_everythingjar.png"
+    -- TODO: Urn of Souls - sprite set
+    if activeitem == 640 then
+        thissprite:SetFrame("Idle", 6)
     end
     -- 
     thissprite:ReplaceSpritesheet(0, itemsprite)
