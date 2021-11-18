@@ -1,11 +1,11 @@
 local testMod = RegisterMod("Coop HUD", 1)
- if HUDAPI  then
-	isminimapmod = true
-  a = 'True'
-else
-	isminimapmod = false
-  a = 'False'
-end
+-- if HUDAPI  then
+--	isminimapmod = true
+--  a = 'True'
+--else
+--	isminimapmod = false
+--  a = 'False'
+--end
 local ModConfigLoaded, ModConfig = pcall(require, "scripts.modconfig")
 function getActiveItemSprite(player,slot)
   Anim = "gfx/ui/item.anm2"
@@ -20,11 +20,13 @@ function getActiveItemSprite(player,slot)
     elseif activeitem == 434 then
       itemsprite = "gfx/characters/costumes/costume_434_jarofflies.png"
     end
-    -- bethany check
+    -- Book of Virtuoses check
+    -- TODO: virtuoses render
     if activeitem == 584 then
       itemsprite = "gfx/characters/costumes/costume_434_jarofflies.png"
     end
-    -- everything jar
+    -- Everything Jar
+    -- TODO: virtuoses render
     if activeitem == 720 then
       itemsprite = "gfx/ui/hud_everythingjar.png" -- TODO: add 
     end
