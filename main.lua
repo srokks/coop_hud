@@ -14,11 +14,15 @@ function getActiveItemSprite(player,slot)
   local thissprite = Sprite() -- replaced
   thissprite:Load(Anim,true)
     local itemsprite = Isaac.GetItemConfig():GetCollectible(activeitem).GfxFileName
-    --jar check
-    if activeitem == 290 then
-      itemsprite = "gfx/characters/costumes/costume_rebirth_90_thejar.png"
-    elseif activeitem == 434 then
-      itemsprite = "gfx/characters/costumes/costume_434_jarofflies.png"
+    --Jar's check and sets item_sprite
+    if activeitem == 290 then -- the jar
+            itemsprite = "gfx/characters/costumes/costume_rebirth_90_thejar.png"
+    elseif activeitem == 434 then -- jar of flies
+            itemsprite = "gfx/characters/costumes/costume_434_jarofflies.png"
+    elseif activeitem == 685 then -- jar of wisp
+            itemsprite = "gfx/ui/hud_jarofwisps.png"
+    elseif activeitem == 720 then -- everything jar
+            itemsprite = "gfx/ui/hud_everythingjar.png"
     end
     -- Book of Virtuoses check
     -- TODO: virtuoses render
