@@ -52,7 +52,7 @@ function getActiveItemSprite(player,slot)
   --The Jar/Jar of Flies - charges check
     if activeitem == 290 or activeitem == 434 then --
         local frame = 0
-        if activeitem == 290 then frame = math.ceil(player:GetJarHearts()) end -- gets no of hearts in jar
+        if activeitem == 290 then frame = math.ceil(player:GetJarHearts()/2) end -- gets no of hearts in jar
         if activeitem == 434 then frame = player:GetJarFlies() end --gets no of flies in jar of flies
         thissprite:SetFrame("Jar", frame)
     end
@@ -356,12 +356,14 @@ end
 function coopHUD:render()
     -- inits
     player_num = 0
+
+    local scale = Vector(1,1)
     local init_x = 20 -- init pos x - hor
     local init_y = 20 -- init pos y - ver
     local x,y = 0 -- pos of different sprites
     local vector_zero = Vector(0,0)
     local player = Isaac.GetPlayer(player_num)
-
+    local trinket_no = player:GetMaxTrinkets()
     -- Second active item - render
     x = init_x - 7
     y = init_y - 7
@@ -373,7 +375,6 @@ function coopHUD:render()
     -- Second active item - charges - render
     x = init_x - 15
     y = init_y - 9
-
     local se_charge = getCharge(player,1)
     if se_charge then
         se_charge.Scale = Vector(0.5,0.5 )
@@ -410,19 +411,20 @@ function coopHUD:render()
             heart_sprite:Render(Vector(x+12*col_no,y+(10*row_no), vector_zero, vector_zero))
         end
     end
-    --trinkets
+    --Trinket 1 -
     scale = Vector(0.7,0.7)
-    x = init_x --pozycja wyjściowa
-    y = init_y + 20  --poz wyściowa
-    tri1 = getTrinket(player,0)
-
+    x = init_x
+    -- if player has only one trinket slot render higher
+    if trinket_no == 1 then y = init_y + 20 else y = init_y + 20  end
+    local tri1 = getTrinket(player,0)
     if tri1 then
         tri1.Scale = scale
         tri1:Render(Vector(x,y), vector_zero, vector_zero)
     end
-    x = init_x --pozycja wyjściowa
-    y = init_y + 32  --poz wyściowa
-    tri2 = getTrinket(player,1)
+    --Trinket 2 -
+    x = init_x
+    y = init_y + 32
+    local tri2 = getTrinket(player,1)
     if tri2 then
         tri2.Scale = scale
         tri2:Render(Vector(x,y), vector_zero, vector_zero)
