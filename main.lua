@@ -24,8 +24,7 @@ function getActiveItemSprite(player,slot)
     elseif activeitem == 720 then -- everything jar
             itemsprite = "gfx/ui/hud_everythingjar.png"
     end
-    -- Book of Virtuoses check
-    -- TODO: virtuoses render
+    -- TODO:Book of Virtuoses check
     --if activeitem == 584 then
     --  itemsprite = "gfx/characters/costumes/costume_434_jarofflies.png"
     --end
@@ -33,15 +32,13 @@ function getActiveItemSprite(player,slot)
     if activeitem == 640 then
         thissprite:SetFrame("Idle", 6)
     end
-    -- 
     thissprite:ReplaceSpritesheet(0, itemsprite)
     thissprite:ReplaceSpritesheet(1, itemsprite)
     thissprite:ReplaceSpritesheet(2, itemsprite)
     thissprite:ReplaceSpritesheet(3, itemsprite)
     thissprite:ReplaceSpritesheet(4, itemsprite)
     thissprite:ReplaceSpritesheet(5, itemsprite)
-    thissprite:LoadGraphics()
-    -- sets item overlay according to charges
+    thissprite:LoadGraphics() -- sets item overlay according to charges
   local itemcharge = Isaac.GetItemConfig():GetCollectible(activeitem).MaxCharges -- gets max charges
   if itemcharge == 0 then -- checks id item has any charges
     thissprite:SetFrame("Idle", 0) -- set frame to unloaded
@@ -49,23 +46,26 @@ function getActiveItemSprite(player,slot)
       -- checks if item dont needs charges or item is overloaded
     thissprite:SetFrame("Idle", 1) -- set frame to loaded
   else
-    thissprite:SetFrame("Idle", 0)
+    thissprite:SetFrame("Idle", 0) -- set frame to unloaded
   end
-  --jar check
-  if activeitem == 290 or activeitem == 434 then
-    local frame = 0
-    if activeitem == 290 then frame = player:GetJarHearts() end
-    if activeitem == 434 then frame = player:GetJarFlies() end
-    thissprite:SetFrame("Jar", frame)
-  end
+  --The Jar/Jar of Flies - charges check
+    if activeitem == 290 or activeitem == 434 then --
+        local frame = 0
+        if activeitem == 290 then frame = math.ceil(player:GetJarHearts()) end -- gets no of hearts in jar
+        if activeitem == 434 then frame = player:GetJarFlies() end --gets no of flies in jar of flies
+        thissprite:SetFrame("Jar", frame)
+    end
     -- Everything Jar - charges set
     if activeitem == 720  then
         charge = player:GetActiveCharge()
         thissprite:SetFrame("EverythingJar", charge+1)
-
     end
-
-
+    -- TODO:Jar of wisp - charges set sprite
+    if activeitem == 685  then
+        thissprite:SetFrame('WispJar',0)
+        --print('wisp')
+    end
+    --
 
 return thissprite
 end
@@ -438,6 +438,6 @@ end
 
 
 --Game():GetSeeds():AddSeedEffect(SeedEffect.SEED_NO_HUD)
-Game():GetSeeds():RemoveSeedEffect(SeedEffect.SEED_NO_HUD)
+--Game():GetSeeds():RemoveSeedEffect(SeedEffect.SEED_NO_HUD)
 
 coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.render)
