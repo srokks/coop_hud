@@ -24,13 +24,13 @@ function getActiveItemSprite(player,slot)
     elseif activeitem == 720 then -- everything jar
             itemsprite = "gfx/ui/hud_everythingjar.png"
     end
-    -- TODO:Book of Virtuoses check
+    -- TODO:Book of Virtuoses sprite set
     --if activeitem == 584 then
     --  itemsprite = "gfx/characters/costumes/costume_434_jarofflies.png"
     --end
-    -- TODO: Urn of Souls - sprite set
+    -- Urn of Souls - sprite set
     if activeitem == 640 then
-        thissprite:SetFrame("Idle", 6)
+        itemsprite = "gfx/ui/hud_urnofsouls.png"
     end
     thissprite:ReplaceSpritesheet(0, itemsprite)
     thissprite:ReplaceSpritesheet(1, itemsprite)
@@ -39,6 +39,7 @@ function getActiveItemSprite(player,slot)
     thissprite:ReplaceSpritesheet(4, itemsprite)
     thissprite:ReplaceSpritesheet(5, itemsprite)
     thissprite:LoadGraphics() -- sets item overlay according to charges
+    -- Sets overlay/charges state frame --
   local itemcharge = Isaac.GetItemConfig():GetCollectible(activeitem).MaxCharges -- gets max charges
   if itemcharge == 0 then -- checks id item has any charges
     thissprite:SetFrame("Idle", 0) -- set frame to unloaded
@@ -60,12 +61,17 @@ function getActiveItemSprite(player,slot)
         charge = player:GetActiveCharge()
         thissprite:SetFrame("EverythingJar", charge+1)
     end
-    -- TODO:Jar of wisp - charges set sprite
-    if activeitem == 685  then
-        thissprite:SetFrame('WispJar',0)
-        --print('wisp')
+    -- TODO: Jar of Wisp - charges set sprite
+    --if activeitem == 685 then
+    --    --TODO: anim frames
+    --    --TODO: get charges
+    --end
+    -- TODO:Urn of soul - charges set sprite
+    if activeitem == 640 then
+        charge = 0
+        -- TODO: get charge of urn
+        thissprite:SetFrame("SoulUrn", charge) -- sets frame
     end
-    --
 
 return thissprite
 end
