@@ -351,94 +351,120 @@ function getMainPocketDesc(player)
   return desc
 end
 function coopHUD:render()
-  init_x = 100 --
-  init_y = 100 --
-  pos = Vector(100,50)
-  z = Vector(0,0)
-  player = Isaac.GetPlayer(0)
-  item = getActiveItemSprite(player,0)
-  if item then
-    item:Render(Vector(init_x,init_y),z,z)
-  end
-  x = init_x + 17
-  charge = getCharge(player)
-  if charge then
-  charge:Render(Vector(x,init_y),z,z)
-end
-  -- hearts
-  x = init_x+ 30 --pozycja wyjściowa
-  y = init_y -10 --poz wyściowa
+    -- inits
+    player_num = 0
+    local init_x = 20 -- init pos x - hor
+    local init_y = 20 -- init pos y - ver
+    local x,y = 0 -- pos of different sprites
+    local vector_zero = Vector(0,0)
+    local player = Isaac.GetPlayer(player_num)
 
-  
-  hearts_row = 4 
-  hearts_col = 4 
-  for j = 0,12,1 do --iteruje po wszystkich serduszkach jakie ma
-    -- TODO: integracja z no cap 
-    row_no = math.floor(j/hearts_row) -- gets heart row number
-    col_no = j%hearts_col
-    heart_sprite=getHeartSprite(player,j)
-    if heart_sprite then
-      heart_sprite:Render(Vector(x+12*col_no,y+(10*row_no),z,z))
+    -- Second active item - render
+    x = init_x - 7
+    y = init_y - 7
+    local second_active = getActiveItemSprite(player,1)
+    if second_active then
+        second_active.Scale = Vector(0.7,0.7)
+        second_active:Render(Vector(x,x), vector_zero, vector_zero)
     end
-  end
-  --trinkets
-  scale = Vector(0.7,0.7)
-  x = init_x --pozycja wyjściowa
-  y = init_y + 20  --poz wyściowa
-  tri1 = getTrinket(player,0)
-  
-  if tri1 then
-    tri1.Scale = scale
-    tri1:Render(Vector(x,y),z,z)
-  end
-  x = init_x --pozycja wyjściowa
-  y = init_y + 32  --poz wyściowa
-  tri2 = getTrinket(player,1)
-  if tri2 then
-    tri2.Scale = scale
-    tri2:Render(Vector(x,y),z,z)
-  end
-  --third pocket
-  x = init_x + 48--pozycja wyjściowa
-  y = init_y + 22  --poz wyściowa
-  scale = Vector(0.5,0.5)
-  third_pocket = getPocketItemSprite(player,2 )
-  if third_pocket then
-    third_pocket.Scale = scale
-    third_pocket:Render(Vector(x,y),z,z)
-  end
-  -- ISSUE: shows pocket item 
-  -- FIX: 
-  
-   
-  --second_pocket
-  x = init_x + 34--pozycja wyjściowa
-  y = init_y + 22  --poz wyściowa
-  scale = Vector(0.5,0.5)
-  second_pocket = getPocketItemSprite(player,1)
-  if second_pocket then
-    second_pocket.Scale = scale
-    second_pocket:Render(Vector(x,y),z,z)
-  end
-  --main_pocket
-  x = init_x + 16--pozycja wyjściowa
-  y = init_y + 24 --poz wyściowa
-  scale = Vector(0.7,0.7)
-  main_pocket = getPocketItemSprite(player,0)
-  if main_pocket then
-    main_pocket.Scale = scale
-    main_pocket:Render(Vector(x,y),z,z)
-  end
-  -- main_pocket_desc
-  x = init_x + 16--pozycja wyjściowa
-  y = init_y + 24 --poz wyściowa
-  local main_pocket_desc = ""
-  main_pocket_desc = getMainPocketDesc(player)
-  f = Font()
-  f:Load("font/luaminioutlined.fnt")
-  color = KColor(1,0.2,0.2,0.7)
-  if main_pocket_desc then
-    f:DrawString (main_pocket_desc,x,y,color,0,true) end
+    -- Second active item - charges - render
+    x = init_x - 15
+    y = init_y - 9
+
+    local se_charge = getCharge(player,1)
+    if se_charge then
+        se_charge.Scale = Vector(0.5,0.5 )
+        se_charge:Render(Vector(x,y), vector_zero, vector_zero)
+    end
+    -- First active item - render
+    local first_active = getActiveItemSprite(player,0)
+    if first_active then
+        first_active:Render(Vector(init_x,init_y), vector_zero, vector_zero)
+    end
+    -- First active item - charges - render
+    x = init_x + 17
+    local fi_charge = getCharge(player,0)
+    if fi_charge then
+        fi_charge:Render(Vector(x,init_y), vector_zero, vector_zero)
+    end
+    -- Hearts - render
+    if first_active then -- checks if has active item
+        x = init_x+ 30
+        y = init_y -10
+    else
+        x = init_x -10 -- if no activeitem render closer to edge
+        y = init_y - 10
+    end
+
+    hearts_row = 4
+    hearts_col = 4
+    for j = 0,12,1 do --iteruje po wszystkich serduszkach jakie ma player
+        -- TODO: integracja z no cap
+        row_no = math.floor(j/hearts_row) -- gets heart row number
+        col_no = j%hearts_col
+        heart_sprite=getHeartSprite(player,j)
+        if heart_sprite then
+            heart_sprite:Render(Vector(x+12*col_no,y+(10*row_no), vector_zero, vector_zero))
+        end
+    end
+    --trinkets
+    scale = Vector(0.7,0.7)
+    x = init_x --pozycja wyjściowa
+    y = init_y + 20  --poz wyściowa
+    tri1 = getTrinket(player,0)
+
+    if tri1 then
+        tri1.Scale = scale
+        tri1:Render(Vector(x,y), vector_zero, vector_zero)
+    end
+    x = init_x --pozycja wyjściowa
+    y = init_y + 32  --poz wyściowa
+    tri2 = getTrinket(player,1)
+    if tri2 then
+        tri2.Scale = scale
+        tri2:Render(Vector(x,y), vector_zero, vector_zero)
+    end
+    --third pocket
+    x = init_x + 48--pozycja wyjściowa
+    y = init_y + 22  --poz wyściowa
+    scale = Vector(0.5,0.5)
+    third_pocket = getPocketItemSprite(player,2 )
+    if third_pocket then
+        third_pocket.Scale = scale
+        third_pocket:Render(Vector(x,y), vector_zero, vector_zero)
+    end
+    -- ISSUE: shows pocket item
+    -- FIX:
+
+
+    --second_pocket
+    x = init_x + 34--pozycja wyjściowa
+    y = init_y + 22  --poz wyściowa
+    scale = Vector(0.5,0.5)
+    second_pocket = getPocketItemSprite(player,1)
+    if second_pocket then
+        second_pocket.Scale = scale
+        second_pocket:Render(Vector(x,y), vector_zero, vector_zero)
+    end
+    --main_pocket
+    x = init_x + 16--pozycja wyjściowa
+    y = init_y + 24 --poz wyściowa
+    scale = Vector(0.7,0.7)
+    main_pocket = getPocketItemSprite(player,0)
+    if main_pocket then
+        main_pocket.Scale = scale
+        main_pocket:Render(Vector(x,y), vector_zero, vector_zero)
+    end
+    -- main_pocket_desc
+    x = init_x + 16--pozycja wyjściowa
+    y = init_y + 24 --poz wyściowa
+    local main_pocket_desc = ""
+    main_pocket_desc = getMainPocketDesc(player)
+    f = Font()
+    f:Load("font/luaminioutlined.fnt")
+    color = KColor(1,0.2,0.2,0.7)
+    if main_pocket_desc then
+        f:DrawString (main_pocket_desc,x,y,color,0,true) end
 
 end
 
