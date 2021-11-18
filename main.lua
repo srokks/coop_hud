@@ -22,11 +22,11 @@ function getActiveItemSprite(player,slot)
     end
     -- Book of Virtuoses check
     -- TODO: virtuoses render
-    if activeitem == 584 then
-      itemsprite = "gfx/characters/costumes/costume_434_jarofflies.png"
-    end
-    -- Everything Jar
-    -- TODO: Everything Jar render
+    --if activeitem == 584 then
+    --  itemsprite = "gfx/characters/costumes/costume_434_jarofflies.png"
+    --end
+     --Everything Jar
+     --TODO: Everything Jar render
     if activeitem == 720 then
       itemsprite = "gfx/ui/hud_everythingjar.png"
     end
@@ -38,11 +38,13 @@ function getActiveItemSprite(player,slot)
     thissprite:ReplaceSpritesheet(4, itemsprite)
     thissprite:ReplaceSpritesheet(5, itemsprite)
     thissprite:LoadGraphics()
-  local itemcharge = Isaac.GetItemConfig():GetCollectible(activeitem).MaxCharges
-  if itemcharge == 0 then
-    thissprite:SetFrame("Idle", 0)
+    -- sets item overlay according to charges
+  local itemcharge = Isaac.GetItemConfig():GetCollectible(activeitem).MaxCharges -- gets max charges
+  if itemcharge == 0 then -- checks id item has any charges
+    thissprite:SetFrame("Idle", 0) -- set frame to unloaded
   elseif player:NeedsCharge() == false or player:GetActiveCharge(slot) >= itemcharge then
-    thissprite:SetFrame("Idle", 1)
+      -- checks if item dont needs charges or item is overloaded
+    thissprite:SetFrame("Idle", 1) -- set frame to loaded
   else
     thissprite:SetFrame("Idle", 0)
   end
@@ -53,7 +55,15 @@ function getActiveItemSprite(player,slot)
     if activeitem == 434 then frame = player:GetJarFlies() end
     thissprite:SetFrame("Jar", frame)
   end
-  -- TODO: Everything Jar - charge
+    -- Everything Jar - charges set
+    if activeitem == 720  then
+        charge = player:GetActiveCharge()
+        thissprite:SetFrame("EverythingJar", charge+1)
+
+    end
+
+
+
 return thissprite
 end
 function getCharge(player)
@@ -332,8 +342,8 @@ function getMainPocketDesc(player)
   return desc
 end
 function coopHUD:render()
-  init_x = 50 --
-  init_y = 50 --
+  init_x = 100 --
+  init_y = 100 --
   pos = Vector(100,50)
   z = Vector(0,0)
   player = Isaac.GetPlayer(0)
@@ -420,6 +430,7 @@ end
   color = KColor(1,0.2,0.2,0.7)
   if main_pocket_desc then
     f:DrawString (main_pocket_desc,x,y,color,0,true) end
+
 end
 
 
