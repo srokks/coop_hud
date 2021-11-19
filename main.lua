@@ -42,8 +42,8 @@ function coopHUD.getActiveItemSprite(player,slot)
     -- Sets overlay/charges state frame --
   local itemcharge = Isaac.GetItemConfig():GetCollectible(activeitem).MaxCharges -- gets max charges
   if itemcharge == 0 then -- checks id item has any charges
-    thissprite:SetFrame("Idle", 0) -- set frame to unloaded
-  elseif player:NeedsCharge() == false or player:GetActiveCharge(slot) >= itemcharge then
+    thissprite:SetFrame("Idle", 0 ) -- set frame to unloaded
+  elseif player:NeedsCharge(slot) == false or player:GetActiveCharge(slot) >= itemcharge then
       -- checks if item dont needs charges or item is overloaded
     thissprite:SetFrame("Idle", 1) -- set frame to loaded
   else
@@ -226,101 +226,116 @@ function coopHUD.renderTrinkets(player,anchor)
     local scale = Vector(0.5,0.5)
     local tri1 = coopHUD.getTrinket(player,0)
     local tri2 = coopHUD.getTrinket(player,1)
-
+    local pos = Vector(anchor.X,anchor.Y)
     if tri1 then
         if tri2 then -- if has trinket 2
-            anchor.Y = anchor.Y + 16 -- left corner pos
+            pos.Y = pos.Y + 16 -- left corner pos
         else -- else
-            anchor.Y = anchor.Y + 22 -- center pos
+            pos.Y = pos.Y + 22 -- center pos
             scale = Vector(0.7,0.7) -- makes trinket bigger
         end
         tri1.Scale = scale
-        tri1:Render(anchor,vector_zero,vector_zero)
-        anchor.X = anchor.X + 8
+        tri1:Render(pos,vector_zero,vector_zero)
+        pos.X = pos.X + 8
     end
     if tri2 then
-        anchor.Y = anchor.Y + 8
+        pos.Y = pos.Y + 8
 
         tri2.Scale = scale
-        tri2:Render(anchor,vector_zero,vector_zero) end
-    return anchor.X
+        tri2:Render(pos,vector_zero,vector_zero) end
+    return pos.X
 end
 function coopHUD.renderPockets(player,anchor)
-    ----main_pocket
+
     --x = init_x + 16--pozycja wyjściowa
     --y = init_y + 24 --poz wyściowa
-    --scale = Vector(0.7,0.7)
-    --local main_pocket = coopHUD.getPocketItemSprite(player,0)
-    --
-    --if main_pocket then
-    --    main_pocket.Scale = scale
-    --    main_pocket:Render(Vector(x,y), vector_zero, vector_zero)
-    --end
+    local scale = Vector(0.7,0.7)
+    local pos = Vector(anchor.X,anchor.Y)
+    local main_pocket = coopHUD.getPocketItemSprite(player,0)
+    local second_pocket = coopHUD.getPocketItemSprite(player,1)
+    local third_pocket = coopHUD.getPocketItemSprite(player,2 )
+    ----second_pocket charges
+    if third_pocket then
+        if third_pocket:GetDefaultAnimation() == 'Idle' then
+            scale = Vector(0.3,0.3 )
+            local pocket_charge  = coopHUD.getItemChargeSprite(player,2)
+            if pocket_charge then
+                if main_pocket:GetDefaultAnimation() ~= 'Idle' and third_pocket :GetDefaultAnimation() ~= 'Idle' then
+                    pocket_charge.Scale = scale
+                    pocket_charge:Render(Vector(pos.X+42,pos.Y+2), vector_zero, vector_zero)
+                end
+            end
+            pos.X = pos.X -5
+        end
+    end
+    ------third pocket
+    scale = Vector(0.5,0.5)
+    if third_pocket then
+        if third_pocket:GetDefaultAnimation() ~= 'Idle' then
+            third_pocket.Scale = scale
+            third_pocket:Render(Vector(pos.X+40,pos.Y), vector_zero, vector_zero)
+        else
+            if main_pocket:GetDefaultAnimation() ~= 'Idle' and second_pocket :GetDefaultAnimation() ~= 'Idle' then
+                second_pocket.Scale = scale
+                second_pocket:Render(Vector(pos.X+40,pos.Y), vector_zero, vector_zero)
+            end
+        end
+    end
+    ----second_pocket charges
+    scale = Vector(0.5,0.5)
+    if second_pocket then
+        if second_pocket:GetDefaultAnimation() == 'Idle' then
+            scale = Vector(0.3,0.3 )
+            local pocket_charge  = coopHUD.getItemChargeSprite(player,2)
+            if pocket_charge then
+                if main_pocket:GetDefaultAnimation() ~= 'Idle' or second_pocket:GetDefaultAnimation() ~= 'Idle' then
+                    pocket_charge.Scale = scale
+                    pocket_charge:Render(Vector(pos.X+34,pos.Y+2), vector_zero, vector_zero)
+
+
+                end
+            end
+            pos.X = pos.X -5
+        end
+    end
+    ----second_pocket
+    scale = Vector(0.5,0.5)
+    if second_pocket then
+        if main_pocket:GetDefaultAnimation() ~= 'Idle' or third_pocket:GetDefaultAnimation() ~= 'Idle' then
+            second_pocket.Scale = scale
+            second_pocket:Render(Vector(pos.X+32,pos.Y), vector_zero, vector_zero)
+        end
+    end
+    ----main_pocket
+    if main_pocket then
+        scale = Vector(0.7,0.7)
+        main_pocket.Scale = scale
+        main_pocket:Render(Vector(pos.X + 16,pos.Y), VECTOR_ZERO, VECTOR_ZERO)
+    end
     ---- main_pocket charge
-    --if main_pocket then
-    --    if main_pocket:GetDefaultAnimation() == 'Idle' then
-    --        x = init_x + 28--pozycja wyjściowa
-    --        y = init_y + 24
-    --        scale = Vector(0.5,0.5)
-    --        local pocket_charge  = getCharge(player,2)
-    --        if pocket_charge then
-    --            pocket_charge.Scale = scale
-    --            pocket_charge:Render(Vector(x,y), vector_zero, vector_zero)
-    --        end
-    --    end
-    --end
-    ----second_pocket
-    --x = init_x + 34--pozycja wyjściowa
-    --y = init_y + 22  --poz wyściowa
-    --scale = Vector(0.5,0.5)
-    --local second_pocket = coopHUD.getPocketItemSprite(player,1)
-    --if second_pocket then
-    --    if main_pocket:GetDefaultAnimation() ~= 'Idle' or second_pocket:GetDefaultAnimation() ~= 'Idle' then
-    --        second_pocket.Scale = scale
-    --        second_pocket:Render(Vector(x,y), vector_zero, vector_zero)
-    --    end
-    --end
-    ----third pocket
-    --x = init_x + 48--pozycja wyjściowa
-    --y = init_y + 22  --poz wyściowa
-    --scale = Vector(0.5,0.5)
-    --local third_pocket = coopHUD.getPocketItemSprite(player,2 )
-    --if third_pocket then
-    --    third_pocket.Scale = scale
-    --    third_pocket:Render(Vector(x,y), vector_zero, vector_zero)
-    --end
-    ---- ISSUE: shows pocket item
-    ---- FIX:
-    --
-    --
-    ----second_pocket
-    --x = init_x + 34--pozycja wyjściowa
-    --y = init_y + 22  --poz wyściowa
-    --scale = Vector(0.5,0.5)
-    --second_pocket = coopHUD.getPocketItemSprite(player,1)
-    --if second_pocket then
-    --    second_pocket.Scale = scale
-    --    second_pocket:Render(Vector(x,y), vector_zero, vector_zero)
-    --end
-    ----main_pocket
-    --x = init_x + 16--pozycja wyjściowa
-    --y = init_y + 24 --poz wyściowa
-    --scale = Vector(0.7,0.7)
-    --main_pocket = coopHUD.getPocketItemSprite(player,0)
-    --if main_pocket then
-    --    main_pocket.Scale = scale
-    --    main_pocket:Render(Vector(x,y), vector_zero, vector_zero)
-    --end
+    if main_pocket then
+        if main_pocket:GetDefaultAnimation() == 'Idle' then
+            --x = init_x + 28--pozycja wyjściowa
+            --y = init_y + 24
+            scale = Vector(0.5,0.5)
+            local pocket_charge  = coopHUD.getItemChargeSprite(player,2)
+            if pocket_charge then
+                pocket_charge.Scale = scale
+                pocket_charge:Render(Vector(pos.X+26,pos.Y+2), vector_zero, vector_zero)
+            end
+            pos.X = pos.X -5
+        end
+    end
     ---- main_pocket_desc
     --x = init_x + 16--pozycja wyjściowa
     --y = init_y + 24 --poz wyściowa
-    --local main_pocket_desc = ""
-    --main_pocket_desc = coopHUD.getMainPocketDesc(player)
-    --f = Font()
-    --f:Load("font/luaminioutlined.fnt")
-    --color = KColor(1,0.2,0.2,0.7)
-    --if main_pocket_desc then
-    --    f:DrawString (main_pocket_desc,x,y,color,0,true) end
+    local main_pocket_desc = ""
+    main_pocket_desc = coopHUD.getMainPocketDesc(player)
+    local f = Font()
+    f:Load("font/luaminioutlined.fnt")
+    local color = KColor(1,0.2,0.2,0.7) -- TODO: sets according to player color
+    if main_pocket_desc then
+        f:DrawString (main_pocket_desc,anchor.X+8,anchor.Y+4 ,color,0,true) end
 
 end
 function coopHUD.render()
@@ -332,20 +347,15 @@ function coopHUD.render()
     local player = Isaac.GetPlayer(player_num)
     local max_trinkets = player:GetMaxTrinkets()
 
-    anchor = Vector(50,50)
+    local anchor = Vector(50,50)
     activeitem_off = coopHUD.renderActiveItem(player,anchor)
-    local offset = coopHUD.renderTrinkets(player,anchor,0)
+    local offset = coopHUD.renderTrinkets(player,anchor)
+    print(offset)
+    coopHUD.renderPockets(player,Vector(offset,anchor.Y+24))
+
     -- Hearts - render
 
-    if first_active then -- checks if has active item
-    x = init_x+ 30
-    y = init_y -10
-    else
-    x = init_x -10 -- if no activeitem render closer to edge
-    y = init_y - 10
-    end
-    x = x + 50 -- DEBUG
-    y = y + 50 -- DEBUG
+
     -- TODO: fix rendering - golden heaert issue
     local rows = 2
     for j = 0,12,1 do --iteruje po wszystkich serduszkach jakie ma player
