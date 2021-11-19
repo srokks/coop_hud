@@ -6,7 +6,7 @@ local coopHUD = RegisterMod("Coop HUD", 1)
 --	isminimapmod = false
 --  a = 'False'
 --end
-
+VECTOR_ZERO = Vector(0,0)
 function coopHUD.getActiveItemSprite(player,slot)
   Anim = "gfx/ui/item.anm2"
   local activeitem = player:GetActiveItem(slot)
@@ -212,14 +212,15 @@ function coopHUD.renderActiveItem(player,anchor)
     -- First active item - render
     local first_active = coopHUD.getActiveItemSprite(player,0)
     if first_active then
-        first_active:Render(Vector(init_x,init_y), vector_zero, vector_zero)
+        first_active:Render(Vector(init_x,init_y), VECTOR_ZERO, VECTOR_ZERO)
     end
     -- First active item - charges - render
     x = init_x + 17
     local fi_charge = coopHUD.getItemChargeSprite(player,0)
     if fi_charge then
-        fi_charge:Render(Vector(x,init_y), vector_zero, vector_zero)
+        fi_charge:Render(Vector(x,init_y), VECTOR_ZERO, VECTOR_ZERO)
     end
+    return Vector(x,y)
 end
 function coopHUD.renderTrinkets(player,anchor)
     local scale = Vector(0.5,0.5)
@@ -332,14 +333,8 @@ function coopHUD.render()
     local max_trinkets = player:GetMaxTrinkets()
 
     anchor = Vector(50,50)
-    coopHUD.renderActiveItem(player,anchor)
-    if max_trinkets > 1 then
-
-    else
-        anchor.Y = anchor.Y + 24
-        coopHUD.renderTrinket(player,anchor,0)
-    end
-
+    activeitem_off = coopHUD.renderActiveItem(player,anchor)
+    local offset = coopHUD.renderTrinkets(player,anchor,0)
     -- Hearts - render
 
     if first_active then -- checks if has active item
@@ -363,85 +358,6 @@ function coopHUD.render()
     heart_sprite:Render(Vector(x+12*row,y+(10*col), vector_zero, vector_zero))
     end
     end
-
-
-
-    --main_pocket
-    x = init_x + 16--pozycja wyjściowa
-    y = init_y + 24 --poz wyściowa
-    scale = Vector(0.7,0.7)
-    local main_pocket = coopHUD.getPocketItemSprite(player,0)
-
-    if main_pocket then
-    main_pocket.Scale = scale
-    main_pocket:Render(Vector(x,y), vector_zero, vector_zero)
-    end
-    -- main_pocket charge
-    if main_pocket then
-    if main_pocket:GetDefaultAnimation() == 'Idle' then
-    x = init_x + 28--pozycja wyjściowa
-    y = init_y + 24
-    scale = Vector(0.5,0.5)
-    local pocket_charge  = getCharge(player,2)
-    if pocket_charge then
-    pocket_charge.Scale = scale
-    pocket_charge:Render(Vector(x,y), vector_zero, vector_zero)
-    end
-    end
-    end
-    --second_pocket
-    x = init_x + 34--pozycja wyjściowa
-    y = init_y + 22  --poz wyściowa
-    scale = Vector(0.5,0.5)
-    local second_pocket = coopHUD.getPocketItemSprite(player,1)
-    if second_pocket then
-    if main_pocket:GetDefaultAnimation() ~= 'Idle' or second_pocket:GetDefaultAnimation() ~= 'Idle' then
-    second_pocket.Scale = scale
-    second_pocket:Render(Vector(x,y), vector_zero, vector_zero)
-    end
-    end
-    --third pocket
-    x = init_x + 48--pozycja wyjściowa
-    y = init_y + 22  --poz wyściowa
-    scale = Vector(0.5,0.5)
-    local third_pocket = coopHUD.getPocketItemSprite(player,2 )
-    if third_pocket then
-    third_pocket.Scale = scale
-    third_pocket:Render(Vector(x,y), vector_zero, vector_zero)
-    end
-    -- ISSUE: shows pocket item
-    -- FIX:
-
-
-    --second_pocket
-    x = init_x + 34--pozycja wyjściowa
-    y = init_y + 22  --poz wyściowa
-    scale = Vector(0.5,0.5)
-    second_pocket = coopHUD.getPocketItemSprite(player,1)
-    if second_pocket then
-    second_pocket.Scale = scale
-    second_pocket:Render(Vector(x,y), vector_zero, vector_zero)
-    end
-    --main_pocket
-    x = init_x + 16--pozycja wyjściowa
-    y = init_y + 24 --poz wyściowa
-    scale = Vector(0.7,0.7)
-    main_pocket = coopHUD.getPocketItemSprite(player,0)
-    if main_pocket then
-    main_pocket.Scale = scale
-    main_pocket:Render(Vector(x,y), vector_zero, vector_zero)
-    end
-    -- main_pocket_desc
-    x = init_x + 16--pozycja wyjściowa
-    y = init_y + 24 --poz wyściowa
-    local main_pocket_desc = ""
-    main_pocket_desc = coopHUD.getMainPocketDesc(player)
-    f = Font()
-    f:Load("font/luaminioutlined.fnt")
-    color = KColor(1,0.2,0.2,0.7)
-    if main_pocket_desc then
-    f:DrawString (main_pocket_desc,x,y,color,0,true) end
-
 end
 
 
