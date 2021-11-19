@@ -221,13 +221,28 @@ function coopHUD.renderActiveItem(player,anchor)
         fi_charge:Render(Vector(x,init_y), vector_zero, vector_zero)
     end
 end
-function coopHUD.renderTrinket(player,anchor,trinket_no)
-    scale = Vector(0.7,0.7)
-    local trinket_sprite = coopHUD.getTrinket(player,trinket_no)
-    if trinket_sprite then
-        trinket_sprite.Scale = scale
-        trinket_sprite:Render(anchor, vector_zero, vector_zero)
+function coopHUD.renderTrinkets(player,anchor)
+    local scale = Vector(0.5,0.5)
+    local tri1 = coopHUD.getTrinket(player,0)
+    local tri2 = coopHUD.getTrinket(player,1)
+
+    if tri1 then
+        if tri2 then -- if has trinket 2
+            anchor.Y = anchor.Y + 16 -- left corner pos
+        else -- else
+            anchor.Y = anchor.Y + 22 -- center pos
+            scale = Vector(0.7,0.7) -- makes trinket bigger
+        end
+        tri1.Scale = scale
+        tri1:Render(anchor,vector_zero,vector_zero)
+        anchor.X = anchor.X + 8
     end
+    if tri2 then
+        anchor.Y = anchor.Y + 8
+
+        tri2.Scale = scale
+        tri2:Render(anchor,vector_zero,vector_zero) end
+    return anchor.X
 end
 function coopHUD.renderPockets(player,anchor)
     ----main_pocket
