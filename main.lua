@@ -8,7 +8,7 @@ local coopHUD = RegisterMod("Coop HUD", 1)
 --end
 VECTOR_ZERO = Vector(0,0)
 function coopHUD.getActiveItemSprite(player,slot)
-  Anim = "gfx/ui/item.anm2"
+  local Anim = "gfx/ui/item.anm2"
   local activeitem = player:GetActiveItem(slot)
   if activeitem == 0 then return false end
   local thissprite = Sprite() -- replaced
@@ -94,24 +94,7 @@ function coopHUD.getItemChargeSprite(player,slot) -- Gets charge of item from  p
   end
   return thissprite
 end
-function coopHUD.getHeartSprite(player,heartpos)
-    local curse = Game():GetLevel():GetCurseName()
-    if Isaac.GetPlayer(0):GetPlayerType() == 10 then -- Lost check
-        if heartpos == 0 then
-            hearttype = "None"
-            overlaytype = "None"
-        end
-    elseif curse == "Curse of the Unknown" then
-        if heartnum == 0 then
-            hearttype = "Curse"
-            overlaytype = "None"
-        end
-    end
-    local totalhearts = math.ceil((player:GetEffectiveMaxHearts() + player:GetSoulHearts())/2)
-    --print(totalhearts)
-    return false
-end
-function coopHUD.getTrinket(player,trinket_pos)
+function coopHUD.getTrinketSprite(player, trinket_pos)
   Anim = "gfx/ui/item.anm2"
   local trinketid = player:GetTrinket(trinket_pos)
   if trinketid == 0 then return false end
@@ -190,42 +173,39 @@ function coopHUD.getMainPocketDesc(player)
 end
 function coopHUD.renderActiveItem(player,anchor)
     local scale = Vector(1,1)
-    local init_x = anchor.X -- init pos x - hor
-    local init_y = anchor.Y
-    local x,y = 0
+    local pos = Vector(anchor.X,anchor.Y)
     -- Second active item - render
-    x = init_x - 7
-    y = init_y - 7
-    local second_active = coopHUD.getActiveItemSprite(player,1)
-    if second_active then
-        second_active.Scale = Vector(0.7,0.7)
-        second_active:Render(Vector(x,x), vector_zero, vector_zero)
-    end
-    -- Second active item - charges - render
-    x = init_x - 15
-    y = init_y - 9
-    local se_charge = coopHUD.getItemChargeSprite(player,1)
-    if se_charge then
-        se_charge.Scale = Vector(0.5,0.5 )
-        se_charge:Render(Vector(x,y), vector_zero, vector_zero)
-    end
-    -- First active item - render
+
     local first_active = coopHUD.getActiveItemSprite(player,0)
-    if first_active then
-        first_active:Render(Vector(init_x,init_y), VECTOR_ZERO, VECTOR_ZERO)
+    local second_active = coopHUD.getActiveItemSprite(player,1)
+    if first_active or second_active then
+        if second_active then
+            second_active.Scale = Vector(0.7,0.7)
+            second_active:Render(Vector(pos.X - 7,pos.Y - 7), vector_zero, vector_zero)
+        end
+        -- Second active item - charges - render
+        local se_charge = coopHUD.getItemChargeSprite(player,1)
+        if se_charge then
+            se_charge.Scale = Vector(0.5,0.5)
+            se_charge:Render(Vector(pos.X - 15,pos.Y - 9), vector_zero, vector_zero)
+        end
+        -- First active item - render
+        if first_active then
+            first_active:Render(pos, VECTOR_ZERO, VECTOR_ZERO)
+        end
+        -- First active item - charges - render
+        pos.X = pos.X + 17
+        local fi_charge = coopHUD.getItemChargeSprite(player,0)
+        if fi_charge then
+            fi_charge:Render(pos, VECTOR_ZERO, VECTOR_ZERO)
+        end
     end
-    -- First active item - charges - render
-    x = init_x + 17
-    local fi_charge = coopHUD.getItemChargeSprite(player,0)
-    if fi_charge then
-        fi_charge:Render(Vector(x,init_y), VECTOR_ZERO, VECTOR_ZERO)
-    end
-    return Vector(x,y)
+    return pos
 end
 function coopHUD.renderTrinkets(player,anchor)
     local scale = Vector(0.5,0.5)
-    local tri1 = coopHUD.getTrinket(player,0)
-    local tri2 = coopHUD.getTrinket(player,1)
+    local tri1 = coopHUD.getTrinketSprite(player,0)
+    local tri2 = coopHUD.getTrinketSprite(player,1)
     local pos = Vector(anchor.X,anchor.Y)
     if tri1 then
         if tri2 then -- if has trinket 2
@@ -246,9 +226,6 @@ function coopHUD.renderTrinkets(player,anchor)
     return pos.X
 end
 function coopHUD.renderPockets(player,anchor)
-
-    --x = init_x + 16--pozycja wyjściowa
-    --y = init_y + 24 --poz wyściowa
     local scale = Vector(0.7,0.7)
     local pos = Vector(anchor.X,anchor.Y)
     local main_pocket = coopHUD.getPocketItemSprite(player,0)
@@ -338,6 +315,35 @@ function coopHUD.renderPockets(player,anchor)
         f:DrawString (main_pocket_desc,anchor.X+8,anchor.Y+4 ,color,0,true) end
 
 end
+function coopHUD.getHeartSprite(heart_type,overlay)
+    local Anim = "gfx/ui/ui_hearts.anm2"
+    local thissprite = Sprite()
+    thissprite:Load(Anim,true)
+    thissprite:SetFrame(heart_type, 0)
+    if overlay then thissprite:SetOverlayFrame (overlay, 0 ) end
+    return thissprite
+end
+function coopHUD.renderHearts(player,anchor)
+    -- Hearts - render
+    local heart
+    local player_type = player:GetPlayerType()
+    local heart_num = 0
+    local pos = Vector(anchor.X,anchor.Y)
+    if player_type == 10 or player_type == 31 then
+        --TODO: Lost custom heart
+    elseif Game():GetLevel():GetCurses() == 8 then -- checks curse of the uknown
+        pos.X = pos.X + 16
+        heart = coopHUD.getHeartSprite('CurseHeart')
+        heart:Render(pos,VECTOR_ZERO,VECTOR_ZERO)
+    elseif player_type == 16 then
+            -- render red/bone from 0-6
+            print('forgotten')
+    elseif player_type == 17  then -- soul and soul tainted - only
+            print('the soul')
+            -- render soul/black from 6-12
+    end
+end
+
 function coopHUD.render()
     -- inits
     player_num = 0
@@ -348,26 +354,11 @@ function coopHUD.render()
     local max_trinkets = player:GetMaxTrinkets()
 
     local anchor = Vector(50,50)
-    activeitem_off = coopHUD.renderActiveItem(player,anchor)
-    local offset = coopHUD.renderTrinkets(player,anchor)
-    print(offset)
-    coopHUD.renderPockets(player,Vector(offset,anchor.Y+24))
-
-    -- Hearts - render
-
-
-    -- TODO: fix rendering - golden heaert issue
-    local rows = 2
-    for j = 0,12,1 do --iteruje po wszystkich serduszkach jakie ma player
-    -- TODO: v1.1 NoCap mod integration
-    local heart_sprite=coopHUD.getHeartSprite(player,j)
-    row = j
-    col = 1
-    -- TODO: fix rendering hearts
-    if heart_sprite then
-    heart_sprite:Render(Vector(x+12*row,y+(10*col), vector_zero, vector_zero))
-    end
-    end
+    local active_off = coopHUD.renderActiveItem(player,anchor)
+    local trinket_off = coopHUD.renderTrinkets(player,anchor)
+    print(active_off)
+    coopHUD.renderPockets(player,Vector(trinket_off,anchor.Y+24))
+    coopHUD.renderHearts(player,Vector(active_off.X,anchor.Y))
 end
 
 
