@@ -347,13 +347,25 @@ function coopHUD.getHeartType(player,heart_pos)
                     heart_type = "CoinEmpty"
                 end
             else -- Normal red hearts
-                if player:GetHearts()-(heart_pos*2) > 1 then
-                    heart_type = "RedHeartFull"
-                elseif player:GetHearts()-(heart_pos*2) == 1 then
-                    heart_type = "RedHeartHalf"
+                if player_type == 21 then --TODO:Tainted maggy pulse heart
+                    if player:GetHearts()-(heart_pos*2) > 1 then
+                        heart_type = "RedHeartFullMaggy"
+                    elseif player:GetHearts()-(heart_pos*2) == 1 then
+                        heart_type = "RedHeartHalf"
+                    else
+                        heart_type = "EmptyHeart"
+                    end
                 else
-                    heart_type = "EmptyHeart"
+                    if player:GetHearts()-(heart_pos*2) > 1 then
+                        heart_type = "RedHeartFull"
+                    elseif player:GetHearts()-(heart_pos*2) == 1 then
+                        heart_type = "RedHeartHalf"
+                    else
+                        heart_type = "EmptyHeart"
+                    end
                 end
+
+
             end
             if player:GetEternalHearts() > 0 and heart_pos+1 == player:GetMaxHearts()/2 and player:GetHearts()-(heart_pos*2) < 3  then
                 overlay = 'WhiteHeartOverlay'
@@ -430,7 +442,8 @@ function coopHUD.renderHearts(player,anchor)
     local heart_num = 0
     local pos = Vector(anchor.X,anchor.Y)
     --player:AddBoneHearts(1)
-    coopHUD.getHeartType(player,1  )
+    coopHUD.getHeartType(player,6 )
+    print('GetSoulCharge',player:GetSoulCharge(),':GetBloodCharge()',player:GetBloodCharge())
 end
 
 function coopHUD.render()
