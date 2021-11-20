@@ -363,8 +363,9 @@ function coopHUD.getHeartType(player,heart_pos)
             if math.ceil(player:GetSoulHearts()/2) + player:GetBoneHearts() <= red_offset then
                 heart_type = "None"
             else
+                local prev_red = 0
                 if player:IsBoneHeart(red_offset) then
-                    local prev_red = 0
+
                     if red_offset > 0 then
                         for i = 0, red_offset do
                             if player:IsBoneHeart(i) == false then
@@ -385,6 +386,34 @@ function coopHUD.getHeartType(player,heart_pos)
                     if player:GetEternalHearts() > 0 and player:GetHearts() > player:GetMaxHearts() and player:GetHearts()-(heart_pos*2) > 0 and player:GetHearts()-(heart_pos*2) < 3 then
                         overlay = 'Eternal'
                     end
+                else
+                    local prev_bones = 0
+                    if red_offset > 0 then
+                        for i = 0, red_offset do
+                            if player:IsBoneHeart(i) then
+                                prev_bones = prev_bones + 1
+                            end
+                        end
+                    end
+                    local black_hearts = (red_offset*2 + 1)-(2*prev_bones)
+                    local remain_souls = player:GetSoulHearts() + (2*prev_bones) - (red_offset*2)
+                    if player:IsBlackHeart(black_hearts) then
+                        if remain_souls > 1 then
+                            heart_type = "BlackHeartFull"
+                        else
+                            heart_type = "BlackHeartHalf"
+                        end
+                    else
+                        if remain_souls > 1 then
+                            heart_type = "BlueHeartFull"
+                        else
+                            heart_type = "BlueHeartHalf"
+                        end
+                    end
+                    --eternal heart overlay
+                    if player:GetEternalHearts() > 0 and heart_pos == 0 then
+                        overlay = 'Eternal'
+                    end
                 end
             end
         end
@@ -400,8 +429,8 @@ function coopHUD.renderHearts(player,anchor)
 
     local heart_num = 0
     local pos = Vector(anchor.X,anchor.Y)
-    player:AddBoneHearts(1)
-    coopHUD.getHeartType(player,2  )
+    --player:AddBoneHearts(1)
+    coopHUD.getHeartType(player,1  )
 end
 
 function coopHUD.render()
