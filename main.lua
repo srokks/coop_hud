@@ -468,8 +468,19 @@ function coopHUD.renderHearts(player,anchor)
     local heart_num = 0
     local pos = Vector(anchor.X,anchor.Y)
     --player:AddBoneHearts(1)
-    coopHUD.getHeartType(player,6 )
+    coopHUD.getHeartType(player,3 ) -- DEBUG
     print('GetSoulCharge',player:GetSoulCharge(),':GetBloodCharge()',player:GetBloodCharge())
+    if player:GetPlayerType() == 18 or 36 then -- Bethany - Tainted Bethany check
+        -- TODO: Bethany charge ind - render right of hearts
+    elseif player:GetPlayerType() == 19 then -- Jacob/Essau check
+        -- TODO: Jacob/Essau render hearts
+    elseif player:GetPlayerType() == 16 or 17 then -- Forgotten/Soul check
+        --TODO: render first player hearts (Forgotten/Soul)
+        --TODO: render sub player hearts (Forgotten/Soul) - with opacity - belowe first hearts
+    else -- Render others chars hearts
+
+    end
+
 end
 
 function coopHUD.render()
