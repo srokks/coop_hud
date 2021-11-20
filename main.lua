@@ -323,25 +323,85 @@ function coopHUD.getHeartSprite(heart_type,overlay)
     if overlay then thissprite:SetOverlayFrame (overlay, 0 ) end
     return thissprite
 end
-function coopHUD.renderHearts(player,anchor)
-    -- Hearts - render
-    local heart
+function coopHUD.getHeartType(player,heart_pos)
     local player_type = player:GetPlayerType()
-    local heart_num = 0
-    local pos = Vector(anchor.X,anchor.Y)
+    local heart_type = ''
+    local overlay = ''
     if player_type == 10 or player_type == 31 then
         --TODO: Lost custom heart
     elseif Game():GetLevel():GetCurses() == 8 then -- checks curse of the uknown
-        pos.X = pos.X + 16
-        heart = coopHUD.getHeartSprite('CurseHeart')
-        heart:Render(pos,VECTOR_ZERO,VECTOR_ZERO)
-    elseif player_type == 16 then
-            -- render red/bone from 0-6
-            print('forgotten')
-    elseif player_type == 17  then -- soul and soul tainted - only
-            print('the soul')
-            -- render soul/black from 6-12
+        heart_type = 'CurseHeart'
+    else
+
+        local totalhearts = math.ceil((player:GetEffectiveMaxHearts() + player:GetSoulHearts())/2)
+        --if player_type == 16 or player_type == 17 then --forgoten and soul check
+        --    print(player:IsBlackHeart(4))
+        --else
+        if player:GetMaxHearts()/2 > heart_pos then -- red heart type
+            if player_type == 14 then -- Keeper
+                if player:GetHearts()-(heart_pos*2) > 1 then
+                    heart_type = "CoinHeartFull"
+                elseif player:GetHearts()-(heart_pos*2) == 1 then
+                    heart_type = "CoinHeartHalf"
+                else
+                    heart_type = "CoinEmpty"
+                end
+            else -- Normal red hearts
+                if player:GetHearts()-(heart_pos*2) > 1 then
+                    heart_type = "RedHeartFull"
+                elseif player:GetHearts()-(heart_pos*2) == 1 then
+                    heart_type = "RedHeartHalf"
+                else
+                    heart_type = "EmptyHeart"
+                end
+            end
+            if player:GetEternalHearts() > 0 and heart_pos+1 == player:GetMaxHearts()/2 and player:GetHearts()-(heart_pos*2) < 3  then
+                overlay = 'WhiteHeartOverlay'
+            end
+        elseif player:GetSoulHearts() > 0 or player:GetBoneHearts() > 0 then
+            local red_offset = heart_pos-(player:GetMaxHearts()/2)
+            if math.ceil(player:GetSoulHearts()/2) + player:GetBoneHearts() <= red_offset then
+                heart_type = "None"
+            else
+                if player:IsBoneHeart(red_offset) then
+                    local prev_red = 0
+                    if red_offset > 0 then
+                        for i = 0, red_offset do
+                            if player:IsBoneHeart(i) == false then
+                                prev_red = prev_red + 2
+                            end
+                        end
+                    end
+                    -- HUDAPI
+                    local overloader_reds = player:GetHearts()+prev_red-(heart_pos*2) --overloaded reds heart in red cointainers
+                    if overloader_reds > 1 then
+                        heart_type = "BoneFull"
+                    elseif overloader_reds == 1 then
+                        heart_type = "BoneHalf"
+                    else
+                        heart_type = "BoneEmpty"
+                    end
+                    -- HUDAPI
+                    if player:GetEternalHearts() > 0 and player:GetHearts() > player:GetMaxHearts() and player:GetHearts()-(heart_pos*2) > 0 and player:GetHearts()-(heart_pos*2) < 3 then
+                        overlay = 'Eternal'
+                    end
+                end
+            end
+        end
+
+
+
+        print(heart_type,overlay)
     end
+end
+function coopHUD.renderHearts(player,anchor)
+    -- Hearts - render
+    local heart
+
+    local heart_num = 0
+    local pos = Vector(anchor.X,anchor.Y)
+    player:AddBoneHearts(1)
+    coopHUD.getHeartType(player,2  )
 end
 
 function coopHUD.render()
@@ -356,7 +416,7 @@ function coopHUD.render()
     local anchor = Vector(50,50)
     local active_off = coopHUD.renderActiveItem(player,anchor)
     local trinket_off = coopHUD.renderTrinkets(player,anchor)
-    print(active_off)
+    --print(active_off)
     coopHUD.renderPockets(player,Vector(trinket_off,anchor.Y+24))
     coopHUD.renderHearts(player,Vector(active_off.X,anchor.Y))
 end
