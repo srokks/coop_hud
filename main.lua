@@ -326,7 +326,9 @@ end
 function coopHUD.getHeartType(player,heart_pos)
     local player_type = player:GetPlayerType()
     local heart_type = ''
-    local overlay = ''
+    local eternal = False
+    local golden = False
+    local remain_souls = 0
     if player_type == 10 or player_type == 31 then
         --TODO: Lost custom heart
     elseif Game():GetLevel():GetCurses() == 8 then -- checks curse of the uknown
@@ -368,7 +370,7 @@ function coopHUD.getHeartType(player,heart_pos)
 
             end
             if player:GetEternalHearts() > 0 and heart_pos+1 == player:GetMaxHearts()/2 and player:GetHearts()-(heart_pos*2) < 3  then
-                overlay = 'WhiteHeartOverlay'
+                eternal = true
             end
         elseif player:GetSoulHearts() > 0 or player:GetBoneHearts() > 0 then
             local red_offset = heart_pos-(player:GetMaxHearts()/2)
@@ -388,15 +390,15 @@ function coopHUD.getHeartType(player,heart_pos)
                     -- HUDAPI
                     local overloader_reds = player:GetHearts()+prev_red-(heart_pos*2) --overloaded reds heart in red cointainers
                     if overloader_reds > 1 then
-                        heart_type = "BoneFull"
+                        heart_type = "BoneHeartFull"
                     elseif overloader_reds == 1 then
-                        heart_type = "BoneHalf"
+                        heart_type = "BoneHeartHalf"
                     else
-                        heart_type = "BoneEmpty"
+                        heart_type = "BoneHeartEmpty"
                     end
                     -- HUDAPI
                     if player:GetEternalHearts() > 0 and player:GetHearts() > player:GetMaxHearts() and player:GetHearts()-(heart_pos*2) > 0 and player:GetHearts()-(heart_pos*2) < 3 then
-                        overlay = 'Eternal'
+                        eternal = true
                     end
                 else
                     local prev_bones = 0
@@ -424,13 +426,37 @@ function coopHUD.getHeartType(player,heart_pos)
                     end
                     --eternal heart overlay
                     if player:GetEternalHearts() > 0 and heart_pos == 0 then
-                        overlay = 'Eternal'
+                        eternal = true
                     end
                 end
             end
         end
-
-
+        if REPENTANCE and player:GetRottenHearts() > 0 then
+            local nonrottenreds = player:GetHearts()/2 - player:GetRottenHearts()
+            if  heart_type== "RedHeartFull" then
+                if heart_pos >= nonrottenreds then
+                    heart_type = "RottenHeartFull"
+                end
+            --elseif heart_type == "RedHeartHalf" then -- unnecesary no half rotten exsist in vanila REPENTANCE
+            --    heart_type = "RottenHalfHart"
+            elseif heart_type == "BoneHeartFull" then
+                local overloader_reds = player:GetHearts()+remain_souls-(heart_pos*2)
+                if overloader_reds - player:GetRottenHearts()*2 <= 0 then
+                    heart_type = "RottenBoneHeartFull"
+                end
+            --elseif heart_type == "BoneHeartHalf" then -- unnecesary no half rotten exsist in vanila REPENTANCE
+            --        heart_type = "RottenBoneHeartHalf"
+            end
+        end
+        local overlay = ''
+        if eternal and golden then
+            overlay = "Gold&Eternal"
+        elseif eternal then
+            overlay = "Eternal"
+        elseif golden then
+            overlay = "Gold"
+        end
+        --TODO: proper overlay set
 
         print(heart_type,overlay)
     end
