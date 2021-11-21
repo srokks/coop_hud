@@ -318,6 +318,17 @@ function coopHUD.renderPockets(player,anchor)
         f:DrawString (main_pocket_desc,anchor.X+8,anchor.Y+4 ,color,0,true) end
 
 end
+function coopHUD.checkDeepPockets()
+    local deep_check = false
+    local player_no = Game():GetNumPlayers()-1
+    for i=0,player_no,1 do
+        local deep = Isaac.GetPlayer(i):HasCollectible(416)
+        if  deep  then
+            deep_check = true
+        end
+    end
+    return deep_check
+end
 function coopHUD.getHeartSprite(heart_type,overlay)
     if heart_type ~= 'None' then
         local Anim = "gfx/ui/ui_hearts.anm2"
