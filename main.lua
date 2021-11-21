@@ -542,11 +542,15 @@ function coopHUD.renderItems(anchor)
     local color = KColor(1,1,1,1)
     local player = Isaac.GetPlayer(0)
     local coin_sprite= Sprite()
+    local has_deep_pockets = false
     coin_sprite:Load(Anim,true)
     coin_sprite:SetFrame('Idle', 0)
     coin_sprite:Render(pos,VECTOR_ZERO,VECTOR_ZERO)
     coin_no = Isaac.GetPlayer(0):GetNumCoins()
     coin_no = string.format("%.2i", coin_no)
+    if coopHUD.checkDeepPockets() then
+        pos.X = pos.X - 2
+        coin_no = string.format("%.3i", coin_no) end
     f:DrawString(coin_no,pos.X+16,pos.Y,color,0,true)
     if player:HasCollectible(416) then print('ma') end
     pos.Y = pos.Y + 12
