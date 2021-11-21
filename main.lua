@@ -321,11 +321,13 @@ end
 function coopHUD.getHeartSprite(heart_type,overlay)
     if heart_type ~= 'None' then
         local Anim = "gfx/ui/ui_hearts.anm2"
-        local thissprite = Sprite()
-        thissprite:Load(Anim,true)
-        thissprite:SetFrame(heart_type, 0)
-        if overlay then thissprite:SetOverlayFrame (overlay, 0 ) end
-        return thissprite
+        local sprite = Sprite()
+        sprite:Load(Anim,true)
+        sprite:SetFrame(heart_type, 0)
+        if overlay ~= 'None'  then
+            sprite:SetOverlayFrame (overlay, 0 )
+        end
+        return sprite
     else
         return False
     end
