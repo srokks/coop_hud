@@ -520,7 +520,44 @@ function coopHUD.renderHearts(player_arr,anchor,opacity)
     end
 end
 function coopHUD.renderItems(anchor)
-    print(anchor)
+    local pos = Vector(anchor.X,anchor.Y)
+    local Anim = "gfx/ui/hudpickups.anm2"
+    local coin_no,bomb_no,key_no = 0
+
+    --,key_sprite
+
+    local f = Font()
+    f:Load("font/luaminioutlined.fnt")
+    local color = KColor(1,1,1,1)
+    local player = Isaac.GetPlayer(0)
+    local coin_sprite= Sprite()
+    coin_sprite:Load(Anim,true)
+    coin_sprite:SetFrame('Idle', 0)
+    coin_sprite:Render(pos,VECTOR_ZERO,VECTOR_ZERO)
+    coin_no = Isaac.GetPlayer(0):GetNumCoins()
+    coin_no = string.format("%.2i", coin_no)
+    f:DrawString(coin_no,pos.X+16,pos.Y,color,0,true)
+    if player:HasCollectible(416) then print('ma') end
+    pos.Y = pos.Y + 12
+
+    local bomb_sprite = Sprite()
+    bomb_sprite:Load(Anim,true)
+    bomb_sprite:SetFrame('Idle',2)
+    if player:HasGoldenBomb()  then bomb_sprite:SetFrame('Idle',6) end
+    bomb_sprite:Render(pos,VECTOR_ZERO,VECTOR_ZERO)
+    bomb_no = player:GetNumBombs()
+    bomb_no = string.format("%.2i", bomb_no)
+    f:DrawString(bomb_no,pos.X+16,pos.Y,color,0,true)
+
+    pos.Y = pos.Y + 12
+    local key_sprite = Sprite()
+    key_sprite:Load(Anim,true)
+    key_sprite:SetFrame('Idle',1)
+    if player:HasGoldenKey()  then key_sprite:SetFrame('Idle',3 ) end
+    key_sprite:Render(pos,VECTOR_ZERO,VECTOR_ZERO)
+    key_no = player:GetNumKeys()
+    key_no = string.format("%.2i", key_no)
+    f:DrawString(key_no,pos.X+16,pos.Y,color,0,true)
 end
 function coopHUD.render()
     -- inits
