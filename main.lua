@@ -344,16 +344,12 @@ function coopHUD.getHeartType(player,heart_pos)
     elseif Game():GetLevel():GetCurses() == 8 then -- checks curse of the uknown
         heart_type = 'CurseHeart'
     else
-        --if player_type == 16 or player_type == 17 then --forgoten and soul check
-        --    print(player:IsBlackHeart(4))
-        --else
         eternal = false
         golden = false
         local total_hearts = math.ceil((player:GetEffectiveMaxHearts() + player:GetSoulHearts())/2)
         local empty_hearts = math.floor((player:GetMaxHearts()-player:GetHearts())/2)
         if empty_hearts < 0 then empty_hearts = 0 end
-        print(heart_pos,heart_pos>total_hearts - (player:GetGoldenHearts()+empty_hearts))
-        if player:GetGoldenHearts() > 0 and heart_pos >= (total_hearts - (player:GetGoldenHearts()+empty_hearts)) then
+        if player:GetGoldenHearts() > 0 and (heart_pos-(total_hearts - (player:GetGoldenHearts()+empty_hearts))) == 0 then
             golden = true
         end
         if player:GetMaxHearts()/2 > heart_pos then -- red heart type
@@ -474,41 +470,60 @@ function coopHUD.getHeartType(player,heart_pos)
             overlay = "WhiteHeartOverlay"
         elseif golden then
             overlay = "GoldHeartOverlay"
+        else
+            overlay = 'None'
         end
         --TODO: proper overlay set
         return heart_type,overlay
     end
 end
-function coopHUD.renderHearts(player,anchor)
+function coopHUD.renderHearts(player,anchor,opacity)
     -- Hearts - render
-    local heart
+    local max_health_cap = 12
 
     local heart_num = 0
     local pos = Vector(anchor.X,anchor.Y)
-    --player:AddBoneHearts(1)
-    --coopHUD.getHeartType(player,3 ) -- DEBUG
-    --print('GetSoulCharge',player:GetSoulCharge(),':GetBloodCharge()',player:GetBloodCharge())
+    local has_sub = false --
     if player:GetPlayerType() == 18 or player:GetPlayerType() == 36 then -- Bethany - Tainted Bethany check
         print('Bethany')
+        --print('GetSoulCharge',player:GetSoulCharge(),':GetBloodCharge()',player:GetBloodCharge())
         -- TODO: Bethany charge ind - render right of hearts
-    elseif player:GetPlayerType() == 19 then -- Jacob/Essau check
-        print('Jacob/Essau')
-        -- TODO: Jacob/Essau render hearts
-    elseif player:GetPlayerType() == 16 or player:GetPlayerType() == 17 then -- Forgotten/Soul check
-        print('Forgotten/Soul')
-        --TODO: render first player hearts (Forgotten/Soul)
-        --TODO: render sub player hearts (Forgotten/Soul) - with opacity - belowe first hearts
-    else -- Render others chars hearts
+    elseif player:GetPlayerType() == 19 then
+        has_sub = true
+    elseif player:GetPlayerType() == 16 or player:GetPlayerType() == 17 then  -- 'Jacob/Essau' - Forgotten/Soul check
+        max_health_cap = 6
+        has_sub = true -- sets sub player value
+    else
+        -- Render HEARTS chars hearts
         pos.X = pos.X + 10
         pos.Y = pos.Y - 10
-        for i=0,12,1 do
-            local heart_type,overlay = coopHUD.getHeartType(player,i)
-            --print(i,heart_type,overlay)
-            local heart_sprt = coopHUD.getHeartSprite(heart_type)
-            if heart_sprt then
-                heart_sprt:Render(Vector(pos.X+(12*i),pos.Y),VECTOR_ZERO,VECTOR_ZERO)
-            end
+        n = 2
+        max_health_cap = 12
+    end
+        for i=0,max_health_cap,1 do
+            print('ll')
+            local heart_type,overlay = ''
+            heart_type,overlay = coopHUD.getHeartType(player,i)
+            local heart_sprite = coopHUD.getHeartSprite(heart_type,overlay)
 
+            if heart_sprite then
+                heart_sprite:Render(Vector(pos.X+(12*i),pos.Y),VECTOR_ZERO,VECTOR_ZERO)
+                --TODO: render first player hearts (Forgotten/Soul)
+                --TODO: render sub player hearts (Forgotten/Soul) - with opacity - belowe first hearts
+            end
+            if has_sub then
+                if i>=6 then
+                    local temp_i = i-6
+                    local sub_player = player:GetSubPlayer()
+                    heart_type,overlay = coopHUD.getHeartType(sub_player,temp_i)
+                    heart_sprite = coopHUD.getHeartSprite(heart_type,overlay)
+
+                    if heart_type~="None" then
+                        heart_sprite.Color = Color(1, 1, 1, 0.5, 0, 0, 0)
+                        heart_sprite:Render(Vector(pos.X+(12*temp_i),pos.Y+10),VECTOR_ZERO,VECTOR_ZERO)
+                    end
+                end
+            end
         end
     end
 
@@ -526,7 +541,6 @@ function coopHUD.render()
     local anchor = Vector(50,50)
     local active_off = coopHUD.renderActiveItem(player,anchor)
     local trinket_off = coopHUD.renderTrinkets(player,anchor)
-    --print(active_off)
     coopHUD.renderPockets(player,Vector(trinket_off,anchor.Y+24))
     coopHUD.renderHearts(player,Vector(active_off.X,anchor.Y))
 end
