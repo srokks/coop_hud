@@ -1,5 +1,8 @@
 coopHUD = RegisterMod("Coop HUD", 1)
 local json = require("json")
+
+local MinimapAPI = require("scripts.minimapapi")
+local SHExists, ScreenHelper = pcall(require, "scripts.screenhelper")
 --
 local renderPlayer = {}
 local VECTOR_ZERO = Vector(0,0)
@@ -702,8 +705,12 @@ function coopHUD.render()
         renderPlayer.render(1,Vector(100,100),false,true)
         --renderPlayer.render(1,Vector(ScreenSize.X-20,20),false,true)
         --renderPlayer.render(1,Vector(100,100),true)
+        local screen_size = ScreenHelper.GetScreenTopRight()
+        offsetVec = Vector(screen_size.X - MinimapAPI:GetConfig("PositionX"), screen_size.Y + MinimapAPI:GetConfig("PositionY"))
+        print(offsetVec)
     else
         Game():GetHUD():SetVisible(true)
+        print(MinimapAPI:IsPositionFree(position,roomshape))
     end
 end
 coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.render)
