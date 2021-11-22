@@ -605,11 +605,19 @@ function renderPlayer.renderItems(anchor)
     key_no = string.format("%.2i", key_no)
     f:DrawString(key_no,pos.X+16,pos.Y,color,0,true)
 end
-function renderPlayer.render(player_num,anchor,trinket_up)
-    if trinket_up == nil then trinket_up = false end
+function renderPlayer.render(player_num,anchor,trinket_up,mirrored)
     local player = Isaac.GetPlayer(player_num)
-    local active_off = renderPlayer.renderActiveItem(player,anchor)
-    renderPlayer.renderHearts(player,Vector(active_off.X,anchor.Y))
+    if trinket_up == nil then trinket_up = false end
+    if mirrored == nil then mirrored = false end
+    if mirrored then
+        -- TODO:
+        local active_off = renderPlayer.renderActiveItem(player,anchor)
+        renderPlayer.renderHearts(player,Vector(active_off.X,anchor.Y))
+    else
+        local active_off = renderPlayer.renderActiveItem(player,anchor)
+        renderPlayer.renderHearts(player,Vector(active_off.X,anchor.Y))
+    end
+
     if trinket_up then
         local trinket_off = renderPlayer.renderTrinkets(player,Vector(anchor.X,anchor.Y - 50) )
         renderPlayer.renderPockets(player,Vector(trinket_off.X,anchor.Y-24),true)
@@ -619,7 +627,6 @@ function renderPlayer.render(player_num,anchor,trinket_up)
     end
 
 
-    print(trinket_off)
 
     ---- DEBUG: Heart overlay test
     --a = renderPlayer.getHeartSprite('RedHeartFull','WhiteHeartOverlay')
@@ -687,9 +694,13 @@ function coopHUD.render()
     if hud_on then
         local ScreenSize = (Isaac.WorldToScreen(Vector(320, 280)) - Game():GetRoom():GetRenderScrollOffset() - Game().ScreenShakeOffset) * 2
         Game():GetHUD():SetVisible(false)
-        renderPlayer.render(0,Vector(20,20),false)
-        -- P1 - color - false ,true,false
-        renderPlayer.render(1,Vector(20,ScreenSize.Y-15),true)
+        renderPlayer.render(0,Vector(20,20),false,false)
+        -- renderPlayer.render(player_num,anchor,trinket_up,mirrored)
+        -- p1 - pos (20, 20)- left up corner
+        -- P2 - pos (20, ScreenSize.Y-15) - left down corner
+
+        renderPlayer.render(1,Vector(100,100),false,true)
+        --renderPlayer.render(1,Vector(ScreenSize.X-20,20),false,true)
         --renderPlayer.render(1,Vector(100,100),true)
     else
         Game():GetHUD():SetVisible(true)
