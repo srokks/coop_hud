@@ -1,15 +1,10 @@
-local coopHUD = RegisterMod("Coop HUD", 1)
--- if HUDAPI  then
---	isminimapmod = true
---  a = 'True'
---else
---	isminimapmod = false
---  a = 'False'
---end
---GLOBALS
-VECTOR_ZERO = Vector(0,0)
-
-function coopHUD.getActiveItemSprite(player,slot)
+coopHUD = RegisterMod("Coop HUD", 1)
+local json = require("json")
+--
+local renderPlayer = {}
+local VECTOR_ZERO = Vector(0,0)
+local player = 0
+function renderPlayer.getActiveItemSprite(player,slot)
     local Anim = "gfx/ui/item.anm2"
     local overlay = ''
     local activeitem = player:GetActiveItem(slot)
@@ -19,13 +14,13 @@ function coopHUD.getActiveItemSprite(player,slot)
     local itemsprite = Isaac.GetItemConfig():GetCollectible(activeitem).GfxFileName
     --Jar's check and sets item_sprite
     if activeitem == 290 then -- the jar
-            itemsprite = "gfx/characters/costumes/costume_rebirth_90_thejar.png"
+        itemsprite = "gfx/characters/costumes/costume_rebirth_90_thejar.png"
     elseif activeitem == 434 then -- jar of flies
-            itemsprite = "gfx/characters/costumes/costume_434_jarofflies.png"
+        itemsprite = "gfx/characters/costumes/costume_434_jarofflies.png"
     elseif activeitem == 685 then -- jar of wisp
-            itemsprite = "gfx/ui/hud_jarofwisps.png"
+        itemsprite = "gfx/ui/hud_jarofwisps.png"
     elseif activeitem == 720 then -- everything jar
-            itemsprite = "gfx/ui/hud_everythingjar.png"
+        itemsprite = "gfx/ui/hud_everythingjar.png"
     end
     -- TODO:Book of Virtuoses sprite set
     --if activeitem == 584 then
@@ -43,16 +38,16 @@ function coopHUD.getActiveItemSprite(player,slot)
     thissprite:ReplaceSpritesheet(5, itemsprite)
     thissprite:LoadGraphics() -- sets item overlay according to charges
     -- Sets overlay/charges state frame --
-  local itemcharge = Isaac.GetItemConfig():GetCollectible(activeitem).MaxCharges -- gets max charges
-  if itemcharge == 0 then -- checks id item has any charges
-    thissprite:SetFrame("Idle", 0 ) -- set frame to unloaded
-  elseif player:NeedsCharge(slot) == false or player:GetActiveCharge(slot) >= itemcharge then
-      -- checks if item dont needs charges or item is overloaded
-    thissprite:SetFrame("Idle", 1) -- set frame to loaded
-  else
-    thissprite:SetFrame("Idle", 0) -- set frame to unloaded
-  end
-  --The Jar/Jar of Flies - charges check
+    local itemcharge = Isaac.GetItemConfig():GetCollectible(activeitem).MaxCharges -- gets max charges
+    if itemcharge == 0 then -- checks id item has any charges
+        thissprite:SetFrame("Idle", 0 ) -- set frame to unloaded
+    elseif player:NeedsCharge(slot) == false or player:GetActiveCharge(slot) >= itemcharge then
+        -- checks if item dont needs charges or item is overloaded
+        thissprite:SetFrame("Idle", 1) -- set frame to loaded
+    else
+        thissprite:SetFrame("Idle", 0) -- set frame to unloaded
+    end
+    --The Jar/Jar of Flies - charges check
     if activeitem == 290 or activeitem == 434 then --
         local frame = 0
         if activeitem == 290 then frame = math.ceil(player:GetJarHearts()/2) end -- gets no of hearts in jar
@@ -64,130 +59,131 @@ function coopHUD.getActiveItemSprite(player,slot)
         fi_charge = player:GetActiveCharge()
         thissprite:SetFrame("EverythingJar", fi_charge +1)
     end
-    -- TODO: Jar of Wisp - charges set sprite
+    -- TODO: Jar of Wisp
     --if activeitem == 685 then
     --    --TODO: anim frames
     --    --TODO: get charges
     --end
-    -- TODO:Urn of soul - charges set sprite
+    -- TODO:Urn of soul
     if activeitem == 640 then
         fi_charge = 0
-        -- TODO: get charge of urn
+        print(player:GetJarFlies())
+        --      --TODO: get charge of urn
         thissprite:SetFrame("SoulUrn", fi_charge) -- sets frame
     end
 
-return thissprite
-end
-function coopHUD.getItemChargeSprite(player,slot) -- Gets charge of item from  player, slot
-    --TODO: Bethany charge bar
-  Anim = "gfx/ui/activechargebar.anm2"
-  local activeitem = player:GetActiveItem(slot)
-  if activeitem == 0 then return false end
-  local itemcharge = Isaac.GetItemConfig():GetCollectible(activeitem).MaxCharges
-  if itemcharge == 0 then return false end
-  local thissprite = Sprite()
-  thissprite:Load(Anim,true)
-  local charges = player:GetActiveCharge(slot) + player:GetBatteryCharge(slot)
-  local step = math.floor((charges/(itemcharge*2))*46)
-  thissprite:SetFrame("ChargeBar", step)
-  if (itemcharge > 1 and itemcharge < 5) or itemcharge == 6 or itemcharge == 12 then
-    thissprite:PlayOverlay("BarOverlay" .. itemcharge, true)
-  else
-    thissprite:PlayOverlay("BarOverlay1", true)
-  end
-  return thissprite
-end
-function coopHUD.getTrinketSprite(player, trinket_pos)
-  Anim = "gfx/ui/item.anm2"
-  local trinketid = player:GetTrinket(trinket_pos)
-  if trinketid == 0 then return false end
-  local thissprite = Sprite()
-  thissprite:Load(Anim,true)
-  local itemsprite = Isaac.GetItemConfig():GetTrinket(trinketid).GfxFileName
-  thissprite:ReplaceSpritesheet(0, itemsprite)
-  thissprite:ReplaceSpritesheet(5, itemsprite)
-  thissprite:LoadGraphics()
-  thissprite:SetFrame("Idle", 0)
-  return thissprite
-end
-function coopHUD.getPocketItemSprite(player,slot)
-  -- cards/runes/
-  
-  local pocketcheck = player:GetCard(slot)
-  local thissprite = Sprite()
-  
-  if pocketcheck ~= 0 then
-    Anim = "gfx/ui/hud_card_coop.anm2"
-    thissprite:Load(Anim,true)
-    thissprite:SetFrame("CardFronts", pocketcheck) -- sets card frame
-    
     return thissprite
-  else
-    pocketcheck = player:GetPill(slot) -- checks if player has pill
+end
+function renderPlayer.getItemChargeSprite(player,slot) -- Gets charge of item from  player, slot
+    --TODO: Bethany charge bar
+    Anim = "gfx/ui/activechargebar.anm2"
+    local activeitem = player:GetActiveItem(slot)
+    if activeitem == 0 then return false end
+    local itemcharge = Isaac.GetItemConfig():GetCollectible(activeitem).MaxCharges
+    if itemcharge == 0 then return false end
+    local thissprite = Sprite()
+    thissprite:Load(Anim,true)
+    local charges = player:GetActiveCharge(slot) + player:GetBatteryCharge(slot)
+    local step = math.floor((charges/(itemcharge*2))*46)
+    thissprite:SetFrame("ChargeBar", step)
+    if (itemcharge > 1 and itemcharge < 5) or itemcharge == 6 or itemcharge == 12 then
+        thissprite:PlayOverlay("BarOverlay" .. itemcharge, true)
+    else
+        thissprite:PlayOverlay("BarOverlay1", true)
+    end
+    return thissprite
+end
+function renderPlayer.getTrinketSprite(player, trinket_pos)
+    Anim = "gfx/ui/item.anm2"
+    local trinketid = player:GetTrinket(trinket_pos)
+    if trinketid == 0 then return false end
+    local thissprite = Sprite()
+    thissprite:Load(Anim,true)
+    local itemsprite = Isaac.GetItemConfig():GetTrinket(trinketid).GfxFileName
+    thissprite:ReplaceSpritesheet(0, itemsprite)
+    thissprite:ReplaceSpritesheet(5, itemsprite)
+    thissprite:LoadGraphics()
+    thissprite:SetFrame("Idle", 0)
+    return thissprite
+end
+function renderPlayer.getPocketItemSprite(player,slot)
+    -- cards/runes/
+
+    local pocketcheck = player:GetCard(slot)
+    local thissprite = Sprite()
+
     if pocketcheck ~= 0 then
-      if pocketcheck > 2048 then pocketcheck = pocketcheck - 2048 end -- check if its horse pill and change id to normal
-      Anim = "gfx/ui/hud_pills_coop.anm2"
-      thissprite:Load(Anim,true)
-      thissprite:SetFrame("Pills", pocketcheck) --sets frame to pills with correct id
-      return thissprite
+        Anim = "gfx/ui/hud_card_coop.anm2"
+        thissprite:Load(Anim,true)
+        thissprite:SetFrame("CardFronts", pocketcheck) -- sets card frame
+
+        return thissprite
     else
-      if player:GetActiveItem(2) > 0 or player:GetActiveItem(3) > 0 then
-          pocketitem = true -- do wyjebania
-          if player:GetActiveItem(2) > 0 then
-              thissprite = coopHUD.getActiveItemSprite(player,2)
-          else
-              thissprite = coopHUD.getActiveItemSprite(player,3)
-          end
-          return thissprite
-      else
-          return false
-      end
+        pocketcheck = player:GetPill(slot) -- checks if player has pill
+        if pocketcheck ~= 0 then
+            if pocketcheck > 2048 then pocketcheck = pocketcheck - 2048 end -- check if its horse pill and change id to normal
+            Anim = "gfx/ui/hud_pills_coop.anm2"
+            thissprite:Load(Anim,true)
+            thissprite:SetFrame("Pills", pocketcheck) --sets frame to pills with correct id
+            return thissprite
+        else
+            if player:GetActiveItem(2) > 0 or player:GetActiveItem(3) > 0 then
+                pocketitem = true -- do wyjebania
+                if player:GetActiveItem(2) > 0 then
+                    thissprite = renderPlayer.getActiveItemSprite(player,2)
+                else
+                    thissprite = renderPlayer.getActiveItemSprite(player,3)
+                end
+                return thissprite
+            else
+                return false
+            end
+        end
     end
-  end
 end
-function coopHUD.getMainPocketDesc(player)
-  desc = 'Error'
-  if player:GetPill(0) < 1 and player:GetCard(0) < 1 then
-    if REPENTANCE == false then return false end
-    if player:GetActiveItem(2) > 0 then
-        desc = Isaac.GetItemConfig():GetCollectible(player:GetActiveItem(2)).Name
-    elseif player:GetActiveItem(3) > 0 then
-        desc = Isaac.GetItemConfig():GetCollectible(player:GetActiveItem(3)).Name
-    else
-        return false
+function renderPlayer.getMainPocketDesc(player)
+    desc = 'Error'
+    if player:GetPill(0) < 1 and player:GetCard(0) < 1 then
+        if REPENTANCE == false then return false end
+        if player:GetActiveItem(2) > 0 then
+            desc = Isaac.GetItemConfig():GetCollectible(player:GetActiveItem(2)).Name
+        elseif player:GetActiveItem(3) > 0 then
+            desc = Isaac.GetItemConfig():GetCollectible(player:GetActiveItem(3)).Name
+        else
+            return false
+        end
+        if desc ~= "Error" then desc = desc .. "  " end
     end
-    if desc ~= "Error" then desc = desc .. "  " end
-  end
-  if player:GetCard(0) > 0 then
-					desc = Isaac.GetItemConfig():GetCard(player:GetCard(0)).Name .. " "
-					if Input.IsActionPressed(ButtonAction.ACTION_MAP, player.ControllerIndex) then
-						desc = Isaac.GetItemConfig():GetCard(player:GetCard(0)).Description .. " "
-					end
-      
-  elseif player:GetPill(0) > 0 then
-					desc = "???" .. " "
-					local itempool = Game():GetItemPool()
-					if itempool:IsPillIdentified (player:GetPill(0)) then
-						local pilleffect = itempool:GetPillEffect(player:GetPill(0))
-						desc = Isaac.GetItemConfig():GetPillEffect(pilleffect).Name .. " "
-					end
-  end
-  return desc
+    if player:GetCard(0) > 0 then
+        desc = Isaac.GetItemConfig():GetCard(player:GetCard(0)).Name .. " "
+        if Input.IsActionPressed(ButtonAction.ACTION_MAP, player.ControllerIndex) then
+            desc = Isaac.GetItemConfig():GetCard(player:GetCard(0)).Description .. " "
+        end
+
+    elseif player:GetPill(0) > 0 then
+        desc = "???" .. " "
+        local itempool = Game():GetItemPool()
+        if itempool:IsPillIdentified (player:GetPill(0)) then
+            local pilleffect = itempool:GetPillEffect(player:GetPill(0))
+            desc = Isaac.GetItemConfig():GetPillEffect(pilleffect).Name .. " "
+        end
+    end
+    return desc
 end
-function coopHUD.renderActiveItem(player,anchor)
+function renderPlayer.renderActiveItem(player,anchor)
     local scale = Vector(1,1)
     local pos = Vector(anchor.X,anchor.Y)
     -- Second active item - render
 
-    local first_active = coopHUD.getActiveItemSprite(player,0)
-    local second_active = coopHUD.getActiveItemSprite(player,1)
+    local first_active = renderPlayer.getActiveItemSprite(player,0)
+    local second_active = renderPlayer.getActiveItemSprite(player,1)
     if first_active or second_active then
         if second_active then
             second_active.Scale = Vector(0.7,0.7)
             second_active:Render(Vector(pos.X - 7,pos.Y - 7), vector_zero, vector_zero)
         end
         -- Second active item - charges - render
-        local se_charge = coopHUD.getItemChargeSprite(player,1)
+        local se_charge = renderPlayer.getItemChargeSprite(player,1)
         if se_charge then
             se_charge.Scale = Vector(0.5,0.5)
             se_charge:Render(Vector(pos.X - 15,pos.Y - 9), vector_zero, vector_zero)
@@ -198,23 +194,23 @@ function coopHUD.renderActiveItem(player,anchor)
         end
         -- First active item - charges - render
         pos.X = pos.X + 17
-        local fi_charge = coopHUD.getItemChargeSprite(player,0)
+        local fi_charge = renderPlayer.getItemChargeSprite(player,0)
         if fi_charge then
             fi_charge:Render(pos, VECTOR_ZERO, VECTOR_ZERO)
         end
     end
     return pos
 end
-function coopHUD.renderTrinkets(player,anchor)
+function renderPlayer.renderTrinkets(player,anchor)
     local scale = Vector(0.5,0.5)
-    local tri1 = coopHUD.getTrinketSprite(player,0)
-    local tri2 = coopHUD.getTrinketSprite(player,1)
-    local pos = Vector(anchor.X,anchor.Y)
+    local tri1 = renderPlayer.getTrinketSprite(player,0)
+    local tri2 = renderPlayer.getTrinketSprite(player,1)
+    local pos = Vector(anchor.X,anchor.Y+20)
     if tri1 then
         if tri2 then -- if has trinket 2
-            pos.Y = pos.Y + 16 -- left corner pos
+            pos.Y = pos.Y  -- left corner pos
         else -- else
-            pos.Y = pos.Y + 22 -- center pos
+            pos.Y = pos.Y + 6 -- center pos
             scale = Vector(0.7,0.7) -- makes trinket bigger
         end
         tri1.Scale = scale
@@ -226,19 +222,20 @@ function coopHUD.renderTrinkets(player,anchor)
 
         tri2.Scale = scale
         tri2:Render(pos,vector_zero,vector_zero) end
-    return pos.X
+    return pos
 end
-function coopHUD.renderPockets(player,anchor)
+function renderPlayer.renderPockets(player,anchor,desc_up)
+    if desc_up == nil then desc_up = false end
     local scale = Vector(0.7,0.7)
-    local pos = Vector(anchor.X,anchor.Y)
-    local main_pocket = coopHUD.getPocketItemSprite(player,0)
-    local second_pocket = coopHUD.getPocketItemSprite(player,1)
-    local third_pocket = coopHUD.getPocketItemSprite(player,2 )
+    local pos = Vector(anchor.X+8,anchor.Y)
+    local main_pocket = renderPlayer.getPocketItemSprite(player,0)
+    local second_pocket = renderPlayer.getPocketItemSprite(player,1)
+    local third_pocket = renderPlayer.getPocketItemSprite(player,2 )
     ----second_pocket charges
     if third_pocket then
         if third_pocket:GetDefaultAnimation() == 'Idle' then
             scale = Vector(0.3,0.3 )
-            local pocket_charge  = coopHUD.getItemChargeSprite(player,2)
+            local pocket_charge  = renderPlayer.getItemChargeSprite(player,2)
             if pocket_charge then
                 if main_pocket:GetDefaultAnimation() ~= 'Idle' and third_pocket :GetDefaultAnimation() ~= 'Idle' then
                     pocket_charge.Scale = scale
@@ -266,7 +263,7 @@ function coopHUD.renderPockets(player,anchor)
     if second_pocket then
         if second_pocket:GetDefaultAnimation() == 'Idle' then
             scale = Vector(0.3,0.3 )
-            local pocket_charge  = coopHUD.getItemChargeSprite(player,2)
+            local pocket_charge  = renderPlayer.getItemChargeSprite(player,2)
             if pocket_charge then
                 if main_pocket:GetDefaultAnimation() ~= 'Idle' or second_pocket:GetDefaultAnimation() ~= 'Idle' then
                     pocket_charge.Scale = scale
@@ -298,7 +295,7 @@ function coopHUD.renderPockets(player,anchor)
             --x = init_x + 28--pozycja wyjściowa
             --y = init_y + 24
             scale = Vector(0.5,0.5)
-            local pocket_charge  = coopHUD.getItemChargeSprite(player,2)
+            local pocket_charge  = renderPlayer.getItemChargeSprite(player,2)
             if pocket_charge then
                 pocket_charge.Scale = scale
                 pocket_charge:Render(Vector(pos.X+26,pos.Y+2), vector_zero, vector_zero)
@@ -309,16 +306,24 @@ function coopHUD.renderPockets(player,anchor)
     ---- main_pocket_desc
     --x = init_x + 16--pozycja wyjściowa
     --y = init_y + 24 --poz wyściowa
+
     local main_pocket_desc = ""
-    main_pocket_desc = coopHUD.getMainPocketDesc(player)
+    if desc_up then
+        pos = Vector(anchor.X+8,anchor.Y-20)
+    else
+        pos = Vector(anchor.X+8,anchor.Y+4)
+    end
+    main_pocket_desc = renderPlayer.getMainPocketDesc(player)
     local f = Font()
     f:Load("font/luaminioutlined.fnt")
     local color = KColor(1,0.2,0.2,0.7) -- TODO: sets according to player color
-    if main_pocket_desc then
-        f:DrawString (main_pocket_desc,anchor.X+8,anchor.Y+4 ,color,0,true) end
-
+        if main_pocket_desc then
+            f:DrawString (main_pocket_desc,pos.X,pos.Y ,color,0,true) end
 end
-function coopHUD.checkDeepPockets()
+
+
+
+function renderPlayer.checkDeepPockets()
     local deep_check = false
     local player_no = Game():GetNumPlayers()-1
     for i=0,player_no,1 do
@@ -329,7 +334,7 @@ function coopHUD.checkDeepPockets()
     end
     return deep_check
 end
-function coopHUD.getHeartSprite(heart_type,overlay)
+function renderPlayer.getHeartSprite(heart_type,overlay)
     if heart_type ~= 'None' then
         local Anim = "gfx/ui/ui_hearts.anm2"
         local sprite = Sprite()
@@ -343,7 +348,7 @@ function coopHUD.getHeartSprite(heart_type,overlay)
         return False
     end
 end
-function coopHUD.getHeartType(player,heart_pos)
+function renderPlayer.getHeartType(player,heart_pos)
     ---- Modified function from HUD_API from NeatPotato mod
     local player_type = player:GetPlayerType()
     local heart_type = 'None'
@@ -465,16 +470,16 @@ function coopHUD.getHeartType(player,heart_pos)
                 if heart_pos >= nonrottenreds then
                     heart_type = "RottenHeartFull"
                 end
-            --elseif heart_type == "RedHeartHalf" then -- unnecesary no half rotten exsist in vanila REPENTANCE
-            --    heart_type = "RottenHalfHart"
+                --elseif heart_type == "RedHeartHalf" then -- unnecesary no half rotten exsist in vanila REPENTANCE
+                --    heart_type = "RottenHalfHart"
             elseif heart_type == "BoneHeartFull" then
                 local overloader_reds = player:GetHearts()+remain_souls-(heart_pos*2)
                 if overloader_reds - player:GetRottenHearts()*2 <= 0 then
 
                     heart_type = "RottenBoneHeartFull"
                 end
-            --elseif heart_type == "BoneHeartHalf" then -- unnecesary no half rotten exsist in vanila REPENTANCE
-            --        heart_type = "RottenBoneHeartHalf"
+                --elseif heart_type == "BoneHeartHalf" then -- unnecesary no half rotten exsist in vanila REPENTANCE
+                --        heart_type = "RottenBoneHeartHalf"
             end
         end
         if eternal and golden then
@@ -490,7 +495,7 @@ function coopHUD.getHeartType(player,heart_pos)
     end
     return heart_type,overlay
 end
-function coopHUD.renderHearts(player_arr,anchor,opacity)
+function renderPlayer.renderHearts(player_arr,anchor,opacity)
     -- Hearts - render
     -- TODO: pulsing Tainted Maggy hearts
     local player = player_arr
@@ -526,8 +531,8 @@ function coopHUD.renderHearts(player_arr,anchor,opacity)
     for row=0,n-1,1 do
         for col=0,m-1,1 do
             heart_type,overlay = ''
-            heart_type,overlay = coopHUD.getHeartType(player,counter)
-            heart_sprite = coopHUD.getHeartSprite(heart_type,overlay)
+            heart_type,overlay = renderPlayer.getHeartType(player,counter)
+            heart_sprite = renderPlayer.getHeartSprite(heart_type,overlay)
             if heart_sprite then
                 temp_pos = Vector(pos.X + (11 * col),pos.Y + (11 * row))
                 heart_sprite:Render(temp_pos,VECTOR_ZERO,VECTOR_ZERO)
@@ -543,8 +548,8 @@ function coopHUD.renderHearts(player_arr,anchor,opacity)
         for row=0,n-1,1 do
             for col=0,m-1,1 do
                 heart_type,overlay = ''
-                heart_type,overlay = coopHUD.getHeartType(sub_player,counter)
-                heart_sprite = coopHUD.getHeartSprite(heart_type,overlay)
+                heart_type,overlay = renderPlayer.getHeartType(sub_player,counter)
+                heart_sprite = renderPlayer.getHeartSprite(heart_type,overlay)
                 if heart_sprite then
                     temp_pos = Vector(pos.X + (11 * col),pos.Y + (11 * row))
                     heart_sprite.Color = color
@@ -555,7 +560,7 @@ function coopHUD.renderHearts(player_arr,anchor,opacity)
         end
     end -- Sub player render heart
 end
-function coopHUD.renderItems(anchor)
+function renderPlayer.renderItems(anchor)
     local pos = Vector(anchor.X,anchor.Y)
     local Anim = "gfx/ui/hudpickups.anm2"
     local coin_no,bomb_no,key_no = 0
@@ -573,7 +578,7 @@ function coopHUD.renderItems(anchor)
     coin_sprite:Render(pos,VECTOR_ZERO,VECTOR_ZERO)
     coin_no = Isaac.GetPlayer(0):GetNumCoins()
     coin_no = string.format("%.2i", coin_no)
-    if coopHUD.checkDeepPockets() then
+    if renderPlayer.checkDeepPockets() then
         pos.X = pos.X - 2
         coin_no = string.format("%.3i", coin_no) end
     f:DrawString(coin_no,pos.X+16,pos.Y,color,0,true)
@@ -600,24 +605,94 @@ function coopHUD.renderItems(anchor)
     key_no = string.format("%.2i", key_no)
     f:DrawString(key_no,pos.X+16,pos.Y,color,0,true)
 end
-function coopHUD.render()
-    -- inits
-    player_num = 0
-
-    local init_x = 100 -- init pos x - hor
-    local init_y = 100
+function renderPlayer.render(player_num,anchor,trinket_up)
+    if trinket_up == nil then trinket_up = false end
     local player = Isaac.GetPlayer(player_num)
-    local max_trinkets = player:GetMaxTrinkets()
+    local active_off = renderPlayer.renderActiveItem(player,anchor)
+    renderPlayer.renderHearts(player,Vector(active_off.X,anchor.Y))
+    if trinket_up then
+        local trinket_off = renderPlayer.renderTrinkets(player,Vector(anchor.X,anchor.Y - 50) )
+        renderPlayer.renderPockets(player,Vector(trinket_off.X,anchor.Y-24),true)
+    else
+        local trinket_off = renderPlayer.renderTrinkets(player,anchor)
+        renderPlayer.renderPockets(player,Vector(trinket_off.X,trinket_off.Y))
+    end
 
-    local anchor = Vector(50,50)
-    local active_off = coopHUD.renderActiveItem(player,anchor)
-    local trinket_off = coopHUD.renderTrinkets(player,anchor)
-    coopHUD.renderPockets(player,Vector(trinket_off,anchor.Y+24))
-    coopHUD.renderHearts(player,Vector(active_off.X,anchor.Y))
+
+    print(trinket_off)
+
+    ---- DEBUG: Heart overlay test
+    --a = renderPlayer.getHeartSprite('RedHeartFull','WhiteHeartOverlay')
+    --a:SetOverlayFrame('WhiteHeartOverlay', 0)
+    --a:SetOverlayFrame('GoldHeartOverlay', 0)
+    --a:Render(Vector(100,100),VECTOR_ZERO,VECTOR_ZERO)
 
 end
 
+-- OPTIONS
+hud_on = true
+--START GAME
+function coopHUD.start_game(continued)
+    if continued then
 
---Game():GetSeeds():AddSeedEffect(SeedEffect.SEED_NO_HUD)
-Game():GetSeeds():RemoveSeedEffect(SeedEffect.SEED_NO_HUD)
+    else
+
+    end
+    print('Coop HUD loaded')
+end
+coopHUD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED,coopHUD.start_game())
+
+--MCM
+local MCM = nil
+if ModConfigMenu then -- checks if
+    MCM = require("scripts.modconfig")
+end
+
+if coopHUD:HasData() then -- Loads data from file
+    options_data = json.decode(coopHUD:LoadData())
+end
+MCM.UpdateCategory("Coop HUD", {
+    Info = "Settings for Coop HUD mod"
+})
+MCM.AddText("Coop HUD", "Turn on:")
+MCM.AddSetting("Coop HUD", {
+    Type = MCM.OptionType.BOOLEAN,
+    CurrentSetting = function()
+        return hud_on
+    end,
+    Display = function()
+        return hud_on
+    end,
+    OnChange = function(value)
+        if hud_on then hud_on = false
+        else
+            hud_on = true
+        end
+    end,
+    Info = {
+        "Turn on/off hud"
+    }
+})
+
+player={}
+
+function coopHUD:saveoptions()
+    local options = {'kupa','sex'}
+    coopHUD:SaveData(json.encode(ask))
+end
+coopHUD:AddCallback(ModCallbacks.MC_PRE_GAME_EXIT,coopHUD.saveoptions)
+--local renderPlayer = require('renderPlayer') -- TODO: split files
+--MAIN MOD
+function coopHUD.render()
+    if hud_on then
+        local ScreenSize = (Isaac.WorldToScreen(Vector(320, 280)) - Game():GetRoom():GetRenderScrollOffset() - Game().ScreenShakeOffset) * 2
+        Game():GetHUD():SetVisible(false)
+        renderPlayer.render(0,Vector(20,20),false)
+        -- P1 - color - false ,true,false
+        renderPlayer.render(1,Vector(20,ScreenSize.Y-15),true)
+        --renderPlayer.render(1,Vector(100,100),true)
+    else
+        Game():GetHUD():SetVisible(true)
+    end
+end
 coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.render)
