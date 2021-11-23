@@ -658,31 +658,31 @@ if ModConfigMenu then -- checks if
     MCM = require("scripts.modconfig")
 end
 
-if coopHUD:HasData() then -- Loads data from file
-    options_data = json.decode(coopHUD:LoadData())
-end
-MCM.UpdateCategory("Coop HUD", {
-    Info = "Settings for Coop HUD mod"
-})
-MCM.AddText("Coop HUD", "Turn on:")
-MCM.AddSetting("Coop HUD", {
-    Type = MCM.OptionType.BOOLEAN,
-    CurrentSetting = function()
-        return hud_on
-    end,
-    Display = function()
-        return hud_on
-    end,
-    OnChange = function(value)
-        if hud_on then hud_on = false
-        else
-            hud_on = true
-        end
-    end,
-    Info = {
-        "Turn on/off hud"
-    }
-})
+--if coopHUD:HasData() then -- Loads data from file
+--    options_data = json.decode(coopHUD:LoadData())
+--end
+--MCM.UpdateCategory("Coop HUD", {
+--    Info = "Settings for Coop HUD mod"
+--})
+--MCM.AddText("Coop HUD", "Turn on:")
+--MCM.AddSetting("Coop HUD", {
+--    Type = MCM.OptionType.BOOLEAN,
+--    CurrentSetting = function()
+--        return hud_on
+--    end,
+--    Display = function()
+--        return hud_on
+--    end,
+--    OnChange = function(value)
+--        if hud_on then hud_on = false
+--        else
+--            hud_on = true
+--        end
+--    end,
+--    Info = {
+--        "Turn on/off hud"
+--    }
+--})
 
 player={}
 
