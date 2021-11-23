@@ -685,6 +685,13 @@ end
 --})
 
 player={}
+local function getMinimapOffset()
+    local min = Vector(999,999)
+    for _,room in ipairs(MinimapAPI:GetLevel()) do
+        if room:GetDisplayFlags() > 0 then
+            if room.Position.X < min.X then min = room.Position end
+        end
+    end
 
 function coopHUD:saveoptions()
     local options = {'kupa','sex'}
