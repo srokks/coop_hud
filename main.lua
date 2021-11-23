@@ -693,6 +693,11 @@ local function getMinimapOffset()
         end
     end
 
+    return MinimapAPI:GetRoomAtPosition(min).RenderOffset
+
+end
+getMinimapOffset()
+--MinimapAPI.Debug.RandomMap()
 function coopHUD:saveoptions()
     local options = {'kupa','sex'}
     coopHUD:SaveData(json.encode(ask))
