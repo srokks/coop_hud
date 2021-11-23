@@ -202,6 +202,7 @@ function renderPlayer.renderActiveItem(player,anchor)
             fi_charge:Render(pos, VECTOR_ZERO, VECTOR_ZERO)
         end
     end
+
     return pos
 end
 function renderPlayer.renderTrinkets(player,anchor)
@@ -498,7 +499,7 @@ function renderPlayer.getHeartType(player,heart_pos)
     end
     return heart_type,overlay
 end
-function renderPlayer.renderHearts(player_arr,anchor,opacity)
+function renderPlayer.renderHearts(player_arr,anchor,opacity,mirrored)
     -- Hearts - render
     -- TODO: pulsing Tainted Maggy hearts
     local player = player_arr
@@ -531,6 +532,17 @@ function renderPlayer.renderHearts(player_arr,anchor,opacity)
     --max_health_cap = 12
     local m = math.floor(max_health_cap/n)
     local counter = 0
+    if mirrored then
+        local col_count = player_total_health % m
+        if player_total_health > 4 then
+            col_count = 4
+        end
+
+        print(player_total_health,col_count)
+
+        pos.X = pos.X - 16
+        pos.X = pos.X - (8 * col_count)
+    end
     for row=0,n-1,1 do
         for col=0,m-1,1 do
             heart_type,overlay = ''
@@ -543,8 +555,7 @@ function renderPlayer.renderHearts(player_arr,anchor,opacity)
             counter = counter + 1
         end
     end
-    if has_sub then
-
+    if has_sub then -- Sub player render heart
         pos.Y = pos.Y + (11 * (math.ceil(player_total_health/m))) -- row below first char hearts
         counter = 0
         local color = Color(1, 1, 1, opacity, 0, 0, 0) -- sets color with opacity
@@ -561,7 +572,7 @@ function renderPlayer.renderHearts(player_arr,anchor,opacity)
                 counter = counter + 1
             end
         end
-    end -- Sub player render heart
+    end
 end
 function renderPlayer.renderItems(anchor)
     local pos = Vector(anchor.X,anchor.Y)
@@ -610,22 +621,27 @@ function renderPlayer.renderItems(anchor)
 end
 function renderPlayer.render(player_num,anchor,trinket_up,mirrored)
     local player = Isaac.GetPlayer(player_num)
+    local active_off = anchor
     if trinket_up == nil then trinket_up = false end
     if mirrored == nil then mirrored = false end
     if mirrored then
         -- TODO:
-        local active_off = renderPlayer.renderActiveItem(player,anchor)
-        renderPlayer.renderHearts(player,Vector(active_off.X,anchor.Y))
+        active_off = renderPlayer.renderActiveItem(player,anchor)
+        active_off.X = active_off.X
+
+        if anchor.X ~= active_off.X then   active_off.X = active_off.X + -32 end
+        renderPlayer.renderHearts(player,Vector(active_off.X,anchor.Y),1,true)
+
     else
-        local active_off = renderPlayer.renderActiveItem(player,anchor)
+        active_off = renderPlayer.renderActiveItem(player,anchor)
         renderPlayer.renderHearts(player,Vector(active_off.X,anchor.Y))
     end
-
     if trinket_up then
+        -- TODO: fix positioning
         local trinket_off = renderPlayer.renderTrinkets(player,Vector(anchor.X,anchor.Y - 50) )
         renderPlayer.renderPockets(player,Vector(trinket_off.X,anchor.Y-24),true)
     else
-        local trinket_off = renderPlayer.renderTrinkets(player,anchor)
+        local trinket_off = renderPlayer.renderTrinkets(player,Vector(active_off.X,anchor.Y))
         renderPlayer.renderPockets(player,Vector(trinket_off.X,trinket_off.Y))
     end
 
@@ -686,17 +702,39 @@ end
 
 player={}
 local function getMinimapOffset()
-    local min = Vector(999,999)
-    for _,room in ipairs(MinimapAPI:GetLevel()) do
-        if room:GetDisplayFlags() > 0 then
-            if room.Position.X < min.X then min = room.Position end
+    -- Modified function from minimap_api by Wolfsauge
+    local minimap_offset = ScreenHelper.GetScreenTopRight()
+    local screen_size = ScreenHelper.GetScreenTopRight()
+    local islarge = MinimapAPI:IsLarge()
+    if not islarge and MinimapAPI:GetConfig("DisplayMode") == 2 then -- BOUNDED MAP
+        minimap_offset = Vector(screen_size.X - MinimapAPI:GetConfig("MapFrameWidth") - MinimapAPI:GetConfig("PositionX") - 24,2)
+    elseif not islarge and MinimapAPI:GetConfig("DisplayMode") == 4 then -- NO MAP
+        minimap_offset = Vector(screen_size.X - 24,2)
+    else -- LARGE
+        local minx = screen_size.X
+        for i,v in ipairs(MinimapAPI:GetLevel()) do
+            if v.TargetRenderOffset and v.TargetRenderOffset.Y < 64 then
+                minx = math.min(minx, v.RenderOffset.X)
+            end
+        end
+        minimap_offset = Vector(minx-24,2) -- Small
+    end
+    --if MinimapAPI:GetConfig('ShowLevelFlags') then
+    --    minimap_offset.X = minimap_offset.X - 16
+    --end
+    if MinimapAPI:GetConfig("Disable") or MinimapAPI.Disable then minimap_offset = Vector(screen_size.X - 24,2)  end
+    local r = MinimapAPI:GetCurrentRoom()
+    if MinimapAPI:GetConfig("HideInCombat") == 2 then
+        if not r:IsClear() and r:GetType() == RoomType.ROOM_BOSS then
+            minimap_offset = Vector(screen_size.X - 24,2)
+        end
+    elseif MinimapAPI:GetConfig("HideInCombat") == 3 then
+        if not r:IsClear() then
+            minimap_offset = Vector(screen_size.X - 24,2)
         end
     end
-
-    return MinimapAPI:GetRoomAtPosition(min).RenderOffset
-
+    return minimap_offset
 end
-getMinimapOffset()
 --MinimapAPI.Debug.RandomMap()
 function coopHUD:saveoptions()
     local options = {'kupa','sex'}
@@ -706,23 +744,28 @@ coopHUD:AddCallback(ModCallbacks.MC_PRE_GAME_EXIT,coopHUD.saveoptions)
 --local renderPlayer = require('renderPlayer') -- TODO: split files
 --MAIN MOD
 function coopHUD.render()
+    MinimapAPI.OverrideConfig.ShowLevelFlags = false
     if hud_on then
         local ScreenSize = (Isaac.WorldToScreen(Vector(320, 280)) - Game():GetRoom():GetRenderScrollOffset() - Game().ScreenShakeOffset) * 2
         Game():GetHUD():SetVisible(false)
-        renderPlayer.render(0,Vector(20,20),false,false)
+
         -- renderPlayer.render(player_num,anchor,trinket_up,mirrored)
         -- p1 - pos (20, 20)- left up corner
         -- P2 - pos (20, ScreenSize.Y-15) - left down corner
-
-        renderPlayer.render(1,Vector(100,100),false,true)
-        --renderPlayer.render(1,Vector(ScreenSize.X-20,20),false,true)
+        renderPlayer.render(0,Vector(20,20),false,false) -- Left Top Corner
+        --renderPlayer.render(1,Vector(20, ScreenSize.Y-16),true,flase) -- Left down corner
         --renderPlayer.render(1,Vector(100,100),true)
-        local screen_size = ScreenHelper.GetScreenTopRight()
-        offsetVec = Vector(screen_size.X - MinimapAPI:GetConfig("PositionX"), screen_size.Y + MinimapAPI:GetConfig("PositionY"))
-        print(offsetVec)
+
+        local minimap_offset = getMinimapOffset()
+        --MinimapAPI.Config.Disable -- global setting of minimapapi
+
+        --MinimapAPI.Debug.RandomMap()
+        --a = Mini`smapAPI.GetRenderOff
+        minimap_offset = getMinimapOffset()
+        --print(off)
+        renderPlayer.render(1,Vector(minimap_offset.X,20 ),false,true) -- Right Left
     else
         Game():GetHUD():SetVisible(true)
-        print(MinimapAPI:IsPositionFree(position,roomshape))
     end
 end
 coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.render)
