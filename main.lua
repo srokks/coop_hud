@@ -488,20 +488,8 @@ function coopHUD.renderPockets(player_table)
         if player_table.main_pocket_desc then
             f:DrawString (player_table.main_pocket_desc,pos.X+desc_off.X,pos.Y+desc_off.Y ,color,0,true) end
     end
-    ---- main_pocket charge
-    if main_pocket then
-        if main_pocket:GetDefaultAnimation() == 'Idle' then
-            --x = init_x + 28--pozycja wyjściowa
-            --y = init_y + 24
-            scale = Vector(0.5,0.5)
-            local pocket_charge  = coopHUD.getItemChargeSprite(player,2)
-            if pocket_charge then
-                pocket_charge.Scale = scale
-                pocket_charge:Render(Vector(pos.X+26,pos.Y+2), vector_zero, vector_zero)
-            end
-            pos.X = pos.X -5
-        end
-    end
+
+
 end
 function coopHUD.renderHearts(player_table)
 
