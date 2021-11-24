@@ -503,6 +503,9 @@ function coopHUD.renderPockets(player_table)
         end
     end
 end
+function coopHUD.renderHearts(player_table)
+
+end
 function coopHUD.renderPlayer(player_no,anchor)
     local player = Isaac.GetPlayer(player_no)
     local players = {}
