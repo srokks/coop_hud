@@ -342,21 +342,35 @@ end
 function coopHUD.renderActiveItems(player_table)
     local anchor = player_table.anchor
     local offset = Vector(0,0)
-    local off = 0
+    local off = Vector(0,0)
     if anchor == anchor_top_left then
         pos = Vector(anchor.X + 20,anchor.Y+16)
-        off = 36
+        off.X = 12
+        off.Y = 36
     elseif anchor == anchor_bottom_left then
-        off = -36
         pos = Vector(anchor.X + 20,anchor.Y-16)
+        off.X = 12
+        off.Y = -42
     elseif anchor == anchor_top_right then
-        off = 36
         pos = Vector(coopHUD.getMinimapOffset().X,anchor.Y+16)
+        off.X = 12
+        off.Y = 36
     elseif anchor == anchor_bottom_right then
         pos = Vector(anchor.X - 24,anchor.Y-16)
-        off = -36
+        off.X = -12
+        off.Y = -42
     end
+
     if player_table.first_active or player_table.second_active then
+        if anchor == anchor_top_left then
+            off.X = 48
+        elseif anchor == anchor_bottom_left then
+            off.X = 48
+        elseif anchor == anchor_top_right then
+            off.X = - 20
+        elseif anchor == anchor_bottom_right then
+            off.X = -48
+        end
         if player_table.second_active then -- First item charge render
             player_table.second_active.Scale = Vector(0.5,0.5)
             player_table.second_active:Render(Vector(pos.X - 16,pos.Y - 8), vector_zero, vector_zero)
@@ -371,11 +385,10 @@ function coopHUD.renderActiveItems(player_table)
         pos.X = pos.X + 17
         if player_table.fi_charge then
             player_table.fi_charge:Render(pos, VECTOR_ZERO, VECTOR_ZERO)
-            offset.X = offset.X + 12
         end
-    offset.Y = offset.Y + off
-    offset.X = offset.X + off
     end
+    offset.X = offset.X + off.X
+    offset.Y = offset.Y + off.Y
     return offset
 end
 function coopHUD.renderTrinkets(player_table)
@@ -507,17 +520,27 @@ function coopHUD.renderHearts(player_table)
     local n = 3 -- No. of rows
     local m = math.floor(max_health_cap/n)  -- No.
     local anchor = player_table.anchor
+    local mirrored = false
     if anchor == anchor_top_left then
-        print(player_table.first_row_offset)
-        pos = Vector(anchor.X + player_table.first_row_offset.X  ,anchor.Y + 12 )
+        pos = Vector(anchor.X + player_table.first_row_offset.X ,anchor.Y+8)
     elseif anchor == anchor_bottom_left then
-        pos = Vector(anchor.X,anchor.Y)
+        pos = Vector(anchor.X+ player_table.first_row_offset.X,anchor.Y - 32)
     elseif anchor == anchor_top_right then
-        pos = Vector(coopHUD.getMinimapOffset().X,anchor.Y)
+        pos = Vector(coopHUD.getMinimapOffset().X + player_table.first_row_offset.X,anchor.Y+8)
+        mirrored = true
     elseif anchor == anchor_bottom_right then
-        pos = Vector(anchor.X,anchor.Y)
+        print(player_table.first_row_offset)
+        pos = Vector(anchor.X +player_table.first_row_offset.X ,anchor.Y - 32)
+        mirrored = true
     end
     local counter = 0
+    if mirrored then
+        local col_count = player_table.player_total_health % m
+        if player_table.player_total_health > 3 then
+            col_count = 4
+        end
+        pos.X = pos.X - (8 * col_count)
+    end
     for row=0,n-1,1 do
         for col=0,m-1,1 do
             if player_table.hearts[counter] then
@@ -533,6 +556,7 @@ function coopHUD.renderPlayer(player_no,anchor)
     local players = {}
     players.name = 'P1'
     players.type = player:GetPlayerType()
+    players.player_total_health = math.ceil((player:GetEffectiveMaxHearts() + player:GetSoulHearts())/2)
     players.anchor = anchor
     players.first_active = coopHUD.getActiveItemSprite(player,0)
     players.second_active = coopHUD.getActiveItemSprite(player,1)
@@ -549,8 +573,8 @@ function coopHUD.renderPlayer(player_no,anchor)
 
     players.first_row_offset = coopHUD.renderActiveItems(players)
     players.test_offset = coopHUD.renderHearts(players)
-    --players.sec_row_offset = coopHUD.renderTrinkets(players)  --DEBUG
-    --coopHUD.renderPockets(players)  --DEBUG
+    players.sec_row_offset = coopHUD.renderTrinkets(players)  --DEBUG
+    coopHUD.renderPockets(players)  --DEBUG
     --local pos = anchor
     --pos.Y = pos.Y + trinket_offset.Y
     --print(trinket_offset)
@@ -604,8 +628,8 @@ function coopHUD.render()
     coopHUD.renderPlayer(0,anchor_bottom_left)
     coopHUD.renderPlayer(0,anchor_top_right)
     coopHUD.renderPlayer(0,anchor_bottom_right)
-    Game():GetHUD():SetVisible(true)
-    --Game():GetHUD():SetVisible(false)
+    --Game():GetHUD():SetVisible(true)
+    Game():GetHUD():SetVisible(false)
 end
 
 coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.render)
