@@ -370,6 +370,22 @@ function coopHUD.renderActiveItem(player, anchor, alignment)
         end
     end
 end
+function coopHUD.renderTrinkets(player_table)
+    local anchor = player_table.anchor
+    local scale = Vector(0.5,0.5)
+    if anchor == anchor_top_left then
+        pos = Vector(anchor.X + 12,anchor.Y+36)
+    elseif anchor == anchor_bottom_left then
+        pos = Vector(anchor.X + 12,anchor.Y-52)
+    elseif anchor == anchor_top_right then
+        pos = Vector(coopHUD.getMinimapOffset().X+16,anchor.Y+36)
+    elseif anchor == anchor_bottom_right then
+        pos = Vector(anchor.X - 12,anchor.Y-52)
+
+    end
+    if player_table.first_trinket then
+        if player_table.second_trinket then -- if has trinket 2
+        else
 
 function coopHUD.renderPlayer(player_no,anchor)
     local player = Isaac.GetPlayer(player_no)
