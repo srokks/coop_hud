@@ -492,7 +492,30 @@ function coopHUD.renderPockets(player_table)
 
 end
 function coopHUD.renderHearts(player_table)
-
+    local max_health_cap = 12
+    local n = 3 -- No. of rows
+    local m = math.floor(max_health_cap/n)  -- No.
+    local anchor = player_table.anchor
+    if anchor == anchor_top_left then
+        print(player_table.first_row_offset)
+        pos = Vector(anchor.X + player_table.first_row_offset.X  ,anchor.Y + 12 )
+    elseif anchor == anchor_bottom_left then
+        pos = Vector(anchor.X,anchor.Y)
+    elseif anchor == anchor_top_right then
+        pos = Vector(coopHUD.getMinimapOffset().X,anchor.Y)
+    elseif anchor == anchor_bottom_right then
+        pos = Vector(anchor.X,anchor.Y)
+    end
+    local counter = 0
+    for row=0,n-1,1 do
+        for col=0,m-1,1 do
+            if player_table.hearts[counter] then
+                temp_pos = Vector(pos.X + (11 * col),pos.Y + (11 * row))
+                player_table.hearts[counter]:Render(temp_pos,VECTOR_ZERO,VECTOR_ZERO)
+            end
+            counter = counter + 1
+        end
+    end
 end
 function coopHUD.renderPlayer(player_no,anchor)
     local player = Isaac.GetPlayer(player_no)
