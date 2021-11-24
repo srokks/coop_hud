@@ -173,160 +173,6 @@ function renderPlayer.getMainPocketDesc(player)
     end
     return desc
 end
-function renderPlayer.renderActiveItem(player,anchor)
-    local scale = Vector(1,1)
-    local pos = Vector(anchor.X,anchor.Y)
-    -- Second active item - render
-
-    local first_active = renderPlayer.getActiveItemSprite(player,0)
-    local second_active = renderPlayer.getActiveItemSprite(player,1)
-    if first_active or second_active then
-        if second_active then
-            second_active.Scale = Vector(0.7,0.7)
-            second_active:Render(Vector(pos.X - 7,pos.Y - 7), vector_zero, vector_zero)
-        end
-        -- Second active item - charges - render
-        local se_charge = renderPlayer.getItemChargeSprite(player,1)
-        if se_charge then
-            se_charge.Scale = Vector(0.5,0.5)
-            se_charge:Render(Vector(pos.X - 15,pos.Y - 9), vector_zero, vector_zero)
-        end
-        -- First active item - render
-        if first_active then
-            first_active:Render(pos, VECTOR_ZERO, VECTOR_ZERO)
-        end
-        -- First active item - charges - render
-        pos.X = pos.X + 17
-        local fi_charge = renderPlayer.getItemChargeSprite(player,0)
-        if fi_charge then
-            fi_charge:Render(pos, VECTOR_ZERO, VECTOR_ZERO)
-        end
-    end
-
-    return pos
-end
-function renderPlayer.renderTrinkets(player,anchor)
-    local scale = Vector(0.5,0.5)
-    local tri1 = renderPlayer.getTrinketSprite(player,0)
-    local tri2 = renderPlayer.getTrinketSprite(player,1)
-    local pos = Vector(anchor.X,anchor.Y+20)
-    if tri1 then
-        if tri2 then -- if has trinket 2
-            pos.Y = pos.Y  -- left corner pos
-        else -- else
-            pos.Y = pos.Y + 6 -- center pos
-            scale = Vector(0.7,0.7) -- makes trinket bigger
-        end
-        tri1.Scale = scale
-        tri1:Render(pos,vector_zero,vector_zero)
-        pos.X = pos.X + 8
-    end
-    if tri2 then
-        pos.Y = pos.Y + 8
-
-        tri2.Scale = scale
-        tri2:Render(pos,vector_zero,vector_zero) end
-    return pos
-end
-function renderPlayer.renderPockets(player,anchor,desc_up)
-    if desc_up == nil then desc_up = false end
-    local scale = Vector(0.7,0.7)
-    local pos = Vector(anchor.X+8,anchor.Y)
-    local main_pocket = renderPlayer.getPocketItemSprite(player,0)
-    local second_pocket = renderPlayer.getPocketItemSprite(player,1)
-    local third_pocket = renderPlayer.getPocketItemSprite(player,2 )
-    ----second_pocket charges
-    if third_pocket then
-        if third_pocket:GetDefaultAnimation() == 'Idle' then
-            scale = Vector(0.3,0.3 )
-            local pocket_charge  = renderPlayer.getItemChargeSprite(player,2)
-            if pocket_charge then
-                if main_pocket:GetDefaultAnimation() ~= 'Idle' and third_pocket :GetDefaultAnimation() ~= 'Idle' then
-                    pocket_charge.Scale = scale
-                    pocket_charge:Render(Vector(pos.X+42,pos.Y+2), vector_zero, vector_zero)
-                end
-            end
-            pos.X = pos.X -5
-        end
-    end
-    ------third pocket
-    scale = Vector(0.5,0.5)
-    if third_pocket then
-        if third_pocket:GetDefaultAnimation() ~= 'Idle' then
-            third_pocket.Scale = scale
-            third_pocket:Render(Vector(pos.X+40,pos.Y), vector_zero, vector_zero)
-        else
-            if main_pocket:GetDefaultAnimation() ~= 'Idle' and second_pocket :GetDefaultAnimation() ~= 'Idle' then
-                second_pocket.Scale = scale
-                second_pocket:Render(Vector(pos.X+40,pos.Y), vector_zero, vector_zero)
-            end
-        end
-    end
-    ----second_pocket charges
-    scale = Vector(0.5,0.5)
-    if second_pocket then
-        if second_pocket:GetDefaultAnimation() == 'Idle' then
-            scale = Vector(0.3,0.3 )
-            local pocket_charge  = renderPlayer.getItemChargeSprite(player,2)
-            if pocket_charge then
-                if main_pocket:GetDefaultAnimation() ~= 'Idle' or second_pocket:GetDefaultAnimation() ~= 'Idle' then
-                    pocket_charge.Scale = scale
-                    pocket_charge:Render(Vector(pos.X+34,pos.Y+2), vector_zero, vector_zero)
-
-
-                end
-            end
-            pos.X = pos.X -5
-        end
-    end
-    ----second_pocket
-    scale = Vector(0.5,0.5)
-    if second_pocket then
-        if main_pocket:GetDefaultAnimation() ~= 'Idle' or third_pocket:GetDefaultAnimation() ~= 'Idle' then
-            second_pocket.Scale = scale
-            second_pocket:Render(Vector(pos.X+32,pos.Y), vector_zero, vector_zero)
-        end
-    end
-    ----main_pocket
-    if main_pocket then
-        scale = Vector(0.7,0.7)
-        main_pocket.Scale = scale
-        main_pocket:Render(Vector(pos.X + 16,pos.Y), VECTOR_ZERO, VECTOR_ZERO)
-    end
-    ---- main_pocket charge
-    if main_pocket then
-        if main_pocket:GetDefaultAnimation() == 'Idle' then
-            --x = init_x + 28--pozycja wyjściowa
-            --y = init_y + 24
-            scale = Vector(0.5,0.5)
-            local pocket_charge  = renderPlayer.getItemChargeSprite(player,2)
-            if pocket_charge then
-                pocket_charge.Scale = scale
-                pocket_charge:Render(Vector(pos.X+26,pos.Y+2), vector_zero, vector_zero)
-            end
-            pos.X = pos.X -5
-        end
-    end
-    ---- main_pocket_desc
-    --x = init_x + 16--pozycja wyjściowa
-    --y = init_y + 24 --poz wyściowa
-
-    local main_pocket_desc = ""
-    if desc_up then
-        pos = Vector(anchor.X+8,anchor.Y-20)
-    else
-        pos = Vector(anchor.X+8,anchor.Y+4)
-    end
-    main_pocket_desc = renderPlayer.getMainPocketDesc(player)
-    local f = Font()
-    f:Load("font/luaminioutlined.fnt")
-    local color = KColor(1,0.2,0.2,0.7) -- TODO: sets according to player color
-        if main_pocket_desc then
-            f:DrawString (main_pocket_desc,pos.X,pos.Y ,color,0,true) end
-end
-
-
-
 function renderPlayer.checkDeepPockets()
     local deep_check = false
     local player_no = Game():GetNumPlayers()-1
@@ -499,6 +345,159 @@ function renderPlayer.getHeartType(player,heart_pos)
     end
     return heart_type,overlay
 end
+
+
+function renderPlayer.renderActiveItem(player,anchor)
+    local scale = Vector(1,1)
+    local pos = Vector(anchor.X,anchor.Y)
+    -- Second active item - render
+
+    local first_active = renderPlayer.getActiveItemSprite(player,0)
+    local second_active = renderPlayer.getActiveItemSprite(player,1)
+    if first_active or second_active then
+        if second_active then
+            second_active.Scale = Vector(0.7,0.7)
+            second_active:Render(Vector(pos.X - 7,pos.Y - 7), vector_zero, vector_zero)
+        end
+        -- Second active item - charges - render
+        local se_charge = renderPlayer.getItemChargeSprite(player,1)
+        if se_charge then
+            se_charge.Scale = Vector(0.5,0.5)
+            se_charge:Render(Vector(pos.X - 15,pos.Y - 9), vector_zero, vector_zero)
+        end
+        -- First active item - render
+        if first_active then
+            first_active:Render(pos, VECTOR_ZERO, VECTOR_ZERO)
+        end
+        -- First active item - charges - render
+        pos.X = pos.X + 17
+        local fi_charge = renderPlayer.getItemChargeSprite(player,0)
+        if fi_charge then
+            fi_charge:Render(pos, VECTOR_ZERO, VECTOR_ZERO)
+        end
+    end
+
+    return pos
+end
+function renderPlayer.renderTrinkets(player,anchor,mirro)
+    local scale = Vector(0.5,0.5)
+    local tri1 = renderPlayer.getTrinketSprite(player,0)
+    local tri2 = renderPlayer.getTrinketSprite(player,1)
+    local pos = Vector(anchor.X,anchor.Y+20)
+    if tri1 then
+        if tri2 then -- if has trinket 2
+            pos.Y = pos.Y  -- left corner pos
+        else -- else
+            pos.Y = pos.Y + 6 -- center pos
+            scale = Vector(0.7,0.7) -- makes trinket bigger
+        end
+        tri1.Scale = scale
+        tri1:Render(pos,vector_zero,vector_zero)
+        pos.X = pos.X + 8
+    end
+    if tri2 then
+        pos.Y = pos.Y + 8
+
+        tri2.Scale = scale
+        tri2:Render(pos,vector_zero,vector_zero) end
+    return pos
+end
+function renderPlayer.renderPockets(player,anchor,desc_up)
+    if desc_up == nil then desc_up = false end
+    local scale = Vector(0.7,0.7)
+    local pos = Vector(anchor.X+8,anchor.Y)
+    local main_pocket = renderPlayer.getPocketItemSprite(player,0)
+    local second_pocket = renderPlayer.getPocketItemSprite(player,1)
+    local third_pocket = renderPlayer.getPocketItemSprite(player,2 )
+    ----second_pocket charges
+    if third_pocket then
+        if third_pocket:GetDefaultAnimation() == 'Idle' then
+            scale = Vector(0.3,0.3 )
+            local pocket_charge  = renderPlayer.getItemChargeSprite(player,2)
+            if pocket_charge then
+                if main_pocket:GetDefaultAnimation() ~= 'Idle' and third_pocket :GetDefaultAnimation() ~= 'Idle' then
+                    pocket_charge.Scale = scale
+                    pocket_charge:Render(Vector(pos.X+42,pos.Y+2), vector_zero, vector_zero)
+                end
+            end
+            pos.X = pos.X -5
+        end
+    end
+    ------third pocket
+    scale = Vector(0.5,0.5)
+    if third_pocket then
+        if third_pocket:GetDefaultAnimation() ~= 'Idle' then
+            third_pocket.Scale = scale
+            third_pocket:Render(Vector(pos.X+40,pos.Y), vector_zero, vector_zero)
+        else
+            if main_pocket:GetDefaultAnimation() ~= 'Idle' and second_pocket :GetDefaultAnimation() ~= 'Idle' then
+                second_pocket.Scale = scale
+                second_pocket:Render(Vector(pos.X+40,pos.Y), vector_zero, vector_zero)
+            end
+        end
+    end
+    ----second_pocket charges
+    scale = Vector(0.5,0.5)
+    if second_pocket then
+        if second_pocket:GetDefaultAnimation() == 'Idle' then
+            scale = Vector(0.3,0.3 )
+            local pocket_charge  = renderPlayer.getItemChargeSprite(player,2)
+            if pocket_charge then
+                if main_pocket:GetDefaultAnimation() ~= 'Idle' or second_pocket:GetDefaultAnimation() ~= 'Idle' then
+                    pocket_charge.Scale = scale
+                    pocket_charge:Render(Vector(pos.X+34,pos.Y+2), vector_zero, vector_zero)
+
+
+                end
+            end
+            pos.X = pos.X -5
+        end
+    end
+    ----second_pocket
+    scale = Vector(0.5,0.5)
+    if second_pocket then
+        if main_pocket:GetDefaultAnimation() ~= 'Idle' or third_pocket:GetDefaultAnimation() ~= 'Idle' then
+            second_pocket.Scale = scale
+            second_pocket:Render(Vector(pos.X+32,pos.Y), vector_zero, vector_zero)
+        end
+    end
+    ----main_pocket
+    if main_pocket then
+        scale = Vector(0.7,0.7)
+        main_pocket.Scale = scale
+        main_pocket:Render(Vector(pos.X + 16,pos.Y), VECTOR_ZERO, VECTOR_ZERO)
+    end
+    ---- main_pocket charge
+    if main_pocket then
+        if main_pocket:GetDefaultAnimation() == 'Idle' then
+            --x = init_x + 28--pozycja wyjściowa
+            --y = init_y + 24
+            scale = Vector(0.5,0.5)
+            local pocket_charge  = renderPlayer.getItemChargeSprite(player,2)
+            if pocket_charge then
+                pocket_charge.Scale = scale
+                pocket_charge:Render(Vector(pos.X+26,pos.Y+2), vector_zero, vector_zero)
+            end
+            pos.X = pos.X -5
+        end
+    end
+    ---- main_pocket_desc
+    --x = init_x + 16--pozycja wyjściowa
+    --y = init_y + 24 --poz wyściowa
+
+    local main_pocket_desc = ""
+    if desc_up then
+        pos = Vector(anchor.X+8,anchor.Y-20)
+    else
+        pos = Vector(anchor.X+8,anchor.Y+4)
+    end
+    main_pocket_desc = renderPlayer.getMainPocketDesc(player)
+    local f = Font()
+    f:Load("font/luaminioutlined.fnt")
+    local color = KColor(1,0.2,0.2,0.7) -- TODO: sets according to player color
+        if main_pocket_desc then
+            f:DrawString (main_pocket_desc,pos.X,pos.Y ,color,0,true) end
+end
 function renderPlayer.renderHearts(player_arr,anchor,opacity,mirrored)
     -- Hearts - render
     -- TODO: pulsing Tainted Maggy hearts
@@ -534,12 +533,9 @@ function renderPlayer.renderHearts(player_arr,anchor,opacity,mirrored)
     local counter = 0
     if mirrored then
         local col_count = player_total_health % m
-        if player_total_health > 4 then
+        if player_total_health > 3 then
             col_count = 4
         end
-
-        print(player_total_health,col_count)
-
         pos.X = pos.X - 16
         pos.X = pos.X - (8 * col_count)
     end
@@ -629,19 +625,22 @@ function renderPlayer.render(player_num,anchor,trinket_up,mirrored)
         active_off = renderPlayer.renderActiveItem(player,anchor)
         active_off.X = active_off.X
 
-        if anchor.X ~= active_off.X then   active_off.X = active_off.X + -32 end
+        if anchor.X == active_off.X then   active_off.X =active_off.X + 6 else active_off.X =active_off.X - 32  end
         renderPlayer.renderHearts(player,Vector(active_off.X,anchor.Y),1,true)
 
     else
         active_off = renderPlayer.renderActiveItem(player,anchor)
         renderPlayer.renderHearts(player,Vector(active_off.X,anchor.Y))
     end
+
+
     if trinket_up then
         -- TODO: fix positioning
         local trinket_off = renderPlayer.renderTrinkets(player,Vector(anchor.X,anchor.Y - 50) )
         renderPlayer.renderPockets(player,Vector(trinket_off.X,anchor.Y-24),true)
     else
         local trinket_off = renderPlayer.renderTrinkets(player,Vector(active_off.X,anchor.Y))
+        if mirrored then trinket_off.X = trinket_off.X - 64 end
         renderPlayer.renderPockets(player,Vector(trinket_off.X,trinket_off.Y))
     end
 
@@ -705,17 +704,21 @@ local function getMinimapOffset()
     -- Modified function from minimap_api by Wolfsauge
     local minimap_offset = ScreenHelper.GetScreenTopRight()
     local screen_size = ScreenHelper.GetScreenTopRight()
-    local islarge = MinimapAPI:IsLarge()
-    if not islarge and MinimapAPI:GetConfig("DisplayMode") == 2 then -- BOUNDED MAP
+    local is_large = MinimapAPI:IsLarge()
+    if not is_large and MinimapAPI:GetConfig("DisplayMode") == 2 then -- BOUNDED MAP
         minimap_offset = Vector(screen_size.X - MinimapAPI:GetConfig("MapFrameWidth") - MinimapAPI:GetConfig("PositionX") - 24,2)
-    elseif not islarge and MinimapAPI:GetConfig("DisplayMode") == 4 then -- NO MAP
+    elseif not is_large and MinimapAPI:GetConfig("DisplayMode") == 4 then -- NO MAP
         minimap_offset = Vector(screen_size.X - 24,2)
     else -- LARGE
         local minx = screen_size.X
         for i,v in ipairs(MinimapAPI:GetLevel()) do
-            if v.TargetRenderOffset and v.TargetRenderOffset.Y < 64 then
-                minx = math.min(minx, v.RenderOffset.X)
+            if v ~= nil then
+                if v:GetDisplayFlags() > 0 then
+                print(v.Position,"This room is visible!")
+                    minx = math.min(minx, v.RenderOffset.X)
+                end
             end
+
         end
         minimap_offset = Vector(minx-24,2) -- Small
     end
@@ -744,6 +747,7 @@ coopHUD:AddCallback(ModCallbacks.MC_PRE_GAME_EXIT,coopHUD.saveoptions)
 --local renderPlayer = require('renderPlayer') -- TODO: split files
 --MAIN MOD
 function coopHUD.render()
+    local minimap_offset = getMinimapOffset()
     MinimapAPI.OverrideConfig.ShowLevelFlags = false
     if hud_on then
         local ScreenSize = (Isaac.WorldToScreen(Vector(320, 280)) - Game():GetRoom():GetRenderScrollOffset() - Game().ScreenShakeOffset) * 2
@@ -756,16 +760,15 @@ function coopHUD.render()
         --renderPlayer.render(1,Vector(20, ScreenSize.Y-16),true,flase) -- Left down corner
         --renderPlayer.render(1,Vector(100,100),true)
 
-        local minimap_offset = getMinimapOffset()
         --MinimapAPI.Config.Disable -- global setting of minimapapi
 
         --MinimapAPI.Debug.RandomMap()
         --a = Mini`smapAPI.GetRenderOff
-        minimap_offset = getMinimapOffset()
-        --print(off)
+        --print(off)s
+        print(minimap_offset)
         renderPlayer.render(1,Vector(minimap_offset.X,20 ),false,true) -- Right Left
     else
-        Game():GetHUD():SetVisible(true)
+        --Game():GetHUD():SetVisible(true)
     end
 end
 coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.render)
