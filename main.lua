@@ -107,7 +107,6 @@ function coopHUD.getTrinketSprite(player, trinket_pos)
 end
 function coopHUD.getPocketItemSprite(player,slot)
     -- cards/runes/
-
     local pocketcheck = player:GetCard(slot)
     local thissprite = Sprite()
 
@@ -129,9 +128,9 @@ function coopHUD.getPocketItemSprite(player,slot)
             if player:GetActiveItem(2) > 0 or player:GetActiveItem(3) > 0 then
                 pocketitem = true -- do wyjebania
                 if player:GetActiveItem(2) > 0 then
-                    thissprite = renderPlayer.getActiveItemSprite(player,2)
+                    thissprite = coopHUD.getActiveItemSprite(player,2)
                 else
-                    thissprite = renderPlayer.getActiveItemSprite(player,3)
+                    thissprite = coopHUD.getActiveItemSprite(player,3)
                 end
                 return thissprite
             else
@@ -332,25 +331,20 @@ function coopHUD.getHeartSprite(heart_type,overlay)
 end
 function coopHUD.renderActiveItems(player_table)
     local anchor = player_table.anchor
+    local offset = Vector(0,0)
+    local off = 0
     if anchor == anchor_top_left then
         pos = Vector(anchor.X + 20,anchor.Y+16)
+        off = 36
     elseif anchor == anchor_bottom_left then
+        off = -36
         pos = Vector(anchor.X + 20,anchor.Y-16)
     elseif anchor == anchor_top_right then
+        off = 36
         pos = Vector(coopHUD.getMinimapOffset().X,anchor.Y+16)
     elseif anchor == anchor_bottom_right then
         pos = Vector(anchor.X - 24,anchor.Y-16)
-
-function coopHUD.renderActiveItem(player, anchor, alignment)
-
-    local first_active = coopHUD.getActiveItemSprite(player,0)
-    local second_active = coopHUD.getActiveItemSprite(player,1)
-    local pos = Vector(anchor.X ,anchor.Y)
-    if first_active or second_active then
-        if first_active then
-            print('ss`')
-            first_active:Render(pos, VECTOR_ZERO, VECTOR_ZERO)
-        end
+        off = -36
     end
     if player_table.first_active or player_table.second_active then
         if player_table.second_active then -- First item charge render
@@ -368,56 +362,131 @@ function coopHUD.renderActiveItem(player, anchor, alignment)
         if player_table.fi_charge then
             player_table.fi_charge:Render(pos, VECTOR_ZERO, VECTOR_ZERO)
         end
+    offset.Y = offset.Y + off
+
     end
+    return offset
 end
 function coopHUD.renderTrinkets(player_table)
+    local mirrored = false
     local anchor = player_table.anchor
+    local off = 0
+    anchor.Y = anchor.Y + player_table.first_row_offset.Y
+     -- TODO: first line offset
+    local trinket_offset = Vector(0,0)
     local scale = Vector(0.5,0.5)
     if anchor == anchor_top_left then
-        pos = Vector(anchor.X + 12,anchor.Y+36)
+        pos = Vector(anchor.X+12,anchor.Y+ 8)
+        off = 24
     elseif anchor == anchor_bottom_left then
-        pos = Vector(anchor.X + 12,anchor.Y-52)
+        pos = Vector(anchor.X + 12,anchor.Y - 8)
+        off = -20
     elseif anchor == anchor_top_right then
-        pos = Vector(coopHUD.getMinimapOffset().X+16,anchor.Y+36)
+        pos = Vector(coopHUD.getMinimapOffset().X+16,anchor.Y+8)
+        mirrored = true
+        off = 24
     elseif anchor == anchor_bottom_right then
-        pos = Vector(anchor.X - 12,anchor.Y-52)
-
+        pos = Vector(anchor.X - 12,anchor.Y-10)
+        mirrored = true
+        off = -20
     end
     if player_table.first_trinket then
-        if player_table.second_trinket then -- if has trinket 2
+        if player_table.second_trinket then
+            if mirrored then pos = Vector(pos.X-16,pos.Y) end-- if has trinket 2
         else
-
+            pos = Vector(pos.X,pos.Y)
             scale = Vector(0.7,0.7) -- makes trinket bigger
         end
         player_table.first_trinket.Scale = scale
         player_table.first_trinket:Render(pos,VECTOR_ZERO,VECTOR_ZERO)
-        pos = Vector(pos.X,pos.Y+16)
+        pos = Vector(pos.X+16,pos.Y)
+        trinket_offset.Y = trinket_offset.Y + off
     end
     if player_table.second_trinket then
         player_table.second_trinket.Scale = scale
-        player_table.second_trinket:Render(Vector(pos.X,pos.Y),vector_zero,vector_zero) end
-
+        player_table.second_trinket:Render(pos,vector_zero,vector_zero)
+    end
+    return trinket_offset
 end
 function coopHUD.renderPockets(player_table)
     local scale = Vector(1,1)
     local anchor = player_table.anchor
+    local off = 0
+    local desc_off = Vector(0,0)
+    anchor.Y = anchor.Y + player_table.sec_row_offset.Y
     if anchor == anchor_top_left then
-        anchor.Y = anchor.Y + player_table.trinket_offset.Y
-        pos = Vector(anchor.X + 12 ,anchor.Y)
+        pos = Vector(anchor.X + 12 ,anchor.Y + 12 )
+        off = 16
+        desc_off = Vector(2,4)
     elseif anchor == anchor_bottom_left then
-        pos = Vector(anchor.X +12,anchor.Y - 12)
+        pos = Vector(anchor.X+12,anchor.Y-12)
+        off = 16
+        desc_off = Vector(2,4)
     elseif anchor == anchor_top_right then
-        anchor.Y = anchor.Y + player_table.trinket_offset.Y
-        pos = Vector(coopHUD.getMinimapOffset().X+12,anchor.Y)
+        pos = Vector(coopHUD.getMinimapOffset().X+8,anchor.Y+12)
+        off = -16
+        desc_off = Vector(-50,0)
+        if string.len(desc) > 12 then
+            player_table.main_pocket_desc = string.format("%.9s...",player_table.main_pocket_desc)
+        end
     elseif anchor == anchor_bottom_right then
-        anchor.Y = player_table.trinket_offset.Y
-        pos = Vector(anchor.X-18,anchor.Y-16)
-        --print(pos,player_table.trinket_offset.Y)
+        pos = Vector(anchor.X-16,anchor.Y-12)
+        desc_off = Vector(-50,4)
+        if string.len(desc) > 12 then
+            player_table.main_pocket_desc = string.format("%.9s...",player_table.main_pocket_desc)
+        end
     end
+    ------third pocket
+    scale = Vector(0.5,0.5)
+    if player_table.third_pocket then
+        if player_table.third_pocket:GetDefaultAnimation() ~= 'Idle' then
+            player_table.third_pocket.Scale = scale
+            player_table.third_pocket:Render(Vector(pos.X + (2 * off),pos.Y), vector_zero, vector_zero)
+        else
+            if player_table.main_pocket:GetDefaultAnimation() ~= 'Idle' and player_table.second_pocket :GetDefaultAnimation() ~= 'Idle' then
+                player_table.second_pocket.Scale = scale
+                player_table.second_pocket:Render(Vector(pos.X+(2 * off),pos.Y), vector_zero, vector_zero)
+            end
+        end
+    end
+    ----second_pocket
+    scale = Vector(0.5,0.5)
+    if player_table.second_pocket then
+        if player_table.main_pocket:GetDefaultAnimation() ~= 'Idle' or player_table.third_pocket:GetDefaultAnimation() ~= 'Idle' then
+            player_table.second_pocket.Scale = scale
+            player_table.second_pocket:Render(Vector(pos.X+off,pos.Y ), vector_zero, vector_zero)
+        end
+        if player_table.second_pocket:GetDefaultAnimation() == 'Idle' then
+            scale = Vector(0.3,0.3 )
+            --local pocket_charge  = renderPlayer.getItemChargeSprite(player,2)
+            --if pocket_charge then
+            --    if main_pocket:GetDefaultAnimation() ~= 'Idle' or second_pocket:GetDefaultAnimation() ~= 'Idle' then
+            --        pocket_charge.Scale = scale
+            --        pocket_charge:Render(Vector(pos.X+34,pos.Y+2), vector_zero, vector_zero)
+            --
+            --
+            --    end
+            --end
+        end
+    end
+    -- Main pocket
     if player_table.main_pocket then
         scale = Vector(0.7,0.7)
         player_table.main_pocket.Scale = scale
         player_table.main_pocket:Render(pos, VECTOR_ZERO, VECTOR_ZERO)
+        ---- main_pocket charge
+        if player_table.main_pocket:GetDefaultAnimation() == 'Idle' then
+            scale = Vector(0.5,0.5)
+            if player_table.pocket_charge then
+                player_table.pocket_charge.Scale = scale
+                player_table.pocket_charge:Render(Vector(pos.X+12,pos.Y+2), vector_zero, vector_zero)
+            end
+        end
+        local f = Font()
+        f:Load("font/luaminioutlined.fnt")
+        local color = KColor(1,0.2,0.2,0.7) -- TODO: sets according to player color
+        if player_table.main_pocket_desc then
+            f:DrawString (player_table.main_pocket_desc,pos.X+desc_off.X,pos.Y+desc_off.Y ,color,0,true) end
     end
     ---- main_pocket charge
     if main_pocket then
@@ -437,23 +506,30 @@ end
 function coopHUD.renderPlayer(player_no,anchor)
     local player = Isaac.GetPlayer(player_no)
     local players = {}
+    players.name = 'P1'
+    players.type = player:GetPlayerType()
+    players.anchor = anchor
     players.first_active = coopHUD.getActiveItemSprite(player,0)
     players.second_active = coopHUD.getActiveItemSprite(player,1)
+    players.fi_charge = coopHUD.getItemChargeSprite(player,0)
+    players.se_charge = coopHUD.getItemChargeSprite(player,1)
+    players.first_trinket = coopHUD.getTrinketSprite(player,0)
+    players.second_trinket = coopHUD.getTrinketSprite(player,1)
+    players.main_pocket = coopHUD.getPocketItemSprite(player,0)
+    players.pocket_charge = coopHUD.getItemChargeSprite(player,2)
+    players.second_pocket = coopHUD.getPocketItemSprite(player,1)
+    players.third_pocket = coopHUD.getPocketItemSprite(player,2)
+    players.main_pocket_desc = coopHUD.getMainPocketDesc(player)
+    ---
 
-    if anchor == anchor_top_left then
-        pos = Vector(anchor.X + 20,anchor.Y+16)
-    elseif anchor == anchor_bottom_left then
-        pos = Vector(anchor.X + 20,anchor.Y-16)
-    elseif anchor == anchor_top_right then
-        print('anchor_top_right')
-    elseif anchor == anchor_bottom_right then
-        pos = Vector(anchor.X - 24,anchor.Y-16)
-
-    end
-    players.first_active:Render(pos,VECTOR_ZERO,VECTOR_ZERO)
-    players.second_active:Render(pos,VECTOR_ZERO,VECTOR_ZERO)
-
-
+    players.first_row_offset = coopHUD.renderActiveItems(players)
+    players.test_offset = coopHUD.renderHearts(players)
+    --players.sec_row_offset = coopHUD.renderTrinkets(players)  --DEBUG
+    --coopHUD.renderPockets(players)  --DEBUG
+    --local pos = anchor
+    --pos.Y = pos.Y + trinket_offset.Y
+    --print(trinket_offset)
+    --players.pocket_charge:Render(Vector(100,100),VECTOR_ZERO,VECTOR_ZERO)
 end
 
 function coopHUD.getMinimapOffset()
@@ -495,11 +571,16 @@ function coopHUD.getMinimapOffset()
 end
 
 function coopHUD.render()
+    anchor_top_left = ScreenHelper.GetScreenTopLeft()
+    anchor_bottom_left = ScreenHelper.GetScreenBottomLeft()
+    anchor_top_right = ScreenHelper.GetScreenTopRight()
+    anchor_bottom_right = ScreenHelper.GetScreenBottomRight()
     coopHUD.renderPlayer(0,anchor_top_left)
     coopHUD.renderPlayer(0,anchor_bottom_left)
-    --coopHUD.renderPlayer(0,anchor_top_right)
+    coopHUD.renderPlayer(0,anchor_top_right)
     coopHUD.renderPlayer(0,anchor_bottom_right)
-    --Game():GetHUD():SetVisible(true)
-    Game():GetHUD():SetVisible(false)
+    Game():GetHUD():SetVisible(true)
+    --Game():GetHUD():SetVisible(false)
 end
+
 coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.render)
