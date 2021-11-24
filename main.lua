@@ -371,9 +371,10 @@ function coopHUD.renderActiveItems(player_table)
         pos.X = pos.X + 17
         if player_table.fi_charge then
             player_table.fi_charge:Render(pos, VECTOR_ZERO, VECTOR_ZERO)
+            offset.X = offset.X + 12
         end
     offset.Y = offset.Y + off
-
+    offset.X = offset.X + off
     end
     return offset
 end
