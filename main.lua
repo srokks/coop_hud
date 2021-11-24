@@ -455,10 +455,45 @@ function coopHUD.renderPlayer(player_no,anchor)
 
 
 end
-anchor_top_left = ScreenHelper.GetScreenTopLeft()
-anchor_bottom_left = ScreenHelper.GetScreenBottomLeft()
-anchor_top_right = ScreenHelper.GetScreenTopRight()
-anchor_bottom_right = ScreenHelper.GetScreenBottomRight()
+
+function coopHUD.getMinimapOffset()
+    -- Modified function from minimap_api by Wolfsauge
+    local minimap_offset = ScreenHelper.GetScreenTopRight()
+    local screen_size = ScreenHelper.GetScreenTopRight()
+    local is_large = MinimapAPI:IsLarge()
+    if not is_large and MinimapAPI:GetConfig("DisplayMode") == 2 then -- BOUNDED MAP
+        minimap_offset = Vector(screen_size.X - MinimapAPI:GetConfig("MapFrameWidth") - MinimapAPI:GetConfig("PositionX") - 24,2)
+    elseif not is_large and MinimapAPI:GetConfig("DisplayMode") == 4 then -- NO MAP
+        minimap_offset = Vector(screen_size.X - 24,2)
+    else -- LARGE
+        local minx = screen_size.X
+        for i,v in ipairs(MinimapAPI:GetLevel()) do
+            if v ~= nil then
+                if v:GetDisplayFlags() > 0 then
+                    minx = math.min(minx, v.RenderOffset.X)
+                end
+            end
+
+        end
+        minimap_offset = Vector(minx-24,2) -- Small
+    end
+    --if MinimapAPI:GetConfig('ShowLevelFlags') then
+    --    minimap_offset.X = minimap_offset.X - 16
+    --end
+    if MinimapAPI:GetConfig("Disable") or MinimapAPI.Disable then minimap_offset = Vector(screen_size.X - 24,2)  end
+    local r = MinimapAPI:GetCurrentRoom()
+    if MinimapAPI:GetConfig("HideInCombat") == 2 then
+        if not r:IsClear() and r:GetType() == RoomType.ROOM_BOSS then
+            minimap_offset = Vector(screen_size.X - 24,2)
+        end
+    elseif MinimapAPI:GetConfig("HideInCombat") == 3 then
+        if not r:IsClear() then
+            minimap_offset = Vector(screen_size.X - 24,2)
+        end
+    end
+    return minimap_offset
+end
+
 function coopHUD.render()
     coopHUD.renderPlayer(0,anchor_top_left)
     coopHUD.renderPlayer(0,anchor_bottom_left)
