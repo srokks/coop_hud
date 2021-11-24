@@ -387,6 +387,17 @@ function coopHUD.renderTrinkets(player_table)
         if player_table.second_trinket then -- if has trinket 2
         else
 
+            scale = Vector(0.7,0.7) -- makes trinket bigger
+        end
+        player_table.first_trinket.Scale = scale
+        player_table.first_trinket:Render(pos,VECTOR_ZERO,VECTOR_ZERO)
+        pos = Vector(pos.X,pos.Y+16)
+    end
+    if player_table.second_trinket then
+        player_table.second_trinket.Scale = scale
+        player_table.second_trinket:Render(Vector(pos.X,pos.Y),vector_zero,vector_zero) end
+
+end
 function coopHUD.renderPlayer(player_no,anchor)
     local player = Isaac.GetPlayer(player_no)
     local players = {}
