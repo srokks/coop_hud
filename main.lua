@@ -330,6 +330,16 @@ function coopHUD.getHeartSprite(heart_type,overlay)
         return False
     end
 end
+function coopHUD.renderActiveItems(player_table)
+    local anchor = player_table.anchor
+    if anchor == anchor_top_left then
+        pos = Vector(anchor.X + 20,anchor.Y+16)
+    elseif anchor == anchor_bottom_left then
+        pos = Vector(anchor.X + 20,anchor.Y-16)
+    elseif anchor == anchor_top_right then
+        pos = Vector(coopHUD.getMinimapOffset().X,anchor.Y+16)
+    elseif anchor == anchor_bottom_right then
+        pos = Vector(anchor.X - 24,anchor.Y-16)
 
 function coopHUD.renderActiveItem(player, anchor, alignment)
 
@@ -342,7 +352,23 @@ function coopHUD.renderActiveItem(player, anchor, alignment)
             first_active:Render(pos, VECTOR_ZERO, VECTOR_ZERO)
         end
     end
-    return pos
+    if player_table.first_active or player_table.second_active then
+        if player_table.second_active then -- First item charge render
+            player_table.second_active.Scale = Vector(0.5,0.5)
+            player_table.second_active:Render(Vector(pos.X - 16,pos.Y - 8), vector_zero, vector_zero)
+        end
+        if player_table.se_charge then -- Second item charge render -- UGLY - can turn on
+            --player_table.se_charge.Scale = Vector(0.5,0.5)
+            --player_table.se_charge:Render(Vector(pos.X - 15,pos.Y - 9), vector_zero, vector_zero)
+        end
+        if player_table.first_active then
+            player_table.first_active:Render(pos, VECTOR_ZERO, VECTOR_ZERO)
+        end
+        pos.X = pos.X + 17
+        if player_table.fi_charge then
+            player_table.fi_charge:Render(pos, VECTOR_ZERO, VECTOR_ZERO)
+        end
+    end
 end
 
 function coopHUD.renderPlayer(player_no,anchor)
