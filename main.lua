@@ -329,6 +329,16 @@ function coopHUD.getHeartSprite(heart_type,overlay)
         return False
     end
 end
+function coopHUD.getHeartSpriteTable(player)
+    local max_health_cap = 12
+    local heart_type,overlay = ''
+    local heart_sprites = {}
+    for counter=0,12,1 do
+        heart_type,overlay = coopHUD.getHeartType(player,counter)
+        heart_sprites[counter] = coopHUD.getHeartSprite(heart_type,overlay)
+    end
+    return heart_sprites
+end
 function coopHUD.renderActiveItems(player_table)
     local anchor = player_table.anchor
     local offset = Vector(0,0)
