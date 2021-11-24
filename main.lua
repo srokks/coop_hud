@@ -398,6 +398,42 @@ function coopHUD.renderTrinkets(player_table)
         player_table.second_trinket:Render(Vector(pos.X,pos.Y),vector_zero,vector_zero) end
 
 end
+function coopHUD.renderPockets(player_table)
+    local scale = Vector(1,1)
+    local anchor = player_table.anchor
+    if anchor == anchor_top_left then
+        anchor.Y = anchor.Y + player_table.trinket_offset.Y
+        pos = Vector(anchor.X + 12 ,anchor.Y)
+    elseif anchor == anchor_bottom_left then
+        pos = Vector(anchor.X +12,anchor.Y - 12)
+    elseif anchor == anchor_top_right then
+        anchor.Y = anchor.Y + player_table.trinket_offset.Y
+        pos = Vector(coopHUD.getMinimapOffset().X+12,anchor.Y)
+    elseif anchor == anchor_bottom_right then
+        anchor.Y = player_table.trinket_offset.Y
+        pos = Vector(anchor.X-18,anchor.Y-16)
+        --print(pos,player_table.trinket_offset.Y)
+    end
+    if player_table.main_pocket then
+        scale = Vector(0.7,0.7)
+        player_table.main_pocket.Scale = scale
+        player_table.main_pocket:Render(pos, VECTOR_ZERO, VECTOR_ZERO)
+    end
+    ---- main_pocket charge
+    if main_pocket then
+        if main_pocket:GetDefaultAnimation() == 'Idle' then
+            --x = init_x + 28--pozycja wyjściowa
+            --y = init_y + 24
+            scale = Vector(0.5,0.5)
+            local pocket_charge  = coopHUD.getItemChargeSprite(player,2)
+            if pocket_charge then
+                pocket_charge.Scale = scale
+                pocket_charge:Render(Vector(pos.X+26,pos.Y+2), vector_zero, vector_zero)
+            end
+            pos.X = pos.X -5
+        end
+    end
+end
 function coopHUD.renderPlayer(player_no,anchor)
     local player = Isaac.GetPlayer(player_no)
     local players = {}
