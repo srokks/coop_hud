@@ -540,6 +540,7 @@ function coopHUD.renderHearts(player_table)
         offset.X = offset.X - (8 * col_count)
         off.Y = 0
         pos.X = pos.X - (8 * col_count)
+
     elseif anchor == anchor_bottom_right then
         pos = Vector(anchor.X +player_table.first_row_offset.X ,anchor.Y - 32)
         offset.X = offset.X - (8 * col_count)
@@ -547,10 +548,20 @@ function coopHUD.renderHearts(player_table)
         pos.X = pos.X - (8 * col_count)
     end
     local counter = 0
+    local heart_space = 11
+    if player_table.is_sub then
+        heart_space = 8
+        pos.Y = pos.Y + 16
+    end
     for row=0,n-1,1 do
         for col=0,m-1,1 do
+
             if player_table.hearts[counter] then
-                temp_pos = Vector(pos.X + (11 * col),pos.Y + (11 * row))
+                if player_table.is_sub then
+                    player_table.hearts[counter].Scale = Vector(0.7,0.7)
+                    player_table.hearts[counter].Color =Color(1, 1, 1, 0.5, 0, 0, 0)
+                end
+                temp_pos = Vector(pos.X + (heart_space * col),pos.Y + (heart_space * row))
                 player_table.hearts[counter]:Render(temp_pos,VECTOR_ZERO,VECTOR_ZERO)
             end
             counter = counter + 1
@@ -558,6 +569,34 @@ function coopHUD.renderHearts(player_table)
     end
     offset.X = offset.X + player_table.first_row_offset.X
     return offset
+end
+function coopHUD.getPlayer(player)
+    local sub
+    local players = {}
+    players.name = 'P1' -- Todo: get name from config
+    players.type = player:GetPlayerType()
+    players.f_color = KColor(1,0.2,0.2,1) -- Todo: get color from config
+    players.player_total_health = math.ceil((player:GetEffectiveMaxHearts() + player:GetSoulHearts())/2)
+
+    players.anchor = anchor -- Todo: get anchor from config
+    players.first_active = coopHUD.getActiveItemSprite(player,0)
+    players.second_active = coopHUD.getActiveItemSprite(player,1)
+    players.fi_charge = coopHUD.getItemChargeSprite(player,0)
+    players.se_charge = coopHUD.getItemChargeSprite(player,1)
+    players.first_trinket = coopHUD.getTrinketSprite(player,0)
+    players.second_trinket = coopHUD.getTrinketSprite(player,1)
+    players.main_pocket = coopHUD.getPocketItemSprite(player,0)
+    players.pocket_charge = coopHUD.getItemChargeSprite(player,2)
+    players.second_pocket = coopHUD.getPocketItemSprite(player,1)
+    players.third_pocket = coopHUD.getPocketItemSprite(player,2)
+    players.main_pocket_desc = coopHUD.getMainPocketDesc(player)
+    players.hearts = coopHUD.getHeartSpriteTable(player)
+    players.extra_lives = player:GetExtraLives()
+    players.extra_lives = string.format('x%d',players.extra_lives )
+    players.has_sub = false
+    players.is_sub = false
+    players.first_row_offset = nil
+    return players
 end
 function coopHUD.renderExtraLives(player_table)
     -- TODO:
@@ -604,28 +643,11 @@ function coopHUD.renderBethanyCharge(player_table)
 end
 function coopHUD.renderPlayer(player_no,anchor)
     local player = Isaac.GetPlayer(player_no)
-    local players = {}
-    players.name = 'P1'
-    players.type = player:GetPlayerType()
-    players.f_color = KColor(1,0.2,0.2,1)
-    players.player_total_health = math.ceil((player:GetEffectiveMaxHearts() + player:GetSoulHearts())/2)
+    local sub = nil
+    local players = coopHUD.getPlayer(player)
     players.anchor = anchor
-    players.first_active = coopHUD.getActiveItemSprite(player,0)
-    players.second_active = coopHUD.getActiveItemSprite(player,1)
-    players.fi_charge = coopHUD.getItemChargeSprite(player,0)
-    players.se_charge = coopHUD.getItemChargeSprite(player,1)
-    players.first_trinket = coopHUD.getTrinketSprite(player,0)
-    players.second_trinket = coopHUD.getTrinketSprite(player,1)
-    players.main_pocket = coopHUD.getPocketItemSprite(player,0)
-    players.pocket_charge = coopHUD.getItemChargeSprite(player,2)
-    players.second_pocket = coopHUD.getPocketItemSprite(player,1)
-    players.third_pocket = coopHUD.getPocketItemSprite(player,2)
-    players.main_pocket_desc = coopHUD.getMainPocketDesc(player)
-    players.hearts = coopHUD.getHeartSpriteTable(player)
-    players.extra_lives = player:GetExtraLives()
-    players.extra_lives = string.format('x%d',players.extra_lives )
-
-    --
+    local sub_table = nil
+    -- Guppys collar ? live
     if player:HasCollectible(212) then  players.extra_lives = string.format('%s?',players.extra_lives) end
     if players.type == 18 or players.type == 36 then -- Bethany/T.Bethany check
         if players.type == 18 then
@@ -635,7 +657,21 @@ function coopHUD.renderPlayer(player_no,anchor)
         end
     end
     ---
+    if  player:GetPlayerType() == 16 or player:GetPlayerType() == 17 then -- Forgotten/Soul check
+        players.has_sub = true
+    end
+    ---
     players.first_row_offset = coopHUD.renderActiveItems(players)
+
+    ---
+    if players.has_sub then
+        sub = player:GetSubPlayer()
+        sub_table = coopHUD.getPlayer(sub)
+        sub_table.first_row_offset = players.first_row_offset
+        sub_table.anchor = anchor
+        sub_table.is_sub = true
+        coopHUD.renderHearts(sub_table)
+    end
     players.hearts_offset = coopHUD.renderHearts(players)
     coopHUD.renderExtraLives(players)
     if players.type == 18 or players.type == 36 then
@@ -695,9 +731,9 @@ function coopHUD.render()
     --coopHUD.renderPlayer(0,anchor_top_left)
     --coopHUD.renderPlayer(0,anchor_bottom_left)
     coopHUD.renderPlayer(0,anchor_top_right)
-    --coopHUD.renderPlayer(0,anchor_bottom_right)
-    Game():GetHUD():SetVisible(true)
-    --Game():GetHUD():SetVisible(false)
+    coopHUD.renderPlayer(0,anchor_bottom_right)
+    --Game():GetHUD():SetVisible(true)
+    Game():GetHUD():SetVisible(false)
 end
 
 coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.render)
