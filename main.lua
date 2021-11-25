@@ -533,20 +533,19 @@ function coopHUD.renderHearts(player_table)
         off.Y = 0
     elseif anchor == anchor_bottom_left then
         pos = Vector(anchor.X+ player_table.first_row_offset.X,anchor.Y - 32)
-        off.X = 0
+        print('col co',col_count)
+        offset.X = offset.X + (8 * col_count)
         off.Y = 0
     elseif anchor == anchor_top_right then
         pos = Vector(coopHUD.getMinimapOffset().X + player_table.first_row_offset.X,anchor.Y+8)
-        off.X = 0
+        offset.X = offset.X - (8 * col_count)
         off.Y = 0
         pos.X = pos.X - (8 * col_count)
-        offset.X = offset.X - (8 * col_count)
     elseif anchor == anchor_bottom_right then
         pos = Vector(anchor.X +player_table.first_row_offset.X ,anchor.Y - 32)
-        off.X = 0
+        offset.X = offset.X - (8 * col_count)
         off.Y = 0
         pos.X = pos.X - (8 * col_count)
-        offset.X = offset.X - (8 * col_count)
     end
     local counter = 0
     for row=0,n-1,1 do
@@ -567,14 +566,14 @@ function coopHUD.renderExtraLives(player_table)
     if anchor == anchor_top_left then
         pos = Vector(anchor.X+12,anchor.Y)
     elseif anchor == anchor_bottom_left then
-        pos = Vector(anchor.X,anchor.Y)
+        pos = Vector(anchor.X+12,anchor.Y-24)
     elseif anchor == anchor_top_right then
         pos = Vector(coopHUD.getMinimapOffset().X-24,anchor.Y)
     elseif anchor == anchor_bottom_right then
-        pos = Vector(anchor.X,anchor.Y)
+        pos = Vector(anchor.X-24,anchor.Y-24)
     end
     if player_table.extra_lives ~= 'x0' then
-        print(pos,player_table.hearts_offset)
+        print(pos,player_table.first_row_offset,player_table.hearts_offset)
         local f = Font()
         f:Load("font/luaminioutlined.fnt")
         local color = KColor(1,0.2,0.2,1) -- TODO: sets according to player color
@@ -658,9 +657,9 @@ function coopHUD.render()
     anchor_top_right = ScreenHelper.GetScreenTopRight()
     anchor_bottom_right = ScreenHelper.GetScreenBottomRight()
     coopHUD.renderPlayer(0,anchor_top_left)
-    --coopHUD.renderPlayer(0,anchor_bottom_left)
+    coopHUD.renderPlayer(0,anchor_bottom_left)
     coopHUD.renderPlayer(0,anchor_top_right)
-    --coopHUD.renderPlayer(0,anchor_bottom_right)
+    coopHUD.renderPlayer(0,anchor_bottom_right)
     --Game():GetHUD():SetVisible(true)
     Game():GetHUD():SetVisible(false)
 end
