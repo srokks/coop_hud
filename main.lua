@@ -508,7 +508,7 @@ function coopHUD.renderPockets(player_table)
         end
         local f = Font()
         f:Load("font/luaminioutlined.fnt")
-        local color = KColor(1,0.2,0.2,0.7) -- TODO: sets according to player color
+        local color = player_table.f_color -- TODO: sets according to player color
         if player_table.main_pocket_desc then
             f:DrawString (player_table.main_pocket_desc,pos.X+desc_off.X,pos.Y+desc_off.Y ,color,0,true) end
     end
@@ -533,7 +533,6 @@ function coopHUD.renderHearts(player_table)
         off.Y = 0
     elseif anchor == anchor_bottom_left then
         pos = Vector(anchor.X+ player_table.first_row_offset.X,anchor.Y - 32)
-        print('col co',col_count)
         offset.X = offset.X + (8 * col_count)
         off.Y = 0
     elseif anchor == anchor_top_right then
@@ -564,30 +563,51 @@ function coopHUD.renderExtraLives(player_table)
     -- TODO:
     local anchor = player_table.anchor
     if anchor == anchor_top_left then
-        pos = Vector(anchor.X+12,anchor.Y)
+        pos = Vector(anchor.X+12,anchor.Y+2)
     elseif anchor == anchor_bottom_left then
-        pos = Vector(anchor.X+12,anchor.Y-24)
+        pos = Vector(anchor.X+12,anchor.Y-20)
     elseif anchor == anchor_top_right then
-        pos = Vector(coopHUD.getMinimapOffset().X-24,anchor.Y)
+        pos = Vector(coopHUD.getMinimapOffset().X-24,anchor.Y+2)
     elseif anchor == anchor_bottom_right then
         pos = Vector(anchor.X-24,anchor.Y-24)
     end
     if player_table.extra_lives ~= 'x0' then
-        print(pos,player_table.first_row_offset,player_table.hearts_offset)
         local f = Font()
         f:Load("font/luaminioutlined.fnt")
-        local color = KColor(1,0.2,0.2,1) -- TODO: sets according to player color
-        f:DrawString (player_table.extra_lives,pos.X+player_table.hearts_offset.X,pos.Y,color,0,true)
+        f:DrawString (player_table.extra_lives,pos.X+player_table.hearts_offset.X,pos.Y,player_table.f_color,0,true)
     end
 end
-function coopHUD.renderBethanyCharge()
+function coopHUD.renderBethanyCharge(player_table)
     -- TODO:
+    local anchor = player_table.anchor
+    if anchor == anchor_top_left then
+        pos = Vector(anchor.X+14,anchor.Y+2)
+    elseif anchor == anchor_bottom_left then
+        pos = Vector(anchor.X+16,anchor.Y-2)
+    elseif anchor == anchor_top_right then
+        pos = Vector(coopHUD.getMinimapOffset().X-26,anchor.Y+2)
+    elseif anchor == anchor_bottom_right then
+        pos = Vector(anchor.X-24,anchor.Y-2)
+    end
+    local heart_sprite = Sprite()
+    if player_table.type == 18 then
+        heart_sprite = coopHUD.getHeartSprite('BlueHeartFull','None')
+    else
+        heart_sprite = coopHUD.getHeartSprite('RedHeartFull','None')
+    end
+    heart_sprite.Scale = Vector(0.6,0.6)
+    heart_sprite:Render(Vector(pos.X+player_table.hearts_offset.X,pos.Y),VECTOR_ZERO,VECTOR_ZERO)
+    local f = Font()
+    local bethany_charge = string.format('x%d',player_table.bethany_charge)
+    f:Load("font/luaminioutlined.fnt")
+    f:DrawString (bethany_charge,pos.X+player_table.hearts_offset.X+6,pos.Y-9,player_table.f_color,0,true)
 end
 function coopHUD.renderPlayer(player_no,anchor)
     local player = Isaac.GetPlayer(player_no)
     local players = {}
     players.name = 'P1'
     players.type = player:GetPlayerType()
+    players.f_color = KColor(1,0.2,0.2,1)
     players.player_total_health = math.ceil((player:GetEffectiveMaxHearts() + player:GetSoulHearts())/2)
     players.anchor = anchor
     players.first_active = coopHUD.getActiveItemSprite(player,0)
@@ -606,8 +626,12 @@ function coopHUD.renderPlayer(player_no,anchor)
     players.first_row_offset = coopHUD.renderActiveItems(players)
     players.hearts_offset = coopHUD.renderHearts(players)
     coopHUD.renderExtraLives(players)
+    if players.type == 18 or players.type == 36 then
+        coopHUD.renderBethanyCharge(players)
+    end
     players.sec_row_offset = coopHUD.renderTrinkets(players)  --DEBUG
     coopHUD.renderPockets(players)  --DEBUG
+
     --local pos = anchor
     --pos.Y = pos.Y + trinket_offset.Y
     --print(trinket_offset)
@@ -656,12 +680,12 @@ function coopHUD.render()
     anchor_bottom_left = ScreenHelper.GetScreenBottomLeft()
     anchor_top_right = ScreenHelper.GetScreenTopRight()
     anchor_bottom_right = ScreenHelper.GetScreenBottomRight()
-    coopHUD.renderPlayer(0,anchor_top_left)
-    coopHUD.renderPlayer(0,anchor_bottom_left)
+    --coopHUD.renderPlayer(0,anchor_top_left)
+    --coopHUD.renderPlayer(0,anchor_bottom_left)
     coopHUD.renderPlayer(0,anchor_top_right)
-    coopHUD.renderPlayer(0,anchor_bottom_right)
-    --Game():GetHUD():SetVisible(true)
-    Game():GetHUD():SetVisible(false)
+    --coopHUD.renderPlayer(0,anchor_bottom_right)
+    Game():GetHUD():SetVisible(true)
+    --Game():GetHUD():SetVisible(false)
 end
 
 coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.render)
