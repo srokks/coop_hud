@@ -521,26 +521,34 @@ function coopHUD.renderHearts(player_table)
     local m = math.floor(max_health_cap/n)  -- No.
     local anchor = player_table.anchor
     local mirrored = false
+    local offset = Vector(0,0)
+    local off = Vector(0,0)
+    local col_count = player_table.player_total_health % m
+    if player_table.player_total_health > 3 then
+        col_count = 4
+    end
     if anchor == anchor_top_left then
         pos = Vector(anchor.X + player_table.first_row_offset.X ,anchor.Y+8)
+        offset.X = offset.X + (8 * col_count)
+        off.Y = 0
     elseif anchor == anchor_bottom_left then
         pos = Vector(anchor.X+ player_table.first_row_offset.X,anchor.Y - 32)
+        off.X = 0
+        off.Y = 0
     elseif anchor == anchor_top_right then
         pos = Vector(coopHUD.getMinimapOffset().X + player_table.first_row_offset.X,anchor.Y+8)
-        mirrored = true
+        off.X = 0
+        off.Y = 0
+        pos.X = pos.X - (8 * col_count)
+        offset.X = offset.X - (8 * col_count)
     elseif anchor == anchor_bottom_right then
-        print(player_table.first_row_offset)
         pos = Vector(anchor.X +player_table.first_row_offset.X ,anchor.Y - 32)
-        mirrored = true
+        off.X = 0
+        off.Y = 0
+        pos.X = pos.X - (8 * col_count)
+        offset.X = offset.X - (8 * col_count)
     end
     local counter = 0
-    if mirrored then
-        local col_count = player_table.player_total_health % m
-        if player_table.player_total_health > 3 then
-            col_count = 4
-        end
-        pos.X = pos.X - (8 * col_count)
-    end
     for row=0,n-1,1 do
         for col=0,m-1,1 do
             if player_table.hearts[counter] then
@@ -550,6 +558,31 @@ function coopHUD.renderHearts(player_table)
             counter = counter + 1
         end
     end
+    offset.X = offset.X + player_table.first_row_offset.X
+    return offset
+end
+function coopHUD.renderExtraLives(player_table)
+    -- TODO:
+    local anchor = player_table.anchor
+    if anchor == anchor_top_left then
+        pos = Vector(anchor.X+12,anchor.Y)
+    elseif anchor == anchor_bottom_left then
+        pos = Vector(anchor.X,anchor.Y)
+    elseif anchor == anchor_top_right then
+        pos = Vector(coopHUD.getMinimapOffset().X-24,anchor.Y)
+    elseif anchor == anchor_bottom_right then
+        pos = Vector(anchor.X,anchor.Y)
+    end
+    if player_table.extra_lives ~= 'x0' then
+        print(pos,player_table.hearts_offset)
+        local f = Font()
+        f:Load("font/luaminioutlined.fnt")
+        local color = KColor(1,0.2,0.2,1) -- TODO: sets according to player color
+        f:DrawString (player_table.extra_lives,pos.X+player_table.hearts_offset.X,pos.Y,color,0,true)
+    end
+end
+function coopHUD.renderBethanyCharge()
+    -- TODO:
 end
 function coopHUD.renderPlayer(player_no,anchor)
     local player = Isaac.GetPlayer(player_no)
@@ -572,7 +605,8 @@ function coopHUD.renderPlayer(player_no,anchor)
     ---
 
     players.first_row_offset = coopHUD.renderActiveItems(players)
-    players.test_offset = coopHUD.renderHearts(players)
+    players.hearts_offset = coopHUD.renderHearts(players)
+    coopHUD.renderExtraLives(players)
     players.sec_row_offset = coopHUD.renderTrinkets(players)  --DEBUG
     coopHUD.renderPockets(players)  --DEBUG
     --local pos = anchor
@@ -580,7 +614,6 @@ function coopHUD.renderPlayer(player_no,anchor)
     --print(trinket_offset)
     --players.pocket_charge:Render(Vector(100,100),VECTOR_ZERO,VECTOR_ZERO)
 end
-
 function coopHUD.getMinimapOffset()
     -- Modified function from minimap_api by Wolfsauge
     local minimap_offset = ScreenHelper.GetScreenTopRight()
@@ -625,9 +658,9 @@ function coopHUD.render()
     anchor_top_right = ScreenHelper.GetScreenTopRight()
     anchor_bottom_right = ScreenHelper.GetScreenBottomRight()
     coopHUD.renderPlayer(0,anchor_top_left)
-    coopHUD.renderPlayer(0,anchor_bottom_left)
+    --coopHUD.renderPlayer(0,anchor_bottom_left)
     coopHUD.renderPlayer(0,anchor_top_right)
-    coopHUD.renderPlayer(0,anchor_bottom_right)
+    --coopHUD.renderPlayer(0,anchor_bottom_right)
     --Game():GetHUD():SetVisible(true)
     Game():GetHUD():SetVisible(false)
 end
