@@ -621,8 +621,20 @@ function coopHUD.renderPlayer(player_no,anchor)
     players.second_pocket = coopHUD.getPocketItemSprite(player,1)
     players.third_pocket = coopHUD.getPocketItemSprite(player,2)
     players.main_pocket_desc = coopHUD.getMainPocketDesc(player)
-    ---
+    players.hearts = coopHUD.getHeartSpriteTable(player)
+    players.extra_lives = player:GetExtraLives()
+    players.extra_lives = string.format('x%d',players.extra_lives )
 
+    --
+    if player:HasCollectible(212) then  players.extra_lives = string.format('%s?',players.extra_lives) end
+    if players.type == 18 or players.type == 36 then -- Bethany/T.Bethany check
+        if players.type == 18 then
+            players.bethany_charge = player:GetSoulCharge()
+        else
+            players.bethany_charge = player:GetBloodCharge()
+        end
+    end
+    ---
     players.first_row_offset = coopHUD.renderActiveItems(players)
     players.hearts_offset = coopHUD.renderHearts(players)
     coopHUD.renderExtraLives(players)
