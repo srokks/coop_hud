@@ -571,6 +571,7 @@ function coopHUD.renderHearts(player_table)
     return offset
 end
 function coopHUD.getPlayer(player)
+    -- TODO: Course of uknown heart render
     local sub
     local players = {}
     players.name = 'P1' -- Todo: get name from config
@@ -661,16 +662,24 @@ function coopHUD.renderPlayer(player_no,anchor)
         players.has_sub = true
     end
     ---
+    if player:GetPlayerType() == 19 then -- Jacob/Essau check
+        --TODO: Jacob/Essau: make player_num+1-> render second in oposite corner/ restrict only when 1
+        players.has_sub = true
+    end
+---
     players.first_row_offset = coopHUD.renderActiveItems(players)
 
     ---
     if players.has_sub then
-        sub = player:GetSubPlayer()
-        sub_table = coopHUD.getPlayer(sub)
-        sub_table.first_row_offset = players.first_row_offset
-        sub_table.anchor = anchor
-        sub_table.is_sub = true
-        coopHUD.renderHearts(sub_table)
+        if  player:GetPlayerType() == 16 or player:GetPlayerType() == 17 then -- Forgotten/Soul check
+            sub = player:GetSubPlayer()
+            sub_table = coopHUD.getPlayer(sub)
+            sub_table.first_row_offset = players.first_row_offset
+            sub_table.anchor = anchor
+            sub_table.is_sub = true
+            coopHUD.renderHearts(sub_table)
+        end
+
     end
     players.hearts_offset = coopHUD.renderHearts(players)
     coopHUD.renderExtraLives(players)
@@ -684,6 +693,65 @@ function coopHUD.renderPlayer(player_no,anchor)
     --pos.Y = pos.Y + trinket_offset.Y
     --print(trinket_offset)
     --players.pocket_charge:Render(Vector(100,100),VECTOR_ZERO,VECTOR_ZERO)
+end
+function coopHUD.checkDeepPockets()
+    local deep_check = false
+    local player_no = Game():GetNumPlayers()-1
+    for i=0,player_no,1 do
+        local deep = Isaac.GetPlayer(i):HasCollectible(416)
+        if  deep  then
+            deep_check = true
+        end
+    end
+    return deep_check
+end
+function coopHUD.renderItems(anchor)
+    local pos = Vector(anchor.X - 12,anchor.Y)
+    local Anim = "gfx/ui/hudpickups.anm2"
+    local coin_no,bomb_no,key_no = 0
+
+    --,key_sprite
+
+    local f = Font()
+    f:Load("font/luaminioutlined.fnt")
+
+    local color = KColor(1,1,1,1)
+    local player = Isaac.GetPlayer(0)
+    local coin_sprite= Sprite()
+    local has_deep_pockets = false
+    coin_no = Isaac.GetPlayer(0):GetNumCoins()
+    pos.X = pos.X - 24
+    coin_sprite:Load(Anim,true)
+    coin_sprite:SetFrame('Idle', 0)
+    coin_no = string.format("%.2i", coin_no)
+    if coopHUD.checkDeepPockets() then
+        pos.X = pos.X - 4
+        coin_no = string.format("%.3i", coin_no) end
+    coin_sprite:Render(pos,VECTOR_ZERO,VECTOR_ZERO)
+
+
+    f:DrawString(coin_no,pos.X+16,pos.Y,color,0,true)
+
+    --
+    local pos = Vector(anchor.X - 12,anchor.Y)
+    local bomb_sprite = Sprite()
+    bomb_sprite:Load(Anim,true)
+    bomb_sprite:SetFrame('Idle',2)
+    if player:HasGoldenBomb()  then bomb_sprite:SetFrame('Idle',6) end
+    bomb_sprite:Render(pos,VECTOR_ZERO,VECTOR_ZERO)
+    bomb_no = player:GetNumBombs()
+    bomb_no = string.format("%.2i", bomb_no)
+    f:DrawString(bomb_no,pos.X+16,pos.Y,color,0,true)
+    --
+    pos.X = pos.X + 24
+    local key_sprite = Sprite()
+    key_sprite:Load(Anim,true)
+    key_sprite:SetFrame('Idle',1)
+    if player:HasGoldenKey()  then key_sprite:SetFrame('Idle',3 ) end
+    key_sprite:Render(pos,VECTOR_ZERO,VECTOR_ZERO)
+    key_no = player:GetNumKeys()
+    key_no = string.format("%.2i", key_no)
+    f:DrawString(key_no,pos.X+16,pos.Y,color,0,true)
 end
 function coopHUD.getMinimapOffset()
     -- Modified function from minimap_api by Wolfsauge
@@ -728,12 +796,15 @@ function coopHUD.render()
     anchor_bottom_left = ScreenHelper.GetScreenBottomLeft()
     anchor_top_right = ScreenHelper.GetScreenTopRight()
     anchor_bottom_right = ScreenHelper.GetScreenBottomRight()
+    anchor_middle_bottom = ScreenHelper.GetScreenCenter()
     --coopHUD.renderPlayer(0,anchor_top_left)
     --coopHUD.renderPlayer(0,anchor_bottom_left)
     coopHUD.renderPlayer(0,anchor_top_right)
-    coopHUD.renderPlayer(0,anchor_bottom_right)
-    --Game():GetHUD():SetVisible(true)
-    Game():GetHUD():SetVisible(false)
+    coopHUD.renderItems(Vector(ScreenHelper.GetScreenSize().X/2,anchor_bottom_left.Y-16))
+    --coopHUD.renderPlayer(0,anchor_bottom_right)
+
+    Game():GetHUD():SetVisible(true)
+    --Game():GetHUD():SetVisible(false)
 end
 
 coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.render)
