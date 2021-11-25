@@ -2,7 +2,11 @@ coopHUD = RegisterMod("Coop HUD", 1)
 local json = require("json")
 local MinimapAPI = require("scripts.minimapapi")
 local SHExists, ScreenHelper = pcall(require, "scripts.screenhelper")
-
+local  anchor_top_left = ScreenHelper.GetScreenTopLeft()
+local anchor_bottom_left = ScreenHelper.GetScreenBottomLeft()
+local anchor_top_right = ScreenHelper.GetScreenTopRight()
+local anchor_bottom_right = ScreenHelper.GetScreenBottomRight()
+local anchor_middle_bottom = ScreenHelper.GetScreenCenter()
 function coopHUD.getActiveItemSprite(player,slot)
     local Anim = "gfx/ui/item.anm2"
     local overlay = ''
@@ -343,19 +347,20 @@ function coopHUD.renderActiveItems(player_table)
     local anchor = player_table.anchor
     local offset = Vector(0,0)
     local off = Vector(0,0)
-    if anchor == anchor_top_left then
+    if anchor.X == anchor_top_left.X and anchor.Y == anchor_top_left.Y then
         pos = Vector(anchor.X + 20,anchor.Y+16)
         off.X = 12
         off.Y = 36
-    elseif anchor == anchor_bottom_left then
+    elseif anchor.X == anchor_bottom_left.X and anchor.Y == anchor_bottom_left.Y  then
+        print(anchor , anchor_bottom_left,anchor.X == anchor_bottom_left.X and anchor.Y == anchor_bottom_left.Y)
         pos = Vector(anchor.X + 20,anchor.Y-16)
         off.X = 12
         off.Y = -42
-    elseif anchor == anchor_top_right then
+    elseif anchor.X == anchor_top_right.X and anchor.Y == anchor_top_right.Y then
         pos = Vector(coopHUD.getMinimapOffset().X,anchor.Y+16)
         off.X = 12
         off.Y = 36
-    elseif anchor == anchor_bottom_right then
+    elseif anchor.X == anchor_bottom_right.X and anchor.Y == anchor_bottom_right.Y then
         pos = Vector(anchor.X - 24,anchor.Y-16)
         off.X = -12
         off.Y = -42
