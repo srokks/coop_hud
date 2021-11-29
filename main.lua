@@ -1,12 +1,12 @@
 coopHUD = RegisterMod("Coop HUD", 1)
-local json = require("json")
-local MinimapAPI = require("scripts.minimapapi")
-local SHExists, ScreenHelper = pcall(require, "scripts.screenhelper")
-anchor_top_left = ScreenHelper.GetScreenTopLeft()
-anchor_bottom_left = ScreenHelper.GetScreenBottomLeft()
-anchor_top_right = ScreenHelper.GetScreenTopRight()
-anchor_bottom_right = ScreenHelper.GetScreenBottomRight()
-anchor_middle_bottom = ScreenHelper.GetScreenCenter()
+
+local game_table = {
+    coins_no = 0;
+    bomb_no = 0;
+    angel_chance = 0;
+    devil_chance = 0;
+    planetarium_chance = 0;
+}
 function coopHUD.getActiveItemSprite(player,slot)
     local Anim = "gfx/ui/item.anm2"
     local overlay = ''
@@ -146,7 +146,6 @@ end
 function coopHUD.getMainPocketDesc(player)
     desc = 'Error'
     if player:GetPill(0) < 1 and player:GetCard(0) < 1 then
-        if REPENTANCE == false then return false end
         if player:GetActiveItem(2) > 0 then
             desc = Isaac.GetItemConfig():GetCollectible(player:GetActiveItem(2)).Name
         elseif player:GetActiveItem(3) > 0 then
@@ -343,587 +342,72 @@ function coopHUD.getHeartSpriteTable(player)
     end
     return heart_sprites
 end
-function coopHUD.renderActiveItems(player_table)
-    local anchor = player_table.anchor
-    local offset = Vector(0,0)
-    local off = Vector(0,0)
-    player_table.first_active:Render(Vector(100,100),VECTOR_ZERO,VECTOR_ZERO)
-    if anchor.X == anchor_top_left.X and anchor.Y == anchor_top_left.Y then
-        pos = Vector(anchor.X + 20,anchor.Y+16)
-        off.X = 12
-        off.Y = 36
-    elseif anchor.X == anchor_bottom_left.X and anchor.Y == anchor_bottom_left.Y  then
-        pos = Vector(anchor.X + 20,anchor.Y-16)
-        off.X = 12
-        off.Y = -42
-    elseif anchor.X == anchor_top_right.X and anchor.Y == anchor_top_right.Y then
-        pos = Vector(coopHUD.getMinimapOffset().X,anchor.Y+16)
-        off.X = 12
-        off.Y = 36
-    elseif anchor.X == anchor_bottom_right.X and anchor.Y == anchor_bottom_right.Y then
-        pos = Vector(anchor.X - 24,anchor.Y-16)
-        off.X = -12
-        off.Y = -42
-    end
-
-    if player_table.first_active or player_table.second_active then
-        if anchor.X == anchor_top_left.X and anchor.Y == anchor_top_left.Y then
-            off.X = 48
-        elseif anchor.X == anchor_bottom_left.X and anchor.Y == anchor_bottom_left.Y  then
-            off.X = 48
-        elseif anchor.X == anchor_top_right.X and anchor.Y == anchor_top_right.Y then
-            off.X = - 20
-        elseif anchor.X == anchor_bottom_right.X and anchor.Y == anchor_bottom_right.Y then
-            off.X = -48
-        end
-        if player_table.second_active then -- First item charge render
-            player_table.second_active.Scale = Vector(0.5,0.5)
-            player_table.second_active:Render(Vector(pos.X - 16,pos.Y - 8), vector_zero, vector_zero)
-        end
-        if player_table.se_charge then -- Second item charge render -- UGLY - can turn on
-            --player_table.se_charge.Scale = Vector(0.5,0.5)
-            --player_table.se_charge:Render(Vector(pos.X - 15,pos.Y - 9), vector_zero, vector_zero)
-        end
-        if player_table.first_active then
-            player_table.first_active:Render(pos,VECTOR_ZERO,VECTOR_ZERO)
-        end
-        pos.X = pos.X + 17
-        if player_table.fi_charge then
-            player_table.fi_charge:Render(pos, VECTOR_ZERO, VECTOR_ZERO)
-        end
-    end
-    offset.X = offset.X + off.X
-    offset.Y = offset.Y + off.Y
-    return offset
+function coopHUD:player_joined()
+    coopHUD.init()
 end
-function coopHUD.renderTrinkets(player_table)
-    local mirrored = false
-    local anchor = Vector(player_table.anchor.X,player_table.anchor.Y)
-    local off = 0
-    print(anchor,"active off:",player_table.active_item_offset)
-     -- TODO: first line offset
-    local trinket_offset = Vector(0,0)
-    local scale = Vector(0.5,0.5)
-    if anchor.X == anchor_top_left.X and anchor.Y == anchor_top_left.Y then
-        pos = Vector(anchor.X+12,anchor.Y+ 8 +player_table.active_item_offset.Y)
-        off = 24
-    elseif anchor.X == anchor_bottom_left.X and anchor.Y == anchor_bottom_left.Y  then
-        pos = Vector(anchor.X + 12,anchor.Y - 10 + player_table.active_item_offset.Y)
-        off = -20
-    elseif anchor.X == anchor_top_right.X and anchor.Y == anchor_top_right.Y then
-        pos = Vector(coopHUD.getMinimapOffset().X+12,anchor.Y+ 8 +player_table.active_item_offset.Y)
-        anchor.Y  = anchor.Y + player_table.active_item_offset.Y
-        mirrored = true
-        off = 24
-    elseif anchor.X == anchor_bottom_right.X and anchor.Y == anchor_bottom_right.Y then
-        pos = Vector(anchor.X - 12,anchor.Y - 10 + player_table.active_item_offset.Y)
-        mirrored = true
-        off = -20
-    end
-    if player_table.first_trinket then
-        if player_table.second_trinket then
-            if mirrored then pos = Vector(pos.X-16,pos.Y) end-- if has trinket 2
-        else
-            pos = Vector(pos.X,pos.Y)
-            scale = Vector(0.7,0.7) -- makes trinket bigger
-        end
-        player_table.first_trinket.Scale = scale
-        player_table.first_trinket:Render(pos,VECTOR_ZERO,VECTOR_ZERO)
-        pos = Vector(pos.X+16,pos.Y)
-        trinket_offset.Y = trinket_offset.Y + off
-    end
-    if player_table.second_trinket then
-        player_table.second_trinket.Scale = scale
-        player_table.second_trinket:Render(pos,vector_zero,vector_zero)
-    end
-    return trinket_offset
-end
-function coopHUD.renderPockets(player_table)
-    local scale = Vector(1,1)
-    local anchor = player_table.anchor
-    local off = 0
-    local desc_off = Vector(0,0)
-    anchor.Y = anchor.Y + player_table.sec_row_offset.Y
-    if anchor.X == anchor_top_left.X and anchor.Y == anchor_top_left.Y then
-        pos = Vector(anchor.X + 12 ,anchor.Y + 12 )
-        off = 16
-        desc_off = Vector(2,4)
-    elseif anchor == anchor_bottom_left then
-        pos = Vector(anchor.X+12,anchor.Y-12)
-        off = 16
-        desc_off = Vector(2,4)
-    elseif anchor == anchor_top_right then
-        pos = Vector(coopHUD.getMinimapOffset().X+8,anchor.Y+12)
-        off = -16
-        desc_off = Vector(-50,0)
-        if string.len(desc) > 12 then
-            player_table.main_pocket_desc = string.format("%.9s...",player_table.main_pocket_desc)
-        end
-    elseif anchor == anchor_bottom_right then
-        pos = Vector(anchor.X-16,anchor.Y-12)
-        desc_off = Vector(-50,4)
-        if string.len(desc) > 12 then
-            player_table.main_pocket_desc = string.format("%.9s...",player_table.main_pocket_desc)
-        end
-    end
-    ------third pocket
-    scale = Vector(0.5,0.5)
-    if player_table.third_pocket then
-        if player_table.third_pocket:GetDefaultAnimation() ~= 'Idle' then
-            player_table.third_pocket.Scale = scale
-            player_table.third_pocket:Render(Vector(pos.X + (2 * off),pos.Y), vector_zero, vector_zero)
-        else
-            if player_table.main_pocket:GetDefaultAnimation() ~= 'Idle' and player_table.second_pocket :GetDefaultAnimation() ~= 'Idle' then
-                player_table.second_pocket.Scale = scale
-                player_table.second_pocket:Render(Vector(pos.X+(2 * off),pos.Y), vector_zero, vector_zero)
-            end
-        end
-    end
-    ----second_pocket
-    scale = Vector(0.5,0.5)
-    if player_table.second_pocket then
-        if player_table.main_pocket:GetDefaultAnimation() ~= 'Idle' or player_table.third_pocket:GetDefaultAnimation() ~= 'Idle' then
-            player_table.second_pocket.Scale = scale
-            player_table.second_pocket:Render(Vector(pos.X+off,pos.Y ), vector_zero, vector_zero)
-        end
-        if player_table.second_pocket:GetDefaultAnimation() == 'Idle' then
-            scale = Vector(0.3,0.3 )
-            --local pocket_charge  = renderPlayer.getItemChargeSprite(player,2)
-            --if pocket_charge then
-            --    if main_pocket:GetDefaultAnimation() ~= 'Idle' or second_pocket:GetDefaultAnimation() ~= 'Idle' then
-            --        pocket_charge.Scale = scale
-            --        pocket_charge:Render(Vector(pos.X+34,pos.Y+2), vector_zero, vector_zero)
-            --
-            --
-            --    end
-            --end
-        end
-    end
-    -- Main pocket
-    if player_table.main_pocket then
-        scale = Vector(0.7,0.7)
-        player_table.main_pocket.Scale = scale
-        player_table.main_pocket:Render(pos, VECTOR_ZERO, VECTOR_ZERO)
-        ---- main_pocket charge
-        if player_table.main_pocket:GetDefaultAnimation() == 'Idle' then
-            scale = Vector(0.5,0.5)
-            if player_table.pocket_charge then
-                player_table.pocket_charge.Scale = scale
-                player_table.pocket_charge:Render(Vector(pos.X+12,pos.Y+2), vector_zero, vector_zero)
-            end
-        end
-        local f = Font()
-        f:Load("font/luaminioutlined.fnt")
-        local color = player_table.f_color -- TODO: sets according to player color
-        if player_table.main_pocket_desc then
-            f:DrawString (player_table.main_pocket_desc,pos.X+desc_off.X,pos.Y+desc_off.Y ,color,0,true) end
-    end
-
-
-end
-function coopHUD.renderHearts(player_table)
-    local max_health_cap = 12
-    local n = 3 -- No. of rows
-    local m = math.floor(max_health_cap/n)  -- No.
-    local anchor = player_table.anchor
-    local mirrored = false
-    local offset = Vector(0,0)
-    local off = Vector(0,0)
-    local col_count = player_table.player_total_health % m
-    if player_table.player_total_health > 3 then
-        col_count = 4
-    end
-    if anchor.X == anchor_top_left.X and anchor.Y == anchor_top_left.Y then
-        pos = Vector(anchor.X + player_table.active_item_offset.X ,anchor.Y+8)
-        offset.X = offset.X + (8 * col_count)
-        off.Y = 0
-    elseif anchor.X == anchor_bottom_left.X and anchor.Y == anchor_bottom_left.Y  then
-        pos = Vector(anchor.X+ player_table.active_item_offset.X,anchor.Y - 32)
-        offset.X = offset.X + (8 * col_count)
-        off.Y = 0
-    elseif anchor.X == anchor_top_right.X and anchor.Y == anchor_top_right.Y then
-        pos = Vector(coopHUD.getMinimapOffset().X + player_table.active_item_offset.X,anchor.Y+8)
-        offset.X = offset.X - (8 * col_count)
-        off.Y = 0
-        pos.X = pos.X - (8 * col_count)
-    elseif anchor.X == anchor_bottom_right.X and anchor.Y == anchor_bottom_right.Y then
-        pos = Vector(anchor.X +player_table.active_item_offset.X ,anchor.Y - 32)
-        offset.X = offset.X - (8 * col_count)
-        off.Y = 0
-        pos.X = pos.X - (8 * col_count)
-    end
-    local counter = 0
-    local heart_space = 11
-    for row=0,n-1,1 do
-        for col=0,m-1,1 do
-
-            if player_table.hearts[counter] then
-                if player_table.is_sub then
-                    player_table.hearts[counter].Scale = Vector(0.7,0.7)
-                    player_table.hearts[counter].Color =Color(1, 1, 1, 0.5, 0, 0, 0)
-                end
-                temp_pos = Vector(pos.X + (heart_space * col),pos.Y + (heart_space * row))
-                player_table.hearts[counter]:Render(temp_pos,VECTOR_ZERO,VECTOR_ZERO)
-            end
-            counter = counter + 1
-        end
-    end
-    if player_table.has_sub then -- Sub player heart render
-        counter = 0
-        local temp_heart_space = 8
-        if anchor.Y == anchor_top_left.Y then
-            pos.Y = anchor.Y + 26
-        elseif anchor.Y == anchor_bottom_right.Y then
-            pos.Y = anchor.Y - 12
-        end
-
-        for row=0,n-1,1 do
-            for col=0,m-1,1 do
-                if player_table.sub_hearts[counter] then
-                    player_table.sub_hearts[counter].Scale = Vector(0.7,0.7)
-                    player_table.sub_hearts[counter].Color =Color(1, 1, 1, 0.5, 0, 0, 0)
-                    temp_pos = Vector(pos.X + (temp_heart_space * col),pos.Y + (temp_heart_space * row))
-                    player_table.sub_hearts[counter]:Render(temp_pos,VECTOR_ZERO,VECTOR_ZERO)
-                end
-                counter = counter + 1
-            end
-        end
-    end
-    offset.X = offset.X + player_table.active_item_offset.X
-    return offset
-end
-function coopHUD.getPlayer(player,player_no)
-    -- TODO: Course of uknown heart render
-    local sub
-    local char = {
-        name = nil,
-        type = nil,
-        f_color = nil,
-        player_total_health = 0,
-        anchor = Vector(0,0),
-        first_active = nil,
-        second_active = nil,
-        fi_charge = nil,
-        se_charge = nil,
-        second_trinket = nil,
-        main_pocket = nil,
-        pocket_charge = nil,
-        second_pocket = nil,
-        third_pocket = nil,
-        main_pocket_desc = nil,
-        hearts = nil,
-        extra_lives = nil,
-        extra_lives = nil,
+coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, coopHUD.player_joined)
+function coopHUD.updatePlayer(player_no)
+    local temp_player = Isaac.GetPlayer(player_no)
+    local player_table = {}
+    player_table = {
+        --
+        first_active = temp_player:GetActiveItem(0),
+        second_active = temp_player:GetActiveItem(1),
+        first_trinket = temp_player:GetTrinket(0),
+        second_trinket = temp_player:GetTrinket(1),
+        pocket_desc = coopHUD.getMainPocketDesc(temp_player),
+        extra_lives = temp_player:GetExtraLives(),
+        bethany_charge = 0, -- inits charge for Bethany
+        ---
+        type = temp_player:GetPlayerType(),
+        ---
         has_sub = false,
-        is_sub = false,
-        active_item_offset = Vector(0,0),
-        hearts_offset = Vector(0,0),
-        sub_hearts = nil,
-        sec_row_offset = Vector(0,0)
-
+        ---
+        sprites = {
+            first_active = coopHUD.getActiveItemSprite(temp_player,0),
+            first_active_charge = coopHUD.getItemChargeSprite(temp_player,0),
+            second_active = coopHUD.getActiveItemSprite(temp_player,1),
+            first_trinket = coopHUD.getTrinketSprite(temp_player,0),
+            second_trinket = coopHUD.getTrinketSprite(temp_player,1),
+            first_pocket = coopHUD.getPocketItemSprite(temp_player,0),
+            second_pocket = coopHUD.getPocketItemSprite(temp_player,1),
+            third_pocket = coopHUD.getPocketItemSprite(temp_player,2),
+            hearts = coopHUD.getHeartSpriteTable(temp_player),
+            sub_hearts = nil
+        },
     }
-    char.name = coopHUD.players_config[player_no].name -- Gets name from config
-    char.type = player:GetPlayerType()
-    char.f_color = coopHUD.players_config[player_no].f_color -- Gets font color from config
-    char.player_total_health = math.ceil((player:GetEffectiveMaxHearts() + player:GetSoulHearts())/2)
-    char.anchor = coopHUD.players_config[player_no].anchor
-    char.first_active = coopHUD.getActiveItemSprite(player,0)
-    char.second_active = coopHUD.getActiveItemSprite(player,1)
-    char.fi_charge = coopHUD.getItemChargeSprite(player,0)
-    char.se_charge = coopHUD.getItemChargeSprite(player,1)
-    char.first_trinket = coopHUD.getTrinketSprite(player,0)
-    char.second_trinket = coopHUD.getTrinketSprite(player,1)
-    char.main_pocket = coopHUD.getPocketItemSprite(player,0)
-    char.pocket_charge = coopHUD.getItemChargeSprite(player,2)
-    char.second_pocket = coopHUD.getPocketItemSprite(player,1)
-    char.third_pocket = coopHUD.getPocketItemSprite(player,2)
-    char.main_pocket_desc = coopHUD.getMainPocketDesc(player)
-    char.hearts = coopHUD.getHeartSpriteTable(player)
-    char.extra_lives = player:GetExtraLives()
-    char.extra_lives = string.format('x%d',char.extra_lives )
-    char.first_row_offset = nil
-    if player:HasCollectible(212) then  char.extra_lives = string.format('%s?',char.extra_lives) end
-    if char.type == 18 or char.type == 36 then -- Bethany/T.Bethany check
-        if char.type == 18 then
-            char.bethany_charge = player:GetSoulCharge()
+    if player_table.type == 18 or player_table.type == 36 then -- Bethany/T.Bethany check
+        if player_table.type == 18 then
+            player_table.bethany_charge = player:GetSoulCharge()
         else
-            char.bethany_charge = player:GetBloodCharge()
+            player_table.bethany_charge = player:GetBloodCharge()
         end
     end
-    if  player:GetPlayerType() == 16 or player:GetPlayerType() == 17 then -- Forgotten/Soul check
-        char.has_sub = true
+    if  player_table.type == 16 or player_table.type == 17 then -- Forgotten/Soul check
+        player_table.has_sub = true
         local sub = player:GetSubPlayer()
-        char.sub_hearts = coopHUD.getHeartSpriteTable(sub)
+        player_table.sub_hearts = coopHUD.getHeartSpriteTable(sub)
     end
-    if player:GetPlayerType() == 19 then -- Jacob/Essau check
+    if player_table:GetPlayerType() == 19 then -- Jacob/Essau check
         --TODO: Jacob/Essau: make player_num+1-> render second in oposite corner/ restrict only when 1
         --players.has_sub = true
     end
-    return char
-end
-function coopHUD.renderExtraLives(player_table)
-    -- TODO:
-    local anchor = player_table.anchor
-    if anchor.X == anchor_top_left.X and anchor.Y == anchor_top_left.Y then
-        pos = Vector(anchor.X+12,anchor.Y+2)
-    elseif anchor.X == anchor_bottom_left.X and anchor.Y == anchor_bottom_left.Y  then
-        pos = Vector(anchor.X+12,anchor.Y-20)
-    elseif anchor.X == anchor_top_right.X and anchor.Y == anchor_top_right.Y then
-        pos = Vector(coopHUD.getMinimapOffset().X-24,anchor.Y+2)
-    elseif anchor.X == anchor_bottom_right.X and anchor.Y == anchor_bottom_right.Y then
-        pos = Vector(anchor.X-24,anchor.Y-24)
-    end
-    if player_table.extra_lives ~= 'x0' then
-        local f = Font()
-        f:Load("font/luaminioutlined.fnt")
-        f:DrawString (player_table.extra_lives,pos.X+player_table.hearts_offset.X,pos.Y,player_table.f_color,0,true)
-    end
-end
-function coopHUD.renderBethanyCharge(player_table)
-    -- TODO:
-    local anchor = player_table.anchor
-    if anchor.X == anchor_top_left.X and anchor.Y == anchor_top_left.Y then
-        pos = Vector(anchor.X+14,anchor.Y+2)
-    elseif anchor.X == anchor_bottom_left.X and anchor.Y == anchor_bottom_left.Y  then
-        pos = Vector(anchor.X+16,anchor.Y-2)
-    elseif anchor.X == anchor_top_right.X and anchor.Y == anchor_top_right.Y then
-        pos = Vector(coopHUD.getMinimapOffset().X-26,anchor.Y+2)
-    elseif anchor.X == anchor_bottom_right.X and anchor.Y == anchor_bottom_right.Y then
-        pos = Vector(anchor.X-24,anchor.Y-2)
-    end
-    local heart_sprite = Sprite()
-    if player_table.type == 18 then
-        heart_sprite = coopHUD.getHeartSprite('BlueHeartFull','None')
-    else
-        heart_sprite = coopHUD.getHeartSprite('RedHeartFull','None')
-    end
-    heart_sprite.Scale = Vector(0.6,0.6)
-    heart_sprite:Render(Vector(pos.X+player_table.hearts_offset.X,pos.Y),VECTOR_ZERO,VECTOR_ZERO)
-    local f = Font()
-    local bethany_charge = string.format('x%d',player_table.bethany_charge)
-    f:Load("font/luaminioutlined.fnt")
-    f:DrawString (bethany_charge,pos.X+player_table.hearts_offset.X+6,pos.Y-9,player_table.f_color,0,true)
-end
-function coopHUD.renderPlayer(player_num)
-    --print(player_num,coopHUD.players_table[player_num].first_active)
-    --coopHUD.players_table[player_num].first_active:Render(Vector(100,100),VECTOR_ZERO,VECTOR_ZERO)
-    coopHUD.players_table[player_num].active_item_offset = coopHUD.renderActiveItems(coopHUD.players_table[player_num])
-    ---
-    coopHUD.players_table[player_num].hearts_offset = coopHUD.renderHearts(coopHUD.players_table[player_num])
-    coopHUD.renderExtraLives(coopHUD.players_table[player_num])
-    if coopHUD.players_table[player_num].type == 18 or coopHUD.players_table[player_num].type == 36 then
-        coopHUD.renderBethanyCharge(coopHUD.players_table[player_num])
-    end
-    coopHUD.players_table[player_num].sec_row_offset = coopHUD.renderTrinkets(coopHUD.players_table[player_num])  --DEBUG
-    --coopHUD.renderPockets(coopHUD.players_table[player_num])  --DEBUG
-
-    --local pos = anchor
-    --pos.Y = pos.Y + trinket_offset.Y
-    --print(trinket_offset)
-    --players.pocket_charge:Render(Vector(100,100),VECTOR_ZERO,VECTOR_ZERO)
-end
-function coopHUD.checkDeepPockets()
-    local deep_check = false
-    local player_no = Game():GetNumPlayers()-1
-    for i=1,player_no,1 do
-        local deep = Isaac.GetPlayer(i):HasCollectible(416)
-        if  deep  then
-            deep_check = true
-        end
-    end
-    return deep_check
-end
-function coopHUD.renderItems(anchor)
-    local pos = Vector(anchor.X - 12,anchor.Y)
-    local Anim = "gfx/ui/hudpickups.anm2"
-    local coin_no,bomb_no,key_no = 0
-
-    --,key_sprite
-
-    local f = Font()
-    f:Load("font/luaminioutlined.fnt")
-
-    local color = KColor(1,1,1,1)
-    local player = Isaac.GetPlayer(0)
-    local coin_sprite= Sprite()
-    local has_deep_pockets = false
-    coin_no = Isaac.GetPlayer(0):GetNumCoins()
-    pos.X = pos.X - 24
-    coin_sprite:Load(Anim,true)
-    coin_sprite:SetFrame('Idle', 0)
-    coin_no = string.format("%.2i", coin_no)
-    if coopHUD.checkDeepPockets() then
-        pos.X = pos.X - 4
-        coin_no = string.format("%.3i", coin_no) end
-    coin_sprite:Render(pos,VECTOR_ZERO,VECTOR_ZERO)
-
-
-    f:DrawString(coin_no,pos.X+16,pos.Y,color,0,true)
-
-    --
-    local pos = Vector(anchor.X - 12,anchor.Y)
-    local bomb_sprite = Sprite()
-    bomb_sprite:Load(Anim,true)
-    bomb_sprite:SetFrame('Idle',2)
-    if player:HasGoldenBomb()  then bomb_sprite:SetFrame('Idle',6) end
-    bomb_sprite:Render(pos,VECTOR_ZERO,VECTOR_ZERO)
-    bomb_no = player:GetNumBombs()
-    bomb_no = string.format("%.2i", bomb_no)
-    f:DrawString(bomb_no,pos.X+16,pos.Y,color,0,true)
-    --
-    pos.X = pos.X + 24
-    local key_sprite = Sprite()
-    key_sprite:Load(Anim,true)
-    key_sprite:SetFrame('Idle',1)
-    if player:HasGoldenKey()  then key_sprite:SetFrame('Idle',3 ) end
-    key_sprite:Render(pos,VECTOR_ZERO,VECTOR_ZERO)
-    key_no = player:GetNumKeys()
-    key_no = string.format("%.2i", key_no)
-    f:DrawString(key_no,pos.X+16,pos.Y,color,0,true)
-end
-function coopHUD.getMinimapOffset()
-    -- Modified function from minimap_api by Wolfsauge
-    local minimap_offset = ScreenHelper.GetScreenTopRight()
-    local screen_size = ScreenHelper.GetScreenTopRight()
-    local is_large = MinimapAPI:IsLarge()
-    if not is_large and MinimapAPI:GetConfig("DisplayMode") == 2 then -- BOUNDED MAP
-        minimap_offset = Vector(screen_size.X - MinimapAPI:GetConfig("MapFrameWidth") - MinimapAPI:GetConfig("PositionX") - 24,2)
-    elseif not is_large and MinimapAPI:GetConfig("DisplayMode") == 4 then -- NO MAP
-        minimap_offset = Vector(screen_size.X - 24,2)
-    else -- LARGE
-        local minx = screen_size.X
-        for i,v in ipairs(MinimapAPI:GetLevel()) do
-            if v ~= nil then
-                if v:GetDisplayFlags() > 0 then
-                    minx = math.min(minx, v.RenderOffset.X)
-                end
-            end
-
-        end
-        minimap_offset = Vector(minx-24,2) -- Small
-    end
-    --if MinimapAPI:GetConfig('ShowLevelFlags') then
-    --    minimap_offset.X = minimap_offset.X - 16
-    --end
-    if MinimapAPI:GetConfig("Disable") or MinimapAPI.Disable then minimap_offset = Vector(screen_size.X - 24,2)  end
-    local r = MinimapAPI:GetCurrentRoom()
-    if MinimapAPI:GetConfig("HideInCombat") == 2 then
-        if not r:IsClear() and r:GetType() == RoomType.ROOM_BOSS then
-            minimap_offset = Vector(screen_size.X - 24,2)
-        end
-    elseif MinimapAPI:GetConfig("HideInCombat") == 3 then
-        if not r:IsClear() then
-            minimap_offset = Vector(screen_size.X - 24,2)
-        end
-    end
-    return minimap_offset
-end
-render_coop_hud = true
-force_on_sp = false
---player_config =  {}
---player_config[0].color = Color(1,1,1,1)
---player_config[0].anchor = Vector(0,0)
-local MCM = require("scripts.modconfig")
-MCM.AddSpace("COOP HUD", "HUD")
-MCM.AddSetting("COOP HUD", "HUD", {
-    Type = MCM.OptionType.BOOLEAN,
-    CurrentSetting = function()
-        return force_on_sp
-    end,
-    Display = function()
-        if force_on_sp == true then
-            return "Force on SP: On"
-        else
-            return "Force on SP: Off"
-        end
-    end,
-    OnChange = function(value)
-        render_coop_hud = value
-    end,
-    Info = {
-        "Force to render COOP HUD on singleplayer run"
-    }
-})
-
-
-coopHUD.players_config =  {}
-coopHUD.players_config[1] ={
-    name = 'P1',
-    anchor = ScreenHelper.GetScreenTopLeft(),
-    f_color = KColor(1,0.2,0.2,1)
-}
-coopHUD.players_config[2] ={
-    name = 'P2',
-    anchor = ScreenHelper.GetScreenTopRight(),
-    f_color = KColor(1,0.2,0.2,1)
-}
-coopHUD.players_config[3] ={
-    name = 'P3',
-    anchor = ScreenHelper.GetScreenBottomLeft(),
-    f_color = KColor(1,0.2,0.2,1)
-}
-coopHUD.players_config[4] ={
-    name = 'P4',
-    anchor = ScreenHelper.GetScreenBottomRight(),
-    f_color = KColor(1,0.2,0.2,1)
-}
-
-
-coopHUD.players_table = {}
-function coopHUD:player_joined()
-     players_no = Game():GetNumPlayers()
-    if players_no > 0 then
-        render_coop_hud = true
-    end
-    for i = 1,2,1 do
-        local player_obj = Isaac.GetPlayer(0)
-        coopHUD.players_table[i] = coopHUD.getPlayer(player_obj,i)
-    end
+    coopHUD.players[player_no] = player_table
 end
 
-function coopHUD.render()
-    if render_coop_hud then
-        for i = 1,2,1 do
-            local player_obj = Isaac.GetPlayer(0)
-            coopHUD.players_table[i] = coopHUD.getPlayer(player_obj,i)
-        end
-        anchor_top_left = ScreenHelper.GetScreenTopLeft()
-        anchor_bottom_left = ScreenHelper.GetScreenBottomLeft()
-        anchor_top_right = ScreenHelper.GetScreenTopRight()
-        anchor_bottom_right = ScreenHelper.GetScreenBottomRight()
-        anchor_middle_bottom = ScreenHelper.GetScreenCenter()
-        for i=1,2,1 do
-            --print(coopHUD.players_table.name)
-            coopHUD.renderPlayer(i)
-        end
-        Game():GetHUD():SetVisible(false)
-    else
-        Game():GetHUD():SetVisible(true)
+local players_no = 0
+coopHUD.players = {}
+counter = 0
+function coopHUD.init()
+    players_no = Game():GetNumPlayers()-1
+    for i=0,players_no,1 do
+        coopHUD.updatePlayer(i)
     end
-
-
-    --for i = 0,2,1 do
-    --    coopHUD.renderPlayer(i)
-    --end
-
-    --if render_coop_hud then
-
-
-
-    --coopHUD.renderPlayer(0,anchor_top_left)
-    --coopHUD.renderPlayer(0,anchor_bottom_left)
-    --coopHUD.renderPlayer(0,anchor_top_right)
-    --coopHUD.renderPlayer(0,anchor_bottom_right)
-
-
-    coopHUD.renderItems(Vector(ScreenHelper.GetScreenSize().X/2,ScreenHelper.GetScreenBottomLeft().Y-16))
-    --Game():GetHUD():SetVisible(false)
-    --else
-    --    Game():GetHUD():SetVisible(true)
-    --end
-    --
-    --
 end
+coopHUD.init()
+debug_player = Isaac.GetPlayer(0)
 
-coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, coopHUD.player_joined)
+function  coopHUD.render()
+
+end
 coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.render)
