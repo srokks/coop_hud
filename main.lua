@@ -109,6 +109,24 @@ function coopHUD.getTrinketSprite(player, trinket_pos)
     thissprite:SetFrame("Idle", 0)
     return thissprite
 end
+function coopHUD.getPocketID(temp_player,slot)
+    local pocket_id = 0
+    local pocket_type = 0 -- 0 - none, 1 - card, 2 - pill, 3 - item
+    if temp_player:GetCard(slot) > 0 then
+        pocket_id = temp_player:GetCard(slot)
+        pocket_type = 1
+    elseif temp_player:GetPill(slot) > 0 then
+        pocket_id = temp_player:GetPill(slot)
+        pocket_type = 2
+    elseif temp_player:GetActiveItem(2) > 0 then
+        pocket_id = temp_player:GetActiveItem(2)
+        pocket_type = 3
+    elseif  temp_player:GetActiveItem(3) > 0 then
+        pocket_id = temp_player:GetActiveItem(3)
+        pocket_type = 3
+    end
+    return {pocket_id,pocket_type}
+end
 function coopHUD.getPocketItemSprite(player,slot)
     -- cards/runes/
     local pocketcheck = player:GetCard(slot)
@@ -355,6 +373,9 @@ function coopHUD.updatePlayer(player_no)
         second_active = temp_player:GetActiveItem(1),
         first_trinket = temp_player:GetTrinket(0),
         second_trinket = temp_player:GetTrinket(1),
+        first_pocket = coopHUD.getPocketID(temp_player,0),
+        second_pocket = coopHUD.getPocketID(temp_player,1),
+        third_pocket = coopHUD.getPocketID(temp_player,2),
         pocket_desc = coopHUD.getMainPocketDesc(temp_player),
         extra_lives = temp_player:GetExtraLives(),
         bethany_charge = 0, -- inits charge for Bethany
@@ -396,7 +417,6 @@ function coopHUD.updatePlayer(player_no)
     end
     coopHUD.players[player_no] = player_table
 end
-
 local vector_zero = Vector(0,0)
 local top_left_anchor = ScreenHelper.GetScreenTopLeft()
 local bottom_left_anchor = ScreenHelper.GetScreenBottomLeft()
@@ -440,10 +460,21 @@ function coopHUD.renderPlayer(player_no)
     end
     ---- POCKETS RENDER
     local down_anchor = bottom_left_anchor
+    ------third pocket
+    scale = Vector(0.5,0.5)
+    if coopHUD.players[player_no].sprites.third_pocket then
+        coopHUD.players[player_no].sprites.third_pocket.Scale = Vector(0.7,0.7)
+        coopHUD.players[player_no].sprites.third_pocket:Render(Vector(down_anchor.X+64,down_anchor.Y-16), vector_zero, vector_zero)
+    end
+    -- Second pocket
+    if coopHUD.players[player_no].sprites.second_pocket then
+        coopHUD.players[player_no].sprites.second_pocket.Scale = Vector(0.7,0.7)
+        coopHUD.players[player_no].sprites.second_pocket:Render(Vector(down_anchor.X+48,down_anchor.Y-16), vector_zero, vector_zero)
+    end
+    -- Main pocket
     if coopHUD.players[player_no].sprites.first_pocket then
-        --scale = Vector(0.7,0.7)
         coopHUD.players[player_no].sprites.first_pocket:Render(Vector(down_anchor.X+16,down_anchor.Y-16), VECTOR_ZERO, VECTOR_ZERO)
-        ---- main_pocket charge
+        ---- Main pocket charge
         if coopHUD.players[player_no].sprites.first_pocket:GetDefaultAnimation() == 'Idle' then -- checks if item is not pill of card
             if coopHUD.players[player_no].sprites.first_pocket_charge then
                 coopHUD.players[player_no].sprites.first_pocket_charge:Render(Vector(down_anchor.X+34,down_anchor.Y-14), vector_zero, vector_zero)
@@ -452,8 +483,8 @@ function coopHUD.renderPlayer(player_no)
         local f = Font()
         f:Load("font/luaminioutlined.fnt")
         local color = KColor(1,1,1,1) -- TODO: sets according to player color
-        if player_table.main_pocket_desc then
-            f:DrawString (player_table.main_pocket_desc,anchor.X+48,anchor.Y - 16,color,0,true) end
+        if coopHUD.players[player_no].pocket_desc then
+            f:DrawString (coopHUD.players[player_no].pocket_desc,down_anchor.X+44,down_anchor.Y-16,color,0,true) end
     end
     --- TRINKET RENDER
 
@@ -482,6 +513,13 @@ function coopHUD.init()
 end
 coopHUD.init()
 debug_player = Isaac.GetPlayer(0)
+function coopHUD.updatePockets(player_no)
+    local temp_player = Isaac.GetPlayer(player_no)
+    if coopHUD.players[player_no].first_pocket ~= coopHUD.getPocketID(temp_player,0) then
+        coopHUD.players[player_no].first_pocket = coopHUD.getPocketID(temp_player,0)
+        coopHUD.players[player_no].sprites.first_pocket = coopHUD.getPocketItemSprite(temp_player,0)
+    end
+end
 function coopHUD.updateActives(player_no)
     local temp_player = Isaac.GetPlayer(player_no)
     if coopHUD.players[player_no].first_active ~= temp_player:GetActiveItem(0) then
@@ -507,6 +545,7 @@ end
 function  coopHUD.render()
     coopHUD.updateActives(0)
     coopHUD.updateTrinkets(0)
+    coopHUD.updatePockets(0)
     coopHUD.renderPlayer(0)
 end
 coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.render)
