@@ -129,37 +129,27 @@ function coopHUD.getPocketID(temp_player,slot)
 end
 function coopHUD.getPocketItemSprite(player,slot)
     -- cards/runes/
-    local pocketcheck = player:GetCard(slot)
-    local thissprite = Sprite()
-
-    if pocketcheck ~= 0 then
-        Anim = "gfx/ui/hud_card_coop.anm2"
-        thissprite:Load(Anim,true)
-        thissprite:SetFrame("CardFronts", pocketcheck) -- sets card frame
-
-        return thissprite
+    local pocket_sprite = Sprite()
+    local anim = ''
+    local pocket = coopHUD.getPocketID(player,slot)
+    local pocket_type = pocket[2]
+    local pocket_id = pocket[1]
+    if pocket_type == 1 then -- Card
+        anim = "gfx/ui/hud_card_coop.anm2"
+        pocket_sprite:Load(anim,true)
+        pocket_sprite:SetFrame("CardFronts", pocket_id) -- sets card frame
+    elseif pocket_type == 2 then -- Pill
+        if pocket_id > 2048 then pocket_id = pocket_id - 2048 end -- check if its horse pill and change id to normal
+        anim = "gfx/ui/hud_pills_coop.anm2"
+        pocket_sprite:Load(anim,true)
+        pocket_sprite:SetFrame("Pills", pocket_id) --sets frame to pills with correct id
+        return pocket_sprite
+    elseif pocket_type == 3 then
+        pocket_sprite = coopHUD.getActiveItemSprite(player,2)
     else
-        pocketcheck = player:GetPill(slot) -- checks if player has pill
-        if pocketcheck ~= 0 then
-            if pocketcheck > 2048 then pocketcheck = pocketcheck - 2048 end -- check if its horse pill and change id to normal
-            Anim = "gfx/ui/hud_pills_coop.anm2"
-            thissprite:Load(Anim,true)
-            thissprite:SetFrame("Pills", pocketcheck) --sets frame to pills with correct id
-            return thissprite
-        else
-            if player:GetActiveItem(2) > 0 or player:GetActiveItem(3) > 0 then
-                pocketitem = true -- do wyjebania
-                if player:GetActiveItem(2) > 0 then
-                    thissprite = coopHUD.getActiveItemSprite(player,2)
-                else
-                    thissprite = coopHUD.getActiveItemSprite(player,3)
-                end
-                return thissprite
-            else
-                return false
-            end
-        end
+        pocket_sprite = false
     end
+    return pocket_sprite
 end
 function coopHUD.getMainPocketDesc(player)
     desc = 'Error'
