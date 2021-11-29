@@ -509,6 +509,17 @@ function coopHUD.updatePockets(player_no)
         coopHUD.players[player_no].first_pocket = coopHUD.getPocketID(temp_player,0)
         coopHUD.players[player_no].sprites.first_pocket = coopHUD.getPocketItemSprite(temp_player,0)
     end
+    if coopHUD.players[player_no].second_pocket ~= coopHUD.getPocketID(temp_player,1) then
+        coopHUD.players[player_no].second_pocket = coopHUD.getPocketID(temp_player,1)
+        coopHUD.players[player_no].sprites.second_pocket = coopHUD.getPocketItemSprite(temp_player,1)
+    end
+    if coopHUD.players[player_no].third_pocket ~= coopHUD.getPocketID(temp_player,2) then
+        coopHUD.players[player_no].third_pocket = coopHUD.getPocketID(temp_player,2)
+        coopHUD.players[player_no].sprites.third_pocket = coopHUD.getPocketItemSprite(temp_player,2)
+    end
+    if coopHUD.players[player_no].pocket_desc ~= coopHUD.getMainPocketDesc(temp_player) then
+        coopHUD.players[player_no].pocket_desc = coopHUD.getMainPocketDesc(temp_player)
+    end
 end
 function coopHUD.updateActives(player_no)
     local temp_player = Isaac.GetPlayer(player_no)
