@@ -1,5 +1,5 @@
 coopHUD = RegisterMod("Coop HUD", 1)
-
+local SHExists, ScreenHelper = pcall(require, "scripts.screenhelper")
 local game_table = {
     coins_no = 0;
     bomb_no = 0;
@@ -367,9 +367,11 @@ function coopHUD.updatePlayer(player_no)
             first_active = coopHUD.getActiveItemSprite(temp_player,0),
             first_active_charge = coopHUD.getItemChargeSprite(temp_player,0),
             second_active = coopHUD.getActiveItemSprite(temp_player,1),
+            second_active_charge = coopHUD.getItemChargeSprite(temp_player,1),
             first_trinket = coopHUD.getTrinketSprite(temp_player,0),
             second_trinket = coopHUD.getTrinketSprite(temp_player,1),
             first_pocket = coopHUD.getPocketItemSprite(temp_player,0),
+            first_pocket_charge = coopHUD.getItemChargeSprite(temp_player,2),
             second_pocket = coopHUD.getPocketItemSprite(temp_player,1),
             third_pocket = coopHUD.getPocketItemSprite(temp_player,2),
             hearts = coopHUD.getHeartSpriteTable(temp_player),
@@ -378,9 +380,9 @@ function coopHUD.updatePlayer(player_no)
     }
     if player_table.type == 18 or player_table.type == 36 then -- Bethany/T.Bethany check
         if player_table.type == 18 then
-            player_table.bethany_charge = player:GetSoulCharge()
+            player_table.bethany_charge = temp_player:GetSoulCharge()
         else
-            player_table.bethany_charge = player:GetBloodCharge()
+            player_table.bethany_charge = temp_player:GetBloodCharge()
         end
     end
     if  player_table.type == 16 or player_table.type == 17 then -- Forgotten/Soul check
@@ -388,13 +390,86 @@ function coopHUD.updatePlayer(player_no)
         local sub = player:GetSubPlayer()
         player_table.sub_hearts = coopHUD.getHeartSpriteTable(sub)
     end
-    if player_table:GetPlayerType() == 19 then -- Jacob/Essau check
+    if player_table.type == 19 then -- Jacob/Essau check
         --TODO: Jacob/Essau: make player_num+1-> render second in oposite corner/ restrict only when 1
         --players.has_sub = true
     end
     coopHUD.players[player_no] = player_table
 end
 
+local vector_zero = Vector(0,0)
+local top_left_anchor = ScreenHelper.GetScreenTopLeft()
+local bottom_left_anchor = ScreenHelper.GetScreenBottomLeft()
+function coopHUD.renderPlayer(player_no)
+    local offset = Vector(0,0)
+    anchor = top_left_anchor
+    ----Render active item
+    if coopHUD.players[player_no].sprites.first_active or coopHUD.players[player_no].sprites.second_active then
+        offset = Vector(offset.X + 49,offset.Y+48)
+        if coopHUD.players[player_no].sprites.second_active then
+            coopHUD.players[player_no].sprites.second_active.Scale = Vector(0.5,0.5)
+            coopHUD.players[player_no].sprites.second_active.Scale = Vector(0.5,0.5)
+            coopHUD.players[player_no].sprites.second_active:Render(Vector(anchor.X + 8 ,anchor.Y + 8 ), vector_zero, vector_zero)
+        end
+        if coopHUD.players[player_no].sprites.second_active_charge then -- Second item charge render -- UGLY - can turn on
+            coopHUD.players[player_no].sprites.second_active_charge.Scale = Vector(0.5,0.5)
+            coopHUD.players[player_no].sprites.second_active_charge:Render(Vector(anchor.X +2,anchor.Y +8), vector_zero, vector_zero)
+        end
+        if coopHUD.players[player_no].sprites.first_active then
+            coopHUD.players[player_no].sprites.first_active:Render(Vector(anchor.X + 19,anchor.Y+16),VECTOR_ZERO,VECTOR_ZERO)
+        end
+        if coopHUD.players[player_no].sprites.first_active_charge then
+            coopHUD.players[player_no].sprites.first_active_charge:Render(Vector(anchor.X + 37,anchor.Y+17), VECTOR_ZERO, VECTOR_ZERO)
+        end
+    else offset.X = offset.X + 12
+    end
+    ----Render hearts
+    local n = 2 -- No. of rows
+    local m = math.floor(12/n)
+    local counter = 0
+    local heart_space = 11
+    pos = Vector(anchor.X+offset.X,anchor.Y+12)
+    for row=0,n-1,1 do
+        for col=0,m-1,1 do
+            if coopHUD.players[player_no].sprites.hearts[counter] then
+                temp_pos = Vector(pos.X + (heart_space * col),pos.Y + (heart_space * row))
+                coopHUD.players[player_no].sprites.hearts[counter]:Render(temp_pos,VECTOR_ZERO,VECTOR_ZERO)
+            end
+            counter = counter + 1
+        end
+    end
+    ---- POCKETS RENDER
+    local down_anchor = bottom_left_anchor
+    if coopHUD.players[player_no].sprites.first_pocket then
+        --scale = Vector(0.7,0.7)
+        coopHUD.players[player_no].sprites.first_pocket:Render(Vector(down_anchor.X+16,down_anchor.Y-16), VECTOR_ZERO, VECTOR_ZERO)
+        ---- main_pocket charge
+        if coopHUD.players[player_no].sprites.first_pocket:GetDefaultAnimation() == 'Idle' then -- checks if item is not pill of card
+            if coopHUD.players[player_no].sprites.first_pocket_charge then
+                coopHUD.players[player_no].sprites.first_pocket_charge:Render(Vector(down_anchor.X+34,down_anchor.Y-14), vector_zero, vector_zero)
+            end
+        end
+        local f = Font()
+        f:Load("font/luaminioutlined.fnt")
+        local color = KColor(1,1,1,1) -- TODO: sets according to player color
+        if player_table.main_pocket_desc then
+            f:DrawString (player_table.main_pocket_desc,anchor.X+48,anchor.Y - 16,color,0,true) end
+    end
+    --- TRINKET RENDER
+
+    --if coopHUD.players[player_no].sprites.first_trinket then
+    --    if coopHUD.players[player_no].sprites.second_trinket then
+    --        pos = Vector(trinket_anchor.X+16,trinket_anchor.Y-32)
+    --    else
+    --        pos = Vector(trinket_anchor.X+18,trinket_anchor.Y-20)
+    --    end
+    --    coopHUD.players[player_no].sprites.first_trinket:Render(pos,VECTOR_ZERO,VECTOR_ZERO)
+    --end
+    --if coopHUD.players[player_no].sprites.second_trinket then
+    --    pos = Vector(trinket_anchor.X+40,trinket_anchor.Y-16)
+    --    coopHUD.players[player_no].sprites.second_trinket:Render(pos,vector_zero,vector_zero)
+    --end
+end
 local players_no = 0
 coopHUD.players = {}
 counter = 0
@@ -402,12 +477,37 @@ function coopHUD.init()
     players_no = Game():GetNumPlayers()-1
     for i=0,players_no,1 do
         coopHUD.updatePlayer(i)
+        print('Initiated ',i,'Player')
     end
 end
 coopHUD.init()
 debug_player = Isaac.GetPlayer(0)
-
+function coopHUD.updateActives(player_no)
+    local temp_player = Isaac.GetPlayer(player_no)
+    if coopHUD.players[player_no].first_active ~= temp_player:GetActiveItem(0) then
+        coopHUD.players[player_no].first_active = temp_player:GetActiveItem(0)
+        coopHUD.players[player_no].second_active = temp_player:GetActiveItem(1)
+        coopHUD.players[player_no].sprites.first_active = coopHUD.getActiveItemSprite(temp_player,0)
+        coopHUD.players[player_no].sprites.first_active_charge = coopHUD.getItemChargeSprite(temp_player,0)
+        coopHUD.players[player_no].sprites.second_active = coopHUD.getActiveItemSprite(temp_player,1)
+        coopHUD.players[player_no].sprites.second_active_charge = coopHUD.getItemChargeSprite(temp_player,1)
+    end
+end
+function coopHUD.updateTrinkets(player_no)
+    local temp_player = Isaac.GetPlayer(player_no)
+    if coopHUD.players[player_no].first_trinket ~= temp_player:GetTrinket(0) then
+        coopHUD.players[player_no].first_trinket = temp_player:GetTrinket(0)
+        coopHUD.players[player_no].sprites.first_trinket = coopHUD.getTrinketSprite(temp_player,0)
+    end
+    if coopHUD.players[player_no].second_trinket ~= temp_player:GetTrinket(1) then
+        coopHUD.players[player_no].second_trinket = temp_player:GetTrinket(1)
+        coopHUD.players[player_no].sprites.second_trinket = coopHUD.getTrinketSprite(temp_player,1)
+    end
+end
 function  coopHUD.render()
-
+    coopHUD.updateActives(0)
+    coopHUD.updateTrinkets(0)
+    coopHUD.renderPlayer(0)
 end
 coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.render)
+Game():GetHUD():SetVisible(false)
