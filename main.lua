@@ -109,20 +109,28 @@ function coopHUD.getTrinketSprite(player, trinket_pos)
     thissprite:SetFrame("Idle", 0)
     return thissprite
 end
-function coopHUD.getPocketID(temp_player,slot)
+function coopHUD.getPocketID(player,slot)
     local pocket_id = 0
     local pocket_type = 0 -- 0 - none, 1 - card, 2 - pill, 3 - item
-    if temp_player:GetCard(slot) > 0 then
-        pocket_id = temp_player:GetCard(slot)
+    if player:GetCard(slot) > 0 then
+        pocket_id = player:GetCard(slot)
         pocket_type = 1
-    elseif temp_player:GetPill(slot) > 0 then
-        pocket_id = temp_player:GetPill(slot)
+    elseif player:GetPill(slot) > 0 then
+        pocket_id = player:GetPill(slot)
         pocket_type = 2
-    elseif temp_player:GetActiveItem(2) > 0 then
-        pocket_id = temp_player:GetActiveItem(2)
-        pocket_type = 3
-    elseif  temp_player:GetActiveItem(3) > 0 then
-        pocket_id = temp_player:GetActiveItem(3)
+    else
+    if slot == 1 then
+        if coopHUD.getPocketID(player,0)[2] ~= 3 then
+            pocket_id = player:GetActiveItem(2)
+            pocket_type = 3
+        end
+    elseif slot == 2 then
+        if coopHUD.getPocketID(player,0)[2] ~= 3 and coopHUD.getPocketID(player,1)[2] ~= 3 then
+            pocket_id = player:GetActiveItem(2)
+            pocket_type = 3
+        end
+    else
+        pocket_id = player:GetActiveItem(2)
         pocket_type = 3
     end
     return {pocket_id,pocket_type}
