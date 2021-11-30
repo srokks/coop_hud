@@ -199,8 +199,10 @@ function coopHUD.getHeartType(player,heart_pos)
         --TODO: Lost custom heart
         heart_type = 'None'
     elseif Game():GetLevel():GetCurses() == 8 then -- checks curse of the uknown
-        heart_type = 'CurseHeart'
-        return heart_type,overlay
+        if heart_pos == 0 and not player:IsSubPlayer() then
+            heart_type = 'CurseHeart'
+            return heart_type,overlay
+        end
     else
         eternal = false
         golden = false
@@ -403,6 +405,7 @@ function coopHUD.updatePlayer(player_no)
         extra_lives = temp_player:GetExtraLives(),
         bethany_charge = 0, -- inits charge for Bethany
         heart_types = coopHUD.getHeartTypeTable(temp_player),
+        sub_heart_types = {},
         ---
         type = temp_player:GetPlayerType(),
         ---
@@ -432,8 +435,9 @@ function coopHUD.updatePlayer(player_no)
     end
     if  player_table.type == 16 or player_table.type == 17 then -- Forgotten/Soul check
         player_table.has_sub = true
-        local sub = player:GetSubPlayer()
-        player_table.sub_hearts = coopHUD.getHeartSpriteTable(sub)
+        local sub = temp_player:GetSubPlayer()
+        player_table.sprites.sub_hearts = coopHUD.getHeartSpriteTable(sub)
+        player_table.sub_heart_types = coopHUD.getHeartTypeTable(sub)
     end
     if player_table.type == 19 then -- Jacob/Essau check
         --TODO: Jacob/Essau: make player_num+1-> render second in oposite corner/ restrict only when 1
@@ -470,6 +474,24 @@ function coopHUD.renderPlayer(player_no)
     ----Render hearts
     local n = 2 -- No. of rows
     local m = math.floor(12/n)
+    -- Sub character hearts render
+    if coopHUD.players[player_no].has_sub then -- Sub player heart render
+        counter = 0
+        pos.Y = anchor.Y + 22
+        local temp_heart_space = 12 -- sets px space between hearts
+        for row=0,n-1,1 do
+            for col=0,m-1,1 do
+                if coopHUD.players[player_no].sprites.sub_hearts[counter] then
+                    coopHUD.players[player_no].sprites.sub_hearts[counter].Scale = Vector(1,1)
+                    coopHUD.players[player_no].sprites.sub_hearts[counter].Color =Color(1, 1, 1, 0.5, 0, 0, 0)
+                    temp_pos = Vector(pos.X + (temp_heart_space * col),pos.Y + (temp_heart_space * row))
+                    coopHUD.players[player_no].sprites.sub_hearts[counter]:Render(temp_pos,VECTOR_ZERO,VECTOR_ZERO)
+                end
+                counter = counter + 1
+            end
+        end
+    end
+    -- Main character hearts render
     local counter = 0
     local heart_space = 11
     pos = Vector(anchor.X+offset.X,anchor.Y+12)
