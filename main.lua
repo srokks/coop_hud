@@ -552,9 +552,17 @@ function coopHUD.updateTrinkets(player_no)
     end
 end
 function  coopHUD.render()
-    coopHUD.updateActives(0)
-    coopHUD.updateTrinkets(0)
-    coopHUD.updatePockets(0)
+    -- Function is triggered by callback 2 times per second -- check every tic cause lag
+    -- Check/update user item with longer tic
+    if counter == 7 then
+        coopHUD.updateActives(0)
+        coopHUD.updateTrinkets(0)
+        coopHUD.updatePockets(0)
+
+        counter = 0
+        print('sa')
+    end
+    counter = counter+1
     coopHUD.renderPlayer(0)
 end
 coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.render)
