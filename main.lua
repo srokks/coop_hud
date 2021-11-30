@@ -579,13 +579,13 @@ function coopHUD.updateHearts(player_no)
 end
 local counter = 0
 function  coopHUD.render()
-    -- Function is triggered by callback 2 times per second -- check every tic cause lag
-    -- Check/update user item with longer tic
-    if counter == 7 then
+    -- Function is triggered by callback 2 times per second
+    -- Check/update user item with longer span - checking with call back cause lag
+    if counter == 6 then
         coopHUD.updateActives(0)
         coopHUD.updateTrinkets(0)
         coopHUD.updatePockets(0)
-
+        coopHUD.updateHearts(0)
         counter = 0
         print('sa')
     end
