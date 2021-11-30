@@ -372,6 +372,17 @@ function coopHUD.getHeartTypeTable(player)
     end
     return heart_types
 end
+function coopHUD.checkDeepPockets()
+    local deep_check = false
+    local player_no = Game():GetNumPlayers()-1
+    for i=0,player_no,1 do
+        local deep = Isaac.GetPlayer(i):HasCollectible(416)
+        if  deep  then
+            deep_check = true
+        end
+    end
+    return deep_check
+end
 function coopHUD:player_joined()
     coopHUD.init()
 end
