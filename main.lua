@@ -358,6 +358,19 @@ function coopHUD.getHeartSpriteTable(player)
     end
     return heart_sprites
 end
+function coopHUD.getHeartTypeTable(player)
+    local max_health_cap = 12
+    local heart_type,overlay = ''
+    local heart_types = {}
+    for counter=0,12,1 do
+        heart_type,overlay = coopHUD.getHeartType(player,counter)
+        heart_types[counter] = {
+            heart_type = heart_type,
+            overlay = overlay,
+        }
+    end
+    return heart_types
+end
 function coopHUD:player_joined()
     coopHUD.init()
 end
