@@ -587,10 +587,11 @@ function  coopHUD.render()
         coopHUD.updatePockets(0)
         coopHUD.updateHearts(0)
         counter = 0
-        print('sa')
     end
     counter = counter+1
     coopHUD.renderPlayer(0)
+
+
 end
 coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.render)
 Game():GetHUD():SetVisible(false)
