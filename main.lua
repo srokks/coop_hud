@@ -390,6 +390,7 @@ function coopHUD.updatePlayer(player_no)
         pocket_desc = coopHUD.getMainPocketDesc(temp_player),
         extra_lives = temp_player:GetExtraLives(),
         bethany_charge = 0, -- inits charge for Bethany
+        heart_types = coopHUD.getHeartTypeTable(temp_player),
         ---
         type = temp_player:GetPlayerType(),
         ---
