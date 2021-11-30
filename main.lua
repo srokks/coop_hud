@@ -493,10 +493,10 @@ function coopHUD.renderPlayer(player_no)
             end
         end
         local f = Font()
-        f:Load("font/luaminioutlined.fnt")
+        f:Load("font/pftempestasevencondensed.fnt")
         local color = KColor(1,1,1,1) -- TODO: sets according to player color
         if coopHUD.players[player_no].pocket_desc then
-            f:DrawString (coopHUD.players[player_no].pocket_desc,down_anchor.X+44,down_anchor.Y-16,color,0,true) end
+            f:DrawString (coopHUD.players[player_no].pocket_desc,down_anchor.X+44,down_anchor.Y-24,color,0,true) end
     end
     --- TRINKET RENDER
 
