@@ -565,6 +565,18 @@ function coopHUD.updateTrinkets(player_no)
         coopHUD.players[player_no].sprites.second_trinket = coopHUD.getTrinketSprite(temp_player,1)
     end
 end
+function coopHUD.updateHearts(player_no)
+    local temp_player = Isaac.GetPlayer(0)
+    for i=12,0,-1 do
+        if coopHUD.players[player_no].heart_types[i].heart_type ~= coopHUD.getHeartType(temp_player,i) then
+            local heart_type,overlay = coopHUD.getHeartType(temp_player,i)
+            coopHUD.players[player_no].heart_types[i].heart_type = heart_type
+            coopHUD.players[player_no].heart_types[i].overlay = overlay
+            coopHUD.players[player_no].sprites.hearts[i] = coopHUD.getHeartSprite(heart_type,overlay)
+        end
+    end
+end
+local counter = 0
 function  coopHUD.render()
     -- Function is triggered by callback 2 times per second -- check every tic cause lag
     -- Check/update user item with longer tic
