@@ -475,13 +475,13 @@ function coopHUD.renderPlayer(player_no)
     ------third pocket
     scale = Vector(0.5,0.5)
     if coopHUD.players[player_no].sprites.third_pocket then
-        coopHUD.players[player_no].sprites.third_pocket.Scale = Vector(0.7,0.7)
-        coopHUD.players[player_no].sprites.third_pocket:Render(Vector(down_anchor.X+64,down_anchor.Y-16), vector_zero, vector_zero)
+        coopHUD.players[player_no].sprites.third_pocket.Scale = Vector(0.5,0.5)
+        coopHUD.players[player_no].sprites.third_pocket:Render(Vector(down_anchor.X+8,down_anchor.Y-42), vector_zero, vector_zero)
     end
     -- Second pocket
     if coopHUD.players[player_no].sprites.second_pocket then
-        coopHUD.players[player_no].sprites.second_pocket.Scale = Vector(0.7,0.7)
-        coopHUD.players[player_no].sprites.second_pocket:Render(Vector(down_anchor.X+48,down_anchor.Y-16), vector_zero, vector_zero)
+        coopHUD.players[player_no].sprites.second_pocket.Scale = Vector(0.5,0.5)
+        coopHUD.players[player_no].sprites.second_pocket:Render(Vector(down_anchor.X+8,down_anchor.Y-32), vector_zero, vector_zero)
     end
     -- Main pocket
     if coopHUD.players[player_no].sprites.first_pocket then
