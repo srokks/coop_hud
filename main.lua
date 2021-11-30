@@ -119,19 +119,20 @@ function coopHUD.getPocketID(player,slot)
         pocket_id = player:GetPill(slot)
         pocket_type = 2
     else
-    if slot == 1 then
-        if coopHUD.getPocketID(player,0)[2] ~= 3 then
+        if slot == 1 then
+            if coopHUD.getPocketID(player,0)[2] ~= 3 then
+                pocket_id = player:GetActiveItem(2)
+                pocket_type = 3
+            end
+        elseif slot == 2 then
+            if coopHUD.getPocketID(player,0)[2] ~= 3 and coopHUD.getPocketID(player,1)[2] ~= 3 then
+                pocket_id = player:GetActiveItem(2)
+                pocket_type = 3
+            end
+        else
             pocket_id = player:GetActiveItem(2)
             pocket_type = 3
         end
-    elseif slot == 2 then
-        if coopHUD.getPocketID(player,0)[2] ~= 3 and coopHUD.getPocketID(player,1)[2] ~= 3 then
-            pocket_id = player:GetActiveItem(2)
-            pocket_type = 3
-        end
-    else
-        pocket_id = player:GetActiveItem(2)
-        pocket_type = 3
     end
     return {pocket_id,pocket_type}
 end
