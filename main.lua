@@ -3,10 +3,12 @@ local SHExists, ScreenHelper = pcall(require, "scripts.screenhelper")
 local game_table = {
     coins_no = 0;
     bomb_no = 0;
+    keys_no = 0;
     angel_chance = 0;
     devil_chance = 0;
     planetarium_chance = 0;
 }
+local onRender = true
 function coopHUD.getActiveItemSprite(player,slot)
     local Anim = "gfx/ui/item.anm2"
     local overlay = ''
@@ -386,7 +388,9 @@ function coopHUD.checkDeepPockets()
     return deep_check
 end
 function coopHUD:player_joined()
+
     coopHUD.init()
+
 end
 coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, coopHUD.player_joined)
 function coopHUD.updatePlayer(player_no)
@@ -493,7 +497,7 @@ function coopHUD.renderPlayer(player_no)
     end
     -- Main character hearts render
     local counter = 0
-    local heart_space = 11
+    local heart_space = 12  -- sets px space between hearts
     pos = Vector(anchor.X+offset.X,anchor.Y+12)
     for row=0,n-1,1 do
         for col=0,m-1,1 do
@@ -504,6 +508,7 @@ function coopHUD.renderPlayer(player_no)
             counter = counter + 1
         end
     end
+
     ---- POCKETS RENDER
     local down_anchor = bottom_left_anchor
     ------third pocket
@@ -546,6 +551,55 @@ function coopHUD.renderPlayer(player_no)
     --    pos = Vector(trinket_anchor.X+40,trinket_anchor.Y-16)
     --    coopHUD.players[player_no].sprites.second_trinket:Render(pos,vector_zero,vector_zero)
     --end
+end
+function coopHUD.renderItems()
+    anchor = Vector(ScreenHelper.GetScreenSize().X/2,ScreenHelper.GetScreenBottomLeft().Y-16)
+    local pos = Vector(anchor.X - 12,anchor.Y)
+    local Anim = "gfx/ui/hudpickups.anm2"
+    local coin_no,bomb_no,key_no = 0
+
+    --,key_sprite
+
+    local f = Font()
+    f:Load("font/luaminioutlined.fnt")
+
+    local color = KColor(1,1,1,1)
+    local player = Isaac.GetPlayer(0)
+    local coin_sprite= Sprite()
+    local has_deep_pockets = false
+    coin_no = Isaac.GetPlayer(0):GetNumCoins()
+    pos.X = pos.X - 24
+    coin_sprite:Load(Anim,true)
+    coin_sprite:SetFrame('Idle', 0)
+    coin_no = string.format("%.2i", coin_no)
+    if coopHUD.checkDeepPockets() then
+        pos.X = pos.X - 4
+        coin_no = string.format("%.3i", coin_no) end
+    coin_sprite:Render(pos,VECTOR_ZERO,VECTOR_ZERO)
+
+
+    f:DrawString(coin_no,pos.X+16,pos.Y,color,0,true)
+
+    --
+    local pos = Vector(anchor.X - 12,anchor.Y)
+    local bomb_sprite = Sprite()
+    bomb_sprite:Load(Anim,true)
+    bomb_sprite:SetFrame('Idle',2)
+    if player:HasGoldenBomb()  then bomb_sprite:SetFrame('Idle',6) end
+    bomb_sprite:Render(pos,VECTOR_ZERO,VECTOR_ZERO)
+    bomb_no = player:GetNumBombs()
+    bomb_no = string.format("%.2i", bomb_no)
+    f:DrawString(bomb_no,pos.X+16,pos.Y,color,0,true)
+    --
+    pos.X = pos.X + 24
+    local key_sprite = Sprite()
+    key_sprite:Load(Anim,true)
+    key_sprite:SetFrame('Idle',1)
+    if player:HasGoldenKey()  then key_sprite:SetFrame('Idle',3 ) end
+    key_sprite:Render(pos,VECTOR_ZERO,VECTOR_ZERO)
+    key_no = player:GetNumKeys()
+    key_no = string.format("%.2i", key_no)
+    f:DrawString(key_no,pos.X+16,pos.Y,color,0,true)
 end
 local players_no = 0
 coopHUD.players = {}
@@ -601,7 +655,13 @@ function coopHUD.updateTrinkets(player_no)
 end
 function coopHUD.updateHearts(player_no)
     local temp_player = Isaac.GetPlayer(0)
-    for i=12,0,-1 do
+    local max_health_cap = 12
+    local sub_player = nil
+    if coopHUD.players[player_no].has_sub then
+        sub_player = temp_player:GetSubPlayer()
+        max_health_cap = 6
+    end
+    for i=max_health_cap,0,-1 do
         if coopHUD.players[player_no].heart_types[i].heart_type ~= coopHUD.getHeartType(temp_player,i) then
             local heart_type,overlay = coopHUD.getHeartType(temp_player,i)
             coopHUD.players[player_no].heart_types[i].heart_type = heart_type
@@ -609,21 +669,36 @@ function coopHUD.updateHearts(player_no)
             coopHUD.players[player_no].sprites.hearts[i] = coopHUD.getHeartSprite(heart_type,overlay)
         end
     end
+    if coopHUD.players[player_no].has_sub then
+        for i=max_health_cap,0,-1 do
+            local test_type = coopHUD.getHeartType(sub_player,i)
+            if coopHUD.players[player_no].sub_heart_types[i].heart_type ~= test_type then
+                print('zmiana serduszek')
+                local heart_type,overlay = coopHUD.getHeartType(sub_player,i)
+                coopHUD.players[player_no].sub_heart_types[i].heart_type = heart_type
+                coopHUD.players[player_no].sub_heart_types[i].overlay = overlay
+                coopHUD.players[player_no].sprites.sub_hearts[i] = coopHUD.getHeartSprite(heart_type,overlay)
+            end
+        end
+
+    end
 end
 local counter = 0
 function  coopHUD.render()
-    -- Function is triggered by callback 2 times per second
-    -- Check/update user item with longer span - checking with call back cause lag
-    if counter == 6 then
-        coopHUD.updateActives(0)
-        coopHUD.updateTrinkets(0)
-        coopHUD.updatePockets(0)
-        coopHUD.updateHearts(0)
-        counter = 0
+    if onRender then
+        -- Function is triggered by callback 2 times per second
+        -- Check/update user item with longer span - checking with call back cause lag
+        if counter == 6 then
+            coopHUD.updateActives(0)
+            coopHUD.updateTrinkets(0)
+            coopHUD.updatePockets(0)
+            coopHUD.updateHearts(0)
+            counter = 0
+        end
+        counter = counter+1
+        coopHUD.renderPlayer(0)
+        coopHUD.renderItems()
     end
-    counter = counter+1
-    coopHUD.renderPlayer(0)
-
 
 end
 coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.render)
