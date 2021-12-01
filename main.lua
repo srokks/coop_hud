@@ -616,7 +616,7 @@ function coopHUD.updateAnchors()
         anchors.bot_left = ScreenHelper.GetScreenBottomLeft()
     end
     if top_right ~= ScreenHelper.GetScreenTopRight() then
-        anchors. top_right = ScreenHelper.GetScreenTopRight()
+        anchors. top_right = Vector(coopHUD.getMinimapOffset().X,ScreenHelper.GetScreenTopRight().Y)
     end
     if bot_right ~= ScreenHelper.GetScreenBottomRight() then
         anchors.bot_right = ScreenHelper.GetScreenBottomRight()
@@ -700,7 +700,12 @@ function coopHUD.renderPlayer(player_no)
     -- Main character hearts render
     local counter = 0
     local heart_space = 12  -- sets px space between hearts
-    pos = Vector(anchor.X+offset.X,anchor.Y+12)
+    if mirrored then
+        pos = Vector(anchor.X+active_item_off.X - (8*hearts_span)+8,anchor.Y+12)
+    else
+        pos = Vector(anchor.X+active_item_off.X,anchor.Y+12)
+    end
+
     for row=0,n-1,1 do
         for col=0,m-1,1 do
             if coopHUD.players[player_no].sprites.hearts[counter] then
