@@ -622,6 +622,13 @@ function coopHUD.updateAnchors()
         anchors.bot_right = ScreenHelper.GetScreenBottomRight()
     end
 end
+function coopHUD.updateExtraLives(player_no)
+    local temp_player = Isaac.GetPlayer(player_no)
+    if coopHUD.players[player_no].extra_lives ~= temp_player:GetExtraLives() then
+        coopHUD.players[player_no].extra_lives = temp_player:GetExtraLives()
+        has_guppy = temp_player:HasCollectible(212)
+    end
+end
 function coopHUD.forceUpdateActives()
     forceUpdateActives = true
 end
