@@ -528,7 +528,7 @@ function coopHUD.updateTrinkets(player_no)
     end
 end
 function coopHUD.updateHearts(player_no)
-    local temp_player = Isaac.GetPlayer(0)
+    local temp_player = Isaac.GetPlayer(player_no)
     local max_health_cap = 12
     local sub_player = nil
     local temp_total_hearts = math.ceil((temp_player:GetEffectiveMaxHearts() + temp_player:GetSoulHearts())/2)
@@ -678,20 +678,21 @@ function coopHUD.renderPlayer(player_no)
         if coopHUD.players[player_no].pocket_desc then
             f:DrawString (coopHUD.players[player_no].pocket_desc,down_anchor.X+44,down_anchor.Y-24,color,0,true) end
     end
-    --- TRINKET RENDER
-
-    --if coopHUD.players[player_no].sprites.first_trinket then
-    --    if coopHUD.players[player_no].sprites.second_trinket then
-    --        pos = Vector(trinket_anchor.X+16,trinket_anchor.Y-32)
-    --    else
-    --        pos = Vector(trinket_anchor.X+18,trinket_anchor.Y-20)
-    --    end
-    --    coopHUD.players[player_no].sprites.first_trinket:Render(pos,VECTOR_ZERO,VECTOR_ZERO)
-    --end
-    --if coopHUD.players[player_no].sprites.second_trinket then
-    --    pos = Vector(trinket_anchor.X+40,trinket_anchor.Y-16)
-    --    coopHUD.players[player_no].sprites.second_trinket:Render(pos,vector_zero,vector_zero)
-    --end
+    -- TRINKET RENDER
+    pos = Vector(anchor.X+16,anchor.Y+36)
+    if coopHUD.players[player_no].sprites.first_trinket then
+        if coopHUD.players[player_no].sprites.second_trinket then
+            coopHUD.players[player_no].sprites.first_trinket.Scale = Vector(0.7,0.7)
+        else
+            pos = Vector(pos.X,pos.Y)
+        end
+        coopHUD.players[player_no].sprites.first_trinket:Render(pos,VECTOR_ZERO,VECTOR_ZERO)
+    end
+    if coopHUD.players[player_no].sprites.second_trinket then
+        pos = Vector(pos.X,pos.Y+24)
+        coopHUD.players[player_no].sprites.second_trinket.Scale = Vector(0.7,0.7)
+        coopHUD.players[player_no].sprites.second_trinket:Render(pos,vector_zero,vector_zero)
+    end
 end
 function coopHUD.renderItems()
     anchor = Vector(ScreenHelper.GetScreenSize().X/2,ScreenHelper.GetScreenBottomLeft().Y-16)
