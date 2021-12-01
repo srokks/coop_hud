@@ -638,17 +638,18 @@ coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM, coopHUD.forceUpdateActives)
 function coopHUD.renderPlayer(player_no)
     local active_item_off = Vector(0,0)
     --Define anchor
-    local anchor = Vector(100,100)
+    local anchor
     local active_vector = Vector(0,0)
     local mirrored = false
+
     if coopHUD.players_config[player_no].snap_side == 'left' then -- Sets vectors for left side
-        anchor = anchors.top_left
+        anchor_top = anchors.top_left
         active_vector.X = active_vector.X +16
         second_item_x_off = 8
         vector_modifier = 12
         active_off = 48
     elseif coopHUD.players_config[player_no].snap_side == 'right' then -- Sets vectors for left side
-        anchor = anchors.top_right
+        anchor_top = anchors.top_right
         mirrored = true
         second_item_x_off = -12
         active_vector.X = active_vector.X -4
@@ -659,30 +660,32 @@ function coopHUD.renderPlayer(player_no)
 
     ----Render active item
     if coopHUD.players[player_no].sprites.first_active or coopHUD.players[player_no].sprites.second_active then
-        active_item_off = Vector(active_item_off.X + active_off ,active_item_off.Y+48)
+        active_item_off = Vector(active_item_off.X + active_off ,active_item_off.Y+44)
         if coopHUD.players[player_no].sprites.second_active then
             coopHUD.players[player_no].sprites.second_active.Scale = Vector(0.5,0.5)
             coopHUD.players[player_no].sprites.second_active.Scale = Vector(0.5,0.5)
-            coopHUD.players[player_no].sprites.second_active:Render(Vector(anchor.X + second_item_x_off ,anchor.Y + 8  ), vector_zero, vector_zero)
+            coopHUD.players[player_no].sprites.second_active:Render(Vector(anchor_top.X + second_item_x_off ,anchor_top.Y + 8  ), vector_zero, vector_zero)
         end
         if coopHUD.players[player_no].sprites.second_active_charge then -- Second item charge render -- UGLY - can turn on
             coopHUD.players[player_no].sprites.second_active_charge.Scale = Vector(0.5,0.5)
-            coopHUD.players[player_no].sprites.second_active_charge:Render(Vector(anchor.X +second_item_x_off+8,anchor.Y +8), vector_zero, vector_zero)
+            coopHUD.players[player_no].sprites.second_active_charge:Render(Vector(anchor_top.X +second_item_x_off+8,anchor_top.Y +8), vector_zero, vector_zero)
         end
         if coopHUD.players[player_no].sprites.first_active then
             -- First item charge render
-            coopHUD.players[player_no].sprites.first_active:Render(Vector(anchor.X+active_vector.X,anchor.Y+16),VECTOR_ZERO,VECTOR_ZERO)
+            coopHUD.players[player_no].sprites.first_active:Render(Vector(anchor_top.X+active_vector.X,anchor_top.Y+16),VECTOR_ZERO,VECTOR_ZERO)
         end
         if coopHUD.players[player_no].sprites.first_active_charge then
             -- First item render
-            coopHUD.players[player_no].sprites.first_active_charge:Render(Vector(anchor.X+active_vector.X+20,anchor.Y+16), VECTOR_ZERO, VECTOR_ZERO)
+            coopHUD.players[player_no].sprites.first_active_charge:Render(Vector(anchor_top.X+active_vector.X+20,anchor_top.Y+16), VECTOR_ZERO, VECTOR_ZERO)
         end
-    else active_item_off.X = active_item_off.X + vector_modifier
+    else
+        active_item_off.X = active_item_off.X + vector_modifier
+        active_item_off.Y = active_item_off.Y + 44
     end
     ----Render hearts
     local hearts_span
     if coopHUD.players[player_no].total_hearts >= 6 then
-        hearts_span = 6
+        hearts_span = 7
     else
         hearts_span = coopHUD.players[player_no].total_hearts % 6
     end
@@ -709,9 +712,9 @@ function coopHUD.renderPlayer(player_no)
     local counter = 0
     local heart_space = 12  -- sets px space between hearts
     if mirrored then
-        pos = Vector(anchor.X+active_item_off.X - (8*hearts_span)+8,anchor.Y+12)
+        pos = Vector(anchor_top.X+active_item_off.X - (8*hearts_span),anchor_top.Y+12)
     else
-        pos = Vector(anchor.X+active_item_off.X,anchor.Y+12)
+        pos = Vector(anchor_top.X+active_item_off.X,anchor_top.Y+12)
     end
 
     for row=0,n-1,1 do
@@ -723,19 +726,26 @@ function coopHUD.renderPlayer(player_no)
             counter = counter + 1
         end
     end
-    -- Extra Lives Render
-    local hearts_span
-    if coopHUD.players[player_no].total_hearts >= 6 then
-        hearts_span = 6
+     --Extra Lives Render
+    if mirrored then
+        pos = Vector(anchor_top.X+active_item_off.X - (8*(hearts_span))-12,anchor_top.Y+4)
     else
-        hearts_span = coopHUD.players[player_no].total_hearts % 6
+        pos = Vector(anchor_top.X+active_item_off.X+ (8*(hearts_span+3)),anchor_top.Y+4)
     end
-    pos = Vector(anchor.X+offset.X+(12*hearts_span),anchor.Y+4)
-    if coopHUD.players[player_no].extra_lives ~= 'x0' then
+    if coopHUD.players[player_no].extra_lives ~= 0 then
         local f = Font()
         f:Load("font/pftempestasevencondensed.fnt")
-        f:DrawString (coopHUD.players[player_no].extra_lives,pos.X,pos.Y,KColor(1,1,1,1),0,true)
+        local text
+        if coopHUD.players[player_no].has_guppy then
+            text = string.format('x%d?',coopHUD.players[player_no].extra_lives)
+            pos.X = pos.X - 6
+        else
+            text =  string.format('x%d',coopHUD.players[player_no].extra_lives)
+        end
+
+        f:DrawString (text,pos.X,pos.Y,KColor(1,1,1,1),0,true)
     end
+
     ---- POCKETS RENDER
     local down_vector = Vector(0,0)
     if coopHUD.players_config[player_no].snap_side == 'left' then -- Sets vectors for left side
@@ -780,20 +790,34 @@ function coopHUD.renderPlayer(player_no)
             f:DrawString (text,anchor.X+down_vector.X+ pocket_off,anchor.Y-16,color,0,true) end
     end
     if coopHUD.players[player_no].bethany_charge ~= nil then
-        print('charge ',coopHUD.players[player_no].bethany_charge)
+        pos =Vector(anchor_top.X+6,anchor_top.Y + active_item_off.Y)
+        local beth_sprite = Sprite()
+        if coopHUD.players[player_no].type == 18 then
+            beth_sprite = coopHUD.getHeartSprite('BlueHeartFull','None')
+        else
+            beth_sprite = coopHUD.getHeartSprite('RedHeartFull','None')
+        end
+        beth_sprite.Scale = Vector(0.6,0.6)
+        beth_sprite:Render(Vector(pos.X,pos.Y),VaECTOR_ZERO,VECTOR_ZERO)
+        local f = Font()
+        local bethany_charge = string.format('x%d',coopHUD.players[player_no].bethany_charge)
+        f:Load("font/luaminioutlined.fnt")
+        f:DrawString (bethany_charge,pos.X+6,pos.Y-9,KColor(1,1,1,1),0,true)
+        active_item_off.Y = active_item_off.Y + 16
     end
     -- TRINKET RENDER
-    pos = Vector(anchor.X+16,anchor.Y+36)
     if coopHUD.players[player_no].sprites.first_trinket then
         if coopHUD.players[player_no].sprites.second_trinket then
+            if mirrored then pos = Vector(pos.X-8,pos.Y-8) end
             coopHUD.players[player_no].sprites.first_trinket.Scale = Vector(0.7,0.7)
+            pos = Vector(anchor_top.X+12,anchor_top.Y+active_item_off.Y)
         else
-            pos = Vector(pos.X,pos.Y)
+            pos = Vector(anchor_top.X+12,anchor_top.Y+active_item_off.Y)
         end
         coopHUD.players[player_no].sprites.first_trinket:Render(pos,VECTOR_ZERO,VECTOR_ZERO)
     end
     if coopHUD.players[player_no].sprites.second_trinket then
-        pos = Vector(pos.X,pos.Y+24)
+        pos = Vector(pos.X+8,pos.Y+8)
         coopHUD.players[player_no].sprites.second_trinket.Scale = Vector(0.7,0.7)
         coopHUD.players[player_no].sprites.second_trinket:Render(pos,vector_zero,vector_zero)
     end
