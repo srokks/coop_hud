@@ -388,9 +388,9 @@ function coopHUD.checkDeepPockets()
     return deep_check
 end
 function coopHUD:player_joined()
-
     coopHUD.init()
-
+    issomeonejoining = false
+    onRender = true
 end
 coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, coopHUD.player_joined)
 function coopHUD.updatePlayer(player_no)
@@ -410,7 +410,7 @@ function coopHUD.updatePlayer(player_no)
         third_pocket = coopHUD.getPocketID(temp_player,2),
         pocket_desc = coopHUD.getMainPocketDesc(temp_player),
         extra_lives = string.format('x%d', temp_player:GetExtraLives()),
-        bethany_charge = 0, -- inits charge for Bethany
+        bethany_charge = nil, -- inits charge for Bethany
         heart_types = coopHUD.getHeartTypeTable(temp_player),
         sub_heart_types = {},
         total_hearts = math.ceil((temp_player:GetEffectiveMaxHearts() + temp_player:GetSoulHearts())/2),
@@ -584,6 +584,7 @@ coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM, coopHUD.forceUpdateActives)
 function coopHUD.renderPlayer(player_no)
     local offset = Vector(0,0)
     anchor = top_left_anchor
+
     ----Render active item
     if coopHUD.players[player_no].sprites.first_active or coopHUD.players[player_no].sprites.second_active then
         offset = Vector(offset.X + 49,offset.Y+48)
@@ -678,6 +679,9 @@ function coopHUD.renderPlayer(player_no)
         if coopHUD.players[player_no].pocket_desc then
             f:DrawString (coopHUD.players[player_no].pocket_desc,down_anchor.X+44,down_anchor.Y-24,color,0,true) end
     end
+    if coopHUD.players[player_no].bethany_charge ~= nil then
+        print('charge ',coopHUD.players[player_no].bethany_charge)
+    end
     -- TRINKET RENDER
     pos = Vector(anchor.X+16,anchor.Y+36)
     if coopHUD.players[player_no].sprites.first_trinket then
@@ -744,9 +748,31 @@ function coopHUD.renderItems()
     f:DrawString(key_no,pos.X+16,pos.Y,color,0,true)
 end
 local counter = 0
+-- This callback turns the vanilla HUD back on when someone tries to join the game. -- @Function from mp stat display
+issomeonejoining = false
+function coopHUD:charselect()
+    for i = 0,players_no+1,1 do
+        if Input.IsActionTriggered(19, i) == true then
+            onRender = false
+            issomeonejoining = true
+        end
+        if Input.IsActionTriggered(15, i) == true then
+            print('selected')
+            onRender = true
+            issomeonejoining = false
+        end
+    end
+end
+coopHUD:AddCallback(ModCallbacks.MC_INPUT_ACTION,    coopHUD.charselect)
+
 function  coopHUD.render()
-    if onRender then
+    if issomeonejoining == false then
         Game():GetHUD():SetVisible(false)
+    else
+        onRender = false
+        Game():GetHUD():SetVisible(true)
+    end
+    if onRender  then
         -- Function is triggered by callback 2 times per second
         -- Check/update user item with longer span - checking with call back cause lag
 
@@ -754,7 +780,6 @@ function  coopHUD.render()
         if counter == 6 then
             coopHUD.updateAnchors()
             for i=0,players_no,1 do
-                print(i)
                 coopHUD.updateActives(i)
                 coopHUD.updateTrinkets(i)
                 coopHUD.updatePockets(i)
@@ -767,10 +792,7 @@ function  coopHUD.render()
         end
 
         coopHUD.renderItems()
-    else
-        Game():GetHUD():SetVisible(true)
     end
-
 end
 coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.render)
 
