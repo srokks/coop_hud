@@ -729,32 +729,47 @@ function coopHUD.renderPlayer(player_no)
         f:DrawString (coopHUD.players[player_no].extra_lives,pos.X,pos.Y,KColor(1,1,1,1),0,true)
     end
     ---- POCKETS RENDER
-    local down_anchor = bottom_left_anchor
+    local down_vector = Vector(0,0)
+    if coopHUD.players_config[player_no].snap_side == 'left' then -- Sets vectors for left side
+        anchor = anchors.bot_left
+        down_vector.X = down_vector.X +16
+        pocket_off = 20
+        alternate_pockets_off = 8
+    elseif coopHUD.players_config[player_no].snap_side == 'right' then -- Sets vectors for left side
+        anchor = anchors.bot_right
+        down_vector.X = down_vector.X -24
+        pocket_off = -52
+        alternate_pockets_off = -8
+    end
+    local charge_off = 18
     ------third pocket
     scale = Vector(0.5,0.5)
     if coopHUD.players[player_no].sprites.third_pocket then
-        coopHUD.players[player_no].sprites.third_pocket.Scale = Vector(0.5,0.5)
-        coopHUD.players[player_no].sprites.third_pocket:Render(Vector(down_anchor.X+8,down_anchor.Y-42), vector_zero, vector_zero)
+        coopHUD.players[player_no].sprites.third_pocket.Scale = Vector(0.7,0.7)
+        coopHUD.players[player_no].sprites.third_pocket:Render(Vector(anchor.X+alternate_pockets_off,anchor.Y-56), vector_zero, vector_zero)
     end
     -- Second pocket
     if coopHUD.players[player_no].sprites.second_pocket then
-        coopHUD.players[player_no].sprites.second_pocket.Scale = Vector(0.5,0.5)
-        coopHUD.players[player_no].sprites.second_pocket:Render(Vector(down_anchor.X+8,down_anchor.Y-32), vector_zero, vector_zero)
+        coopHUD.players[player_no].sprites.second_pocket.Scale = Vector(0.7,0.7)
+        coopHUD.players[player_no].sprites.second_pocket:Render(Vector(anchor.X+alternate_pockets_off,anchor.Y-40), vector_zero, vector_zero)
     end
     -- Main pocket
     if coopHUD.players[player_no].sprites.first_pocket then
-        coopHUD.players[player_no].sprites.first_pocket:Render(Vector(down_anchor.X+16,down_anchor.Y-16), VECTOR_ZERO, VECTOR_ZERO)
-        ---- Main pocket charge
+        coopHUD.players[player_no].sprites.first_pocket:Render(Vector(anchor.X+down_vector.X,anchor.Y-16), VECTOR_ZERO, VECTOR_ZERO)
+        -- Main pocket charge
         if coopHUD.players[player_no].sprites.first_pocket:GetDefaultAnimation() == 'Idle' then -- checks if item is not pill of card
             if coopHUD.players[player_no].sprites.first_pocket_charge then
-                coopHUD.players[player_no].sprites.first_pocket_charge:Render(Vector(down_anchor.X+34,down_anchor.Y-14), vector_zero, vector_zero)
+                coopHUD.players[player_no].sprites.first_pocket_charge:Render(Vector(anchor.X+down_vector.X + charge_off,anchor.Y-16), vector_zero, vector_zero)
             end
         end
         local f = Font()
         f:Load("font/pftempestasevencondensed.fnt")
         local color = KColor(1,1,1,1) -- TODO: sets according to player color
         if coopHUD.players[player_no].pocket_desc then
-            f:DrawString (coopHUD.players[player_no].pocket_desc,down_anchor.X+44,down_anchor.Y-24,color,0,true) end
+            local text = coopHUD.players[player_no].pocket_desc
+            if string.len(text) > 12 and mirrored then
+                text = string.format("%.12s...",text) end
+            f:DrawString (text,anchor.X+down_vector.X+ pocket_off,anchor.Y-16,color,0,true) end
     end
     if coopHUD.players[player_no].bethany_charge ~= nil then
         print('charge ',coopHUD.players[player_no].bethany_charge)
