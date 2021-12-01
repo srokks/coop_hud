@@ -628,30 +628,56 @@ end
 coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM, coopHUD.forceUpdateActives)
 --
 function coopHUD.renderPlayer(player_no)
-    local offset = Vector(0,0)
-    anchor = top_left_anchor
+    local active_item_off = Vector(0,0)
+    --Define anchor
+    local anchor = Vector(100,100)
+    local active_vector = Vector(0,0)
+    local mirrored = false
+    if coopHUD.players_config[player_no].snap_side == 'left' then -- Sets vectors for left side
+        anchor = anchors.top_left
+        active_vector.X = active_vector.X +16
+        second_item_x_off = 8
+        vector_modifier = 12
+        active_off = 48
+    elseif coopHUD.players_config[player_no].snap_side == 'right' then -- Sets vectors for left side
+        anchor = anchors.top_right
+        mirrored = true
+        second_item_x_off = -12
+        active_vector.X = active_vector.X -4
+        vector_modifier = 0
+        modifier = -1
+        active_off = -36
+    end
 
     ----Render active item
     if coopHUD.players[player_no].sprites.first_active or coopHUD.players[player_no].sprites.second_active then
-        offset = Vector(offset.X + 49,offset.Y+48)
+        active_item_off = Vector(active_item_off.X + active_off ,active_item_off.Y+48)
         if coopHUD.players[player_no].sprites.second_active then
             coopHUD.players[player_no].sprites.second_active.Scale = Vector(0.5,0.5)
             coopHUD.players[player_no].sprites.second_active.Scale = Vector(0.5,0.5)
-            coopHUD.players[player_no].sprites.second_active:Render(Vector(anchor.X + 8 ,anchor.Y + 8 ), vector_zero, vector_zero)
+            coopHUD.players[player_no].sprites.second_active:Render(Vector(anchor.X + second_item_x_off ,anchor.Y + 8  ), vector_zero, vector_zero)
         end
         if coopHUD.players[player_no].sprites.second_active_charge then -- Second item charge render -- UGLY - can turn on
             coopHUD.players[player_no].sprites.second_active_charge.Scale = Vector(0.5,0.5)
-            coopHUD.players[player_no].sprites.second_active_charge:Render(Vector(anchor.X +2,anchor.Y +8), vector_zero, vector_zero)
+            coopHUD.players[player_no].sprites.second_active_charge:Render(Vector(anchor.X +second_item_x_off+8,anchor.Y +8), vector_zero, vector_zero)
         end
         if coopHUD.players[player_no].sprites.first_active then
-            coopHUD.players[player_no].sprites.first_active:Render(Vector(anchor.X + 19,anchor.Y+16),VECTOR_ZERO,VECTOR_ZERO)
+            -- First item charge render
+            coopHUD.players[player_no].sprites.first_active:Render(Vector(anchor.X+active_vector.X,anchor.Y+16),VECTOR_ZERO,VECTOR_ZERO)
         end
         if coopHUD.players[player_no].sprites.first_active_charge then
-            coopHUD.players[player_no].sprites.first_active_charge:Render(Vector(anchor.X + 37,anchor.Y+17), VECTOR_ZERO, VECTOR_ZERO)
+            -- First item render
+            coopHUD.players[player_no].sprites.first_active_charge:Render(Vector(anchor.X+active_vector.X+20,anchor.Y+16), VECTOR_ZERO, VECTOR_ZERO)
         end
-    else offset.X = offset.X + 12
+    else active_item_off.X = active_item_off.X + vector_modifier
     end
     ----Render hearts
+    local hearts_span
+    if coopHUD.players[player_no].total_hearts >= 6 then
+        hearts_span = 6
+    else
+        hearts_span = coopHUD.players[player_no].total_hearts % 6
+    end
     local n = 2 -- No. of rows
     local m = math.floor(12/n)
     -- Sub character hearts render
