@@ -1,14 +1,8 @@
 coopHUD = RegisterMod("Coop HUD", 1)
 local SHExists, ScreenHelper = pcall(require, "scripts.screenhelper")
-local game_table = {
-    coins_no = 0;
-    bomb_no = 0;
-    keys_no = 0;
-    angel_chance = 0;
-    devil_chance = 0;
-    planetarium_chance = 0;
-}
+-- OPTIONS SKETCH
 local onRender = true
+---
 function coopHUD.getActiveItemSprite(player,slot)
     local Anim = "gfx/ui/item.anm2"
     local overlay = ''
@@ -375,6 +369,7 @@ function coopHUD.getHeartTypeTable(player)
     end
     return heart_types
 end
+---
 function coopHUD.checkDeepPockets()
     local deep_check = false
     local player_no = Game():GetNumPlayers()-1
@@ -455,6 +450,117 @@ end
 local vector_zero = Vector(0,0)
 local top_left_anchor = ScreenHelper.GetScreenTopLeft()
 local bottom_left_anchor = ScreenHelper.GetScreenBottomLeft()
+--
+local players_no = 0
+coopHUD.players = {}
+-- init
+function coopHUD.init()
+    players_no = Game():GetNumPlayers()-1
+    for i=0,players_no,1 do
+        coopHUD.updatePlayer(i)
+        print('Initiated ',i,'Player')
+    end
+end
+coopHUD.init()
+coopHUD:AddCallback(ModCallbacks.MC_POST_NEW_ROOM , coopHUD.init); -- Updates all players info on entering new flor
+
+
+
+-- Update
+local forceUpdateActives = false
+function coopHUD.updatePockets(player_no)
+    local temp_player = Isaac.GetPlayer(player_no)
+    -- TODO: refresh pocket items on use
+    if coopHUD.players[player_no].first_pocket ~= coopHUD.getPocketID(temp_player,0) then
+        coopHUD.players[player_no].first_pocket = coopHUD.getPocketID(temp_player,0)
+        coopHUD.players[player_no].sprites.first_pocket = coopHUD.getPocketItemSprite(temp_player,0)
+    end
+    if coopHUD.players[player_no].second_pocket ~= coopHUD.getPocketID(temp_player,1) then
+        coopHUD.players[player_no].second_pocket = coopHUD.getPocketID(temp_player,1)
+        coopHUD.players[player_no].sprites.second_pocket = coopHUD.getPocketItemSprite(temp_player,1)
+    end
+    if coopHUD.players[player_no].third_pocket ~= coopHUD.getPocketID(temp_player,2) then
+        coopHUD.players[player_no].third_pocket = coopHUD.getPocketID(temp_player,2)
+        coopHUD.players[player_no].sprites.third_pocket = coopHUD.getPocketItemSprite(temp_player,2)
+    end
+    if coopHUD.players[player_no].pocket_desc ~= coopHUD.getMainPocketDesc(temp_player) then
+        coopHUD.players[player_no].pocket_desc = coopHUD.getMainPocketDesc(temp_player)
+    end
+    if coopHUD.players[player_no].first_pocket_charge ~= temp_player:GetActiveCharge(2) or forceUpdateActives then
+        coopHUD.players[player_no].first_pocket_charge = temp_player:GetActiveCharge(2)
+        coopHUD.players[player_no].sprites.first_pocket_charge = coopHUD.getItemChargeSprite(temp_player,2)
+        coopHUD.players[player_no].first_pocket = coopHUD.getPocketID(temp_player,0)
+        coopHUD.players[player_no].sprites.first_pocket = coopHUD.getPocketItemSprite(temp_player,0)
+    end
+end
+function coopHUD.updateActives(player_no)
+    local temp_player = Isaac.GetPlayer(player_no)
+    if coopHUD.players[player_no].first_active ~= temp_player:GetActiveItem(0)  then
+        coopHUD.players[player_no].first_active = temp_player:GetActiveItem(0)
+        coopHUD.players[player_no].second_active = temp_player:GetActiveItem(1)
+        coopHUD.players[player_no].sprites.first_active = coopHUD.getActiveItemSprite(temp_player,0)
+        coopHUD.players[player_no].sprites.first_active_charge = coopHUD.getItemChargeSprite(temp_player,0)
+        coopHUD.players[player_no].sprites.second_active = coopHUD.getActiveItemSprite(temp_player,1)
+        coopHUD.players[player_no].sprites.second_active_charge = coopHUD.getItemChargeSprite(temp_player,1)
+    end
+    --print(coopHUD.players[player_no].first_active_charge , temp_player:GetActiveCharge(0))
+    if coopHUD.players[player_no].first_active_charge ~= temp_player:GetActiveCharge(0) or forceUpdateActives then
+        coopHUD.players[player_no].first_active_charge = temp_player:GetActiveCharge(0)
+        coopHUD.players[player_no].sprites.first_active = coopHUD.getActiveItemSprite(temp_player,0)
+        coopHUD.players[player_no].sprites.first_active_charge = coopHUD.getItemChargeSprite(temp_player,0)
+    end
+end
+function coopHUD.updateTrinkets(player_no)
+    local temp_player = Isaac.GetPlayer(player_no)
+    if coopHUD.players[player_no].first_trinket ~= temp_player:GetTrinket(0) then
+        coopHUD.players[player_no].first_trinket = temp_player:GetTrinket(0)
+        coopHUD.players[player_no].sprites.first_trinket = coopHUD.getTrinketSprite(temp_player,0)
+    end
+    if coopHUD.players[player_no].second_trinket ~= temp_player:GetTrinket(1) then
+        coopHUD.players[player_no].second_trinket = temp_player:GetTrinket(1)
+        coopHUD.players[player_no].sprites.second_trinket = coopHUD.getTrinketSprite(temp_player,1)
+    end
+end
+function coopHUD.updateHearts(player_no)
+    local temp_player = Isaac.GetPlayer(0)
+    local max_health_cap = 12
+    local sub_player = nil
+    local temp_total_hearts = math.ceil((temp_player:GetEffectiveMaxHearts() + temp_player:GetSoulHearts())/2)
+    if coopHUD.players[player_no].total_hearts ~= temp_total_hearts then
+        coopHUD.players[player_no].total_hearts = temp_total_hearts
+    end
+    if coopHUD.players[player_no].has_sub then
+        sub_player = temp_player:GetSubPlayer()
+        max_health_cap = 6
+    end
+    for i=max_health_cap,0,-1 do
+        local heart_type,overlay = coopHUD.getHeartType(temp_player,i)
+        if (coopHUD.players[player_no].heart_types[i].heart_type ~= heart_type) or
+                (coopHUD.players[player_no].heart_types[i].overlay ~= overlay)then
+            coopHUD.players[player_no].heart_types[i].heart_type = heart_type
+            coopHUD.players[player_no].heart_types[i].overlay = overlay
+            coopHUD.players[player_no].sprites.hearts[i] = coopHUD.getHeartSprite(heart_type,overlay)
+        end
+    end
+    if coopHUD.players[player_no].has_sub then
+        for i=max_health_cap,0,-1 do
+            local test_type = coopHUD.getHeartType(sub_player,i)
+            if coopHUD.players[player_no].sub_heart_types[i].heart_type ~= test_type then
+                print('zmiana serduszek')
+                local heart_type,overlay = coopHUD.getHeartType(sub_player,i)
+                coopHUD.players[player_no].sub_heart_types[i].heart_type = heart_type
+                coopHUD.players[player_no].sub_heart_types[i].overlay = overlay
+                coopHUD.players[player_no].sprites.sub_hearts[i] = coopHUD.getHeartSprite(heart_type,overlay)
+            end
+        end
+
+    end
+end
+function coopHUD.forceUpdateActives()
+    forceUpdateActives = true
+end
+coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM, coopHUD.forceUpdateActives)
+--
 function coopHUD.renderPlayer(player_no)
     local offset = Vector(0,0)
     anchor = top_left_anchor
@@ -616,115 +722,9 @@ function coopHUD.renderItems()
     key_no = string.format("%.2i", key_no)
     f:DrawString(key_no,pos.X+16,pos.Y,color,0,true)
 end
-local players_no = 0
-coopHUD.players = {}
-counter = 0
-function coopHUD.init()
-    players_no = Game():GetNumPlayers()-1
-    for i=0,players_no,1 do
-        coopHUD.updatePlayer(i)
-        print('Initiated ',i,'Player')
-    end
-end
-coopHUD.init()
-debug_player = Isaac.GetPlayer(0)
-function coopHUD.updatePockets(player_no)
-    local temp_player = Isaac.GetPlayer(player_no)
-    -- TODO: refresh pocket items on use
-    if coopHUD.players[player_no].first_pocket ~= coopHUD.getPocketID(temp_player,0) then
-        coopHUD.players[player_no].first_pocket = coopHUD.getPocketID(temp_player,0)
-        coopHUD.players[player_no].sprites.first_pocket = coopHUD.getPocketItemSprite(temp_player,0)
-    end
-    if coopHUD.players[player_no].second_pocket ~= coopHUD.getPocketID(temp_player,1) then
-        coopHUD.players[player_no].second_pocket = coopHUD.getPocketID(temp_player,1)
-        coopHUD.players[player_no].sprites.second_pocket = coopHUD.getPocketItemSprite(temp_player,1)
-    end
-    if coopHUD.players[player_no].third_pocket ~= coopHUD.getPocketID(temp_player,2) then
-        coopHUD.players[player_no].third_pocket = coopHUD.getPocketID(temp_player,2)
-        coopHUD.players[player_no].sprites.third_pocket = coopHUD.getPocketItemSprite(temp_player,2)
-    end
-    if coopHUD.players[player_no].pocket_desc ~= coopHUD.getMainPocketDesc(temp_player) then
-        coopHUD.players[player_no].pocket_desc = coopHUD.getMainPocketDesc(temp_player)
-    end
-    if coopHUD.players[player_no].first_pocket_charge ~= temp_player:GetActiveCharge(2) or forceUpdateActives then
-        coopHUD.players[player_no].first_pocket_charge = temp_player:GetActiveCharge(2)
-        coopHUD.players[player_no].sprites.first_pocket_charge = coopHUD.getItemChargeSprite(temp_player,2)
-        coopHUD.players[player_no].first_pocket = coopHUD.getPocketID(temp_player,0)
-        coopHUD.players[player_no].sprites.first_pocket = coopHUD.getPocketItemSprite(temp_player,0)
-    end
-end
-function coopHUD.test()
-    forceUpdateActives = true
-end
-coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM, coopHUD.test)
-local forceUpdateActives = false
-function coopHUD.updateActives(player_no)
-    local temp_player = Isaac.GetPlayer(player_no)
-    if coopHUD.players[player_no].first_active ~= temp_player:GetActiveItem(0)  then
-        print('ssss')
-        coopHUD.players[player_no].first_active = temp_player:GetActiveItem(0)
-        coopHUD.players[player_no].second_active = temp_player:GetActiveItem(1)
-        coopHUD.players[player_no].sprites.first_active = coopHUD.getActiveItemSprite(temp_player,0)
-        coopHUD.players[player_no].sprites.first_active_charge = coopHUD.getItemChargeSprite(temp_player,0)
-        coopHUD.players[player_no].sprites.second_active = coopHUD.getActiveItemSprite(temp_player,1)
-        coopHUD.players[player_no].sprites.second_active_charge = coopHUD.getItemChargeSprite(temp_player,1)
-    end
-    --print(coopHUD.players[player_no].first_active_charge , temp_player:GetActiveCharge(0))
-    if coopHUD.players[player_no].first_active_charge ~= temp_player:GetActiveCharge(0) or forceUpdateActives then
-        coopHUD.players[player_no].first_active_charge = temp_player:GetActiveCharge(0)
-        coopHUD.players[player_no].sprites.first_active = coopHUD.getActiveItemSprite(temp_player,0)
-        coopHUD.players[player_no].sprites.first_active_charge = coopHUD.getItemChargeSprite(temp_player,0)
-    end
-end
-function coopHUD.updateTrinkets(player_no)
-    local temp_player = Isaac.GetPlayer(player_no)
-    if coopHUD.players[player_no].first_trinket ~= temp_player:GetTrinket(0) then
-        coopHUD.players[player_no].first_trinket = temp_player:GetTrinket(0)
-        coopHUD.players[player_no].sprites.first_trinket = coopHUD.getTrinketSprite(temp_player,0)
-    end
-    if coopHUD.players[player_no].second_trinket ~= temp_player:GetTrinket(1) then
-        coopHUD.players[player_no].second_trinket = temp_player:GetTrinket(1)
-        coopHUD.players[player_no].sprites.second_trinket = coopHUD.getTrinketSprite(temp_player,1)
-    end
-end
-function coopHUD.updateHearts(player_no)
-    local temp_player = Isaac.GetPlayer(0)
-    local max_health_cap = 12
-    local sub_player = nil
-    local temp_total_hearts = math.ceil((temp_player:GetEffectiveMaxHearts() + temp_player:GetSoulHearts())/2)
-    if coopHUD.players[player_no].total_hearts ~= temp_total_hearts then
-        coopHUD.players[player_no].total_hearts = temp_total_hearts
-    end
-    if coopHUD.players[player_no].has_sub then
-        sub_player = temp_player:GetSubPlayer()
-        max_health_cap = 6
-    end
-    for i=max_health_cap,0,-1 do
-        local heart_type,overlay = coopHUD.getHeartType(temp_player,i)
-        if (coopHUD.players[player_no].heart_types[i].heart_type ~= heart_type) or
-                (coopHUD.players[player_no].heart_types[i].overlay ~= overlay)then
-            coopHUD.players[player_no].heart_types[i].heart_type = heart_type
-            coopHUD.players[player_no].heart_types[i].overlay = overlay
-            coopHUD.players[player_no].sprites.hearts[i] = coopHUD.getHeartSprite(heart_type,overlay)
-        end
-    end
-    if coopHUD.players[player_no].has_sub then
-        for i=max_health_cap,0,-1 do
-            local test_type = coopHUD.getHeartType(sub_player,i)
-            if coopHUD.players[player_no].sub_heart_types[i].heart_type ~= test_type then
-                print('zmiana serduszek')
-                local heart_type,overlay = coopHUD.getHeartType(sub_player,i)
-                coopHUD.players[player_no].sub_heart_types[i].heart_type = heart_type
-                coopHUD.players[player_no].sub_heart_types[i].overlay = overlay
-                coopHUD.players[player_no].sprites.sub_hearts[i] = coopHUD.getHeartSprite(heart_type,overlay)
-            end
-        end
-
-    end
-end
-local counter = 0
 function  coopHUD.render()
     if onRender then
+        Game():GetHUD():SetVisible(false)
         -- Function is triggered by callback 2 times per second
         -- Check/update user item with longer span - checking with call back cause lag
         if counter == 6 then
@@ -737,8 +737,10 @@ function  coopHUD.render()
         counter = counter+1
         coopHUD.renderPlayer(0)
         coopHUD.renderItems()
+    else
+        Game():GetHUD():SetVisible(true)
     end
 
 end
 coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.render)
-Game():GetHUD():SetVisible(false)
+
