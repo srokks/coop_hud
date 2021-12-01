@@ -749,13 +749,7 @@ function  coopHUD.render()
         Game():GetHUD():SetVisible(false)
         -- Function is triggered by callback 2 times per second
         -- Check/update user item with longer span - checking with call back cause lag
-        if counter == 6 then
-            coopHUD.updateActives(0)
-            coopHUD.updateTrinkets(0)
-            coopHUD.updatePockets(0)
-            coopHUD.updateHearts(0)
-            counter = 0
-        end
+
         counter = counter+1
         if counter == 6 then
             coopHUD.updateAnchors()
