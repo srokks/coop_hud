@@ -2,6 +2,12 @@ coopHUD = RegisterMod("Coop HUD", 1)
 local SHExists, ScreenHelper = pcall(require, "scripts.screenhelper")
 -- OPTIONS SKETCH
 local onRender = true
+local anchors = {
+    top_left = ScreenHelper.GetScreenTopLeft(),
+    bot_left = ScreenHelper.GetScreenBottomLeft(),
+    top_right = ScreenHelper.GetScreenTopRight(),
+    bot_right = ScreenHelper.GetScreenBottomRight(),
+}
 ---
 function coopHUD.getActiveItemSprite(player,slot)
     local Anim = "gfx/ui/item.anm2"
@@ -556,6 +562,20 @@ function coopHUD.updateHearts(player_no)
 
     end
 end
+function coopHUD.updateAnchors()
+    if top_left ~= ScreenHelper.GetScreenTopLeft() then
+        anchors.top_left = ScreenHelper.GetScreenTopLeft()
+    end
+    if bot_left ~= ScreenHelper.GetScreenBottomLeft() then
+        anchors.bot_left = ScreenHelper.GetScreenBottomLeft()
+    end
+    if top_right ~= ScreenHelper.GetScreenTopRight() then
+        anchors. top_right = ScreenHelper.GetScreenTopRight()
+    end
+    if bot_right ~= ScreenHelper.GetScreenBottomRight() then
+        anchors.bot_right = ScreenHelper.GetScreenBottomRight()
+    end
+end
 function coopHUD.forceUpdateActives()
     forceUpdateActives = true
 end
@@ -722,6 +742,7 @@ function coopHUD.renderItems()
     key_no = string.format("%.2i", key_no)
     f:DrawString(key_no,pos.X+16,pos.Y,color,0,true)
 end
+local counter = 0
 function  coopHUD.render()
     if onRender then
         Game():GetHUD():SetVisible(false)
@@ -735,7 +756,21 @@ function  coopHUD.render()
             counter = 0
         end
         counter = counter+1
-        coopHUD.renderPlayer(0)
+        if counter == 6 then
+            coopHUD.updateAnchors()
+            for i=0,players_no,1 do
+                print(i)
+                coopHUD.updateActives(i)
+                coopHUD.updateTrinkets(i)
+                coopHUD.updatePockets(i)
+                coopHUD.updateHearts(i)
+                counter = 0
+            end
+        end
+        for i=0,players_no,1 do
+            coopHUD.renderPlayer(i)
+        end
+
         coopHUD.renderItems()
     else
         Game():GetHUD():SetVisible(true)
