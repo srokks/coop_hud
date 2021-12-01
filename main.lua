@@ -42,8 +42,17 @@ local onRender = true
 local anchors = {
     top_left = ScreenHelper.GetScreenTopLeft(),
     bot_left = ScreenHelper.GetScreenBottomLeft(),
-    top_right = ScreenHelper.GetScreenTopRight(),
+    top_right = Vector(coopHUD.getMinimapOffset().X,ScreenHelper.GetScreenTopRight().Y),
     bot_right = ScreenHelper.GetScreenBottomRight(),
+}
+coopHUD.players_config = {}
+coopHUD.players_config[0] = {
+    snap_side = 'left',-- left/right or off if > 2 players
+    main_anchor, --
+}
+coopHUD.players_config[1] = {
+    snap_side = 'right',-- left/right or off if > 2 players
+    main_anchor, --
 }
 ---
 function coopHUD.getActiveItemSprite(player,slot)
