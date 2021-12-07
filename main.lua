@@ -908,6 +908,7 @@ function  coopHUD.render()
                 coopHUD.updateTrinkets(i)
                 coopHUD.updatePockets(i)
                 coopHUD.updateHearts(i)
+                coopHUD.updateExtraLives(i)
                 counter = 0
             end
         end
