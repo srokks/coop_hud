@@ -630,6 +630,20 @@ function coopHUD.updateExtraLives(player_no)
         has_guppy = temp_player:HasCollectible(212)
     end
 end
+function coopHUD.updateBethanyCharge(player_no)
+    if coopHUD.players[player_no].type == 36 then
+        local temp_player = Isaac.GetPlayer(player_no)
+        if coopHUD.players[player_no].bethany_charge ~= temp_player:GetBloodCharge() then
+            coopHUD.players[player_no].bethany_charge = temp_player:GetBloodCharge()
+        end
+    end
+    if coopHUD.players[player_no].type == 18 then
+        local temp_player = Isaac.GetPlayer(player_no)
+        if coopHUD.players[player_no].bethany_charge ~= temp_player:GetSoulCharge() then
+            coopHUD.players[player_no].bethany_charge = temp_player:GetSoulCharge()
+        end
+    end
+end
 function coopHUD.forceUpdateActives()
     forceUpdateActives = true
 end
