@@ -1,57 +1,61 @@
 function coopHUD.getActiveItemSprite(player,slot)
     local Anim = "gfx/ui/item.anm2"
     local overlay = ''
-    local activeitem = player:GetActiveItem(slot)
-    if activeitem == 0 then return false end
-    local thissprite = Sprite() -- replaced
-    thissprite:Load(Anim,true)
-    local itemsprite = Isaac.GetItemConfig():GetCollectible(activeitem).GfxFileName
+    local active_item = player:GetActiveItem(slot)
+    if active_item == 0 then return false end
+    local this_sprite = Sprite() -- replaced
+    this_sprite:Load(Anim,true)
+    local item_sprite = Isaac.GetItemConfig():GetCollectible(active_item).GfxFileName
     --Jar's check and sets item_sprite
-    if activeitem == 290 then -- the jar
-        itemsprite = "gfx/characters/costumes/costume_rebirth_90_thejar.png"
-    elseif activeitem == 434 then -- jar of flies
-        itemsprite = "gfx/characters/costumes/costume_434_jarofflies.png"
-    elseif activeitem == 685 then -- jar of wisp
-        itemsprite = "gfx/ui/hud_jarofwisps.png"
-    elseif activeitem == 720 then -- everything jar
-        itemsprite = "gfx/ui/hud_everythingjar.png"
+    if active_item == 290 then -- the jar
+        item_sprite = "gfx/characters/costumes/costume_rebirth_90_thejar.png"
+    elseif active_item == 434 then -- jar of flies
+        item_sprite = "gfx/characters/costumes/costume_434_jarofflies.png"
+    elseif active_item == 685 then -- jar of wisp
+        item_sprite = "gfx/ui/hud_jarofwisps.png"
+    elseif active_item == 720 then -- everything jar
+        item_sprite = "gfx/ui/hud_everythingjar.png"
     end
     -- TODO:Book of Virtuoses sprite set
     --if activeitem == 584 then
     --  itemsprite = "gfx/characters/costumes/costume_434_jarofflies.png"
     --end
     -- Urn of Souls - sprite set
-    if activeitem == 640 then
-        itemsprite = "gfx/ui/hud_urnofsouls.png"
+    if active_item == 640 then
+        item_sprite = "gfx/ui/hud_urnofsouls.png"
     end
-    thissprite:ReplaceSpritesheet(0, itemsprite)
-    thissprite:ReplaceSpritesheet(1, itemsprite)
-    thissprite:ReplaceSpritesheet(2, itemsprite)
-    thissprite:ReplaceSpritesheet(3, itemsprite)
-    thissprite:ReplaceSpritesheet(4, itemsprite)
-    thissprite:ReplaceSpritesheet(5, itemsprite)
-    thissprite:LoadGraphics() -- sets item overlay according to charges
+    this_sprite:ReplaceSpritesheet(0, item_sprite)
+    this_sprite:ReplaceSpritesheet(1, item_sprite)
+    this_sprite:ReplaceSpritesheet(2, item_sprite)
+    this_sprite:ReplaceSpritesheet(3, item_sprite)
+    this_sprite:ReplaceSpritesheet(4, item_sprite)
+    this_sprite:ReplaceSpritesheet(5, item_sprite)
+    if player:HasCollectible(584) and active_item ~= 584 then
+        item_sprite = 'gfx/ui/hud_bookofvirtues.png'
+        this_sprite:ReplaceSpritesheet(6, item_sprite)
+    end
+    this_sprite:LoadGraphics() -- sets item overlay according to charges
     -- Sets overlay/charges state frame --
-    local itemcharge = Isaac.GetItemConfig():GetCollectible(activeitem).MaxCharges -- gets max charges
+    local itemcharge = Isaac.GetItemConfig():GetCollectible(active_item).MaxCharges -- gets max charges
     if itemcharge == 0 then -- checks id item has any charges
-        thissprite:SetFrame("Idle", 0 ) -- set frame to unloaded
+        this_sprite:SetFrame("Idle", 0 ) -- set frame to unloaded
     elseif player:NeedsCharge(slot) == false or player:GetActiveCharge(slot) >= itemcharge then
         -- checks if item dont needs charges or item is overloaded
-        thissprite:SetFrame("Idle", 1) -- set frame to loaded
+        this_sprite:SetFrame("Idle", 1) -- set frame to loaded
     else
-        thissprite:SetFrame("Idle", 0) -- set frame to unloaded
+        this_sprite:SetFrame("Idle", 0) -- set frame to unloaded
     end
     --The Jar/Jar of Flies - charges check
-    if activeitem == 290 or activeitem == 434 then --
+    if active_item == 290 or active_item == 434 then --
         local frame = 0
-        if activeitem == 290 then frame = math.ceil(player:GetJarHearts()/2) end -- gets no of hearts in jar
-        if activeitem == 434 then frame = player:GetJarFlies() end --gets no of flies in jar of flies
-        thissprite:SetFrame("Jar", frame)
+        if active_item == 290 then frame = math.ceil(player:GetJarHearts()/2) end -- gets no of hearts in jar
+        if active_item == 434 then frame = player:GetJarFlies() end --gets no of flies in jar of flies
+        this_sprite:SetFrame("Jar", frame)
     end
     -- Everything Jar - charges set
-    if activeitem == 720  then
+    if active_item == 720  then
         fi_charge = player:GetActiveCharge()
-        thissprite:SetFrame("EverythingJar", fi_charge +1)
+        this_sprite:SetFrame("EverythingJar", fi_charge +1)
     end
     -- TODO: Jar of Wisp
     --if activeitem == 685 then
@@ -59,14 +63,14 @@ function coopHUD.getActiveItemSprite(player,slot)
     --    --TODO: get charges
     --end
     -- TODO:Urn of soul
-    if activeitem == 640 then
+    if active_item == 640 then
         fi_charge = 0
         print(player:GetJarFlies())
         --      --TODO: get charge of urn
-        thissprite:SetFrame("SoulUrn", fi_charge) -- sets frame
+        this_sprite:SetFrame("SoulUrn", fi_charge) -- sets frame
     end
 
-    return thissprite
+    return this_sprite
 end
 function coopHUD.getItemChargeSprite(player,slot) -- Gets charge of item from  player, slot
     --TODO: Bethany charge bar
