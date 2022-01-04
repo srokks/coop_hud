@@ -115,4 +115,18 @@ end
 function coopHUD.forceUpdateActives()
     forceUpdateActives = true
 end
+function coopHUD.updateAnchors()
+    if top_left ~= ScreenHelper.GetScreenTopLeft() then
+        coopHUD.anchors.top_left = ScreenHelper.GetScreenTopLeft()
+    end
+    if bot_left ~= ScreenHelper.GetScreenBottomLeft() then
+        coopHUD.anchors.bot_left = ScreenHelper.GetScreenBottomLeft()
+    end
+    if top_right ~= ScreenHelper.GetScreenTopRight() then
+        coopHUD.anchors. top_right = Vector(coopHUD.getMinimapOffset().X,ScreenHelper.GetScreenTopRight().Y)
+    end
+    if bot_right ~= ScreenHelper.GetScreenBottomRight() then
+        coopHUD.anchors.bot_right = ScreenHelper.GetScreenBottomRight()
+    end
+end
 coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM, coopHUD.forceUpdateActives)
