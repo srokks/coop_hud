@@ -30,9 +30,23 @@ function coopHUD.getActiveItemSprite(player,slot)
     this_sprite:ReplaceSpritesheet(3, item_sprite)
     this_sprite:ReplaceSpritesheet(4, item_sprite)
     this_sprite:ReplaceSpritesheet(5, item_sprite)
-    if player:HasCollectible(584) and active_item ~= 584 then
-        item_sprite = 'gfx/ui/hud_bookofvirtues.png'
-        this_sprite:ReplaceSpritesheet(6, item_sprite)
+
+
+    if player:HasCollectible(584)  or player:HasCollectible(619) then
+        -- checks if player has virtuoses or bithright
+        if player:HasCollectible(584) and active_item ~= 584 then -- sets virtuoses sprite
+            item_sprite = 'gfx/ui/hud_bookofvirtues.png'
+            this_sprite:ReplaceSpritesheet(6, item_sprite) end
+        if player:GetPlayerType() == 3 and player:HasCollectible(619)  then -- if judas and has birthrignt
+            if player:HasCollectible(584) and active_item ~= 584 then
+                 item_sprite = 'gfx/ui/hud_bookofvirtueswithbelial.png' -- sets virt/belial sprite
+                this_sprite:ReplaceSpritesheet(6, item_sprite)
+            else
+                 item_sprite = 'gfx/ui/hud_bookofbelial.png' -- sets belial sprite
+                this_sprite:ReplaceSpritesheet(6, item_sprite)
+            end
+        end
+
     end
     this_sprite:LoadGraphics() -- sets item overlay according to charges
     -- Sets overlay/charges state frame --
