@@ -71,18 +71,11 @@ function coopHUD.getActiveItemSprite(player,slot)
         fi_charge = player:GetActiveCharge()
         this_sprite:SetFrame("EverythingJar", fi_charge +1)
     end
-    -- TODO: Jar of Wisp
-    --if activeitem == 685 then
-    --    --TODO: anim frames
-    --    --TODO: get charges
-    --end
-    -- TODO:Urn of soul
-    if active_item == 640 then
-        fi_charge = 0
-        print(player:GetJarFlies())
-        --      --TODO: get charge of urn
-        this_sprite:SetFrame("SoulUrn", fi_charge) -- sets frame
+    -- Jar of Wisps sprite set
+    if active_item == 685 then
+        --TODO: Jar of Wisp
     end
+
 
     return this_sprite
 end
@@ -101,6 +94,7 @@ function coopHUD.getItemChargeSprite(player,slot)
     sprite:SetFrame("ChargeBar", step)
 
 end
+
 function coopHUD.getTrinketSprite(player, trinket_pos)
     Anim = "gfx/ui/item.anm2"
     local trinketid = player:GetTrinket(trinket_pos)
