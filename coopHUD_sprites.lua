@@ -86,20 +86,24 @@ function coopHUD.getActiveItemSprite(player,slot)
 
     return this_sprite
 end
-function coopHUD.getItemChargeSprite(player,slot)
-    -- Returns sprite with charge_bar from player - slot
+function coopHUD.getItemChargeSprite(player,slot) -- Gets charge of item from  player, slot
     --TODO: Bethany charge bar
-    local Anim = "gfx/ui/activechargebar.anm2"
-    local active_item = player:GetActiveItem(slot)
-    if active_item == 0 then return false end
-    local item_charge = Isaac.GetItemConfig():GetCollectible(active_item).MaxCharges
-    if item_charge == 0 then return false end
-    local sprite = Sprite()
-    sprite:Load(Anim,true)
+    Anim = "gfx/ui/activechargebar.anm2"
+    local activeitem = player:GetActiveItem(slot)
+    if activeitem == 0 then return false end
+    local itemcharge = Isaac.GetItemConfig():GetCollectible(activeitem).MaxCharges
+    if itemcharge == 0 then return false end
+    local thissprite = Sprite()
+    thissprite:Load(Anim,true)
     local charges = player:GetActiveCharge(slot) + player:GetBatteryCharge(slot)
-    local step = math.floor((charges/(item_charge *2))*46)
-    sprite:SetFrame("ChargeBar", step)
-
+    local step = math.floor((charges/(itemcharge*2))*46)
+    thissprite:SetFrame("ChargeBar", step)
+    if (itemcharge > 1 and itemcharge < 5) or itemcharge == 6 or itemcharge == 12 then
+        thissprite:PlayOverlay("BarOverlay" .. itemcharge, true)
+    else
+        thissprite:PlayOverlay("BarOverlay1", true)
+    end
+    return thissprite
 end
 function coopHUD.getTrinketSprite(player, trinket_pos)
     Anim = "gfx/ui/item.anm2"
