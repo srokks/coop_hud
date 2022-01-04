@@ -17,7 +17,7 @@ function coopHUD.getActiveItemSprite(player,slot)
         item_sprite = "gfx/ui/hud_everythingjar.png"
     end
     -- TODO:Book of Virtuoses sprite set
-    --if activeitem == 584 then
+    --if active_item == 584 then
     --  itemsprite = "gfx/characters/costumes/costume_434_jarofflies.png"
     --end
     -- Urn of Souls - sprite set
@@ -88,35 +88,35 @@ function coopHUD.getActiveItemSprite(player,slot)
 end
 function coopHUD.getItemChargeSprite(player,slot) -- Gets charge of item from  player, slot
     --TODO: Bethany charge bar
-    Anim = "gfx/ui/activechargebar.anm2"
-    local activeitem = player:GetActiveItem(slot)
-    if activeitem == 0 then return false end
-    local itemcharge = Isaac.GetItemConfig():GetCollectible(activeitem).MaxCharges
-    if itemcharge == 0 then return false end
-    local thissprite = Sprite()
-    thissprite:Load(Anim,true)
+    Anim = "gfx/ui/activechargebar_coop.anm2"
+    local active_item = player:GetActiveItem(slot)
+    if active_item == 0 then return false end
+    local item_charge = Isaac.GetItemConfig():GetCollectible(active_item).MaxCharges
+    if item_charge == 0 then return false end
+    local sprite = Sprite()
+    sprite:Load(Anim,true)
     local charges = player:GetActiveCharge(slot) + player:GetBatteryCharge(slot)
-    local step = math.floor((charges/(itemcharge*2))*46)
-    thissprite:SetFrame("ChargeBar", step)
-    if (itemcharge > 1 and itemcharge < 5) or itemcharge == 6 or itemcharge == 12 then
-        thissprite:PlayOverlay("BarOverlay" .. itemcharge, true)
+    local step = math.floor((charges/(item_charge *2))*46)
+    sprite:SetFrame("ChargeBar", step)
+    if (item_charge > 1 and item_charge < 5) or item_charge == 6 or item_charge == 12 then
+        sprite:PlayOverlay("BarOverlay" .. item_charge, true)
     else
-        thissprite:PlayOverlay("BarOverlay1", true)
+        sprite:PlayOverlay("BarOverlay1", true)
     end
-    return thissprite
+    return sprite
 end
 function coopHUD.getTrinketSprite(player, trinket_pos)
     Anim = "gfx/ui/item.anm2"
-    local trinketid = player:GetTrinket(trinket_pos)
-    if trinketid == 0 then return false end
-    local thissprite = Sprite()
-    thissprite:Load(Anim,true)
-    local itemsprite = Isaac.GetItemConfig():GetTrinket(trinketid).GfxFileName
-    thissprite:ReplaceSpritesheet(0, itemsprite)
-    thissprite:ReplaceSpritesheet(5, itemsprite)
-    thissprite:LoadGraphics()
-    thissprite:SetFrame("Idle", 0)
-    return thissprite
+    local trinket_id = player:GetTrinket(trinket_pos)
+    if trinket_id == 0 then return false end
+    local sprite = Sprite()
+    sprite:Load(Anim,true)
+    local item_sprite = Isaac.GetItemConfig():GetTrinket(trinket_id).GfxFileName
+    sprite:ReplaceSpritesheet(0, item_sprite)
+    sprite:ReplaceSpritesheet(5, item_sprite)
+    sprite:LoadGraphics()
+    sprite:SetFrame("Idle", 0)
+    return sprite
 end
 function coopHUD.getPocketID(player,slot)
     local pocket_id = 0
@@ -189,10 +189,10 @@ function coopHUD.getMainPocketDesc(player)
 
     elseif player:GetPill(0) > 0 then
         desc = "???" .. " "
-        local itempool = Game():GetItemPool()
-        if itempool:IsPillIdentified (player:GetPill(0)) then
-            local pilleffect = itempool:GetPillEffect(player:GetPill(0))
-            desc = Isaac.GetItemConfig():GetPillEffect(pilleffect).Name .. " "
+        local item_pool = Game():GetItemPool()
+        if item_pool:IsPillIdentified (player:GetPill(0)) then
+            local pill_effect = item_pool:GetPillEffect(player:GetPill(0))
+            desc = Isaac.GetItemConfig():GetPillEffect(pill_effect).Name .. " "
         end
     end
     return desc
