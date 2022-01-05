@@ -23,7 +23,7 @@ function coopHUD.updatePockets(player_no)
     end
     if coopHUD.players[player_no].first_pocket_charge ~= temp_player:GetActiveCharge(2) or forceUpdateActives then
         coopHUD.players[player_no].first_pocket_charge = temp_player:GetActiveCharge(2)
-        coopHUD.players[player_no].sprites.first_pocket_charge = coopHUD.getItemChargeSprite(temp_player,2)
+        coopHUD.players[player_no].sprites.first_pocket_charge = coopHUD.getChargeSprites(temp_player,2)
         coopHUD.players[player_no].first_pocket = coopHUD.getPocketID(temp_player,0)
         coopHUD.players[player_no].sprites.first_pocket = coopHUD.getPocketItemSprite(temp_player,0)
     end
@@ -34,15 +34,14 @@ function coopHUD.updateActives(player_no)
         coopHUD.players[player_no].first_active = temp_player:GetActiveItem(0)
         coopHUD.players[player_no].second_active = temp_player:GetActiveItem(1)
         coopHUD.players[player_no].sprites.first_active = coopHUD.getActiveItemSprite(temp_player,0)
-        coopHUD.players[player_no].sprites.first_active_charge = coopHUD.getItemChargeSprite(temp_player,0)
+        coopHUD.players[player_no].sprites.first_active_charge = coopHUD.getChargeSprites(temp_player,0)
         coopHUD.players[player_no].sprites.second_active = coopHUD.getActiveItemSprite(temp_player,1)
-        coopHUD.players[player_no].sprites.second_active_charge = coopHUD.getItemChargeSprite(temp_player,1)
+        coopHUD.players[player_no].sprites.second_active_charge = coopHUD.getChargeSprites(temp_player,1)
     end
-    --print(coopHUD.players[player_no].first_active_charge , temp_player:GetActiveCharge(0))
     if coopHUD.players[player_no].first_active_charge ~= temp_player:GetActiveCharge(0) or forceUpdateActives then
         coopHUD.players[player_no].first_active_charge = temp_player:GetActiveCharge(0)
         coopHUD.players[player_no].sprites.first_active = coopHUD.getActiveItemSprite(temp_player,0)
-        coopHUD.players[player_no].sprites.first_active_charge = coopHUD.getItemChargeSprite(temp_player,0)
+        coopHUD.players[player_no].sprites.first_active_charge = coopHUD.getChargeSprites(temp_player,0)
     end
 end
 function coopHUD.updateTrinkets(player_no)
@@ -103,12 +102,14 @@ function coopHUD.updateBethanyCharge(player_no)
         local temp_player = Isaac.GetPlayer(player_no)
         if coopHUD.players[player_no].bethany_charge ~= temp_player:GetBloodCharge() then
             coopHUD.players[player_no].bethany_charge = temp_player:GetBloodCharge()
+            coopHUD.players[player_no].first_active_charge = coopHUD.getChargeSprites(temp_player,0)
         end
     end
     if coopHUD.players[player_no].type == 18 then
         local temp_player = Isaac.GetPlayer(player_no)
         if coopHUD.players[player_no].bethany_charge ~= temp_player:GetSoulCharge() then
             coopHUD.players[player_no].bethany_charge = temp_player:GetSoulCharge()
+            coopHUD.players[player_no].first_active_charge = coopHUD.getChargeSprites(temp_player,0)
         end
     end
 end
