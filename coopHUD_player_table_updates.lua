@@ -3,6 +3,71 @@
 --- Created by srokks.
 --- DateTime: 04/01/2022 16:20
 ---
+function coopHUD.updatePlayer(player_no)
+    local temp_player = Isaac.GetPlayer(player_no)
+    local player_table = {}
+    player_table = {
+        --
+        first_active = temp_player:GetActiveItem(0),
+        first_active_charge = temp_player:GetActiveCharge(0),
+        second_active = temp_player:GetActiveItem(1),
+        second_active_charge = temp_player:GetActiveCharge(1),
+        first_trinket = temp_player:GetTrinket(0),
+        second_trinket = temp_player:GetTrinket(1),
+        first_pocket = coopHUD.getPocketID(temp_player,0),
+        first_pocket_charge = temp_player:GetActiveCharge(2),
+        second_pocket = coopHUD.getPocketID(temp_player,1),
+        third_pocket = coopHUD.getPocketID(temp_player,2),
+        pocket_desc = coopHUD.getMainPocketDesc(temp_player),
+        extra_lives = temp_player:GetExtraLives(),
+        has_guppy = temp_player:HasCollectible(212),
+        bethany_charge = nil, -- inits charge for Bethany
+        heart_types = coopHUD.getHeartTypeTable(temp_player),
+        sub_heart_types = {},
+        wisp_jar_use = 0, -- holds info about used jar of wisp FIXME:
+        total_hearts = math.ceil((temp_player:GetEffectiveMaxHearts() + temp_player:GetSoulHearts())/2),
+        ---
+        type = temp_player:GetPlayerType(),
+        ---
+        has_sub = false,
+        ---
+        sprites = {
+            first_active = coopHUD.getActiveItemSprite(temp_player,0),
+            first_active_charge = coopHUD.getChargeSprites(temp_player,0),
+            first_active_bethany_charge = nil,
+            second_active = coopHUD.getActiveItemSprite(temp_player,1),
+            second_active_charge = coopHUD.getChargeSprites(temp_player,1),
+            first_trinket = coopHUD.getTrinketSprite(temp_player,0),
+            second_trinket = coopHUD.getTrinketSprite(temp_player,1),
+            first_pocket = coopHUD.getPocketItemSprite(temp_player,0),
+            first_pocket_charge = coopHUD.getChargeSprites(temp_player,2),
+            second_pocket = coopHUD.getPocketItemSprite(temp_player,1),
+            third_pocket = coopHUD.getPocketItemSprite(temp_player,2),
+            hearts = coopHUD.getHeartSpriteTable(temp_player),
+            sub_hearts = nil
+        },
+    }
+    -- Bethany/T.Bethany check
+    if player_table.type == 18 or player_table.type == 36 then
+        if player_table.type == 18 then
+            player_table.bethany_charge = temp_player:GetSoulCharge()
+        else
+            player_table.bethany_charge = temp_player:GetBloodCharge()
+        end
+    end
+    -- Forgotten/Soul check
+    if  player_table.type == 16 or player_table.type == 17 then
+        player_table.has_sub = true
+        local sub = temp_player:GetSubPlayer()
+        player_table.sprites.sub_hearts = coopHUD.getHeartSpriteTable(sub)
+        player_table.sub_heart_types = coopHUD.getHeartTypeTable(sub)
+    end
+    if player_table.type == 19 then -- Jacob/Essau check
+        --TODO: Jacob/Essau: make player_num+1-> render second in oposite corner/ restrict only when 1
+        --players.has_sub = true
+    end
+    coopHUD.players[player_no] = player_table
+end
 function coopHUD.updatePockets(player_no)
     local temp_player = Isaac.GetPlayer(player_no)
     -- TODO: refresh pocket items on use
@@ -113,8 +178,11 @@ function coopHUD.updateBethanyCharge(player_no)
         end
     end
 end
-function coopHUD.forceUpdateActives()
+function coopHUD.forceUpdateActives(a)
     forceUpdateActives = true
+    for k, v in pairs(a) do
+        print(k, v)
+    end
 end
 function coopHUD.updateAnchors()
     if coopHUD.anchors.top_left ~= ScreenHelper.GetScreenTopLeft() then
