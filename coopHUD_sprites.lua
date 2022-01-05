@@ -16,10 +16,6 @@ function coopHUD.getActiveItemSprite(player,slot)
     elseif active_item == 720 then -- everything jar
         item_sprite = "gfx/ui/hud_everythingjar.png"
     end
-    -- TODO:Book of Virtuoses sprite set
-    --if active_item == 584 then
-    --  itemsprite = "gfx/characters/costumes/costume_434_jarofflies.png"
-    --end
     -- Urn of Souls - sprite set
     if active_item == 640 then
         item_sprite = "gfx/ui/hud_urnofsouls.png"
@@ -71,11 +67,14 @@ function coopHUD.getActiveItemSprite(player,slot)
         fi_charge = player:GetActiveCharge()
         this_sprite:SetFrame("EverythingJar", fi_charge +1)
     end
-    -- TODO: Jar of Wisp
-    --if activeitem == 685 then
-    --    --TODO: anim frames
-    --    --TODO: get charges
-    --end
+     --TODO: Jar of Wisp
+    if active_item == 685 then
+        --print(coopHUD.jar_of_wisp_charge,'test')
+        if coopHUD.jar_of_wisp_charge > 12 then
+            coopHUD.jar_of_wisp_charge = 12
+        end
+        this_sprite:SetFrame('WispJar',coopHUD.jar_of_wisp_charge)
+    end
     -- TODO:Urn of soul
     if active_item == 640 then
         fi_charge = 0
