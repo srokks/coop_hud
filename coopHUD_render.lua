@@ -237,28 +237,6 @@ function coopHUD.renderItems()
     key_no = string.format("%.2i", key_no)
     f:DrawString(key_no,pos.X+16,pos.Y,color,0,true)
 end
-function coopHUD.renderChargeBarWIP()
-    local temp_player = Isaac.GetPlayer(0)
-    b = coopHUD.getItemChargeSprite(temp_player,2)
-    local active_item = player:GetActiveItem(slot)
-    local item_charge = Isaac.GetItemConfig():GetCollectible(active_item).MaxCharges
-    local charges = player:GetActiveCharge(slot) + player:GetBatteryCharge(slot)
-    local step = math.floor((charges/(item_charge *2))*46)
-    local step2 = math.floor((temp_player:GetEffectiveBloodCharge()/(item_charge *2))*46)
-    b:SetFrame("ChargeBar", step+1+step2)
-
-    local col = Color(1,1,1,1,0,0,0)
-    col:SetColorize(0.8,0.9,1.8,1) -- bethany soul charge color
-    --col:SetColorize(1,0.2,0.2,1) --  bethany blood charge color
-    b.Color = col
-    b:RenderLayer(1,Vector(100,100))
-     a = coopHUD.getItemChargeSprite(temp_player,0)
-    a:RenderLayer(1,Vector(100,100))
-    a:RenderLayer(2,Vector(100,100))
-    frame = a:GetOverlayAnimation()
-    a:SetFrame(frame,0)
-    a:RenderLayer(0,Vector(100,100))
-end
 local counter = 0
 function  coopHUD.render()
     onRender = true
@@ -289,7 +267,6 @@ function  coopHUD.render()
             coopHUD.renderPlayer(i)
         end
         coopHUD.renderItems()
-
     end
 end
 

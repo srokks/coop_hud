@@ -86,26 +86,6 @@ function coopHUD.getActiveItemSprite(player,slot)
 
     return this_sprite
 end
-function coopHUD.getItemChargeSprite(player,slot)
-    -- Gets charge of item from  player, slot
-    -- Old function
-    Anim = "gfx/ui/activechargebar_coop.anm2"
-    local active_item = player:GetActiveItem(slot)
-    if active_item == 0 then return false end
-    local item_charge = Isaac.GetItemConfig():GetCollectible(active_item).MaxCharges
-    if item_charge == 0 then return false end
-    local sprite = Sprite()
-    sprite:Load(Anim,true)
-    local charges = player:GetActiveCharge(slot) + player:GetBatteryCharge(slot)
-    local step = math.floor((charges/(item_charge *2))*46)
-    sprite:SetFrame("ChargeBar", step)
-    if (item_charge > 1 and item_charge < 5) or item_charge == 6 or item_charge == 12 then
-        sprite:PlayOverlay("BarOverlay" .. item_charge, true)
-    else
-        sprite:PlayOverlay("BarOverlay1", true)
-    end
-    return sprite
-end
 function coopHUD.getChargeSprites(player,slot) -- Gets charge of item from  player, slot
     local sprites = {
         beth_charge = Sprite(),
@@ -295,8 +275,6 @@ function coopHUD.getHeartType(player,heart_pos)
                         heart_type = "EmptyHeart"
                     end
                 end
-
-
             end
             if player:GetEternalHearts() > 0 and heart_pos+1 == player:GetMaxHearts()/2 and player:GetHearts()-(heart_pos*2) < 3  then
                 eternal = true
