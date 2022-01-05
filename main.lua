@@ -144,7 +144,7 @@ local vector_zero = Vector(0,0)
 local top_left_anchor = ScreenHelper.GetScreenTopLeft()
 local bottom_left_anchor = ScreenHelper.GetScreenBottomLeft()
 --
-local players_no = 0
+players_no = 0
 coopHUD.players = {}
 -- init
 function coopHUD.init()
