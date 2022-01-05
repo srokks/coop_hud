@@ -46,10 +46,10 @@ function coopHUD.getActiveItemSprite(player,slot)
     end
     this_sprite:LoadGraphics() -- sets item overlay according to charges
     -- Sets overlay/charges state frame --
-    local itemcharge = Isaac.GetItemConfig():GetCollectible(active_item).MaxCharges -- gets max charges
-    if itemcharge == 0 then -- checks id item has any charges
+    local item_charge = Isaac.GetItemConfig():GetCollectible(active_item).MaxCharges -- gets max charges
+    if item_charge == 0 then -- checks id item has any charges
         this_sprite:SetFrame("Idle", 0 ) -- set frame to unloaded
-    elseif player:NeedsCharge(slot) == false or player:GetActiveCharge(slot) >= itemcharge then
+    elseif player:NeedsCharge(slot) == false or player:GetActiveCharge(slot) >= item_charge then
         -- checks if item dont needs charges or item is overloaded
         this_sprite:SetFrame("Idle", 1) -- set frame to loaded
     else
