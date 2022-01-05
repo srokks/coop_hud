@@ -257,3 +257,53 @@ function coopHUD.renderChargeBarWIP()
     a:SetFrame(frame,0)
     a:RenderLayer(0,Vector(100,100))
 end
+local counter = 0
+function  coopHUD.render()
+    onRender = true
+    --if issomeonejoining == false then
+    --    Game():GetHUD():SetVisible(false)
+    --else
+    --    onRender = false
+    --    Game():GetHUD():SetVisible(true)
+    --end
+    if onRender  then
+        -- Function is triggered by callback 2 times per second
+        -- Check/update user item with longer span - checking with call back cause lag
+
+        counter = counter+1
+        if counter == 6 then
+            coopHUD.updateAnchors()
+            for i=0,players_no,1 do
+                coopHUD.updateActives(i)
+                coopHUD.updateTrinkets(i)
+                coopHUD.updatePockets(i)
+                coopHUD.updateHearts(i)
+                coopHUD.updateExtraLives(i)
+                coopHUD.updateBethanyCharge(i)
+                counter = 0
+            end
+        end
+        for i=0,players_no,1 do
+            coopHUD.renderPlayer(i)
+        end
+        coopHUD.renderItems()
+
+    end
+end
+
+function coopHUD.renderChargeBar(sprites,pos)
+    print(sprites.charge)
+    if sprites.charge then
+        sprites.charge:RenderLayer(0,pos)  -- renders background
+    end
+    if sprites.beth_charge then
+        sprites.beth_charge:RenderLayer(1,pos) -- renders bethany charge
+    end
+    if sprites.charge then
+        sprites.charge:RenderLayer(1,pos)
+        sprites.charge:RenderLayer(2,pos)
+    end
+    if sprites.overlay then
+        sprites.overlay:Render(pos)
+    end
+end
