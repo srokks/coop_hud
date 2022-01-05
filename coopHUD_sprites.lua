@@ -106,6 +106,50 @@ function coopHUD.getItemChargeSprite(player,slot)
     end
     return sprite
 end
+function coopHUD.getChargeSprites(player,slot) -- Gets charge of item from  player, slot
+    local sprites = {
+        beth_charge = Sprite(),
+        charge = Sprite(),
+        overlay = Sprite(),
+    }
+    local anim = "gfx/ui/activechargebar_coop.anm2"
+    local active_item = player:GetActiveItem(slot)
+    if active_item == 0 then return false end
+    local item_charge = Isaac.GetItemConfig():GetCollectible(active_item).MaxCharges
+    if item_charge == 0 then return false end
+    -- Normal and battery charge
+    local charges = player:GetActiveCharge(slot) + player:GetBatteryCharge(slot)
+    local step = math.floor((charges/(item_charge *2))*46)
+    sprites.charge:Load(anim,true)
+    sprites.charge:SetFrame('ChargeBar',step)
+    -- Overlay sprite
+    sprites.overlay:Load(anim,true)
+    if (item_charge > 1 and item_charge < 5) or item_charge == 6 or item_charge == 12 then
+        sprites.overlay:SetFrame("BarOverlay" .. item_charge, 0)
+    else
+        sprites.overlay:SetFrame("BarOverlay1", 0)
+    end
+    -- Bethany charge
+    local player_type = player:GetPlayerType()
+    if player_type == 18 or player_type == 36 then
+        local beth_charge
+        local color = Color(1,1,1,1,0,0,0)
+        if  player_type == 18 then
+            beth_charge = player:GetEffectiveSoulCharge()
+            color:SetColorize(0.8,0.9,1.8,1)
+        elseif player_type == 36 then
+            beth_charge = player:GetEffectiveBloodCharge()
+            color:SetColorize(1,0.2,0.2,1)
+        end
+        sprites.beth_charge:Load(anim,true)
+        sprites.beth_charge.Color = color
+        step = step +  math.floor((beth_charge/(item_charge *2))*46)
+        sprites.beth_charge:SetFrame('ChargeBar',step)
+    else
+        sprites.beth_charge = false
+    end
+    return sprites
+end
 function coopHUD.getTrinketSprite(player, trinket_pos)
     Anim = "gfx/ui/item.anm2"
     local trinket_id = player:GetTrinket(trinket_pos)
