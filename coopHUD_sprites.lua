@@ -143,7 +143,7 @@ function coopHUD.getChargeSprites(player,slot) -- Gets charge of item from  play
         end
         sprites.beth_charge:Load(anim,true)
         sprites.beth_charge.Color = color
-        step = step +  math.floor((beth_charge/(item_charge *2))*46)
+        step = step +  math.floor((beth_charge/(item_charge *2))*46) + 1
         sprites.beth_charge:SetFrame('ChargeBar',step)
     else
         sprites.beth_charge = false

@@ -6,13 +6,13 @@ function coopHUD.renderPlayer(player_no)
     local mirrored = false
 
     if coopHUD.players_config[player_no].snap_side == 'left' then -- Sets vectors for left side
-        anchor_top = anchors.top_left
+        anchor_top = coopHUD.anchors.top_left
         active_vector.X = active_vector.X +16
         second_item_x_off = 8
         vector_modifier = 12
         active_off = 48
     elseif coopHUD.players_config[player_no].snap_side == 'right' then -- Sets vectors for left side
-        anchor_top = anchors.top_right
+        anchor_top = coopHUD.anchors.top_right
         mirrored = true
         second_item_x_off = -12
         active_vector.X = active_vector.X -4
@@ -31,15 +31,16 @@ function coopHUD.renderPlayer(player_no)
         end
         if coopHUD.players[player_no].sprites.second_active_charge then -- Second item charge render -- UGLY - can turn on
             coopHUD.players[player_no].sprites.second_active_charge.Scale = Vector(0.5,0.5)
-            coopHUD.players[player_no].sprites.second_active_charge:Render(Vector(anchor_top.X +second_item_x_off+8,anchor_top.Y +8), vector_zero, vector_zero)
+            --coopHUD.players[player_no].sprites.second_active_charge:Render(Vector(anchor_top.X +second_item_x_off+8,anchor_top.Y +8), vector_zero, vector_zero)
         end
         if coopHUD.players[player_no].sprites.first_active then
-            -- First item charge render
+            -- First item render
             coopHUD.players[player_no].sprites.first_active:Render(Vector(anchor_top.X+active_vector.X,anchor_top.Y+16),VECTOR_ZERO,VECTOR_ZERO)
         end
-        if coopHUD.players[player_no].sprites.first_active_charge then
-            -- First item render
-            coopHUD.players[player_no].sprites.first_active_charge:Render(Vector(anchor_top.X+active_vector.X+20,anchor_top.Y+16), VECTOR_ZERO, VECTOR_ZERO)
+        if coopHUD.players[player_no].sprites.first_active_charge.charge then
+            -- First item charge render
+            local pos = Vector(anchor_top.X+active_vector.X+20,anchor_top.Y+16)
+            coopHUD.renderChargeBar(coopHUD.players[player_no].sprites.first_active_charge,pos)
         end
     else
         active_item_off.X = active_item_off.X + vector_modifier
@@ -112,12 +113,12 @@ function coopHUD.renderPlayer(player_no)
     ---- POCKETS RENDER
     local down_vector = Vector(0,0)
     if coopHUD.players_config[player_no].snap_side == 'left' then -- Sets vectors for left side
-        anchor = anchors.bot_left
+        anchor = coopHUD.anchors.bot_left
         down_vector.X = down_vector.X +16
         pocket_off = 20
         alternate_pockets_off = 8
     elseif coopHUD.players_config[player_no].snap_side == 'right' then -- Sets vectors for left side
-        anchor = anchors.bot_right
+        anchor = coopHUD.anchors.bot_right
         down_vector.X = down_vector.X -24
         pocket_off = -52
         alternate_pockets_off = -8
@@ -139,8 +140,9 @@ function coopHUD.renderPlayer(player_no)
         coopHUD.players[player_no].sprites.first_pocket:Render(Vector(anchor.X+down_vector.X,anchor.Y-16), VECTOR_ZERO, VECTOR_ZERO)
         -- Main pocket charge
         if coopHUD.players[player_no].sprites.first_pocket:GetDefaultAnimation() == 'Idle' then -- checks if item is not pill of card
-            if coopHUD.players[player_no].sprites.first_pocket_charge then
-                coopHUD.players[player_no].sprites.first_pocket_charge:Render(Vector(anchor.X+down_vector.X + charge_off,anchor.Y-16), vector_zero, vector_zero)
+            if coopHUD.players[player_no].sprites.first_pocket_charge.charge then
+                local pos = Vector(anchor.X+down_vector.X + charge_off,anchor.Y-16)
+                coopHUD.renderChargeBar(coopHUD.players[player_no].sprites.first_pocket_charge,pos)
             end
         end
         local f = Font()
