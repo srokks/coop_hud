@@ -37,7 +37,7 @@ function coopHUD.renderPlayer(player_no)
             -- First item render
             coopHUD.players[player_no].sprites.first_active:Render(Vector(anchor_top.X+active_vector.X,anchor_top.Y+16),VECTOR_ZERO,VECTOR_ZERO)
         end
-        if coopHUD.players[player_no].sprites.first_active_charge.charge then
+        if coopHUD.players[player_no].sprites.first_active_charge then
             -- First item charge render
             local pos = Vector(anchor_top.X+active_vector.X+20,anchor_top.Y+16)
             coopHUD.renderChargeBar(coopHUD.players[player_no].sprites.first_active_charge,pos)
