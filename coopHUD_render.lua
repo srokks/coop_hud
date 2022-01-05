@@ -271,7 +271,6 @@ function  coopHUD.render()
 end
 
 function coopHUD.renderChargeBar(sprites,pos)
-    print(sprites.charge)
     if sprites.charge then
         sprites.charge:RenderLayer(0,pos)  -- renders background
     end
