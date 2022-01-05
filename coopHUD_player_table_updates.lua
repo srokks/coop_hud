@@ -3,6 +3,7 @@
 --- Created by srokks.
 --- DateTime: 04/01/2022 16:20
 ---
+coopHUD.jar_of_wisp_charge = 1 -- Global value of jar_of_wisp_charge
 function coopHUD.updatePlayer(player_no)
     local temp_player = Isaac.GetPlayer(player_no)
     local player_table = {}
@@ -95,6 +96,9 @@ function coopHUD.updatePockets(player_no)
 end
 function coopHUD.updateActives(player_no)
     local temp_player = Isaac.GetPlayer(player_no)
+    if coopHUD.players[player_no].first_active == 685 and coopHUD.jar_of_wisp_charge == nil then
+        coopHUD.jar_of_wisp_charge = 1
+    end
     if coopHUD.players[player_no].first_active ~= temp_player:GetActiveItem(0)  then
         coopHUD.players[player_no].first_active = temp_player:GetActiveItem(0)
         coopHUD.players[player_no].second_active = temp_player:GetActiveItem(1)
@@ -178,10 +182,15 @@ function coopHUD.updateBethanyCharge(player_no)
         end
     end
 end
-function coopHUD.forceUpdateActives(a)
-    forceUpdateActives = true
-    for k, v in pairs(a) do
-        print(k, v)
+function coopHUD.forceUpdateActives()
+    local player = Isaac.GetPlayer(0)
+    local tempEffects = player:GetEffects()
+    -- In case theres jar of wisp in game if used increment global charge value
+    -- It's workaround due broken ActiveItemDesc.VarData api function
+    -- FIXME: wait till api is fixed
+    if coopHUD.jar_of_wisp_charge ~= nil and tempEffects:GetCollectibleEffectNum(685) + 2 ~= coopHUD.jar_of_wisp_charge then
+        coopHUD.jar_of_wisp_charge = coopHUD.jar_of_wisp_charge + 1
+        -- TODO: check if every player trigger it
     end
 end
 function coopHUD.updateAnchors()
