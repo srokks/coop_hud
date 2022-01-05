@@ -86,8 +86,9 @@ function coopHUD.getActiveItemSprite(player,slot)
 
     return this_sprite
 end
-function coopHUD.getItemChargeSprite(player,slot) -- Gets charge of item from  player, slot
-    --TODO: Bethany charge bar
+function coopHUD.getItemChargeSprite(player,slot)
+    -- Gets charge of item from  player, slot
+    -- Old function
     Anim = "gfx/ui/activechargebar_coop.anm2"
     local active_item = player:GetActiveItem(slot)
     if active_item == 0 then return false end
