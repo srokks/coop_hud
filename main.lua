@@ -103,27 +103,30 @@ function coopHUD.updatePlayer(player_no)
         ---
         sprites = {
             first_active = coopHUD.getActiveItemSprite(temp_player,0),
-            first_active_charge = coopHUD.getItemChargeSprite(temp_player,0),
+            first_active_charge = coopHUD.getChargeSprites(temp_player,0),
+            first_active_bethany_charge = nil,
             second_active = coopHUD.getActiveItemSprite(temp_player,1),
-            second_active_charge = coopHUD.getItemChargeSprite(temp_player,1),
+            second_active_charge = coopHUD.getChargeSprites(temp_player,1),
             first_trinket = coopHUD.getTrinketSprite(temp_player,0),
             second_trinket = coopHUD.getTrinketSprite(temp_player,1),
             first_pocket = coopHUD.getPocketItemSprite(temp_player,0),
-            first_pocket_charge = coopHUD.getItemChargeSprite(temp_player,2),
+            first_pocket_charge = coopHUD.getChargeSprites(temp_player,2),
             second_pocket = coopHUD.getPocketItemSprite(temp_player,1),
             third_pocket = coopHUD.getPocketItemSprite(temp_player,2),
             hearts = coopHUD.getHeartSpriteTable(temp_player),
             sub_hearts = nil
         },
     }
-    if player_table.type == 18 or player_table.type == 36 then -- Bethany/T.Bethany check
+    -- Bethany/T.Bethany check
+    if player_table.type == 18 or player_table.type == 36 then
         if player_table.type == 18 then
             player_table.bethany_charge = temp_player:GetSoulCharge()
         else
             player_table.bethany_charge = temp_player:GetBloodCharge()
         end
     end
-    if  player_table.type == 16 or player_table.type == 17 then -- Forgotten/Soul check
+    -- Forgotten/Soul check
+    if  player_table.type == 16 or player_table.type == 17 then
         player_table.has_sub = true
         local sub = temp_player:GetSubPlayer()
         player_table.sprites.sub_hearts = coopHUD.getHeartSpriteTable(sub)
