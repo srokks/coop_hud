@@ -199,6 +199,7 @@ function coopHUD.getPocketItemSprite(player,slot)
     return pocket_sprite
 end
 function coopHUD.getMainPocketDesc(player)
+    --TODO: fix desc generation - new lang files
     desc = 'Error'
     if player:GetPill(0) < 1 and player:GetCard(0) < 1 then
         if player:GetActiveItem(2) > 0 then
@@ -393,6 +394,7 @@ function coopHUD.getHeartSpriteTable(player)
     local max_health_cap = 12
     local heart_type,overlay = ''
     local heart_sprites = {}
+    -- TODO: T.Maggy integrate with birthright - max cap increased to 18
     for counter=0,12,1 do
         heart_type,overlay = coopHUD.getHeartType(player,counter)
         heart_sprites[counter] = coopHUD.getHeartSprite(heart_type,overlay)
@@ -400,6 +402,8 @@ function coopHUD.getHeartSpriteTable(player)
     return heart_sprites
 end
 function coopHUD.getHeartTypeTable(player)
+    --TODO: T. Maggy pulsing hearts
+    --TODO: Broken heart type integration - https://bindingofisaacrebirth.fandom.com/wiki/Health#Broken_Hearts
     local max_health_cap = 12
     local heart_type,overlay = ''
     local heart_types = {}
