@@ -56,6 +56,7 @@ coopHUD.players_config[1] = {
 }
 coopHUD.players = {}
 ---
+include("coopHUD_globals.lua")
 include("coopHUD_player_table_updates.lua")
 include("coopHUD_sprites.lua")
 include("coopHUD_render.lua")
