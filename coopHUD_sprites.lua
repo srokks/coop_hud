@@ -60,15 +60,21 @@ function coopHUD.getActiveItemSprite(player,slot)
         end
         this_sprite:SetFrame('WispJar',coopHUD.jar_of_wisp_charge + wisp_charge) -- sets proper frame
     end
-    -- TODO:Urn of soul
+    -- Urn of soul
+    -- For this moment can only show when urn is open/closed no api function
+    -- FIXME: Urn of soul charge: wait till api is fixed
     if active_item == 640 then
-        fi_charge = 0
-        print(player:GetJarFlies())
-        --      --TODO: get charge of urn
-        this_sprite:SetFrame("SoulUrn", fi_charge) -- sets frame
+         -- sets frame
+        local tempEffects = player:GetEffects()
+        local urn_state = tempEffects:GetCollectibleEffectNum(640) -- gets effect of item 0-closed urn/1- opened
+        local state = 0  -- closed urn frame no
+        if urn_state ~= 0 then -- checks if urn is open
+            state = 22 -- opened urn frame no
+        end
+        this_sprite:SetFrame("SoulUrn", state)
     end
     if player:HasCollectible(584)  or player:HasCollectible(619) then
-        -- checks if player has virtuoses or bithright
+        -- checks if player has virtuoses or birthright
         if player:HasCollectible(584) and active_item ~= 584 then -- sets virtuoses sprite
             item_sprite = 'gfx/ui/hud_bookofvirtues.png'
             this_sprite:ReplaceSpritesheet(3, item_sprite)
