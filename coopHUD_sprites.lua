@@ -234,7 +234,6 @@ function coopHUD.getHeartType(player,heart_pos)
     local golden = false
     local remain_souls = 0
     if player_type == 10 or player_type == 31 then
-        --TODO: Lost custom heart
         if heart_pos == 0 then -- only returns for first pos
             -- checks if Holy Mantle is loaded
             if player:GetEffects():GetCollectibleEffectNum(CollectibleType.COLLECTIBLE_HOLY_MANTLE) ~= 0 then
