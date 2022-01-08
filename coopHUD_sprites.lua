@@ -1,6 +1,4 @@
 function coopHUD.getActiveItemSprite(player,slot)
-    -- Todo: change name of item animaton file
-    local Anim = "gfx/ui/tit.anm2"
     local overlay = ''
     local active_item = player:GetActiveItem(slot)
     if active_item == 0 then return false end
@@ -142,12 +140,10 @@ function coopHUD.getChargeSprites(player,slot) -- Gets charge of item from  play
     return sprites
 end
 function coopHUD.getTrinketSprite(player, trinket_pos)
-    -- Todo: change name of item animaton file
-    Anim = "gfx/ui/tit.anm2"
     local trinket_id = player:GetTrinket(trinket_pos)
     if trinket_id == 0 then return false end
     local sprite = Sprite()
-    sprite:Load(Anim,true)
+    sprite:Load(coopHUD.GLOBALS.item_anim_path,true)
     local item_sprite = Isaac.GetItemConfig():GetTrinket(trinket_id).GfxFileName
     sprite:ReplaceSpritesheet(0, item_sprite) -- item layer
     sprite:ReplaceSpritesheet(2, item_sprite) -- shadow layer
@@ -190,13 +186,11 @@ function coopHUD.getPocketItemSprite(player,slot)
     local pocket_type = pocket[2]
     local pocket_id = pocket[1]
     if pocket_type == 1 then -- Card
-        anim = "gfx/ui/hud_card_coop.anm2"
-        pocket_sprite:Load(anim,true)
+        pocket_sprite:Load(coopHUD.GLOBALS.card_anim_path,true)
         pocket_sprite:SetFrame("CardFronts", pocket_id) -- sets card frame
     elseif pocket_type == 2 then -- Pill
         if pocket_id > 2048 then pocket_id = pocket_id - 2048 end -- check if its horse pill and change id to normal
-        anim = "gfx/ui/hud_pills_coop.anm2"
-        pocket_sprite:Load(anim,true)
+        pocket_sprite:Load(coopHUD.GLOBALS.pill_anim_path,true)
         pocket_sprite:SetFrame("Pills", pocket_id) --sets frame to pills with correct id
         return pocket_sprite
     elseif pocket_type == 3 then
@@ -382,9 +376,8 @@ function coopHUD.getHeartType(player,heart_pos)
 end
 function coopHUD.getHeartSprite(heart_type,overlay)
     if heart_type ~= 'None' then
-        local Anim = "gfx/ui/ui_hearts.anm2"
         local sprite = Sprite()
-        sprite:Load(Anim,true)
+        sprite:Load(coopHUD.GLOBALS.hearts_anim_path,true)
         sprite:SetFrame(heart_type, 0)
         if overlay ~= 'None'  then
             sprite:SetOverlayFrame (overlay, 0 )
