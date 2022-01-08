@@ -101,7 +101,6 @@ function coopHUD.getChargeSprites(player,slot) -- Gets charge of item from  play
         charge = Sprite(),
         overlay = Sprite(),
     }
-    local anim = "gfx/ui/activechargebar_coop.anm2"
     local active_item = player:GetActiveItem(slot)
     if active_item == 0 then return false end
     local item_charge = Isaac.GetItemConfig():GetCollectible(active_item).MaxCharges
@@ -109,10 +108,10 @@ function coopHUD.getChargeSprites(player,slot) -- Gets charge of item from  play
     -- Normal and battery charge
     local charges = player:GetActiveCharge(slot) + player:GetBatteryCharge(slot)
     local step = math.floor((charges/(item_charge *2))*46)
-    sprites.charge:Load(anim,true)
+    sprites.charge:Load(coopHUD.GLOBALS.charge_anim_path,true)
     sprites.charge:SetFrame('ChargeBar',step)
     -- Overlay sprite
-    sprites.overlay:Load(anim,true)
+    sprites.overlay:Load(coopHUD.GLOBALS.charge_anim_path,true)
     if (item_charge > 1 and item_charge < 5) or item_charge == 6 or item_charge == 12 then
         sprites.overlay:SetFrame("BarOverlay" .. item_charge, 0)
     else
@@ -130,7 +129,7 @@ function coopHUD.getChargeSprites(player,slot) -- Gets charge of item from  play
             beth_charge = player:GetEffectiveBloodCharge()
             color:SetColorize(1,0.2,0.2,1)
         end
-        sprites.beth_charge:Load(anim,true)
+        sprites.beth_charge:Load(coopHUD.GLOBALS.charge_anim_path,true)
         sprites.beth_charge.Color = color
         step = step +  math.floor((beth_charge/(item_charge *2))*46) + 1
         sprites.beth_charge:SetFrame('ChargeBar',step)
@@ -181,7 +180,6 @@ end
 function coopHUD.getPocketItemSprite(player,slot)
     -- cards/runes/
     local pocket_sprite = Sprite()
-    local anim = ''
     local pocket = coopHUD.getPocketID(player,slot)
     local pocket_type = pocket[2]
     local pocket_id = pocket[1]
