@@ -47,13 +47,18 @@ function coopHUD.getActiveItemSprite(player,slot)
         fi_charge = player:GetActiveCharge()
         this_sprite:SetFrame("EverythingJar", fi_charge +1)
     end
-     --TODO: Jar of Wisp
-    if active_item == 685 then
-        --print(coopHUD.jar_of_wisp_charge,'test')
-        if coopHUD.jar_of_wisp_charge > 12 then
-            coopHUD.jar_of_wisp_charge = 12
+    -- Jar of wisp - charges set
+    if active_item == 685 and coopHUD.jar_of_wisp_charge ~= nil then
+        local wisp_charge =  0
+        if item_charge == 0 then -- checks id item has any charges
+            wisp_charge = 0 -- set frame to unloaded
+        elseif player:NeedsCharge(slot) == false or player:GetActiveCharge(slot) >= item_charge then
+            -- checks if item dont needs charges or item is overloaded
+            wisp_charge = 15 -- set frame to loaded
+        else
+            wisp_charge = 0 -- set frame to unloaded
         end
-        this_sprite:SetFrame('WispJar',coopHUD.jar_of_wisp_charge)
+        this_sprite:SetFrame('WispJar',coopHUD.jar_of_wisp_charge + wisp_charge) -- sets proper frame
     end
     -- TODO:Urn of soul
     if active_item == 640 then

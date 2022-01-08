@@ -3,7 +3,7 @@
 --- Created by srokks.
 --- DateTime: 04/01/2022 16:20
 ---
-coopHUD.jar_of_wisp_charge = 1 -- Global value of jar_of_wisp_charge
+coopHUD.jar_of_wisp_charge = nil -- Global value of jar_of_wisp_charge
 function coopHUD.updatePlayer(player_no)
     local temp_player = Isaac.GetPlayer(player_no)
     local player_table = {}
@@ -97,13 +97,21 @@ end
 function coopHUD.updateActives(player_no)
     local temp_player = Isaac.GetPlayer(player_no)
     if coopHUD.players[player_no].first_active == 685 and coopHUD.jar_of_wisp_charge == nil then
-        coopHUD.jar_of_wisp_charge = 1
+        coopHUD.jar_of_wisp_charge = 0  -- sets default val if item is picked first time
     end
-    -- Catches if player uses jar of the wisp and increment global charge value
+    -- Catches if player uses jar of the wisp, checks effects of jar of wisp in this run
+    -- and increment global charge value.
+    -- Dont work on dubled jar of wisp due to item pool or in ex. Dipoipia
     -- It's workaround due broken ActiveItemDesc.VarData api function
-    -- FIXME: wait till api is fixed
+    -- FIXME: Jar of wisp charge: wait till api is fixed
     if Input.IsActionPressed(ButtonAction.ACTION_ITEM, 0) and coopHUD.players[player_no].first_active == 685 then
-        coopHUD.jar_of_wisp_charge = coopHUD.jar_of_wisp_charge + 1
+        local tempEffects = player:GetEffects()
+        if coopHUD.jar_of_wisp_charge ~= tempEffects:GetCollectibleEffectNum(685) then
+            coopHUD.jar_of_wisp_charge = tempEffects:GetCollectibleEffectNum(685)
+            if coopHUD.jar_of_wisp_charge >= 12 then
+                coopHUD.jar_of_wisp_charge = 11
+            end
+        end
     end
     if coopHUD.players[player_no].first_active ~= temp_player:GetActiveItem(0)  then
         coopHUD.players[player_no].first_active = temp_player:GetActiveItem(0)
