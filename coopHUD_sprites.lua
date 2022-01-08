@@ -343,9 +343,9 @@ function coopHUD.getHeartType(player,heart_pos)
             end
         end
         if REPENTANCE and player:GetRottenHearts() > 0 then
-            local nonrottenreds = player:GetHearts()/2 - player:GetRottenHearts()
+            local non_rotten_reds = player:GetHearts()/2 - player:GetRottenHearts()
             if  heart_type == "RedHeartFull" then
-                if heart_pos >= nonrottenreds then
+                if heart_pos >= non_rotten_reds then
                     heart_type = "RottenHeartFull"
                 end
                 --elseif heart_type == "RedHeartHalf" then -- unnecesary no half rotten exsist in vanila REPENTANCE
