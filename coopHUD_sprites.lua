@@ -5,7 +5,7 @@ function coopHUD.getActiveItemSprite(player,slot)
     local active_item = player:GetActiveItem(slot)
     if active_item == 0 then return false end
     local this_sprite = Sprite() -- replaced
-    this_sprite:Load(Anim,true)
+    this_sprite:Load(coopHUD.GLOBALS.item_anim_path,true)
     local item_sprite = Isaac.GetItemConfig():GetCollectible(active_item).GfxFileName
     --Jar's check and sets item_sprite
     if active_item == 290 then -- the jar
