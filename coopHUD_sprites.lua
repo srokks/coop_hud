@@ -235,8 +235,13 @@ function coopHUD.getHeartType(player,heart_pos)
     local remain_souls = 0
     if player_type == 10 or player_type == 31 then
         --TODO: Lost custom heart
-        heart_type = 'None'
-    elseif Game():GetLevel():GetCurses() == 8 then -- checks curse of the uknown
+        if heart_pos == 0 then -- only returns for first pos
+            -- checks if Holy Mantle is loaded
+            if player:GetEffects():GetCollectibleEffectNum(CollectibleType.COLLECTIBLE_HOLY_MANTLE) ~= 0 then
+                heart_type = 'HolyMantle'
+            end
+        end
+    elseif Game():GetLevel():GetCurses() == 8 then -- checks curse of the unknown
         if heart_pos == 0 and not player:IsSubPlayer() then
             heart_type = 'CurseHeart'
             return heart_type,overlay
