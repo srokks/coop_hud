@@ -1,5 +1,6 @@
 function coopHUD.getActiveItemSprite(player,slot)
-    local Anim = "gfx/ui/item.anm2"
+    -- Todo: change name of item animaton file
+    local Anim = "gfx/ui/tit.anm2"
     local overlay = ''
     local active_item = player:GetActiveItem(slot)
     if active_item == 0 then return false end
@@ -20,31 +21,10 @@ function coopHUD.getActiveItemSprite(player,slot)
     if active_item == 640 then
         item_sprite = "gfx/ui/hud_urnofsouls.png"
     end
-    this_sprite:ReplaceSpritesheet(0, item_sprite)
-    this_sprite:ReplaceSpritesheet(1, item_sprite)
-    this_sprite:ReplaceSpritesheet(2, item_sprite)
-    this_sprite:ReplaceSpritesheet(3, item_sprite)
-    this_sprite:ReplaceSpritesheet(4, item_sprite)
-    this_sprite:ReplaceSpritesheet(5, item_sprite)
+    this_sprite:ReplaceSpritesheet(0, item_sprite) -- item
+    this_sprite:ReplaceSpritesheet(1, item_sprite) -- border
+    this_sprite:ReplaceSpritesheet(2, item_sprite) -- shadow
 
-
-    if player:HasCollectible(584)  or player:HasCollectible(619) then
-        -- checks if player has virtuoses or bithright
-        if player:HasCollectible(584) and active_item ~= 584 then -- sets virtuoses sprite
-            item_sprite = 'gfx/ui/hud_bookofvirtues.png'
-            this_sprite:ReplaceSpritesheet(6, item_sprite) end
-        if player:GetPlayerType() == 3 and player:HasCollectible(619)  then -- if judas and has birthrignt
-            if player:HasCollectible(584) and active_item ~= 584 then
-                 item_sprite = 'gfx/ui/hud_bookofvirtueswithbelial.png' -- sets virt/belial sprite
-                this_sprite:ReplaceSpritesheet(6, item_sprite)
-            else
-                 item_sprite = 'gfx/ui/hud_bookofbelial.png' -- sets belial sprite
-                this_sprite:ReplaceSpritesheet(6, item_sprite)
-            end
-        end
-
-    end
-    this_sprite:LoadGraphics() -- sets item overlay according to charges
     -- Sets overlay/charges state frame --
     local item_charge = Isaac.GetItemConfig():GetCollectible(active_item).MaxCharges -- gets max charges
     if item_charge == 0 then -- checks id item has any charges
@@ -82,6 +62,27 @@ function coopHUD.getActiveItemSprite(player,slot)
         --      --TODO: get charge of urn
         this_sprite:SetFrame("SoulUrn", fi_charge) -- sets frame
     end
+    if player:HasCollectible(584)  or player:HasCollectible(619) then
+        -- checks if player has virtuoses or bithright
+        if player:HasCollectible(584) and active_item ~= 584 then -- sets virtuoses sprite
+            item_sprite = 'gfx/ui/hud_bookofvirtues.png'
+            this_sprite:ReplaceSpritesheet(3, item_sprite)
+            this_sprite:ReplaceSpritesheet(4, item_sprite)
+
+        end
+        if player:GetPlayerType() == 3 and player:HasCollectible(619)  then -- if judas and has birthrignt
+            if player:HasCollectible(584) and active_item ~= 584 then
+                 item_sprite = 'gfx/ui/hud_bookofvirtueswithbelial.png' -- sets virt/belial sprite
+                this_sprite:ReplaceSpritesheet(3, item_sprite)
+                this_sprite:ReplaceSpritesheet(4, item_sprite)
+            else
+                 item_sprite = 'gfx/ui/hud_bookofbelial.png' -- sets belial sprite
+                this_sprite:ReplaceSpritesheet(3, item_sprite)
+                this_sprite:ReplaceSpritesheet(4, item_sprite)
+            end
+        end
+    end
+    this_sprite:LoadGraphics()
 
     return this_sprite
 end
@@ -130,14 +131,15 @@ function coopHUD.getChargeSprites(player,slot) -- Gets charge of item from  play
     return sprites
 end
 function coopHUD.getTrinketSprite(player, trinket_pos)
-    Anim = "gfx/ui/item.anm2"
+    -- Todo: change name of item animaton file
+    Anim = "gfx/ui/tit.anm2"
     local trinket_id = player:GetTrinket(trinket_pos)
     if trinket_id == 0 then return false end
     local sprite = Sprite()
     sprite:Load(Anim,true)
     local item_sprite = Isaac.GetItemConfig():GetTrinket(trinket_id).GfxFileName
-    sprite:ReplaceSpritesheet(0, item_sprite)
-    sprite:ReplaceSpritesheet(5, item_sprite)
+    sprite:ReplaceSpritesheet(0, item_sprite) -- item layer
+    sprite:ReplaceSpritesheet(2, item_sprite) -- shadow layer
     sprite:LoadGraphics()
     sprite:SetFrame("Idle", 0)
     return sprite
