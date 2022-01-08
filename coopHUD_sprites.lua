@@ -1,10 +1,9 @@
 function coopHUD.getActiveItemSprite(player,slot)
-    local Anim = "gfx/ui/item.anm2"
     local overlay = ''
     local active_item = player:GetActiveItem(slot)
     if active_item == 0 then return false end
     local this_sprite = Sprite() -- replaced
-    this_sprite:Load(Anim,true)
+    this_sprite:Load(coopHUD.GLOBALS.item_anim_path,true)
     local item_sprite = Isaac.GetItemConfig():GetCollectible(active_item).GfxFileName
     --Jar's check and sets item_sprite
     if active_item == 290 then -- the jar
@@ -20,36 +19,15 @@ function coopHUD.getActiveItemSprite(player,slot)
     if active_item == 640 then
         item_sprite = "gfx/ui/hud_urnofsouls.png"
     end
-    this_sprite:ReplaceSpritesheet(0, item_sprite)
-    this_sprite:ReplaceSpritesheet(1, item_sprite)
-    this_sprite:ReplaceSpritesheet(2, item_sprite)
-    this_sprite:ReplaceSpritesheet(3, item_sprite)
-    this_sprite:ReplaceSpritesheet(4, item_sprite)
-    this_sprite:ReplaceSpritesheet(5, item_sprite)
+    this_sprite:ReplaceSpritesheet(0, item_sprite) -- item
+    this_sprite:ReplaceSpritesheet(1, item_sprite) -- border
+    this_sprite:ReplaceSpritesheet(2, item_sprite) -- shadow
 
-
-    if player:HasCollectible(584)  or player:HasCollectible(619) then
-        -- checks if player has virtuoses or bithright
-        if player:HasCollectible(584) and active_item ~= 584 then -- sets virtuoses sprite
-            item_sprite = 'gfx/ui/hud_bookofvirtues.png'
-            this_sprite:ReplaceSpritesheet(6, item_sprite) end
-        if player:GetPlayerType() == 3 and player:HasCollectible(619)  then -- if judas and has birthrignt
-            if player:HasCollectible(584) and active_item ~= 584 then
-                 item_sprite = 'gfx/ui/hud_bookofvirtueswithbelial.png' -- sets virt/belial sprite
-                this_sprite:ReplaceSpritesheet(6, item_sprite)
-            else
-                 item_sprite = 'gfx/ui/hud_bookofbelial.png' -- sets belial sprite
-                this_sprite:ReplaceSpritesheet(6, item_sprite)
-            end
-        end
-
-    end
-    this_sprite:LoadGraphics() -- sets item overlay according to charges
     -- Sets overlay/charges state frame --
-    local itemcharge = Isaac.GetItemConfig():GetCollectible(active_item).MaxCharges -- gets max charges
-    if itemcharge == 0 then -- checks id item has any charges
+    local item_charge = Isaac.GetItemConfig():GetCollectible(active_item).MaxCharges -- gets max charges
+    if item_charge == 0 then -- checks id item has any charges
         this_sprite:SetFrame("Idle", 0 ) -- set frame to unloaded
-    elseif player:NeedsCharge(slot) == false or player:GetActiveCharge(slot) >= itemcharge then
+    elseif player:NeedsCharge(slot) == false or player:GetActiveCharge(slot) >= item_charge then
         -- checks if item dont needs charges or item is overloaded
         this_sprite:SetFrame("Idle", 1) -- set frame to loaded
     else
@@ -67,21 +45,53 @@ function coopHUD.getActiveItemSprite(player,slot)
         fi_charge = player:GetActiveCharge()
         this_sprite:SetFrame("EverythingJar", fi_charge +1)
     end
-     --TODO: Jar of Wisp
-    if active_item == 685 then
-        --print(coopHUD.jar_of_wisp_charge,'test')
-        if coopHUD.jar_of_wisp_charge > 12 then
-            coopHUD.jar_of_wisp_charge = 12
+    -- Jar of wisp - charges set
+    if active_item == 685 and coopHUD.jar_of_wisp_charge ~= nil then
+        local wisp_charge =  0
+        if item_charge == 0 then -- checks id item has any charges
+            wisp_charge = 0 -- set frame to unloaded
+        elseif player:NeedsCharge(slot) == false or player:GetActiveCharge(slot) >= item_charge then
+            -- checks if item dont needs charges or item is overloaded
+            wisp_charge = 15 -- set frame to loaded
+        else
+            wisp_charge = 0 -- set frame to unloaded
         end
-        this_sprite:SetFrame('WispJar',coopHUD.jar_of_wisp_charge)
+        this_sprite:SetFrame('WispJar',coopHUD.jar_of_wisp_charge + wisp_charge) -- sets proper frame
     end
-    -- TODO:Urn of soul
+    -- Urn of soul
+    -- For this moment can only show when urn is open/closed no api function
+    -- FIXME: Urn of soul charge: wait till api is fixed
     if active_item == 640 then
-        fi_charge = 0
-        print(player:GetJarFlies())
-        --      --TODO: get charge of urn
-        this_sprite:SetFrame("SoulUrn", fi_charge) -- sets frame
+         -- sets frame
+        local tempEffects = player:GetEffects()
+        local urn_state = tempEffects:GetCollectibleEffectNum(640) -- gets effect of item 0-closed urn/1- opened
+        local state = 0  -- closed urn frame no
+        if urn_state ~= 0 then -- checks if urn is open
+            state = 22 -- opened urn frame no
+        end
+        this_sprite:SetFrame("SoulUrn", state)
     end
+    if player:HasCollectible(584)  or player:HasCollectible(619) then
+        -- checks if player has virtuoses or birthright
+        if player:HasCollectible(584) and active_item ~= 584 then -- sets virtuoses sprite
+            item_sprite = 'gfx/ui/hud_bookofvirtues.png'
+            this_sprite:ReplaceSpritesheet(3, item_sprite)
+            this_sprite:ReplaceSpritesheet(4, item_sprite)
+
+        end
+        if player:GetPlayerType() == 3 and player:HasCollectible(619)  then -- if judas and has birthrignt
+            if player:HasCollectible(584) and active_item ~= 584 then
+                 item_sprite = 'gfx/ui/hud_bookofvirtueswithbelial.png' -- sets virt/belial sprite
+                this_sprite:ReplaceSpritesheet(3, item_sprite)
+                this_sprite:ReplaceSpritesheet(4, item_sprite)
+            else
+                 item_sprite = 'gfx/ui/hud_bookofbelial.png' -- sets belial sprite
+                this_sprite:ReplaceSpritesheet(3, item_sprite)
+                this_sprite:ReplaceSpritesheet(4, item_sprite)
+            end
+        end
+    end
+    this_sprite:LoadGraphics()
 
     return this_sprite
 end
@@ -91,7 +101,6 @@ function coopHUD.getChargeSprites(player,slot) -- Gets charge of item from  play
         charge = Sprite(),
         overlay = Sprite(),
     }
-    local anim = "gfx/ui/activechargebar_coop.anm2"
     local active_item = player:GetActiveItem(slot)
     if active_item == 0 then return false end
     local item_charge = Isaac.GetItemConfig():GetCollectible(active_item).MaxCharges
@@ -99,10 +108,10 @@ function coopHUD.getChargeSprites(player,slot) -- Gets charge of item from  play
     -- Normal and battery charge
     local charges = player:GetActiveCharge(slot) + player:GetBatteryCharge(slot)
     local step = math.floor((charges/(item_charge *2))*46)
-    sprites.charge:Load(anim,true)
+    sprites.charge:Load(coopHUD.GLOBALS.charge_anim_path,true)
     sprites.charge:SetFrame('ChargeBar',step)
     -- Overlay sprite
-    sprites.overlay:Load(anim,true)
+    sprites.overlay:Load(coopHUD.GLOBALS.charge_anim_path,true)
     if (item_charge > 1 and item_charge < 5) or item_charge == 6 or item_charge == 12 then
         sprites.overlay:SetFrame("BarOverlay" .. item_charge, 0)
     else
@@ -120,7 +129,7 @@ function coopHUD.getChargeSprites(player,slot) -- Gets charge of item from  play
             beth_charge = player:GetEffectiveBloodCharge()
             color:SetColorize(1,0.2,0.2,1)
         end
-        sprites.beth_charge:Load(anim,true)
+        sprites.beth_charge:Load(coopHUD.GLOBALS.charge_anim_path,true)
         sprites.beth_charge.Color = color
         step = step +  math.floor((beth_charge/(item_charge *2))*46) + 1
         sprites.beth_charge:SetFrame('ChargeBar',step)
@@ -130,14 +139,13 @@ function coopHUD.getChargeSprites(player,slot) -- Gets charge of item from  play
     return sprites
 end
 function coopHUD.getTrinketSprite(player, trinket_pos)
-    Anim = "gfx/ui/item.anm2"
     local trinket_id = player:GetTrinket(trinket_pos)
     if trinket_id == 0 then return false end
     local sprite = Sprite()
-    sprite:Load(Anim,true)
+    sprite:Load(coopHUD.GLOBALS.item_anim_path,true)
     local item_sprite = Isaac.GetItemConfig():GetTrinket(trinket_id).GfxFileName
-    sprite:ReplaceSpritesheet(0, item_sprite)
-    sprite:ReplaceSpritesheet(5, item_sprite)
+    sprite:ReplaceSpritesheet(0, item_sprite) -- item layer
+    sprite:ReplaceSpritesheet(2, item_sprite) -- shadow layer
     sprite:LoadGraphics()
     sprite:SetFrame("Idle", 0)
     return sprite
@@ -172,18 +180,15 @@ end
 function coopHUD.getPocketItemSprite(player,slot)
     -- cards/runes/
     local pocket_sprite = Sprite()
-    local anim = ''
     local pocket = coopHUD.getPocketID(player,slot)
     local pocket_type = pocket[2]
     local pocket_id = pocket[1]
     if pocket_type == 1 then -- Card
-        anim = "gfx/ui/hud_card_coop.anm2"
-        pocket_sprite:Load(anim,true)
+        pocket_sprite:Load(coopHUD.GLOBALS.card_anim_path,true)
         pocket_sprite:SetFrame("CardFronts", pocket_id) -- sets card frame
     elseif pocket_type == 2 then -- Pill
         if pocket_id > 2048 then pocket_id = pocket_id - 2048 end -- check if its horse pill and change id to normal
-        anim = "gfx/ui/hud_pills_coop.anm2"
-        pocket_sprite:Load(anim,true)
+        pocket_sprite:Load(coopHUD.GLOBALS.pill_anim_path,true)
         pocket_sprite:SetFrame("Pills", pocket_id) --sets frame to pills with correct id
         return pocket_sprite
     elseif pocket_type == 3 then
@@ -194,6 +199,7 @@ function coopHUD.getPocketItemSprite(player,slot)
     return pocket_sprite
 end
 function coopHUD.getMainPocketDesc(player)
+    --TODO: fix desc generation - new lang files
     desc = 'Error'
     if player:GetPill(0) < 1 and player:GetCard(0) < 1 then
         if player:GetActiveItem(2) > 0 then
@@ -229,9 +235,13 @@ function coopHUD.getHeartType(player,heart_pos)
     local golden = false
     local remain_souls = 0
     if player_type == 10 or player_type == 31 then
-        --TODO: Lost custom heart
-        heart_type = 'None'
-    elseif Game():GetLevel():GetCurses() == 8 then -- checks curse of the uknown
+        if heart_pos == 0 then -- only returns for first pos
+            -- checks if Holy Mantle is loaded
+            if player:GetEffects():GetCollectibleEffectNum(CollectibleType.COLLECTIBLE_HOLY_MANTLE) ~= 0 then
+                heart_type = 'HolyMantle'
+            end
+        end
+    elseif Game():GetLevel():GetCurses() == 8 then -- checks curse of the unknown
         if heart_pos == 0 and not player:IsSubPlayer() then
             heart_type = 'CurseHeart'
             return heart_type,overlay
@@ -338,9 +348,9 @@ function coopHUD.getHeartType(player,heart_pos)
             end
         end
         if REPENTANCE and player:GetRottenHearts() > 0 then
-            local nonrottenreds = player:GetHearts()/2 - player:GetRottenHearts()
+            local non_rotten_reds = player:GetHearts()/2 - player:GetRottenHearts()
             if  heart_type == "RedHeartFull" then
-                if heart_pos >= nonrottenreds then
+                if heart_pos >= non_rotten_reds then
                     heart_type = "RottenHeartFull"
                 end
                 --elseif heart_type == "RedHeartHalf" then -- unnecesary no half rotten exsist in vanila REPENTANCE
@@ -369,9 +379,8 @@ function coopHUD.getHeartType(player,heart_pos)
 end
 function coopHUD.getHeartSprite(heart_type,overlay)
     if heart_type ~= 'None' then
-        local Anim = "gfx/ui/ui_hearts.anm2"
         local sprite = Sprite()
-        sprite:Load(Anim,true)
+        sprite:Load(coopHUD.GLOBALS.hearts_anim_path,true)
         sprite:SetFrame(heart_type, 0)
         if overlay ~= 'None'  then
             sprite:SetOverlayFrame (overlay, 0 )
@@ -385,6 +394,7 @@ function coopHUD.getHeartSpriteTable(player)
     local max_health_cap = 12
     local heart_type,overlay = ''
     local heart_sprites = {}
+    -- TODO: T.Maggy integrate with birthright - max cap increased to 18
     for counter=0,12,1 do
         heart_type,overlay = coopHUD.getHeartType(player,counter)
         heart_sprites[counter] = coopHUD.getHeartSprite(heart_type,overlay)
@@ -392,6 +402,8 @@ function coopHUD.getHeartSpriteTable(player)
     return heart_sprites
 end
 function coopHUD.getHeartTypeTable(player)
+    --TODO: T. Maggy pulsing hearts
+    --TODO: Broken heart type integration - https://bindingofisaacrebirth.fandom.com/wiki/Health#Broken_Hearts
     local max_health_cap = 12
     local heart_type,overlay = ''
     local heart_types = {}
