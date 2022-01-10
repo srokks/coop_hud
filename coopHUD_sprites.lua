@@ -199,7 +199,6 @@ function coopHUD.getPocketItemSprite(player,slot)
     return pocket_sprite
 end
 function coopHUD.getMainPocketDesc(player)
-    --TODO: fix desc generation - new lang files
     desc = 'Error'
     if player:GetPill(0) < 1 and player:GetCard(0) < 1 then
         if player:GetActiveItem(2) > 0 then
@@ -209,20 +208,25 @@ function coopHUD.getMainPocketDesc(player)
         else
             return false
         end
-        if desc ~= "Error" then desc = desc .. "  " end
+        desc = string.sub(desc,2) --  get rid of # on front of
+        desc = langAPI.getItemName(desc)
+
     end
     if player:GetCard(0) > 0 then
-        desc = Isaac.GetItemConfig():GetCard(player:GetCard(0)).Name .. " "
+        desc = Isaac.GetItemConfig():GetCard(player:GetCard(0)).Name
         if Input.IsActionPressed(ButtonAction.ACTION_MAP, player.ControllerIndex) then
-            desc = Isaac.GetItemConfig():GetCard(player:GetCard(0)).Description .. " "
+            desc = Isaac.GetItemConfig():GetCard(player:GetCard(0)).Description
         end
-
+        desc = string.sub(desc,2) --  get rid of # on front of
+        desc = langAPI.getPocketName(desc)
     elseif player:GetPill(0) > 0 then
         desc = "???" .. " "
         local item_pool = Game():GetItemPool()
         if item_pool:IsPillIdentified (player:GetPill(0)) then
             local pill_effect = item_pool:GetPillEffect(player:GetPill(0))
-            desc = Isaac.GetItemConfig():GetPillEffect(pill_effect).Name .. " "
+            desc = Isaac.GetItemConfig():GetPillEffect(pill_effect).Name
+            desc = string.sub(desc,2) --  get rid of # on front of
+            desc = langAPI.getPocketName(desc)
         end
     end
     return desc
