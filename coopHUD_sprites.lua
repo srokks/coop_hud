@@ -393,7 +393,12 @@ function coopHUD.getHeartSprite(heart_type,overlay)
         sprite:Load(coopHUD.GLOBALS.hearts_anim_path,true)
         sprite:SetFrame(heart_type, 0)
         if overlay ~= 'None'  then
-            sprite:SetOverlayFrame (overlay, 0 )
+            if overlay == 'string' then
+                sprite:SetOverlayFrame (overlay, 0 )
+            else
+                --TODO: proper overlay set - eternal mixed with golden heart
+            end
+
         end
         return sprite
     else
