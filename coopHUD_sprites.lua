@@ -5,18 +5,18 @@ function coopHUD.getActiveItemSprite(player,slot)
     local this_sprite = Sprite() -- replaced
     this_sprite:Load(coopHUD.GLOBALS.item_anim_path,true)
     local item_sprite = Isaac.GetItemConfig():GetCollectible(active_item).GfxFileName
-    --Jar's check and sets item_sprite
-    if active_item == 290 then -- the jar
+    -- Custom sprites set - jars etc.
+    if active_item == CollectibleType.COLLECTIBLE_THE_JAR then -- the jar
         item_sprite = "gfx/characters/costumes/costume_rebirth_90_thejar.png"
-    elseif active_item == 434 then -- jar of flies
+    elseif active_item == CollectibleType.COLLECTIBLE_JAR_OF_FLIES then -- jar of flies
         item_sprite = "gfx/characters/costumes/costume_434_jarofflies.png"
-    elseif active_item == 685 then -- jar of wisp
+    elseif active_item == CollectibleType.COLLECTIBLE_JAR_OF_WISPS then -- jar of wisp
         item_sprite = "gfx/ui/hud_jarofwisps.png"
-    elseif active_item == 720 then -- everything jar
+    elseif active_item == CollectibleType.COLLECTIBLE_EVERYTHING_JAR then -- everything jar
         item_sprite = "gfx/ui/hud_everythingjar.png"
     end
     -- Urn of Souls - sprite set
-    if active_item == 640 then
+    if active_item == CollectibleType.COLLECTIBLE_URN_OF_SOULS then
         item_sprite = "gfx/ui/hud_urnofsouls.png"
     end
     this_sprite:ReplaceSpritesheet(0, item_sprite) -- item
@@ -34,19 +34,19 @@ function coopHUD.getActiveItemSprite(player,slot)
         this_sprite:SetFrame("Idle", 0) -- set frame to unloaded
     end
     --The Jar/Jar of Flies - charges check
-    if active_item == 290 or active_item == 434 then --
+    if active_item == CollectibleType.COLLECTIBLE_THE_JAR or active_item == CollectibleType.COLLECTIBLE_JAR_OF_FLIES then --
         local frame = 0
-        if active_item == 290 then frame = math.ceil(player:GetJarHearts()/2) end -- gets no of hearts in jar
-        if active_item == 434 then frame = player:GetJarFlies() end --gets no of flies in jar of flies
+        if active_item == CollectibleType.COLLECTIBLE_THE_JAR then frame = math.ceil(player:GetJarHearts()/2) end -- gets no of hearts in jar
+        if active_item == CollectibleType.COLLECTIBLE_JAR_OF_FLIES then frame = player:GetJarFlies() end --gets no of flies in jar of flies
         this_sprite:SetFrame("Jar", frame)
     end
     -- Everything Jar - charges set
-    if active_item == 720  then
+    if active_item == CollectibleType.COLLECTIBLE_EVERYTHING_JAR  then
         fi_charge = player:GetActiveCharge()
         this_sprite:SetFrame("EverythingJar", fi_charge +1)
     end
     -- Jar of wisp - charges set
-    if active_item == 685 and coopHUD.jar_of_wisp_charge ~= nil then
+    if active_item == CollectibleType.COLLECTIBLE_JAR_OF_WISPS and coopHUD.jar_of_wisp_charge ~= nil then
         local wisp_charge =  0
         if item_charge == 0 then -- checks id item has any charges
             wisp_charge = 0 -- set frame to unloaded
@@ -61,7 +61,7 @@ function coopHUD.getActiveItemSprite(player,slot)
     -- Urn of soul
     -- For this moment can only show when urn is open/closed no api function
     -- FIXME: Urn of soul charge: wait till api is fixed
-    if active_item == 640 then
+    if active_item == CollectibleType.COLLECTIBLE_URN_OF_SOULS then
          -- sets frame
         local tempEffects = player:GetEffects()
         local urn_state = tempEffects:GetCollectibleEffectNum(640) -- gets effect of item 0-closed urn/1- opened
@@ -71,16 +71,16 @@ function coopHUD.getActiveItemSprite(player,slot)
         end
         this_sprite:SetFrame("SoulUrn", state)
     end
-    if player:HasCollectible(584)  or player:HasCollectible(619) then
+    if player:HasCollectible(CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES)  or player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
         -- checks if player has virtuoses or birthright
-        if player:HasCollectible(584) and active_item ~= 584 then -- sets virtuoses sprite
+        if player:HasCollectible(CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES) and active_item ~= CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES then -- sets virtuoses sprite
             item_sprite = 'gfx/ui/hud_bookofvirtues.png'
             this_sprite:ReplaceSpritesheet(3, item_sprite)
             this_sprite:ReplaceSpritesheet(4, item_sprite)
 
         end
-        if player:GetPlayerType() == 3 and player:HasCollectible(619)  then -- if judas and has birthrignt
-            if player:HasCollectible(584) and active_item ~= 584 then
+        if player:GetPlayerType() == PlayerType.PLAYER_JUDAS and player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT)  then -- if judas and has birthrignt
+            if player:HasCollectible(CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES) and active_item ~= CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES then
                  item_sprite = 'gfx/ui/hud_bookofvirtueswithbelial.png' -- sets virt/belial sprite
                 this_sprite:ReplaceSpritesheet(3, item_sprite)
                 this_sprite:ReplaceSpritesheet(4, item_sprite)
