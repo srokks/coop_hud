@@ -383,7 +383,6 @@ function coopHUD.getHeartType(player,heart_pos)
         else
             overlay = 'None'
         end
-        --TODO: proper overlay set
     end
     return heart_type,overlay
 end
