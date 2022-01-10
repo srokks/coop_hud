@@ -375,7 +375,7 @@ function coopHUD.getHeartType(player,heart_pos)
             end
         end
         if eternal and golden then
-            overlay = "Gold&Eternal"
+            overlay = { "WhiteHeartOverlay","GoldHeartOverlay" }
         elseif eternal then
             overlay = "WhiteHeartOverlay"
         elseif golden then
