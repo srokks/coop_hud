@@ -374,6 +374,17 @@ function coopHUD.getHeartType(player,heart_pos)
                 --        heart_type = "RottenBoneHeartHalf"
             end
         end
+        -- Broken heart type  - https://bindingofisaacrebirth.fandom.com/wiki/Health#Broken_Hearts
+        if player:GetBrokenHearts() > 0 then
+            if heart_pos > total_hearts-1 and total_hearts + player:GetBrokenHearts() > heart_pos then
+                print(heart_pos)
+                heart_type = 'BrokenHeart'
+            end
+           --heart_pos >= total_hearts - (player:GetGoldenHearts()+empty_hearts)
+--if player:GetGoldenHearts() > 0 and (heart_pos >= total_hearts - (player:GetGoldenHearts()+empty_hearts)) then
+--        golden = true
+--        end
+        end
         if eternal and golden then
             overlay = { "WhiteHeartOverlay","GoldHeartOverlay" }
         elseif eternal then
