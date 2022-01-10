@@ -14,6 +14,12 @@ function coopHUD.getActiveItemSprite(player,slot)
         item_sprite = "gfx/ui/hud_jarofwisps.png"
     elseif active_item == CollectibleType.COLLECTIBLE_EVERYTHING_JAR then -- everything jar
         item_sprite = "gfx/ui/hud_everythingjar.png"
+    elseif active_item == CollectibleType.COLLECTIBLE_FLIP and player:GetPlayerType() == PlayerType.PLAYER_LAZARUS2_B then
+        -- Fixme: Flip weird sprite (too much white :D) when lazarus b
+        item_sprite = 'gfx/ui/ui_flip_coop.png'
+        this_sprite:ReplaceSpritesheet(0, item_sprite)
+        this_sprite:ReplaceSpritesheet(1, item_sprite)
+        this_sprite:ReplaceSpritesheet(2, item_sprite)
     end
     -- Urn of Souls - sprite set
     if active_item == CollectibleType.COLLECTIBLE_URN_OF_SOULS then
