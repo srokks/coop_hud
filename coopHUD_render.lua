@@ -189,6 +189,8 @@ function coopHUD.renderPlayer(player_no)
     end
 end
 function coopHUD.renderItems()
+    -- TODO: Planetarium chances render
+    -- TODO: Angel/Devil room chances
     anchor = Vector(ScreenHelper.GetScreenSize().X/2,ScreenHelper.GetScreenBottomLeft().Y-16)
     local pos = Vector(anchor.X - 12,anchor.Y)
     local Anim = "gfx/ui/hudpickups.anm2"
