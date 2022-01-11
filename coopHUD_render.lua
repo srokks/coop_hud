@@ -288,6 +288,3 @@ function coopHUD.renderChargeBar(sprites,pos)
     end
 end
 
--- TODO: test
--- test1
--- test2
