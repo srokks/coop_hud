@@ -423,7 +423,8 @@ function coopHUD.getHeartSpriteTable(player)
     local max_health_cap = 12
     local heart_type,overlay = ''
     local heart_sprites = {}
-    -- TODO: T.Maggy integrate with birthright - max cap increased to 18
+    -- TODO: Maggy integrate with birthright - max cap increased to 18
+
     for counter=0,12,1 do
         heart_type,overlay = coopHUD.getHeartType(player,counter)
         heart_sprites[counter] = coopHUD.getHeartSprite(heart_type,overlay)
