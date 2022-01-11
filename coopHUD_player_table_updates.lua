@@ -27,6 +27,7 @@ function coopHUD.updatePlayer(player_no)
         sub_heart_types = {},
         wisp_jar_use = 0, -- holds info about used jar of wisp FIXME:
         total_hearts = math.ceil((temp_player:GetEffectiveMaxHearts() + temp_player:GetSoulHearts())/2),
+        max_health_cap = 12,
         ---
         type = temp_player:GetPlayerType(),
         ---
@@ -142,18 +143,25 @@ function coopHUD.updateHearts(player_no)
     local temp_player = Isaac.GetPlayer(player_no)
     local max_health_cap = 12
     local sub_player = nil
-    local temp_total_hearts = math.ceil((temp_player:GetEffectiveMaxHearts() + temp_player:GetSoulHearts())/2)
+    local temp_total_hearts = math.ceil((player:GetEffectiveMaxHearts() + player:GetSoulHearts())/2)
+
     if coopHUD.players[player_no].total_hearts ~= temp_total_hearts then
         coopHUD.players[player_no].total_hearts = temp_total_hearts
+        if coopHUD.players[player_no].max_health_cap ~= 18 and -- prevent from changing after birthright picked
+            coopHUD.players[player_no].type == PlayerType.PLAYER_MAGDALENA and -- checks if payer is Maggy
+            player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
+            coopHUD.players[player_no].max_health_cap = 18
+        end
     end
     if coopHUD.players[player_no].has_sub then
-        sub_player = temp_player:GetSubPlayer()
+        sub_player = player:GetSubPlayer()
         max_health_cap = 6
     end
-    for i=max_health_cap,0,-1 do
-        local heart_type,overlay = coopHUD.getHeartType(temp_player,i)
-        if (coopHUD.players[player_no].heart_types[i].heart_type ~= heart_type) or
-                (coopHUD.players[player_no].heart_types[i].overlay ~= overlay)then
+    for i=coopHUD.players[player_no].max_health_cap,0,-1 do
+        local heart_type,overlay = coopHUD.getHeartType(player,i)
+        if (coopHUD.players[player_no].heart_types[i] == nil) or
+                (coopHUD.players[player_no].heart_types[i].heart_type ~= heart_type) or
+                (coopHUD.players[player_no].heart_types[i].overlay ~= overlay) then
             coopHUD.players[player_no].heart_types[i].heart_type = heart_type
             coopHUD.players[player_no].heart_types[i].overlay = overlay
             coopHUD.players[player_no].sprites.hearts[i] = coopHUD.getHeartSprite(heart_type,overlay)
@@ -170,7 +178,6 @@ function coopHUD.updateHearts(player_no)
                 coopHUD.players[player_no].sprites.sub_hearts[i] = coopHUD.getHeartSprite(heart_type,overlay)
             end
         end
-
     end
 end
 function coopHUD.updateExtraLives(player_no)
