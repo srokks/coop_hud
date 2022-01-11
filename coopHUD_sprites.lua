@@ -5,18 +5,24 @@ function coopHUD.getActiveItemSprite(player,slot)
     local this_sprite = Sprite() -- replaced
     this_sprite:Load(coopHUD.GLOBALS.item_anim_path,true)
     local item_sprite = Isaac.GetItemConfig():GetCollectible(active_item).GfxFileName
-    --Jar's check and sets item_sprite
-    if active_item == 290 then -- the jar
+    -- Custom sprites set - jars etc.
+    if active_item == CollectibleType.COLLECTIBLE_THE_JAR then -- the jar
         item_sprite = "gfx/characters/costumes/costume_rebirth_90_thejar.png"
-    elseif active_item == 434 then -- jar of flies
+    elseif active_item == CollectibleType.COLLECTIBLE_JAR_OF_FLIES then -- jar of flies
         item_sprite = "gfx/characters/costumes/costume_434_jarofflies.png"
-    elseif active_item == 685 then -- jar of wisp
+    elseif active_item == CollectibleType.COLLECTIBLE_JAR_OF_WISPS then -- jar of wisp
         item_sprite = "gfx/ui/hud_jarofwisps.png"
-    elseif active_item == 720 then -- everything jar
+    elseif active_item == CollectibleType.COLLECTIBLE_EVERYTHING_JAR then -- everything jar
         item_sprite = "gfx/ui/hud_everythingjar.png"
+    elseif active_item == CollectibleType.COLLECTIBLE_FLIP and player:GetPlayerType() == PlayerType.PLAYER_LAZARUS2_B then
+        -- Fixme: Flip weird sprite (too much white :D) when lazarus b
+        item_sprite = 'gfx/ui/ui_flip_coop.png'
+        this_sprite:ReplaceSpritesheet(0, item_sprite)
+        this_sprite:ReplaceSpritesheet(1, item_sprite)
+        this_sprite:ReplaceSpritesheet(2, item_sprite)
     end
     -- Urn of Souls - sprite set
-    if active_item == 640 then
+    if active_item == CollectibleType.COLLECTIBLE_URN_OF_SOULS then
         item_sprite = "gfx/ui/hud_urnofsouls.png"
     end
     this_sprite:ReplaceSpritesheet(0, item_sprite) -- item
@@ -34,19 +40,19 @@ function coopHUD.getActiveItemSprite(player,slot)
         this_sprite:SetFrame("Idle", 0) -- set frame to unloaded
     end
     --The Jar/Jar of Flies - charges check
-    if active_item == 290 or active_item == 434 then --
+    if active_item == CollectibleType.COLLECTIBLE_THE_JAR or active_item == CollectibleType.COLLECTIBLE_JAR_OF_FLIES then --
         local frame = 0
-        if active_item == 290 then frame = math.ceil(player:GetJarHearts()/2) end -- gets no of hearts in jar
-        if active_item == 434 then frame = player:GetJarFlies() end --gets no of flies in jar of flies
+        if active_item == CollectibleType.COLLECTIBLE_THE_JAR then frame = math.ceil(player:GetJarHearts()/2) end -- gets no of hearts in jar
+        if active_item == CollectibleType.COLLECTIBLE_JAR_OF_FLIES then frame = player:GetJarFlies() end --gets no of flies in jar of flies
         this_sprite:SetFrame("Jar", frame)
     end
     -- Everything Jar - charges set
-    if active_item == 720  then
+    if active_item == CollectibleType.COLLECTIBLE_EVERYTHING_JAR  then
         fi_charge = player:GetActiveCharge()
         this_sprite:SetFrame("EverythingJar", fi_charge +1)
     end
     -- Jar of wisp - charges set
-    if active_item == 685 and coopHUD.jar_of_wisp_charge ~= nil then
+    if active_item == CollectibleType.COLLECTIBLE_JAR_OF_WISPS and coopHUD.jar_of_wisp_charge ~= nil then
         local wisp_charge =  0
         if item_charge == 0 then -- checks id item has any charges
             wisp_charge = 0 -- set frame to unloaded
@@ -61,7 +67,7 @@ function coopHUD.getActiveItemSprite(player,slot)
     -- Urn of soul
     -- For this moment can only show when urn is open/closed no api function
     -- FIXME: Urn of soul charge: wait till api is fixed
-    if active_item == 640 then
+    if active_item == CollectibleType.COLLECTIBLE_URN_OF_SOULS then
          -- sets frame
         local tempEffects = player:GetEffects()
         local urn_state = tempEffects:GetCollectibleEffectNum(640) -- gets effect of item 0-closed urn/1- opened
@@ -71,16 +77,16 @@ function coopHUD.getActiveItemSprite(player,slot)
         end
         this_sprite:SetFrame("SoulUrn", state)
     end
-    if player:HasCollectible(584)  or player:HasCollectible(619) then
+    if player:HasCollectible(CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES)  or player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
         -- checks if player has virtuoses or birthright
-        if player:HasCollectible(584) and active_item ~= 584 then -- sets virtuoses sprite
+        if player:HasCollectible(CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES) and active_item ~= CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES then -- sets virtuoses sprite
             item_sprite = 'gfx/ui/hud_bookofvirtues.png'
             this_sprite:ReplaceSpritesheet(3, item_sprite)
             this_sprite:ReplaceSpritesheet(4, item_sprite)
 
         end
-        if player:GetPlayerType() == 3 and player:HasCollectible(619)  then -- if judas and has birthrignt
-            if player:HasCollectible(584) and active_item ~= 584 then
+        if player:GetPlayerType() == PlayerType.PLAYER_JUDAS and player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT)  then -- if judas and has birthrignt
+            if player:HasCollectible(CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES) and active_item ~= CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES then
                  item_sprite = 'gfx/ui/hud_bookofvirtueswithbelial.png' -- sets virt/belial sprite
                 this_sprite:ReplaceSpritesheet(3, item_sprite)
                 this_sprite:ReplaceSpritesheet(4, item_sprite)
@@ -199,7 +205,6 @@ function coopHUD.getPocketItemSprite(player,slot)
     return pocket_sprite
 end
 function coopHUD.getMainPocketDesc(player)
-    --TODO: fix desc generation - new lang files
     desc = 'Error'
     if player:GetPill(0) < 1 and player:GetCard(0) < 1 then
         if player:GetActiveItem(2) > 0 then
@@ -209,20 +214,25 @@ function coopHUD.getMainPocketDesc(player)
         else
             return false
         end
-        if desc ~= "Error" then desc = desc .. "  " end
+        desc = string.sub(desc,2) --  get rid of # on front of
+        desc = langAPI.getItemName(desc)
+
     end
     if player:GetCard(0) > 0 then
-        desc = Isaac.GetItemConfig():GetCard(player:GetCard(0)).Name .. " "
+        desc = Isaac.GetItemConfig():GetCard(player:GetCard(0)).Name
         if Input.IsActionPressed(ButtonAction.ACTION_MAP, player.ControllerIndex) then
-            desc = Isaac.GetItemConfig():GetCard(player:GetCard(0)).Description .. " "
+            desc = Isaac.GetItemConfig():GetCard(player:GetCard(0)).Description
         end
-
+        desc = string.sub(desc,2) --  get rid of # on front of
+        desc = langAPI.getPocketName(desc)
     elseif player:GetPill(0) > 0 then
         desc = "???" .. " "
         local item_pool = Game():GetItemPool()
         if item_pool:IsPillIdentified (player:GetPill(0)) then
             local pill_effect = item_pool:GetPillEffect(player:GetPill(0))
-            desc = Isaac.GetItemConfig():GetPillEffect(pill_effect).Name .. " "
+            desc = Isaac.GetItemConfig():GetPillEffect(pill_effect).Name
+            desc = string.sub(desc,2) --  get rid of # on front of
+            desc = langAPI.getPocketName(desc)
         end
     end
     return desc
@@ -364,8 +374,23 @@ function coopHUD.getHeartType(player,heart_pos)
                 --        heart_type = "RottenBoneHeartHalf"
             end
         end
+        -- Broken heart type  - https://bindingofisaacrebirth.fandom.com/wiki/Health#Broken_Hearts
+        if player:GetBrokenHearts() > 0 then
+            if heart_pos > total_hearts-1 and total_hearts + player:GetBrokenHearts() > heart_pos then
+                if player:GetPlayerType() == PlayerType.PLAYER_KEEPER or
+                        player:GetPlayerType() == PlayerType.PLAYER_KEEPER_B then
+                    heart_type = 'BrokenCoinHeart'
+                else
+                    heart_type = 'BrokenHeart'
+                end
+            end
+           --heart_pos >= total_hearts - (player:GetGoldenHearts()+empty_hearts)
+--if player:GetGoldenHearts() > 0 and (heart_pos >= total_hearts - (player:GetGoldenHearts()+empty_hearts)) then
+--        golden = true
+--        end
+        end
         if eternal and golden then
-            overlay = "Gold&Eternal"
+            overlay = { "WhiteHeartOverlay","GoldHeartOverlay" }
         elseif eternal then
             overlay = "WhiteHeartOverlay"
         elseif golden then
@@ -373,17 +398,22 @@ function coopHUD.getHeartType(player,heart_pos)
         else
             overlay = 'None'
         end
-        --TODO: proper overlay set
     end
     return heart_type,overlay
 end
 function coopHUD.getHeartSprite(heart_type,overlay)
+    --TODO: T. Maggy pulsing hearts
     if heart_type ~= 'None' then
         local sprite = Sprite()
         sprite:Load(coopHUD.GLOBALS.hearts_anim_path,true)
         sprite:SetFrame(heart_type, 0)
         if overlay ~= 'None'  then
-            sprite:SetOverlayFrame (overlay, 0 )
+            if overlay == 'string' then
+                sprite:SetOverlayFrame (overlay, 0 )
+            else
+                --TODO: proper overlay set - eternal mixed with golden heart
+            end
+
         end
         return sprite
     else
@@ -394,7 +424,8 @@ function coopHUD.getHeartSpriteTable(player)
     local max_health_cap = 12
     local heart_type,overlay = ''
     local heart_sprites = {}
-    -- TODO: T.Maggy integrate with birthright - max cap increased to 18
+    -- TODO: Maggy integrate with birthright - max cap increased to 18
+
     for counter=0,12,1 do
         heart_type,overlay = coopHUD.getHeartType(player,counter)
         heart_sprites[counter] = coopHUD.getHeartSprite(heart_type,overlay)
@@ -402,8 +433,6 @@ function coopHUD.getHeartSpriteTable(player)
     return heart_sprites
 end
 function coopHUD.getHeartTypeTable(player)
-    --TODO: T. Maggy pulsing hearts
-    --TODO: Broken heart type integration - https://bindingofisaacrebirth.fandom.com/wiki/Health#Broken_Hearts
     local max_health_cap = 12
     local heart_type,overlay = ''
     local heart_types = {}
