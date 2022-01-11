@@ -402,6 +402,7 @@ function coopHUD.getHeartType(player,heart_pos)
     return heart_type,overlay
 end
 function coopHUD.getHeartSprite(heart_type,overlay)
+    --TODO: T. Maggy pulsing hearts
     if heart_type ~= 'None' then
         local sprite = Sprite()
         sprite:Load(coopHUD.GLOBALS.hearts_anim_path,true)
@@ -432,8 +433,6 @@ function coopHUD.getHeartSpriteTable(player)
     return heart_sprites
 end
 function coopHUD.getHeartTypeTable(player)
-    --TODO: T. Maggy pulsing hearts
-
     local max_health_cap = 12
     local heart_type,overlay = ''
     local heart_types = {}
