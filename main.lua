@@ -114,3 +114,4 @@ coopHUD:AddCallback(ModCallbacks.MC_INPUT_ACTION,    coopHUD.charselect)
 
 coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.render)
 
+-- TODO: lalal testy
