@@ -287,3 +287,7 @@ function coopHUD.renderChargeBar(sprites,pos)
         sprites.overlay:Render(pos)
     end
 end
+
+-- TODO: test
+-- test1
+-- test2
