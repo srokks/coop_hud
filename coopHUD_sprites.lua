@@ -424,9 +424,12 @@ function coopHUD.getHeartSpriteTable(player)
     local max_health_cap = 12
     local heart_type,overlay = ''
     local heart_sprites = {}
-    -- TODO: Maggy integrate with birthright - max cap increased to 18
-
-    for counter=0,12,1 do
+    -- Sets increased heatlh cap when playing Maggy with Birthright
+    if player:GetPlayerType() == PlayerType.PLAYER_MAGDALENA and -- checks if player is Maggy
+        player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
+        max_health_cap = 18
+    end
+    for counter=0,max_health_cap,1 do
         heart_type,overlay = coopHUD.getHeartType(player,counter)
         heart_sprites[counter] = coopHUD.getHeartSprite(heart_type,overlay)
     end
@@ -436,7 +439,12 @@ function coopHUD.getHeartTypeTable(player)
     local max_health_cap = 12
     local heart_type,overlay = ''
     local heart_types = {}
-    for counter=0,12,1 do
+    -- Sets increased heatlh cap when playing Maggy with Birthright
+    if player:GetPlayerType() == PlayerType.PLAYER_MAGDALENA and -- checks if player is Maggy
+        player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
+        max_health_cap = 18
+    end
+    for counter=0,max_health_cap,1 do
         heart_type,overlay = coopHUD.getHeartType(player,counter)
         heart_types[counter] = {
             heart_type = heart_type,
