@@ -1,16 +1,19 @@
 function coopHUD.renderActive(player,pos,mirrored)
     local active_pivot = Vector(0,0)
     local sec_pivot = Vector(0,0)
+    local charge_offset = Vector(0,0)
     local offset = Vector(0,0)
     local final_offset = Vector(0,0)
     if mirrored then
         active_pivot = Vector(-16,16)
         sec_pivot = Vector(-24,8)
         offset = Vector(0,32)
+        charge_offset = Vector(0,0)
     else
         active_pivot = Vector(16,16)
         sec_pivot = Vector(8,8)
         offset = Vector(32,32)
+        charge_offset = Vector(12,0)
     end
 
     if player.sprites.second_active then
@@ -22,6 +25,29 @@ function coopHUD.renderActive(player,pos,mirrored)
         local temp_pos = Vector(pos.X + active_pivot.X,pos.Y+active_pivot.Y)
         player.sprites.first_active:Render(temp_pos)
         final_offset = offset
+        local b_charge_off = coopHUD.renderChargeBar(player.sprites.first_active_charge,Vector(pos.X + 8 + final_offset.X,pos.Y + 16))
+        if b_charge_off then final_offset.X = final_offset.X + charge_offset.X end
+
+    end
+    return final_offset
+end
+function coopHUD.renderChargeBar(sprites,pos)
+    local final_offset = false
+    if  sprites then
+        if sprites.charge then
+            sprites.charge:RenderLayer(0,pos)  -- renders background
+            final_offset = true
+        end
+        if sprites.beth_charge then
+            sprites.beth_charge:RenderLayer(1,pos) -- renders bethany charge
+        end
+        if sprites.charge then
+            sprites.charge:RenderLayer(1,pos)
+            sprites.charge:RenderLayer(2,pos)
+        end
+        if sprites.overlay then
+            sprites.overlay:Render(pos)
+        end
     end
     return final_offset
 end
