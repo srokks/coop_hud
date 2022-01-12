@@ -51,10 +51,13 @@ function coopHUD.renderPlayer(player_no)
     if coopHUD.players[player_no].total_hearts >= 6 then
         hearts_span = 7
     else
-        hearts_span = coopHUD.players[player_no].total_hearts % 6
+        hearts_span = coopHUD.players[player_no].total_hearts % 8
     end
     local n = 2 -- No. of rows
-    local m = math.floor(12/n)
+    if coopHUD.players[players_no].max_health_cap > 12 then
+        n = 3
+    end
+    local m = math.floor(coopHUD.players[players_no].max_health_cap/n)
     -- Sub character hearts render
     if coopHUD.players[player_no].has_sub then -- Sub player heart render
         counter = 0
@@ -74,7 +77,7 @@ function coopHUD.renderPlayer(player_no)
     end
     -- Main character hearts render
     local counter = 0
-    local heart_space = 12  -- sets px space between hearts
+    local heart_space = Vector(12,9)  -- sets px space between hearts
     if mirrored then
         pos = Vector(anchor_top.X+active_item_off.X - (8*hearts_span),anchor_top.Y+12)
     else
@@ -84,7 +87,7 @@ function coopHUD.renderPlayer(player_no)
     for row=0,n-1,1 do
         for col=0,m-1,1 do
             if coopHUD.players[player_no].sprites.hearts[counter] then
-                temp_pos = Vector(pos.X + (heart_space * col),pos.Y + (heart_space * row))
+                temp_pos = Vector(pos.X + (heart_space.X * col),pos.Y + (heart_space.Y * row))
                 coopHUD.players[player_no].sprites.hearts[counter]:Render(temp_pos,VECTOR_ZERO,VECTOR_ZERO)
             end
             counter = counter + 1
