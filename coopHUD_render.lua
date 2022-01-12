@@ -310,7 +310,7 @@ function coopHUD.renderItems()
     key_no = string.format("%.2i", key_no)
     f:DrawString(key_no,pos.X+16,pos.Y,color,0,true)
 end
-local counter = 0
+coopHUD.counter = 60
 function  coopHUD.render()
     onRender = true
     --if issomeonejoining == false then
@@ -323,8 +323,8 @@ function  coopHUD.render()
         -- Function is triggered by callback 2 times per second
         -- Check/update user item with longer span - checking with call back cause lag
 
-        counter = counter+1
-        if counter == 6 then
+        coopHUD.counter = coopHUD.counter-1
+        if coopHUD.counter%15 == 0 then
             coopHUD.updateAnchors()
             for i=0,players_no,1 do
                 coopHUD.updateActives(i)
@@ -335,6 +335,9 @@ function  coopHUD.render()
                 coopHUD.updateBethanyCharge(i)
                 coopHUD.updateCollectible(i)
             end
+        end
+        if  coopHUD.counter == 0 then
+            coopHUD.counter = 60
         end
         for i=0,players_no,1 do
             coopHUD.renderPlayer(i)
