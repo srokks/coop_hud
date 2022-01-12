@@ -358,7 +358,7 @@ function  coopHUD.render()
                 coopHUD.updateHearts(i)
                 coopHUD.updateExtraLives(i)
                 coopHUD.updateBethanyCharge(i)
-                counter = 0
+                coopHUD.updateCollectible(i)
             end
         end
         for i=0,players_no,1 do
