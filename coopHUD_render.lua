@@ -6,7 +6,7 @@ function coopHUD.renderActive(player,pos,mirrored)
     if mirrored then
         active_pivot = Vector(-16,16)
         sec_pivot = Vector(-24,8)
-        offset = Vector(-32,32)
+        offset = Vector(0,32)
     else
         active_pivot = Vector(16,16)
         sec_pivot = Vector(8,8)
@@ -29,12 +29,12 @@ function coopHUD.renderHearts(player,pos,mirrored)
     local temp_pos
     local final_offset = Vector(0,0)
     if player.total_hearts >= 6 then -- Determines how many columns will be
-        hearts_span = 8
+        hearts_span = 7
     else
         hearts_span = player.total_hearts % 8
     end
     if mirrored then
-        temp_pos = Vector(pos.X-8*(hearts_span+1)-4,pos.Y+8)
+        temp_pos = Vector(pos.X-8*(hearts_span+1),pos.Y+8)
     else
         temp_pos = Vector(pos.X+8,pos.Y+8)
     end
@@ -114,31 +114,6 @@ function coopHUD.renderPlayer(player_no)
         active_off = -36
     end
 
-    ----Render active item
-    if coopHUD.players[player_no].sprites.first_active or coopHUD.players[player_no].sprites.second_active then
-        active_item_off = Vector(active_item_off.X + active_off ,active_item_off.Y+44)
-        if coopHUD.players[player_no].sprites.second_active then
-            coopHUD.players[player_no].sprites.second_active.Scale = Vector(0.5,0.5)
-            coopHUD.players[player_no].sprites.second_active.Scale = Vector(0.5,0.5)
-            coopHUD.players[player_no].sprites.second_active:Render(Vector(anchor_top.X + second_item_x_off ,anchor_top.Y + 8  ), vector_zero, vector_zero)
-        end
-        if coopHUD.players[player_no].sprites.second_active_charge then -- Second item charge render -- UGLY - can turn on
-            coopHUD.players[player_no].sprites.second_active_charge.Scale = Vector(0.5,0.5)
-            --coopHUD.players[player_no].sprites.second_active_charge:Render(Vector(anchor_top.X +second_item_x_off+8,anchor_top.Y +8), vector_zero, vector_zero)
-        end
-        if coopHUD.players[player_no].sprites.first_active then
-            -- First item render
-            coopHUD.players[player_no].sprites.first_active:Render(Vector(anchor_top.X+active_vector.X,anchor_top.Y+16),VECTOR_ZERO,VECTOR_ZERO)
-        end
-        if coopHUD.players[player_no].sprites.first_active_charge then
-            -- First item charge render
-            local pos = Vector(anchor_top.X+active_vector.X+20,anchor_top.Y+16)
-            coopHUD.renderChargeBar(coopHUD.players[player_no].sprites.first_active_charge,pos)
-        end
-    else
-        active_item_off.X = active_item_off.X + vector_modifier
-        active_item_off.Y = active_item_off.Y + 44
-    end
     ----Render hearts
     local hearts_span
     if coopHUD.players[player_no].total_hearts >= 6 then
