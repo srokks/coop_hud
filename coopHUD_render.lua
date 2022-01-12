@@ -28,14 +28,13 @@ end
 function coopHUD.renderHearts(player,pos,mirrored)
     local temp_pos
     local final_offset = Vector(0,0)
-    if player.total_hearts >= 6 then
+    if player.total_hearts >= 6 then -- Determines how many columns will be
         hearts_span = 8
     else
         hearts_span = player.total_hearts % 8
     end
-    print(hearts_span)
     if mirrored then
-        temp_pos = Vector(pos.X-8*(hearts_span)-4,pos.Y+8)
+        temp_pos = Vector(pos.X-8*(hearts_span+1)-4,pos.Y+8)
     else
         temp_pos = Vector(pos.X+8,pos.Y+8)
     end
@@ -45,7 +44,6 @@ function coopHUD.renderHearts(player,pos,mirrored)
     end
     local m = math.floor(player.max_health_cap/n) -- No of columns in health grid
     -- Sub character hearts render
-    print(player.has_sub)
     counter = 0
     if player.has_sub then -- Sub player heart render
         for row=0,n-1,1 do
@@ -61,11 +59,24 @@ function coopHUD.renderHearts(player,pos,mirrored)
         end
     end
     -- Main character hearts render
-    local counter = 0
+    counter = 0
     local heart_space = Vector(12,9)  -- sets px space between hearts
     for row=0,n-1,1 do
         for col=0,m-1,1 do
             if player.sprites.hearts[counter] then
+                local t_maggy_hearts = 1
+                -- Changes max non dissapearing hearst if player  has_birthright
+                if player.has_birthright then t_maggy_hearts = 2 end
+                if player.type == PlayerType.PLAYER_MAGDALENA_B and counter > t_maggy_hearts
+                        and player.heart_types[counter].heart_type ~= 'EmptyHeart' then
+                    -- According to main ticker changes alpha color of sprite this way animate item
+                    -- Probably not sufficient way but when I'll learn better animation I fix it
+                    local sprite_alpha = coopHUD.counter/60
+                    if sprite_alpha > 0.4 then
+                        local col = Color(1,1,1,sprite_alpha)
+                        player.sprites.hearts[counter].Color = col
+                    end
+                end
                 heart_pos = Vector(temp_pos.X + 12*col,temp_pos.Y+10*row)
                 player.sprites.hearts[counter]:Render(heart_pos)
             end
