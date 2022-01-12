@@ -4,6 +4,13 @@
 --- DateTime: 04/01/2022 16:20
 ---
 coopHUD.jar_of_wisp_charge = nil -- Global value of jar_of_wisp_charge
+function coopHUD.updateCollectible(player_no)
+    local player = Isaac.GetPlayer(player_no)
+    -- Update if player has birthright
+    if not coopHUD.players[player_no].has_birthright and player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
+        coopHUD.players[player_no].has_birthright = true
+    end
+end
 function coopHUD.updatePlayer(player_no)
     local temp_player = Isaac.GetPlayer(player_no)
     local player_table = {}
@@ -32,6 +39,7 @@ function coopHUD.updatePlayer(player_no)
         type = temp_player:GetPlayerType(),
         ---
         has_sub = false,
+        has_birthright = false,
         ---
         sprites = {
             first_active = coopHUD.getActiveItemSprite(temp_player,0),
