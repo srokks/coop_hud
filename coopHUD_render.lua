@@ -44,6 +44,22 @@ function coopHUD.renderHearts(player,pos,mirrored)
         n = 3 -- No of rows in case of increased health cap - Maggy+Birthright
     end
     local m = math.floor(player.max_health_cap/n) -- No of columns in health grid
+    -- Sub character hearts render
+    print(player.has_sub)
+    counter = 0
+    if player.has_sub then -- Sub player heart render
+        for row=0,n-1,1 do
+            for col=0,m-1,1 do
+                if player.sprites.sub_hearts[counter] then
+                    player.sprites.sub_hearts[counter].Scale = Vector(1,1)
+                    player.sprites.sub_hearts[counter].Color =Color(1, 1, 1, 0.5, 0, 0, 0)
+                    heart_pos = Vector(temp_pos.X + 12 * col,temp_pos.Y+10)
+                    player.sprites.sub_hearts[counter]:Render(heart_pos)
+                end
+                counter = counter + 1
+            end
+        end
+    end
     -- Main character hearts render
     local counter = 0
     local heart_space = Vector(12,9)  -- sets px space between hearts
