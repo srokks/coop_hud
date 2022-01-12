@@ -2,13 +2,14 @@ coopHUD = RegisterMod("Coop HUD", 1)
 local SHExists, ScreenHelper = pcall(require, "scripts.screenhelper")
 function coopHUD.getMinimapOffset()
     -- Modified function from minimap_api by Wolfsauge
+    --TODO: curse of the unknown integration
     local minimap_offset = ScreenHelper.GetScreenTopRight()
     local screen_size = ScreenHelper.GetScreenTopRight()
     local is_large = MinimapAPI:IsLarge()
     if not is_large and MinimapAPI:GetConfig("DisplayMode") == 2 then -- BOUNDED MAP
-        minimap_offset = Vector(screen_size.X - MinimapAPI:GetConfig("MapFrameWidth") - MinimapAPI:GetConfig("PositionX") - 24,2)
+        minimap_offset = Vector(screen_size.X - MinimapAPI:GetConfig("MapFrameWidth") - MinimapAPI:GetConfig("PositionX") - 16,2)
     elseif not is_large and MinimapAPI:GetConfig("DisplayMode") == 4 then -- NO MAP
-        minimap_offset = Vector(screen_size.X - 24,2)
+        minimap_offset = Vector(screen_size.X - 16,2)
     else -- LARGE
         local minx = screen_size.X
         for i,v in ipairs(MinimapAPI:GetLevel()) do
@@ -19,7 +20,7 @@ function coopHUD.getMinimapOffset()
             end
 
         end
-        minimap_offset = Vector(minx-24,2) -- Small
+        minimap_offset = Vector(minx-16,2) -- Small
     end
     --if MinimapAPI:GetConfig('ShowLevelFlags') then
     --    minimap_offset.X = minimap_offset.X - 16
