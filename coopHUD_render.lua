@@ -25,6 +25,45 @@ function coopHUD.renderActive(player,pos,mirrored)
     end
     return final_offset
 end
+function coopHUD.renderHearts(player,pos,mirrored)
+    local temp_pos
+    local final_offset = Vector(0,0)
+    if player.total_hearts >= 6 then
+        hearts_span = 8
+    else
+        hearts_span = player.total_hearts % 8
+    end
+    print(hearts_span)
+    if mirrored then
+        temp_pos = Vector(pos.X-8*(hearts_span)-4,pos.Y+8)
+    else
+        temp_pos = Vector(pos.X+8,pos.Y+8)
+    end
+    local n = 2 -- No. of rows in
+    if player.max_health_cap > 12 then
+        n = 3 -- No of rows in case of increased health cap - Maggy+Birthright
+    end
+    local m = math.floor(player.max_health_cap/n) -- No of columns in health grid
+    -- Main character hearts render
+    local counter = 0
+    local heart_space = Vector(12,9)  -- sets px space between hearts
+    for row=0,n-1,1 do
+        for col=0,m-1,1 do
+            if player.sprites.hearts[counter] then
+                heart_pos = Vector(temp_pos.X + 12*col,temp_pos.Y+10*row)
+                player.sprites.hearts[counter]:Render(heart_pos)
+            end
+            counter = counter + 1
+        end
+    end
+    if mirrored then
+        final_offset = Vector(temp_pos.X-4,temp_pos.Y)
+    else
+        final_offset = Vector(heart_pos.X+4,heart_pos.Y)
+    end
+    return final_offset
+end
+
 function coopHUD.renderPlayer(player_no)
     local active_item_off = Vector(0,0)
     --Define anchor
