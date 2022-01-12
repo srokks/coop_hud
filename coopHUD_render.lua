@@ -1,3 +1,30 @@
+function coopHUD.renderActive(player,pos,mirrored)
+    local active_pivot = Vector(0,0)
+    local sec_pivot = Vector(0,0)
+    local offset = Vector(0,0)
+    local final_offset = Vector(0,0)
+    if mirrored then
+        active_pivot = Vector(-16,16)
+        sec_pivot = Vector(-24,8)
+        offset = Vector(-32,32)
+    else
+        active_pivot = Vector(16,16)
+        sec_pivot = Vector(8,8)
+        offset = Vector(32,32)
+    end
+
+    if player.sprites.second_active then
+        local temp_pos = Vector(pos.X + sec_pivot.X,pos.Y + sec_pivot.Y)
+        player.sprites.second_active.Scale = Vector(0.5,0.5)
+        player.sprites.second_active:Render(temp_pos)
+    end
+    if player.sprites.first_active then
+        local temp_pos = Vector(pos.X + active_pivot.X,pos.Y+active_pivot.Y)
+        player.sprites.first_active:Render(temp_pos)
+        final_offset = offset
+    end
+    return final_offset
+end
 function coopHUD.renderPlayer(player_no)
     local active_item_off = Vector(0,0)
     --Define anchor
