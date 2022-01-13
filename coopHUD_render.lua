@@ -419,7 +419,8 @@ function coopHUD.renderPlayer2(player_no)
     first_line_off = Vector(first_line_off.X+temp_off.X,first_line_off.Y+temp_off.Y)
     temp_off = coopHUD.renderHearts(coopHUD.players[player_no],Vector(pos.X+first_line_off.X,pos.Y),mirrored)
     first_line_off = Vector(first_line_off.X + temp_off.X,first_line_off.Y + temp_off.Y)
-    --print(pos,temp_off,first_line_off)
+    temp_off = coopHUD.renderExtraLives(coopHUD.players[player_no],Vector(pos.X+first_line_off.X,pos.Y),mirrored)
+    first_line_off = Vector(first_line_off.X + temp_off.X,first_line_off.Y + temp_off.Y)
     coopHUD.renderActive(coopHUD.players[player_no],Vector(pos.X+first_line_off.X,pos.Y),mirrored)
     --- MIRRORED
     local pos = Vector(Isaac.GetScreenWidth(),0)
@@ -429,7 +430,10 @@ function coopHUD.renderPlayer2(player_no)
     first_line_off = Vector(first_line_off.X + temp_off.X,first_line_off.Y + temp_off.Y)
     temp_off = coopHUD.renderHearts(coopHUD.players[player_no],Vector(pos.X+first_line_off.X,pos.Y),mirrored)
     first_line_off = Vector(first_line_off.X + temp_off.X,first_line_off.Y + temp_off.Y)
-    print(temp_off,first_line_off)
+    temp_off = coopHUD.renderExtraLives(coopHUD.players[player_no],Vector(pos.X+first_line_off.X,pos.Y),mirrored)
+    --
+    first_line_off = Vector(first_line_off.X + temp_off.X,first_line_off.Y + temp_off.Y)
+    print(temp_off)
     coopHUD.renderActive(coopHUD.players[player_no],Vector(pos.X+first_line_off.X,pos.Y),mirrored)
 end
 
