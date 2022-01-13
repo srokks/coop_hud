@@ -245,6 +245,12 @@ function coopHUD.renderTrinkets(player,pos,mirrored)
         player.sprites.first_trinket:Render(temp_pos)
     end
 end
+function coopHUD.renderBethanyCharge(player,pos,mirrored)
+
+end
+function coopHUD.renderPlayerInfo(player,pos,mirrored)
+
+end
 function coopHUD.renderPlayer(player_no)
     local active_item_off = Vector(0,0)
     --Define anchor
