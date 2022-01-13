@@ -73,7 +73,10 @@ function coopHUD.renderHearts(player,pos,mirrored)
     if mirrored then
         temp_pos = Vector(pos.X-12*(hearts_span),pos.Y+8)
         final_offset = Vector(-12*(hearts_span)-6,0)
-        if Game():GetLevel():GetCurses() == 8 then final_offset = Vector(-16,16) end
+        if Game():GetLevel():GetCurses() == 8 then
+            temp_pos = Vector(pos.X-12,pos.Y+8)
+            final_offset = Vector(-16,16)
+        end
     else
         temp_pos = Vector(pos.X+8,pos.Y+8)
         final_offset = Vector(12*(hearts_span)+4,0) -- sets returning offset
