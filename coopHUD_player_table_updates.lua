@@ -221,9 +221,11 @@ function coopHUD.updateBethanyCharge(player_no)
     end
 end
 function coopHUD.updatePoopMana(player_no)
+    local force_update = false
     if coopHUD.players[player_no].type == PlayerType.PLAYER_XXX_B  then
         local player = Isaac.GetPlayer(player_no)
         if coopHUD.players[player_no].poop_mana ~= player:GetPoopMana() then
+            force_update = true
             coopHUD.players[player_no].poop_mana = player:GetPoopMana()
         end
         if coopHUD.players[player_no].max_poop_mana ~= 9 or
@@ -233,13 +235,10 @@ function coopHUD.updatePoopMana(player_no)
                 coopHUD.players[player_no].max_poop_mana = 29
             end
         end
-        if coopHUD.players[player_no].poops[0] ~= player:GetPoopSpell(0) then
-            coopHUD.players[player_no].poops = coopHUD.getPoopSpellTable(player_no)
-            coopHUD.players[player_no].sprites.poops = coopHUD.getPoopSpriteTable(player)
-        end
-        --print(coopHUD.players[player_no].poop_mana,coopHUD.players[player_no].max_poop_mana)
-        --coopHUD.players[player_no].poops = 0
-        --coopHUD.players[player_no].sprites.poops = 0
+        if coopHUD.players[player_no].poops[0] ~= player:GetPoopSpell(0) or force_update then
+                coopHUD.players[player_no].poops = coopHUD.getPoopSpellTable(player_no)
+                coopHUD.players[player_no].sprites.poops = coopHUD.getPoopSpriteTable(player)
+            end
     end
 end
 function coopHUD.getPoopSpellTable(player_no)
