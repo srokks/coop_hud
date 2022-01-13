@@ -278,6 +278,18 @@ function coopHUD.renderBethanyCharge(player,pos,mirrored)
         f:DrawString (bethany_charge,pos.X+text_pivot.X,pos.Y+text_pivot.Y,KColor(1,1,1,1),0,true)
     end
 end
+function coopHUD.renderBagOfCrafting(player,pos,mirrored)
+end
+function coopHUD.renderPoopSpells(player,pos,mirrored)
+    if mirrored then
+
+    else
+
+    end
+    for i=0,PoopSpellType.SPELL_QUEUE_SIZE-1,1 do
+        player.sprites.poops[i]:Render(Vector(100+10*i,100))
+    end
+end
 function coopHUD.renderPlayerInfo(player,pos,mirrored)
 
 end
@@ -381,6 +393,7 @@ function coopHUD.renderPlayer2(player_no)
     local down_pos = Vector(0,Isaac.GetScreenHeight())
     local pocket_off = Vector(0,0)
     local trinket_off = Vector(0,0)
+    local extra_charge_off = Vector(0,0)
     -- <First  top line render> --
     active_off = coopHUD.renderActive(coopHUD.players[player_no],pos,mirrored)
     hearts_off = coopHUD.renderHearts(coopHUD.players[player_no],Vector(pos.X+active_off.X,pos.Y),mirrored)
