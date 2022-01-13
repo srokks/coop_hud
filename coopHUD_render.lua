@@ -358,6 +358,7 @@ function  coopHUD.render()
                 coopHUD.updateExtraLives(i)
                 coopHUD.updateBethanyCharge(i)
                 coopHUD.updateCollectible(i)
+                coopHUD.updatePoopMana(i)
             end
         end
         if  coopHUD.counter == 0 then
