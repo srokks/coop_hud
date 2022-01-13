@@ -276,7 +276,7 @@ function coopHUD.getHeartType(player,heart_pos)
                     heart_type = "CoinEmpty"
                 end
             else -- Normal red hearts
-                if player_type == 21 then --TODO:Tainted maggy pulse heart
+                if player_type == 21 then
                     if player:GetHearts()-(heart_pos*2) > 1 then
                         heart_type = "RedHeartFullMaggy"
                     elseif player:GetHearts()-(heart_pos*2) == 1 then
@@ -402,7 +402,6 @@ function coopHUD.getHeartType(player,heart_pos)
     return heart_type,overlay
 end
 function coopHUD.getHeartSprite(heart_type,overlay)
-    --TODO: T. Maggy pulsing hearts
     if heart_type ~= 'None' then
         local sprite = Sprite()
         sprite:Load(coopHUD.GLOBALS.hearts_anim_path,true)
