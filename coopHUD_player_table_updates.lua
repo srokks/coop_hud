@@ -41,7 +41,7 @@ function coopHUD.updatePlayer(player_no)
         --- T ??? - specifics
         poop_mana = 0,
         max_poop_mana = 0,
-        poops = {},
+        poops = coopHUD.getPoopSpellTable(player_no),
         ---
         type = temp_player:GetPlayerType(),
         ---
@@ -63,7 +63,7 @@ function coopHUD.updatePlayer(player_no)
             third_pocket = coopHUD.getPocketItemSprite(temp_player,2),
             hearts = coopHUD.getHeartSpriteTable(temp_player),
             sub_hearts = nil,
-            poops = {},
+            poops = coopHUD.getPoopSpriteTable(temp_player),
         },
     }
     -- Bethany/T.Bethany check
