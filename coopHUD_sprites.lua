@@ -452,3 +452,30 @@ function coopHUD.getHeartTypeTable(player)
     end
     return heart_types
 end
+function coopHUD.getPoopSprite(player,i)
+    local spell_type
+    local layer_name = 'IdleSmall'
+    spell_type = player:GetPoopSpell(i)
+    if i == 0 then layer_name = 'Idle' end
+    if spell_type ~= 0 then
+        local sprite = Sprite()
+        sprite:Load(coopHUD.GLOBALS.poop_anim_path,true)
+        sprite:SetFrame(layer_name,spell_type)
+        print(i,player:GetPoopMana() )
+        if i >= player:GetPoopMana() then
+            local col = Color(1,1,1,1)
+            col:SetColorize(1, 1, 1, 1)
+            sprite.Color = Color(0.3,0.3,0.3,0.3)
+        end
+        return sprite
+    else
+        return nil
+    end
+end
+function coopHUD.getPoopSpriteTable(player)
+    local poop_table = {}
+    for i=0,PoopSpellType.SPELL_QUEUE_SIZE-1,1 do
+        poop_table[i] = coopHUD.getPoopSprite(player,i)
+    end
+    return poop_table
+end
