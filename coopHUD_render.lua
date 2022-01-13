@@ -410,7 +410,8 @@ function coopHUD.renderPlayer2(player_no)
     -- </First  top line render> --
     -- <Second  top line render> --
     --TODO: renderPlayerInfo: render head of current character and name <P1 .. P4>
-     coopHUD.renderBethanyCharge(coopHUD.players[player_no],Vector(pos.X,pos.Y + math.max(active_off.Y,hearts_off.Y)),mirrored)
+     extra_charge_off = coopHUD.renderBethanyCharge(coopHUD.players[player_no],Vector(pos.X,pos.Y + math.max(active_off.Y,hearts_off.Y)),mirrored)
+    coopHUD.renderPoopSpells(coopHUD.players[player_no],Vector(pos.X,pos.Y + math.max(active_off.Y,hearts_off.Y)),mirrored)
     -- </Second  top line render> --
     -- <Down  line>
     pocket_off = coopHUD.renderPockets(coopHUD.players[player_no],down_pos,mirrored)
@@ -433,7 +434,8 @@ function coopHUD.renderPlayer2(player_no)
     -- </First  top line render> --
     -- <Second  top line render> --
     --TODO: renderPlayerInfo: render head of current character and name <P1 .. P4>
-     coopHUD.renderBethanyCharge(coopHUD.players[player_no],Vector(pos.X,pos.Y + math.max(active_off.Y,hearts_off.Y)),mirrored)
+     extra_charge_off = coopHUD.renderBethanyCharge(coopHUD.players[player_no],Vector(pos.X,pos.Y + math.max(active_off.Y,hearts_off.Y)),mirrored)
+    coopHUD.renderPoopSpells(coopHUD.players[player_no],Vector(pos.X,pos.Y + math.max(active_off.Y,hearts_off.Y)),mirrored)
     -- </Second  top line render> --
     -- <Down  line>
     pocket_off = coopHUD.renderPockets(coopHUD.players[player_no],down_pos,mirrored)
