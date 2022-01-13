@@ -1,52 +1,63 @@
 function coopHUD.renderActive(player,pos,mirrored)
-    local active_pivot = Vector(0,0)
-    local sec_pivot = Vector(0,0)
+    local active_pivot = Vector(0,0) -- first item pivot
+    local sec_pivot = Vector(0,0) -- second item pivot
     local charge_offset = Vector(0,0)
     local offset = Vector(0,0)
+    local temp_pos = Vector(0,0)
     local final_offset = Vector(0,0)
     if mirrored then
-        active_pivot = Vector(-16,16)
+        active_pivot = Vector(-32,16)
         sec_pivot = Vector(-24,8)
-        offset = Vector(0,32)
-        charge_offset = Vector(0,0)
+        offset = Vector(-32,32)
+        charge_offset = Vector(-12,0)
     else
         active_pivot = Vector(16,16)
         sec_pivot = Vector(8,8)
         offset = Vector(32,32)
-        charge_offset = Vector(12,0)
+        charge_offset = Vector(32,0)
     end
-
+    -- Second active render
     if player.sprites.second_active then
-        local temp_pos = Vector(pos.X + sec_pivot.X,pos.Y + sec_pivot.Y)
+        temp_pos = Vector(pos.X + sec_pivot.X,pos.Y + sec_pivot.Y)
         player.sprites.second_active.Scale = Vector(0.5,0.5)
         player.sprites.second_active:Render(temp_pos)
     end
+    -- Second active render
     if player.sprites.first_active then
-        local temp_pos = Vector(pos.X + active_pivot.X,pos.Y+active_pivot.Y)
+        temp_pos = Vector(pos.X + charge_offset.X,pos.Y)
+        charge_offset = coopHUD.renderChargeBar(player.sprites.first_active_charge,temp_pos,mirrored)
+        temp_pos = Vector(pos.X + active_pivot.X ,pos.Y+active_pivot.Y)
         player.sprites.first_active:Render(temp_pos)
-        final_offset = offset
-        local b_charge_off = coopHUD.renderChargeBar(player.sprites.first_active_charge,Vector(pos.X + 8 + final_offset.X,pos.Y + 16))
-        if b_charge_off then final_offset.X = final_offset.X + charge_offset.X end
-
+        final_offset = Vector(offset.X+charge_offset.X,offset.Y)
     end
     return final_offset
 end
-function coopHUD.renderChargeBar(sprites,pos)
-    local final_offset = false
+function coopHUD.renderChargeBar(sprites,pos,mirrored)
+    local offset = Vector(0,0)
+    local pivot = Vector(0,0)
+    local final_offset = Vector(0,0)
+    if mirrored then
+        pivot = Vector(8,16)
+        offset = Vector(-12,16)
+    else
+        pivot = Vector(8,16)
+        offset = Vector(12,16)
+    end
+    local temp_pos = Vector(pos.X + pivot.X,pos.Y + pivot.Y) -- Sets pivot for anim frame
     if  sprites then
         if sprites.charge then
-            sprites.charge:RenderLayer(0,pos)  -- renders background
-            final_offset = true
+            sprites.charge:RenderLayer(0,temp_pos)  -- renders background
+            final_offset = offset
         end
         if sprites.beth_charge then
-            sprites.beth_charge:RenderLayer(1,pos) -- renders bethany charge
+            sprites.beth_charge:RenderLayer(1,temp_pos) -- renders bethany charge
         end
         if sprites.charge then
-            sprites.charge:RenderLayer(1,pos)
-            sprites.charge:RenderLayer(2,pos)
+            sprites.charge:RenderLayer(1,temp_pos)
+            sprites.charge:RenderLayer(2,temp_pos)
         end
         if sprites.overlay then
-            sprites.overlay:Render(pos)
+            sprites.overlay:Render(temp_pos)
         end
     end
     return final_offset
@@ -55,14 +66,18 @@ function coopHUD.renderHearts(player,pos,mirrored)
     local temp_pos
     local final_offset = Vector(0,0)
     if player.total_hearts >= 6 then -- Determines how many columns will be
-        hearts_span = 7
+        hearts_span = 6
     else
-        hearts_span = player.total_hearts % 8
+        hearts_span = player.total_hearts % 6
     end
     if mirrored then
-        temp_pos = Vector(pos.X-8*(hearts_span+1),pos.Y+8)
+        temp_pos = Vector(pos.X-12*(hearts_span),pos.Y+8)
+        final_offset = Vector(-12*(hearts_span)-6,0)
+        if Game():GetLevel():GetCurses() == 8 then final_offset = Vector(-16,16) end
     else
         temp_pos = Vector(pos.X+8,pos.Y+8)
+        final_offset = Vector(12*(hearts_span)+4,0) -- sets returning offset
+        if Game():GetLevel():GetCurses() == 8 then final_offset = Vector(16,16) end
     end
     local n = 2 -- No. of rows in
     if player.max_health_cap > 12 then
