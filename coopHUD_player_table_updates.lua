@@ -10,6 +10,10 @@ function coopHUD.updateCollectible(player_no)
     if not coopHUD.players[player_no].has_birthright and player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
         coopHUD.players[player_no].has_birthright = true
     end
+    -- Update if player has guppy's collar
+    if not coopHUD.players[player_no].has_guppy and player:HasCollectible(CollectibleType.COLLECTIBLE_GUPPYS_COLLAR) then
+        coopHUD.players[player_no].has_guppy = true
+    end
 end
 function coopHUD.updatePlayer(player_no)
     local temp_player = Isaac.GetPlayer(player_no)
@@ -40,6 +44,7 @@ function coopHUD.updatePlayer(player_no)
         ---
         has_sub = false,
         has_birthright = false,
+        has_guppy = false,
         ---
         sprites = {
             first_active = coopHUD.getActiveItemSprite(temp_player,0),
