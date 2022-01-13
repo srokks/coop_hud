@@ -124,31 +124,35 @@ function coopHUD.renderHearts(player,pos,mirrored)
             counter = counter + 1
         end
     end
-    if mirrored then
-        final_offset = Vector(temp_pos.X-4,temp_pos.Y)
-    else
-        final_offset = Vector(heart_pos.X+4,heart_pos.Y)
-    end
     return final_offset
 end
 function coopHUD.renderExtraLives(player,pos,mirrored)
+    local temp_pos = Vector(0,0)
     local lives_pivot = Vector(0,0)
-    if mirrored then
-        lives_pivot = Vector(0,0)
-    else
-        lives_pivot = Vector(12,4)
-    end
+    local offset = Vector(0,0)
+    local final_offset = Vector(0,0)
     if player.extra_lives ~= 0 then
         local f = Font()
         f:Load("font/pftempestasevencondensed.fnt")
         local text
         if player.has_guppy then
+            temp_pos = 1
             text = string.format('x%d?',player.extra_lives)
-            pos.X = pos.X - 6
         else
             text =  string.format('x%d',player.extra_lives)
         end
-
+        if mirrored then -- mirrored
+            offset = Vector(string.len(text)*-8,0)
+            lives_pivot = Vector(string.len(text)*-8,4)
+        else -- normal
+            offset = Vector(string.len(text)*6,0)
+            lives_pivot = Vector(2,4)
+        end
+        f:DrawString (text,pos.X+lives_pivot.X,pos.Y+lives_pivot.Y,KColor(1,1,1,1),0,true)
+        final_offset = offset
+    end
+    return final_offset
+end
 function coopHUD.renderPlayer(player_no)
     local active_item_off = Vector(0,0)
     --Define anchor
