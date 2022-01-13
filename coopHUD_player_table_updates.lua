@@ -38,6 +38,10 @@ function coopHUD.updatePlayer(player_no)
         wisp_jar_use = 0, -- holds info about used jar of wisp FIXME:
         total_hearts = math.ceil((temp_player:GetEffectiveMaxHearts() + temp_player:GetSoulHearts())/2),
         max_health_cap = 12,
+        --- T ??? - specifics
+        poop_mana = 0,
+        max_poop_mana = 0,
+        poops = {},
         ---
         type = temp_player:GetPlayerType(),
         ---
@@ -58,7 +62,8 @@ function coopHUD.updatePlayer(player_no)
             second_pocket = coopHUD.getPocketItemSprite(temp_player,1),
             third_pocket = coopHUD.getPocketItemSprite(temp_player,2),
             hearts = coopHUD.getHeartSpriteTable(temp_player),
-            sub_hearts = nil
+            sub_hearts = nil,
+            poops = {},
         },
     }
     -- Bethany/T.Bethany check
