@@ -32,7 +32,6 @@ function coopHUD.updatePlayer(player_no)
         third_pocket = coopHUD.getPocketID(temp_player,2),
         pocket_desc = coopHUD.getMainPocketDesc(temp_player),
         extra_lives = temp_player:GetExtraLives(),
-        has_guppy = temp_player:HasCollectible(212),
         bethany_charge = nil, -- inits charge for Bethany
         heart_types = coopHUD.getHeartTypeTable(temp_player),
         sub_heart_types = {},
