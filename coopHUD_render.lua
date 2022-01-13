@@ -156,6 +156,73 @@ function coopHUD.renderExtraLives(player,pos,mirrored)
     end
     return final_offset
 end
+function coopHUD.renderPockets(player,pos,mirrored)
+    local temp_pos = Vector(0,0)
+    local main_pocket_pivot = Vector(0,0)
+    local charge_pivot = Vector(0,0)
+    local sec_po_pivot = Vector(0,0)
+    local trd_po_pivot = Vector(0,0)
+    local desc_pivot = Vector(0,0)
+    local offset = Vector(0,0)
+    local final_offset = Vector(0,0)
+    local f = Font()
+    f:Load("font/pftempestasevencondensed.fnt")
+    local color = KColor(1,1,1,1) -- TODO: sets according to player color
+    if mirrored then
+        main_pocket_pivot = Vector(-16,-16)
+        charge_pivot = Vector(-16,-28)
+        sec_po_pivot = Vector(-48,-18)
+        trd_po_pivot = Vector(-60,-18)
+        desc_pivot = Vector(-38,-16)
+        offset = Vector(0,-32)
+    else
+        main_pocket_pivot = Vector(16,-16)
+        charge_pivot = Vector(28,-28)
+        sec_po_pivot = Vector(52,-18)
+        trd_po_pivot = Vector(64,-18)
+        desc_pivot = Vector(48,-16)
+        offset = Vector(0,-32)
+    end
+    ------third pocket
+    if player.sprites.third_pocket then
+        temp_pos = Vector(pos.X+trd_po_pivot.X,pos.Y+trd_po_pivot.Y)
+        player.sprites.third_pocket.Scale = Vector(0.5,0.5) -- sets scale
+        player.sprites.third_pocket.Color = Color(1,1,1,0.5) -- sets sprite alpha
+        player.sprites.third_pocket:Render(temp_pos)
+    end
+    -- Second pocket
+    if player.sprites.second_pocket then
+        temp_pos = Vector(pos.X+sec_po_pivot.X,pos.Y+sec_po_pivot.Y)
+        player.sprites.second_pocket.Scale = Vector(0.5,0.5) -- sets scale
+        player.sprites.second_pocket.Color = Color(1,1,1,0.5) -- sets sprite alpha
+        player.sprites.second_pocket:Render(temp_pos)
+    end
+    -- Main pocket
+    if player.sprites.first_pocket then
+        local charge_offset = Vector(0,0)
+        final_offset = offset
+        -- Main pocket charge
+        if player.sprites.first_pocket:GetDefaultAnimation() == 'Idle' then -- checks if item is not pill of card
+            if player.sprites.first_pocket_charge.charge then
+                temp_pos = Vector(pos.X+charge_pivot.X,pos.Y+charge_pivot.Y)
+                charge_offset = coopHUD.renderChargeBar(player.sprites.first_pocket_charge,temp_pos,mirrored)
+            end
+        end
+        if mirrored then main_pocket_pivot.X = main_pocket_pivot.X + charge_offset.X end
+        temp_pos = Vector(pos.X+main_pocket_pivot.X,pos.Y+main_pocket_pivot.Y)
+        player.sprites.first_pocket:Render(temp_pos)
+        -- Description
+        if player.pocket_desc then
+            temp_pos = Vector(pos.X+desc_pivot.X,pos.Y+desc_pivot.Y)
+            if  mirrored then temp_pos.X = temp_pos.X - string.len(player.pocket_desc)*6
+            end
+            local text = player.pocket_desc
+            --if string.len(text) > 12 and mirrored then
+            --    text = string.format("%.12s...",text) end
+            f:DrawString (text,temp_pos.X,temp_pos.Y,color,0,true) end
+    end
+    return final_offset
+end
 function coopHUD.renderPlayer(player_no)
     local active_item_off = Vector(0,0)
     --Define anchor
@@ -421,19 +488,32 @@ function coopHUD.renderPlayer2(player_no)
     first_line_off = Vector(first_line_off.X + temp_off.X,first_line_off.Y + temp_off.Y)
     temp_off = coopHUD.renderExtraLives(coopHUD.players[player_no],Vector(pos.X+first_line_off.X,pos.Y),mirrored)
     first_line_off = Vector(first_line_off.X + temp_off.X,first_line_off.Y + temp_off.Y)
-    coopHUD.renderActive(coopHUD.players[player_no],Vector(pos.X+first_line_off.X,pos.Y),mirrored)
+    -- Down line
+    local down_pos = Vector(0,Isaac.GetScreenHeight())
+    local down_line_off = Vector(0,0)
+    local mirrored = false
+    local temp_off = coopHUD.renderPockets(coopHUD.players[player_no],down_pos,mirrored)
+     down_line_off = Vector(down_line_off.X + temp_off.X,down_line_off.Y + temp_off.Y)
+    coopHUD.renderPockets(coopHUD.players[player_no],Vector(down_pos.X,down_pos.Y+down_line_off.Y),mirrored)
     --- MIRRORED
     local pos = Vector(Isaac.GetScreenWidth(),0)
     local first_line_off = Vector(0,0)
     local mirrored = true
     local temp_off = coopHUD.renderActive(coopHUD.players[player_no],pos,mirrored)
+    -- heart render
     first_line_off = Vector(first_line_off.X + temp_off.X,first_line_off.Y + temp_off.Y)
     temp_off = coopHUD.renderHearts(coopHUD.players[player_no],Vector(pos.X+first_line_off.X,pos.Y),mirrored)
+    -- extra lives
     first_line_off = Vector(first_line_off.X + temp_off.X,first_line_off.Y + temp_off.Y)
     temp_off = coopHUD.renderExtraLives(coopHUD.players[player_no],Vector(pos.X+first_line_off.X,pos.Y),mirrored)
     --
-    first_line_off = Vector(first_line_off.X + temp_off.X,first_line_off.Y + temp_off.Y)
-    print(temp_off)
-    coopHUD.renderActive(coopHUD.players[player_no],Vector(pos.X+first_line_off.X,pos.Y),mirrored)
-end
+    -- Down line
+    local down_pos = Vector(Isaac.GetScreenWidth(),Isaac.GetScreenHeight())
+    --local down_pos = Vector(100,100)
 
+    local down_line_off = Vector(0,0)
+    local mirrored = true
+    local temp_off = coopHUD.renderPockets(coopHUD.players[player_no],down_pos,mirrored)
+    down_line_off = Vector(down_line_off.X + temp_off.X,down_line_off.Y + temp_off.Y)
+    coopHUD.renderPockets(coopHUD.players[player_no],Vector(down_pos.X,down_pos.Y+down_line_off.Y),mirrored)
+end
