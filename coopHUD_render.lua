@@ -70,6 +70,11 @@ function coopHUD.renderHearts(player,pos,mirrored)
     else
         hearts_span = player.total_hearts % 6
     end
+    local n = 2 -- No. of rows in
+    if player.max_health_cap > 12 then
+        n = 3 -- No of rows in case of increased health cap - Maggy+Birthright
+    end
+    local m = math.floor(player.max_health_cap/n) -- No of columns in health grid
     if mirrored then
         temp_pos = Vector(pos.X-12*(hearts_span),pos.Y+8)
         final_offset = Vector(-12*(hearts_span)-6,0)
@@ -246,7 +251,30 @@ function coopHUD.renderTrinkets(player,pos,mirrored)
     end
 end
 function coopHUD.renderBethanyCharge(player,pos,mirrored)
-
+    if player.bethany_charge ~= nil then
+        local temp_pos = Vector(0,0)
+        local spr_pivot = Vector(0,0)
+        local text_pivot = Vector(0,0)
+        local f = Font()
+        local bethany_charge = string.format('x%d',player.bethany_charge)
+        if mirrored then
+            spr_pivot = Vector(-7,8)
+            text_pivot = Vector(-10 + string.len(bethany_charge)*-6,-1)
+        else
+            spr_pivot = Vector(5,8)
+            text_pivot = Vector(10,-2)
+        end
+        local beth_sprite = Sprite()
+        if player.type == PlayerType.PLAYER_BETHANY then -- Sets sprite frame according to player type
+            beth_sprite = coopHUD.getHeartSprite('BlueHeartFull','None')
+        else
+            beth_sprite = coopHUD.getHeartSprite('RedHeartFull','None')
+        end
+        beth_sprite.Scale = Vector(0.6,0.6)
+        beth_sprite:Render(Vector(pos.X+spr_pivot.X,pos.Y+spr_pivot.Y))
+        f:Load("font/luaminioutlined.fnt")
+        f:DrawString (bethany_charge,pos.X+text_pivot.X,pos.Y+text_pivot.Y,KColor(1,1,1,1),0,true)
+    end
 end
 function coopHUD.renderPlayerInfo(player,pos,mirrored)
 
