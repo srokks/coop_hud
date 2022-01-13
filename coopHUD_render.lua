@@ -223,6 +223,29 @@ function coopHUD.renderPockets(player,pos,mirrored)
     end
     return final_offset
 end
+function coopHUD.renderTrinkets(player,pos,mirrored)
+    local temp_pos = Vector(0,0)
+    local trinket_pivot = Vector(0,0)
+    local sec_tr_pivot = Vector(0,0)
+    print(mirrored,pos)
+    if mirrored then
+        trinket_pivot  = Vector(-12,-12)
+        sec_tr_pivot = Vector(-32,-12)
+    else
+        trinket_pivot = Vector(12,-12)
+        sec_tr_pivot = Vector(32,-12)
+    end
+    if player.sprites.first_trinket then
+        if player.sprites.second_trinket then
+            temp_pos = Vector(pos.X + sec_tr_pivot.X,pos.Y + sec_tr_pivot.Y)
+            player.sprites.second_trinket.Scale = Vector(0.7,0.7)
+            player.sprites.second_trinket:Render(temp_pos)
+        end
+        temp_pos = Vector(pos.X + trinket_pivot.X,pos.Y + trinket_pivot.Y)
+        player.sprites.first_trinket.Scale = Vector(0.7,0.7)
+        player.sprites.first_trinket:Render(temp_pos)
+    end
+end
 function coopHUD.renderPlayer(player_no)
     local active_item_off = Vector(0,0)
     --Define anchor
@@ -494,7 +517,8 @@ function coopHUD.renderPlayer2(player_no)
     local mirrored = false
     local temp_off = coopHUD.renderPockets(coopHUD.players[player_no],down_pos,mirrored)
      down_line_off = Vector(down_line_off.X + temp_off.X,down_line_off.Y + temp_off.Y)
-    coopHUD.renderPockets(coopHUD.players[player_no],Vector(down_pos.X,down_pos.Y+down_line_off.Y),mirrored)
+    coopHUD.renderTrinkets(coopHUD.players[player_no],Vector(down_pos.X,down_pos.Y+down_line_off.Y),mirrored)
+    --coopHUD.renderPockets(coopHUD.players[player_no],Vector(down_pos.X,down_pos.Y+down_line_off.Y),mirrored) -- DEBUG: test offsets
     --- MIRRORED
     local pos = Vector(Isaac.GetScreenWidth(),0)
     local first_line_off = Vector(0,0)
@@ -515,5 +539,6 @@ function coopHUD.renderPlayer2(player_no)
     local mirrored = true
     local temp_off = coopHUD.renderPockets(coopHUD.players[player_no],down_pos,mirrored)
     down_line_off = Vector(down_line_off.X + temp_off.X,down_line_off.Y + temp_off.Y)
-    coopHUD.renderPockets(coopHUD.players[player_no],Vector(down_pos.X,down_pos.Y+down_line_off.Y),mirrored)
+    coopHUD.renderTrinkets(coopHUD.players[player_no],Vector(down_pos.X,down_pos.Y+down_line_off.Y),mirrored)
+    --coopHUD.renderPockets(coopHUD.players[player_no],Vector(down_pos.X,down_pos.Y+down_line_off.Y),mirrored) -- DEBUG: test offsets
 end
