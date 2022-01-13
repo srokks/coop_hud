@@ -387,19 +387,25 @@ function  coopHUD.render()
     end
 end
 
-function coopHUD.renderChargeBar(sprites,pos)
-    if sprites.charge then
-        sprites.charge:RenderLayer(0,pos)  -- renders background
-    end
-    if sprites.beth_charge then
-        sprites.beth_charge:RenderLayer(1,pos) -- renders bethany charge
-    end
-    if sprites.charge then
-        sprites.charge:RenderLayer(1,pos)
-        sprites.charge:RenderLayer(2,pos)
-    end
-    if sprites.overlay then
-        sprites.overlay:Render(pos)
-    end
+function coopHUD.renderPlayer2(player_no)
+    local pos = Vector(0,0)
+    local first_line_off = Vector(0,0)
+    local mirrored = false
+    local temp_off = coopHUD.renderActive(coopHUD.players[player_no],pos,mirrored)
+    first_line_off = Vector(first_line_off.X+temp_off.X,first_line_off.Y+temp_off.Y)
+    temp_off = coopHUD.renderHearts(coopHUD.players[player_no],Vector(pos.X+first_line_off.X,pos.Y),mirrored)
+    first_line_off = Vector(first_line_off.X + temp_off.X,first_line_off.Y + temp_off.Y)
+    --print(pos,temp_off,first_line_off)
+    coopHUD.renderActive(coopHUD.players[player_no],Vector(pos.X+first_line_off.X,pos.Y),mirrored)
+    --- MIRRORED
+    local pos = Vector(Isaac.GetScreenWidth(),0)
+    local first_line_off = Vector(0,0)
+    local mirrored = true
+    local temp_off = coopHUD.renderActive(coopHUD.players[player_no],pos,mirrored)
+    first_line_off = Vector(first_line_off.X + temp_off.X,first_line_off.Y + temp_off.Y)
+    temp_off = coopHUD.renderHearts(coopHUD.players[player_no],Vector(pos.X+first_line_off.X,pos.Y),mirrored)
+    first_line_off = Vector(first_line_off.X + temp_off.X,first_line_off.Y + temp_off.Y)
+    print(temp_off,first_line_off)
+    coopHUD.renderActive(coopHUD.players[player_no],Vector(pos.X+first_line_off.X,pos.Y),mirrored)
 end
 
