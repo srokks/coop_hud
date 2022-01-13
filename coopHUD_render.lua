@@ -408,42 +408,48 @@ end
 
 function coopHUD.renderPlayer2(player_no)
     local pos = Vector(0,0)
-    local first_line_off = Vector(0,0)
     local mirrored = false
-    local temp_off = coopHUD.renderActive(coopHUD.players[player_no],pos,mirrored)
-    first_line_off = Vector(first_line_off.X+temp_off.X,first_line_off.Y+temp_off.Y)
-    temp_off = coopHUD.renderHearts(coopHUD.players[player_no],Vector(pos.X+first_line_off.X,pos.Y),mirrored)
-    first_line_off = Vector(first_line_off.X + temp_off.X,first_line_off.Y + temp_off.Y)
-    temp_off = coopHUD.renderExtraLives(coopHUD.players[player_no],Vector(pos.X+first_line_off.X,pos.Y),mirrored)
-    first_line_off = Vector(first_line_off.X + temp_off.X,first_line_off.Y + temp_off.Y)
-    -- Down line
+    -- <Locals inits>
+    local active_off = Vector(0,0)
+    local hearts_off = Vector(0,0)
+    local exl_liv_off = Vector(0,0)
     local down_pos = Vector(0,Isaac.GetScreenHeight())
-    local down_line_off = Vector(0,0)
-    local mirrored = false
-    local temp_off = coopHUD.renderPockets(coopHUD.players[player_no],down_pos,mirrored)
-     down_line_off = Vector(down_line_off.X + temp_off.X,down_line_off.Y + temp_off.Y)
-    coopHUD.renderTrinkets(coopHUD.players[player_no],Vector(down_pos.X,down_pos.Y+down_line_off.Y),mirrored)
-    --coopHUD.renderPockets(coopHUD.players[player_no],Vector(down_pos.X,down_pos.Y+down_line_off.Y),mirrored) -- DEBUG: test offsets
+    local pocket_off = Vector(0,0)
+    local trinket_off = Vector(0,0)
+    -- <First  top line render> --
+    active_off = coopHUD.renderActive(coopHUD.players[player_no],pos,mirrored)
+    hearts_off = coopHUD.renderHearts(coopHUD.players[player_no],Vector(pos.X+active_off.X,pos.Y),mirrored)
+    exl_liv_off = coopHUD.renderExtraLives(coopHUD.players[player_no],Vector(pos.X+active_off.X+hearts_off.X,pos.Y),mirrored)
+    -- </First  top line render> --
+    -- <Second  top line render> --
+    --TODO: renderPlayerInfo: render head of current character and name <P1 .. P4>
+     coopHUD.renderBethanyCharge(coopHUD.players[player_no],Vector(pos.X,pos.Y + math.max(active_off.Y,hearts_off.Y)),mirrored)
+    -- </Second  top line render> --
+    -- <Down  line>
+    pocket_off = coopHUD.renderPockets(coopHUD.players[player_no],down_pos,mirrored)
+    trinket_off = coopHUD.renderTrinkets(coopHUD.players[player_no],Vector(down_pos.X,down_pos.Y+pocket_off.Y),mirrored)
+    --coopHUD.renderPockets(coopHUD.players[player_no],Vector(down_pos.X,down_pos.Y+pocket_off.Y+trinket_off.Y),mirrored) -- DEBUG: test offsets
     --- MIRRORED
     local pos = Vector(Isaac.GetScreenWidth(),0)
-    local first_line_off = Vector(0,0)
     local mirrored = true
-    local temp_off = coopHUD.renderActive(coopHUD.players[player_no],pos,mirrored)
-    -- heart render
-    first_line_off = Vector(first_line_off.X + temp_off.X,first_line_off.Y + temp_off.Y)
-    temp_off = coopHUD.renderHearts(coopHUD.players[player_no],Vector(pos.X+first_line_off.X,pos.Y),mirrored)
-    -- extra lives
-    first_line_off = Vector(first_line_off.X + temp_off.X,first_line_off.Y + temp_off.Y)
-    temp_off = coopHUD.renderExtraLives(coopHUD.players[player_no],Vector(pos.X+first_line_off.X,pos.Y),mirrored)
-    --
-    -- Down line
+    -- <Locals inits>
+    local active_off = Vector(0,0)
+    local hearts_off = Vector(0,0)
+    local exl_liv_off = Vector(0,0)
     local down_pos = Vector(Isaac.GetScreenWidth(),Isaac.GetScreenHeight())
-    --local down_pos = Vector(100,100)
-
-    local down_line_off = Vector(0,0)
-    local mirrored = true
-    local temp_off = coopHUD.renderPockets(coopHUD.players[player_no],down_pos,mirrored)
-    down_line_off = Vector(down_line_off.X + temp_off.X,down_line_off.Y + temp_off.Y)
-    coopHUD.renderTrinkets(coopHUD.players[player_no],Vector(down_pos.X,down_pos.Y+down_line_off.Y),mirrored)
-    --coopHUD.renderPockets(coopHUD.players[player_no],Vector(down_pos.X,down_pos.Y+down_line_off.Y),mirrored) -- DEBUG: test offsets
+    local pocket_off = Vector(0,0)
+    local trinket_off = Vector(0,0)
+    -- <First  top line render> --
+    active_off = coopHUD.renderActive(coopHUD.players[player_no],pos,mirrored)
+    hearts_off = coopHUD.renderHearts(coopHUD.players[player_no],Vector(pos.X+active_off.X,pos.Y),mirrored)
+    exl_liv_off = coopHUD.renderExtraLives(coopHUD.players[player_no],Vector(pos.X+active_off.X+hearts_off.X,pos.Y),mirrored)
+    -- </First  top line render> --
+    -- <Second  top line render> --
+    --TODO: renderPlayerInfo: render head of current character and name <P1 .. P4>
+     coopHUD.renderBethanyCharge(coopHUD.players[player_no],Vector(pos.X,pos.Y + math.max(active_off.Y,hearts_off.Y)),mirrored)
+    -- </Second  top line render> --
+    -- <Down  line>
+    pocket_off = coopHUD.renderPockets(coopHUD.players[player_no],down_pos,mirrored)
+    trinket_off = coopHUD.renderTrinkets(coopHUD.players[player_no],Vector(down_pos.X,down_pos.Y+pocket_off.Y),mirrored)
+    --coopHUD.renderPockets(coopHUD.players[player_no],Vector(down_pos.X,down_pos.Y+pocket_off.Y+trinket_off.Y),mirrored) -- DEBUG: test offsets
 end
