@@ -67,6 +67,7 @@ function coopHUD.getActiveItemSprite(player,slot)
     -- Urn of soul
     -- For this moment can only show when urn is open/closed no api function
     -- FIXME: Urn of soul charge: wait till api is fixed
+    -- TODO: Hold item sprite integration
     if active_item == CollectibleType.COLLECTIBLE_URN_OF_SOULS then
          -- sets frame
         local tempEffects = player:GetEffects()
