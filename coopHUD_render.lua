@@ -281,13 +281,22 @@ end
 function coopHUD.renderBagOfCrafting(player,pos,mirrored)
 end
 function coopHUD.renderPoopSpells(player,pos,mirrored)
+    local main_offset = Vector(0,0)
+    local pos_multi = 0
+    local first_off = Vector(0,0)
     if mirrored then
-
+        pos_multi = -10
+        main_offset = Vector(-16,16)
+        first_off = Vector(-16,16)
     else
-
+        pos_multi = 10
+        main_offset = Vector(16,16)
+        first_off = Vector(16,16)
     end
     for i=0,PoopSpellType.SPELL_QUEUE_SIZE-1,1 do
-        player.sprites.poops[i]:Render(Vector(100+10*i,100))
+        temp_pos = Vector(pos.X+main_offset.X+i*pos_multi,pos.Y+main_offset.Y)
+        if i == 0 then temp_pos = Vector(pos.X+first_off.X,pos.Y+first_off.Y) end
+        player.sprites.poops[i]:Render(temp_pos)
     end
 end
 function coopHUD.renderPlayerInfo(player,pos,mirrored)
