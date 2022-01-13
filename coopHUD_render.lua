@@ -77,14 +77,14 @@ function coopHUD.renderHearts(player,pos,mirrored)
     local m = math.floor(player.max_health_cap/n) -- No of columns in health grid
     if mirrored then
         temp_pos = Vector(pos.X-12*(hearts_span),pos.Y+8)
-        final_offset = Vector(-12*(hearts_span)-6,0)
+        final_offset = Vector(-12*(hearts_span)-6,8*n)
         if Game():GetLevel():GetCurses() == 8 then
             temp_pos = Vector(pos.X-12,pos.Y+8)
             final_offset = Vector(-16,16)
         end
     else
         temp_pos = Vector(pos.X+8,pos.Y+8)
-        final_offset = Vector(12*(hearts_span)+4,0) -- sets returning offset
+        final_offset = Vector(12*(hearts_span)+4,8) -- sets returning offset
         if Game():GetLevel():GetCurses() == 8 then final_offset = Vector(16,16) end
     end
     local n = 2 -- No. of rows in
@@ -232,6 +232,7 @@ function coopHUD.renderTrinkets(player,pos,mirrored)
     local temp_pos = Vector(0,0)
     local trinket_pivot = Vector(0,0)
     local sec_tr_pivot = Vector(0,0)
+    local off = Vector(0,-24)
     if mirrored then
         trinket_pivot  = Vector(-12,-12)
         sec_tr_pivot = Vector(-32,-12)
@@ -249,6 +250,7 @@ function coopHUD.renderTrinkets(player,pos,mirrored)
         player.sprites.first_trinket.Scale = Vector(0.7,0.7)
         player.sprites.first_trinket:Render(temp_pos)
     end
+    return off
 end
 function coopHUD.renderBethanyCharge(player,pos,mirrored)
     if player.bethany_charge ~= nil then
@@ -280,44 +282,6 @@ function coopHUD.renderPlayerInfo(player,pos,mirrored)
 
 end
 function coopHUD.renderPlayer(player_no)
-    local active_item_off = Vector(0,0)
-    --Define anchor
-    local anchor
-    local active_vector = Vector(0,0)
-    local mirrored = false
-
-    if coopHUD.players_config[player_no].snap_side == 'left' then -- Sets vectors for left side
-        anchor_top = coopHUD.anchors.top_left
-        active_vector.X = active_vector.X +16
-        second_item_x_off = 8
-        vector_modifier = 12
-        active_off = 48
-    elseif coopHUD.players_config[player_no].snap_side == 'right' then -- Sets vectors for left side
-        anchor_top = coopHUD.anchors.top_right
-        mirrored = true
-        second_item_x_off = -12
-        active_vector.X = active_vector.X -4
-        vector_modifier = 0
-        modifier = -1
-        active_off = -36
-    end
-    -- Bethany charge render
-    if coopHUD.players[player_no].bethany_charge ~= nil then
-        pos =Vector(anchor_top.X+6,anchor_top.Y + active_item_off.Y)
-        local beth_sprite = Sprite()
-        if coopHUD.players[player_no].type == 18 then
-            beth_sprite = coopHUD.getHeartSprite('BlueHeartFull','None')
-        else
-            beth_sprite = coopHUD.getHeartSprite('RedHeartFull','None')
-        end
-        beth_sprite.Scale = Vector(0.6,0.6)
-        beth_sprite:Render(Vector(pos.X,pos.Y),VaECTOR_ZERO,VECTOR_ZERO)
-        local f = Font()
-        local bethany_charge = string.format('x%d',coopHUD.players[player_no].bethany_charge)
-        f:Load("font/luaminioutlined.fnt")
-        f:DrawString (bethany_charge,pos.X+6,pos.Y-9,KColor(1,1,1,1),0,true)
-        active_item_off.Y = active_item_off.Y + 16
-    end
 end
 function coopHUD.renderItems()
     -- TODO: Planetarium chances render
