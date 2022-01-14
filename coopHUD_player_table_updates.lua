@@ -85,7 +85,7 @@ function coopHUD.updatePlayer(player_no)
         --TODO: Jacob/Essau: make player_num+1-> render second in oposite corner/ restrict only when 1
         --players.has_sub = true
     end
-    coopHUD.players[player_no] = player_table
+    return player_table
 end
 function coopHUD.updatePockets(player_no)
     local temp_player = Isaac.GetPlayer(player_no)
@@ -160,7 +160,7 @@ function coopHUD.updateHearts(player_no)
     local temp_player = Isaac.GetPlayer(player_no)
     local max_health_cap = 12
     local sub_player = nil
-    local temp_total_hearts = math.ceil((player:GetEffectiveMaxHearts() + player:GetSoulHearts())/2)
+    local temp_total_hearts = math.ceil((temp_player:GetEffectiveMaxHearts() + temp_player:GetSoulHearts())/2)
 
     if coopHUD.players[player_no].total_hearts ~= temp_total_hearts then
         coopHUD.players[player_no].total_hearts = temp_total_hearts
@@ -309,3 +309,48 @@ function coopHUD.getMinimapOffset()
 end
 
 coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM, coopHUD.forceUpdateActives)
+function coopHUD.checkDeepPockets()
+    local deep_check = false
+    local player_no = Game():GetNumPlayers()-1
+    for i=0,player_no,1 do
+        local deep = Isaac.GetPlayer(i):HasCollectible(416)
+        if  deep  then
+            deep_check = true
+        end
+    end
+    return deep_check
+end
+function coopHUD.init() -- inits/updates all player infos
+    -- TODO: custom apis integration from save file - jar of wisp/
+    coopHUD.players.config.players_no = Game():GetNumPlayers()-1
+    for i=0,players_no,1 do
+        coopHUD.players[i] = coopHUD.updatePlayer(i)
+    end
+end
+coopHUD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, coopHUD.init) -- refresh tables when entering game floor callback
+coopHUD:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, coopHUD.init) -- refresh tables when entering new floor callback
+coopHUD:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, coopHUD.init) -- refresh tables when entering new room callback
+
+function coopHUD.updateTables()
+    local counter = 0
+    if counter % 60 == 0 then -- updates tables every second
+        coopHUD.updateAnchors()
+        for i=0,players_no,1 do
+            print('Updates')
+            coopHUD.updateActives(i)
+            print(coopHUD.players[i].first_active)
+            --coopHUD.updateTrinkets(i)
+            --coopHUD.updatePockets(i)
+            --coopHUD.updateHearts(i)
+            --coopHUD.updateExtraLives(i)
+            --coopHUD.updateBethanyCharge(i)
+            --coopHUD.updateCollectible(i)
+            --coopHUD.updatePoopMana(i)
+        end
+
+    end
+    if counter  == 60 then counter = 0 end
+    counter = counter + 1
+end
+
+coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.updateTables)

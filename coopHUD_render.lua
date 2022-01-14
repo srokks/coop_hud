@@ -6,7 +6,7 @@ function coopHUD.renderActive(player,pos,mirrored)
     local temp_pos = Vector(0,0)
     local final_offset = Vector(0,0)
     if mirrored then
-        active_pivot = Vector(-32,16)
+        active_pivot = Vector(-24,16)
         sec_pivot = Vector(-24,8)
         offset = Vector(-32,32)
         charge_offset = Vector(-12,0)
@@ -38,7 +38,7 @@ function coopHUD.renderChargeBar(sprites,pos,mirrored)
     local final_offset = Vector(0,0)
     if mirrored then
         pivot = Vector(8,16)
-        offset = Vector(-12,16)
+        offset = Vector(-4,16)
     else
         pivot = Vector(8,16)
         offset = Vector(12,16)
@@ -87,11 +87,6 @@ function coopHUD.renderHearts(player,pos,mirrored)
         final_offset = Vector(12*(hearts_span)+4,8) -- sets returning offset
         if Game():GetLevel():GetCurses() == 8 then final_offset = Vector(16,16) end
     end
-    local n = 2 -- No. of rows in
-    if player.max_health_cap > 12 then
-        n = 3 -- No of rows in case of increased health cap - Maggy+Birthright
-    end
-    local m = math.floor(player.max_health_cap/n) -- No of columns in health grid
     -- Sub character hearts render
     counter = 0
     if player.has_sub then -- Sub player heart render
@@ -208,7 +203,7 @@ function coopHUD.renderPockets(player,pos,mirrored)
         final_offset = offset
         -- Main pocket charge
         if player.sprites.first_pocket:GetDefaultAnimation() == 'Idle' then -- checks if item is not pill of card
-            if player.sprites.first_pocket_charge.charge then
+            if player.sprites.first_pocket_charge then
                 temp_pos = Vector(pos.X+charge_pivot.X,pos.Y+charge_pivot.Y)
                 charge_offset = coopHUD.renderChargeBar(player.sprites.first_pocket_charge,temp_pos,mirrored)
             end
@@ -293,16 +288,44 @@ function coopHUD.renderPoopSpells(player,pos,mirrored)
         main_offset = Vector(16,16)
         first_off = Vector(16,16)
     end
-    for i=0,PoopSpellType.SPELL_QUEUE_SIZE-1,1 do
+    if  player.sprites.poops~= nil then
+        for i=0,PoopSpellType.SPELL_QUEUE_SIZE-1,1 do
         temp_pos = Vector(pos.X+main_offset.X+i*pos_multi,pos.Y+main_offset.Y)
         if i == 0 then temp_pos = Vector(pos.X+first_off.X,pos.Y+first_off.Y) end
         player.sprites.poops[i]:Render(temp_pos)
     end
+    end
+
 end
 function coopHUD.renderPlayerInfo(player,pos,mirrored)
 
 end
 function coopHUD.renderPlayer(player_no)
+    --
+    local anchor_top = coopHUD.anchors[coopHUD.players.config[player_no].anchor_top]
+    local anchor_bot = coopHUD.anchors[coopHUD.players.config[player_no].anchor_bot]
+    local mirrored = coopHUD.players.config[player_no].mirrored
+    -- <Locals inits>
+    local active_off = Vector(0,0)
+    local hearts_off = Vector(0,0)
+    local exl_liv_off = Vector(0,0)
+    local pocket_off = Vector(0,0)
+    local trinket_off = Vector(0,0)
+    local extra_charge_off = Vector(0,0)
+    -- <First  top line render> --
+    active_off = coopHUD.renderActive(coopHUD.players[player_no], anchor_top,mirrored)
+    hearts_off = coopHUD.renderHearts(coopHUD.players[player_no],Vector(anchor_top.X+active_off.X, anchor_top.Y),mirrored)
+    exl_liv_off = coopHUD.renderExtraLives(coopHUD.players[player_no],Vector(anchor_top.X+active_off.X+hearts_off.X, anchor_top.Y),mirrored)
+    -- </First  top line render> --
+    -- <Second  top line render> --
+    --TODO: renderPlayerInfo: render head of current character and name <P1 .. P4>
+     extra_charge_off = coopHUD.renderBethanyCharge(coopHUD.players[player_no],Vector(anchor_top.X, anchor_top.Y + math.max(active_off.Y,hearts_off.Y)),mirrored)
+    --coopHUD.renderPoopSpells(coopHUD.players[player_no],Vector(pos.X,pos.Y + math.max(active_off.Y,hearts_off.Y)),mirrored)
+    -- </Second  top line render> --
+    -- <Down  line>
+    pocket_off = coopHUD.renderPockets(coopHUD.players[player_no], anchor_bot,mirrored)
+    trinket_off = coopHUD.renderTrinkets(coopHUD.players[player_no],Vector(anchor_bot.X, anchor_bot.Y+pocket_off.Y),mirrored)
+    --coopHUD.renderPockets(coopHUD.players[player_no],Vector(down_pos.X,down_pos.Y+pocket_off.Y+trinket_off.Y),mirrored) -- DEBUG: test offsets
 end
 function coopHUD.renderItems()
     -- TODO: Planetarium chances render
@@ -360,87 +383,31 @@ end
 coopHUD.counter = 60
 function  coopHUD.render()
     onRender = true
-    --if issomeonejoining == false then
-    --    Game():GetHUD():SetVisible(false)
-    --else
-    --    onRender = false
-    --    Game():GetHUD():SetVisible(true)
-    --end
     if onRender  then
         -- Function is triggered by callback 2 times per second
-        -- Check/update user item with longer span - checking with call back cause lag
-
+        -- Check/update user item with longer span - checking with call back cause la
+        -- < UPDATE table logic>
         coopHUD.counter = coopHUD.counter-1
         if coopHUD.counter%15 == 0 then
             coopHUD.updateAnchors()
             for i=0,players_no,1 do
                 coopHUD.updateActives(i)
-                coopHUD.updateTrinkets(i)
-                coopHUD.updatePockets(i)
-                coopHUD.updateHearts(i)
-                coopHUD.updateExtraLives(i)
-                coopHUD.updateBethanyCharge(i)
-                coopHUD.updateCollectible(i)
-                coopHUD.updatePoopMana(i)
+                --coopHUD.updateTrinkets(i)
+                --coopHUD.updatePockets(i)
+                --coopHUD.updateHearts(i)
+                --coopHUD.updateExtraLives(i)
+                --coopHUD.updateBethanyCharge(i)
+                --coopHUD.updateCollectible(i)
+                --coopHUD.updatePoopMana(i)
             end
         end
         if  coopHUD.counter == 0 then
             coopHUD.counter = 60
         end
+        -- < Render  logic>
         for i=0,players_no,1 do
             coopHUD.renderPlayer(i)
         end
         coopHUD.renderItems()
     end
-end
-
-function coopHUD.renderPlayer2(player_no)
-    local pos = Vector(0,0)
-    local mirrored = false
-    -- <Locals inits>
-    local active_off = Vector(0,0)
-    local hearts_off = Vector(0,0)
-    local exl_liv_off = Vector(0,0)
-    local down_pos = Vector(0,Isaac.GetScreenHeight())
-    local pocket_off = Vector(0,0)
-    local trinket_off = Vector(0,0)
-    local extra_charge_off = Vector(0,0)
-    -- <First  top line render> --
-    active_off = coopHUD.renderActive(coopHUD.players[player_no],pos,mirrored)
-    hearts_off = coopHUD.renderHearts(coopHUD.players[player_no],Vector(pos.X+active_off.X,pos.Y),mirrored)
-    exl_liv_off = coopHUD.renderExtraLives(coopHUD.players[player_no],Vector(pos.X+active_off.X+hearts_off.X,pos.Y),mirrored)
-    -- </First  top line render> --
-    -- <Second  top line render> --
-    --TODO: renderPlayerInfo: render head of current character and name <P1 .. P4>
-     extra_charge_off = coopHUD.renderBethanyCharge(coopHUD.players[player_no],Vector(pos.X,pos.Y + math.max(active_off.Y,hearts_off.Y)),mirrored)
-    coopHUD.renderPoopSpells(coopHUD.players[player_no],Vector(pos.X,pos.Y + math.max(active_off.Y,hearts_off.Y)),mirrored)
-    -- </Second  top line render> --
-    -- <Down  line>
-    pocket_off = coopHUD.renderPockets(coopHUD.players[player_no],down_pos,mirrored)
-    trinket_off = coopHUD.renderTrinkets(coopHUD.players[player_no],Vector(down_pos.X,down_pos.Y+pocket_off.Y),mirrored)
-    --coopHUD.renderPockets(coopHUD.players[player_no],Vector(down_pos.X,down_pos.Y+pocket_off.Y+trinket_off.Y),mirrored) -- DEBUG: test offsets
-    --- MIRRORED
-    local pos = Vector(Isaac.GetScreenWidth(),0)
-    local mirrored = true
-    -- <Locals inits>
-    local active_off = Vector(0,0)
-    local hearts_off = Vector(0,0)
-    local exl_liv_off = Vector(0,0)
-    local down_pos = Vector(Isaac.GetScreenWidth(),Isaac.GetScreenHeight())
-    local pocket_off = Vector(0,0)
-    local trinket_off = Vector(0,0)
-    -- <First  top line render> --
-    active_off = coopHUD.renderActive(coopHUD.players[player_no],pos,mirrored)
-    hearts_off = coopHUD.renderHearts(coopHUD.players[player_no],Vector(pos.X+active_off.X,pos.Y),mirrored)
-    exl_liv_off = coopHUD.renderExtraLives(coopHUD.players[player_no],Vector(pos.X+active_off.X+hearts_off.X,pos.Y),mirrored)
-    -- </First  top line render> --
-    -- <Second  top line render> --
-    --TODO: renderPlayerInfo: render head of current character and name <P1 .. P4>
-     extra_charge_off = coopHUD.renderBethanyCharge(coopHUD.players[player_no],Vector(pos.X,pos.Y + math.max(active_off.Y,hearts_off.Y)),mirrored)
-    coopHUD.renderPoopSpells(coopHUD.players[player_no],Vector(pos.X,pos.Y + math.max(active_off.Y,hearts_off.Y)),mirrored)
-    -- </Second  top line render> --
-    -- <Down  line>
-    pocket_off = coopHUD.renderPockets(coopHUD.players[player_no],down_pos,mirrored)
-    trinket_off = coopHUD.renderTrinkets(coopHUD.players[player_no],Vector(down_pos.X,down_pos.Y+pocket_off.Y),mirrored)
-    --coopHUD.renderPockets(coopHUD.players[player_no],Vector(down_pos.X,down_pos.Y+pocket_off.Y+trinket_off.Y),mirrored) -- DEBUG: test offsets
 end

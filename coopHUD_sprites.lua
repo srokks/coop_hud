@@ -462,7 +462,6 @@ function coopHUD.getPoopSprite(player,i)
         local sprite = Sprite()
         sprite:Load(coopHUD.GLOBALS.poop_anim_path,true)
         sprite:SetFrame(layer_name,spell_type)
-        print(i,player:GetPoopMana() )
         if i >= player:GetPoopMana() then
             local col = Color(1,1,1,1)
             col:SetColorize(1, 1, 1, 1)
@@ -480,3 +479,5 @@ function coopHUD.getPoopSpriteTable(player)
     end
     return poop_table
 end
+-- TODO: T.FOrgotten - weird heart render
+-- TODO: Jaccob/Essau - tint non used sprites -
