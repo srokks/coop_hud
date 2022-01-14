@@ -229,7 +229,7 @@ function coopHUD.updatePoopMana(player_no)
             coopHUD.players[player_no].poop_mana = player:GetPoopMana()
         end
         if coopHUD.players[player_no].max_poop_mana ~= 9 or
-                coopHUD.players[player_no].max_poop_mana ~= 9then
+                coopHUD.players[player_no].max_poop_mana ~= 9 then
             coopHUD.players[player_no].max_poop_mana = 9
             if coopHUD.players[player_no].has_birthright then
                 coopHUD.players[player_no].max_poop_mana = 29
