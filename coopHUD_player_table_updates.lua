@@ -265,4 +265,47 @@ function coopHUD.updateAnchors()
         coopHUD.anchors.bot_right = ScreenHelper.GetScreenBottomRight()
     end
 end
+function coopHUD.getMinimapOffset()
+    local minimap_offset = Vector(Isaac.GetScreenWidth(),0)
+    if MinimapAPI ~= nil then
+        print('nie ma')
+        -- Modified function from minimap_api by Wolfsauge
+        --TODO: curse of the unknown integration
+        local screen_size = Vector(Isaac.GetScreenWidth(),0)
+        local is_large = MinimapAPI:IsLarge()
+        if not is_large and MinimapAPI:GetConfig("DisplayMode") == 2 then -- BOUNDED MAP
+            minimap_offset = Vector(screen_size.X - MinimapAPI:GetConfig("MapFrameWidth") - MinimapAPI:GetConfig("PositionX") - 0,2)
+        elseif not is_large and MinimapAPI:GetConfig("DisplayMode") == 4 then -- NO MAP
+            minimap_offset = Vector(screen_size.X - 4,2)
+        else -- LARGE
+            local minx = screen_size.X
+            for i,v in ipairs(MinimapAPI:GetLevel()) do
+                if v ~= nil then
+                    if v:GetDisplayFlags() > 0 then
+                        minx = math.min(minx, v.RenderOffset.X)
+                    end
+                end
+
+            end
+            minimap_offset = Vector(minx-4,2) -- Small
+        end
+        if MinimapAPI:GetConfig("Disable") or MinimapAPI.Disable then minimap_offset = Vector(screen_size.X - 4,2)  end
+        local r = MinimapAPI:GetCurrentRoom()
+        if MinimapAPI:GetConfig("HideInCombat") == 2 then
+            if not r:IsClear() and r:GetType() == RoomType.ROOM_BOSS then
+                minimap_offset = Vector(screen_size.X - 0,2)
+            end
+        elseif MinimapAPI:GetConfig("HideInCombat") == 3 then
+            if not r:IsClear() then
+                minimap_offset = Vector(screen_size.X - 0,2)
+            end
+        end
+        if MinimapAPI:GetConfig('ShowLevelFlags') then
+            print(MinimapAPI:GetConfig('ShowLevelFlags'))
+            MinimapAPI.Config.ShowLevelFlags = false
+        end
+    end
+    return minimap_offset
+end
+
 coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM, coopHUD.forceUpdateActives)
