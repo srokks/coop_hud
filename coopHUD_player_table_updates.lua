@@ -335,17 +335,15 @@ function coopHUD.updateTables()
     local counter = 0
     if counter % 60 == 0 then -- updates tables every second
         coopHUD.updateAnchors()
-        for i=0,players_no,1 do
-            print('Updates')
+        for i=0,coopHUD.players_config.players_no,1 do
             coopHUD.updateActives(i)
-            print(coopHUD.players[i].first_active)
-            --coopHUD.updateTrinkets(i)
-            --coopHUD.updatePockets(i)
-            --coopHUD.updateHearts(i)
-            --coopHUD.updateExtraLives(i)
-            --coopHUD.updateBethanyCharge(i)
-            --coopHUD.updateCollectible(i)
-            --coopHUD.updatePoopMana(i)
+            coopHUD.updateTrinkets(i)
+            coopHUD.updatePockets(i)
+            coopHUD.updateHearts(i)
+            coopHUD.updateExtraLives(i)
+            coopHUD.updateBethanyCharge(i)
+            coopHUD.updateCollectible(i)
+            coopHUD.updatePoopMana(i)
         end
 
     end
