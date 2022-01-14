@@ -175,7 +175,7 @@ function coopHUD.updateHearts(player_no)
         max_health_cap = 6
     end
     for i=coopHUD.players[player_no].max_health_cap,0,-1 do
-        local heart_type,overlay = coopHUD.getHeartType(player,i)
+        local heart_type,overlay = coopHUD.getHeartType(temp_player,i)
         if (coopHUD.players[player_no].heart_types[i] == nil) or
                 (coopHUD.players[player_no].heart_types[i].heart_type ~= heart_type) or
                 (coopHUD.players[player_no].heart_types[i].overlay ~= overlay) then
@@ -322,8 +322,8 @@ function coopHUD.checkDeepPockets()
 end
 function coopHUD.init() -- inits/updates all player infos
     -- TODO: custom apis integration from save file - jar of wisp/
-    coopHUD.players.config.players_no = Game():GetNumPlayers()-1
-    for i=0,players_no,1 do
+    coopHUD.players_config.players_no = Game():GetNumPlayers()-1
+    for i=0,coopHUD.players_config.players_no,1 do
         coopHUD.players[i] = coopHUD.updatePlayer(i)
     end
 end
