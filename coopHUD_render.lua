@@ -302,9 +302,9 @@ function coopHUD.renderPlayerInfo(player,pos,mirrored)
 end
 function coopHUD.renderPlayer(player_no)
     --
-    local anchor_top = coopHUD.anchors[coopHUD.players.config[player_no].anchor_top]
-    local anchor_bot = coopHUD.anchors[coopHUD.players.config[player_no].anchor_bot]
-    local mirrored = coopHUD.players.config[player_no].mirrored
+    local anchor_top = coopHUD.anchors[coopHUD.players_config[player_no].anchor_top]
+    local anchor_bot = coopHUD.anchors[coopHUD.players_config[player_no].anchor_bot]
+    local mirrored = coopHUD.players_config[player_no].mirrored
     -- <Locals inits>
     local active_off = Vector(0,0)
     local hearts_off = Vector(0,0)

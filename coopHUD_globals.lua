@@ -7,7 +7,7 @@ coopHUD.GLOBALS = {
     poop_anim_path = "gfx/ui/ui_poops.anm2"
 }
 coopHUD.players = {}
-coopHUD.players.config = {
+coopHUD.players_config = {
         players_no = 0,
         [0] = {
             anchor_top = 'top_right',
