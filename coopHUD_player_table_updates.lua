@@ -252,17 +252,17 @@ function coopHUD.forceUpdateActives()
     forceUpdateActives = true
 end
 function coopHUD.updateAnchors()
-    if coopHUD.anchors.top_left ~= ScreenHelper.GetScreenTopLeft() then
-        coopHUD.anchors.top_left = ScreenHelper.GetScreenTopLeft()
+    if coopHUD.anchors.top_left ~= Vector(0,0) then
+        coopHUD.anchors.top_left = Vector(0,0)
     end
-    if coopHUD.anchors.bot_left ~= ScreenHelper.GetScreenBottomLeft() then
-        coopHUD.anchors.bot_left = ScreenHelper.GetScreenBottomLeft()
+    if coopHUD.anchors.bot_left ~= Vector(0,Isaac.GetScreenHeight()) then
+        coopHUD.anchors.bot_left = Vector(0,Isaac.GetScreenHeight())
     end
-    if coopHUD.anchors.top_right ~= ScreenHelper.GetScreenTopRight() then
-        coopHUD.anchors. top_right = Vector(coopHUD.getMinimapOffset().X,ScreenHelper.GetScreenTopRight().Y)
+    if coopHUD.anchors.top_right ~= Vector(coopHUD.getMinimapOffset().X,0) then
+        coopHUD.anchors.top_right = Vector(coopHUD.getMinimapOffset().X,0)
     end
-    if coopHUD.anchors.bot_right ~= ScreenHelper.GetScreenBottomRight() then
-        coopHUD.anchors.bot_right = ScreenHelper.GetScreenBottomRight()
+    if coopHUD.anchors.bot_right ~= Vector(Isaac.GetScreenWidth(),Isaac.GetScreenHeight()) then
+        coopHUD.anchors.bot_right = Vector(Isaac.GetScreenWidth(),Isaac.GetScreenHeight())
     end
 end
 function coopHUD.getMinimapOffset()
