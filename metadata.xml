@@ -1,8 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <metadata>
-	<name>Coop HUD</name>
-	<directory>coop_hud</directory>
-	<description/>
-	<version>1.0</version>
-	<visibility/>
+    <name>Coop HUD</name>
+    <directory>coop_hud- wip</directory>
+    <id>0</id>
+    <description>Coop HUD mod.
+   New desc</description>
+    <version>0.1</version>
+    <visibility>Private</visibility>
+    <tag id="Lua"/>
+    <tag id="Tweaks"/>
+    <tag id="Graphics"/>
 </metadata>
-

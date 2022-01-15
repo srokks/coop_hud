@@ -268,7 +268,6 @@ end
 function coopHUD.getMinimapOffset()
     local minimap_offset = Vector(Isaac.GetScreenWidth(),0)
     if MinimapAPI ~= nil then
-        print('nie ma')
         -- Modified function from minimap_api by Wolfsauge
         --TODO: curse of the unknown integration
         local screen_size = Vector(Isaac.GetScreenWidth(),0)
@@ -301,7 +300,6 @@ function coopHUD.getMinimapOffset()
             end
         end
         if MinimapAPI:GetConfig('ShowLevelFlags') then
-            print(MinimapAPI:GetConfig('ShowLevelFlags'))
             MinimapAPI.Config.ShowLevelFlags = false
         end
     end
@@ -332,8 +330,7 @@ coopHUD:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, coopHUD.init) -- refresh tab
 coopHUD:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, coopHUD.init) -- refresh tables when entering new room callback
 
 function coopHUD.updateTables()
-    local counter = 0
-    if counter % 60 == 0 then -- updates tables every second
+    if coopHUD.TICKER % 15 == 0 then -- updates tables every second
         coopHUD.updateAnchors()
         for i=0,coopHUD.players_config.players_no,1 do
             coopHUD.updateActives(i)
@@ -347,8 +344,7 @@ function coopHUD.updateTables()
         end
 
     end
-    if counter  == 60 then counter = 0 end
-    counter = counter + 1
+
 end
 
 coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.updateTables)

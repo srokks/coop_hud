@@ -1,4 +1,4 @@
-coopHUD = RegisterMod("Coop HUD", 1)
+--coopHUD = RegisterMod("Coop HUD wip", 1)
 
 ---
 include("coopHUD_globals.lua")

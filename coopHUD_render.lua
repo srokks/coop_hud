@@ -115,7 +115,7 @@ function coopHUD.renderHearts(player,pos,mirrored)
                         and player.heart_types[counter].heart_type ~= 'EmptyHeart' then
                     -- According to main ticker changes alpha color of sprite this way animate item
                     -- Probably not sufficient way but when I'll learn better animation I fix it
-                    local sprite_alpha = coopHUD.counter/60
+                    local sprite_alpha = coopHUD.TICKER/60
                     if sprite_alpha > 0.4 then
                         local col = Color(1,1,1,sprite_alpha)
                         player.sprites.hearts[counter].Color = col
@@ -380,34 +380,47 @@ function coopHUD.renderItems()
     key_no = string.format("%.2i", key_no)
     f:DrawString(key_no,pos.X+16,pos.Y,color,0,true)
 end
-coopHUD.counter = 60
+coopHUD.onRender = true
 function  coopHUD.render()
-    onRender = true
-    if onRender  then
-        -- Function is triggered by callback 2 times per second
-        -- Check/update user item with longer span - checking with call back cause la
-        -- < UPDATE table logic>
-        coopHUD.counter = coopHUD.counter-1
-        if coopHUD.counter%15 == 0 then
-            coopHUD.updateAnchors()
-            for i=0,players_no,1 do
-                coopHUD.updateActives(i)
-                --coopHUD.updateTrinkets(i)
-                --coopHUD.updatePockets(i)
-                --coopHUD.updateHearts(i)
-                --coopHUD.updateExtraLives(i)
-                --coopHUD.updateBethanyCharge(i)
-                --coopHUD.updateCollectible(i)
-                --coopHUD.updatePoopMana(i)
-            end
-        end
-        if  coopHUD.counter == 0 then
-            coopHUD.counter = 60
-        end
-        -- < Render  logic>
-        for i=0,players_no,1 do
+    --if coopHUD.players_config.players_no > 2 then onRender = false end -- prevents to render if more than 2 players
+    if coopHUD.TICKER  == 60 then coopHUD.TICKER = 0 end
+    coopHUD.TICKER = coopHUD.TICKER + 1
+    if coopHUD.onRender then
+        for i=0,coopHUD.players_config.players_no,1 do
+            if  Game():GetHUD():IsVisible() then Game():GetHUD():SetVisible(false) end
             coopHUD.renderPlayer(i)
         end
         coopHUD.renderItems()
     end
 end
+local is_joining = false
+function coopHUD:charselect(ent, input_hook, btn_action)
+    if ent ~= nil and ent.Type == 1 then
+        --print(ent) -- Debug:
+    end
+    for i=0,coopHUD.players_config.players_no+1,1 do
+        if Input.IsActionTriggered(ButtonAction.ACTION_JOINMULTIPLAYER, i) then
+        is_joining = true
+        --coopHUD.onRender = false
+    end
+    if Input.IsActionTriggered(ButtonAction.ACTION_MENUBACK, i)  then
+        --print('back',i)
+        is_joining = false
+        --coopHUD.onRender = false
+        --Game():GetHUD():SetVisible(true)
+        --coopHUD.onRender = true
+    end
+    end
+
+end
+function coopHUD.player_joining()
+    if  is_joining then
+        if  not Game():GetHUD():IsVisible() then Game():GetHUD():SetVisible(true) end
+        --if coopHUD.pla
+        is_joining = false
+    end
+end
+coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT,    coopHUD.player_joining)
+coopHUD:AddCallback(ModCallbacks.MC_INPUT_ACTION,    coopHUD.charselect)
+coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.render)
+-- This callback turns the vanilla HUD back on when someone tries to join the game. -- @Function from mp stat display
