@@ -381,46 +381,40 @@ function coopHUD.renderItems()
     f:DrawString(key_no,pos.X+16,pos.Y,color,0,true)
 end
 coopHUD.onRender = true
+coopHUD.is_joining = false
 function  coopHUD.render()
     --if coopHUD.players_config.players_no > 2 then onRender = false end -- prevents to render if more than 2 players
     if coopHUD.TICKER  == 60 then coopHUD.TICKER = 0 end
     coopHUD.TICKER = coopHUD.TICKER + 1
     if coopHUD.onRender then
         for i=0,coopHUD.players_config.players_no,1 do
-            if  Game():GetHUD():IsVisible() then Game():GetHUD():SetVisible(false) end
             coopHUD.renderPlayer(i)
         end
         coopHUD.renderItems()
     end
 end
-local is_joining = false
-function coopHUD:charselect(ent, input_hook, btn_action)
-    if ent ~= nil and ent.Type == 1 then
-        --print(ent) -- Debug:
-    end
+function coopHUD.is_joining()
     for i=0,coopHUD.players_config.players_no+1,1 do
         if Input.IsActionTriggered(ButtonAction.ACTION_JOINMULTIPLAYER, i) then
-        is_joining = true
-        --coopHUD.onRender = false
-    end
-    if Input.IsActionTriggered(ButtonAction.ACTION_MENUBACK, i)  then
-        --print('back',i)
-        is_joining = false
-        --coopHUD.onRender = false
-        --Game():GetHUD():SetVisible(true)
-        --coopHUD.onRender = true
-    end
-    end
-
-end
-function coopHUD.player_joining()
-    if  is_joining then
-        if  not Game():GetHUD():IsVisible() then Game():GetHUD():SetVisible(true) end
-        --if coopHUD.pla
-        is_joining = false
+            coopHUD.is_joining = true
+            coopHUD.onRender=false
+            Game():GetHUD():SetVisible(true)
+        end
+        if Input.IsActionTriggered(ButtonAction.ACTION_MENUBACK, i) and coopHUD.is_joining then
+            coopHUD.is_joining =false
+            coopHUD.onRender=true
+            Game():GetHUD():SetVisible(false)
+        end
     end
 end
-coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT,    coopHUD.player_joining)
-coopHUD:AddCallback(ModCallbacks.MC_INPUT_ACTION,    coopHUD.charselect)
+function coopHUD.init_player()
+    if coopHUD.is_joining then
+        coopHUD.players_config.players_no = Game():GetNumPlayers()
+        coopHUD.init()
+        coopHUD.onRender=true
+        Game():GetHUD():SetVisible(false)
+    end
+end
 coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.render)
--- This callback turns the vanilla HUD back on when someone tries to join the game. -- @Function from mp stat display
+coopHUD:AddCallback(ModCallbacks.MC_INPUT_ACTION, coopHUD.is_joining)
+coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, coopHUD.ta)
