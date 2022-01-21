@@ -38,7 +38,7 @@ function coopHUD.renderChargeBar(sprites,pos,mirrored)
     local final_offset = Vector(0,0)
     if mirrored then
         pivot = Vector(8,16)
-        offset = Vector(-4,16)
+        offset = Vector(-12,16)
     else
         pivot = Vector(8,16)
         offset = Vector(12,16)
