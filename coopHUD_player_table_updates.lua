@@ -3,6 +3,7 @@
 --- Created by srokks.
 --- DateTime: 04/01/2022 16:20
 ---
+local SHExists, ScreenHelper = pcall(require, "scripts.screenhelper")
 coopHUD.jar_of_wisp_charge = nil -- Global value of jar_of_wisp_charge
 function coopHUD.updateCollectible(player_no)
     local player = Isaac.GetPlayer(player_no)
@@ -252,17 +253,22 @@ function coopHUD.forceUpdateActives()
     forceUpdateActives = true
 end
 function coopHUD.updateAnchors()
-    if coopHUD.anchors.top_left ~= Vector(0,0) then
-        coopHUD.anchors.top_left = Vector(0,0)
+    local offset = 0
+    if SHExists then
+        offset = ScreenHelper.GetOffset()
     end
-    if coopHUD.anchors.bot_left ~= Vector(0,Isaac.GetScreenHeight()) then
-        coopHUD.anchors.bot_left = Vector(0,Isaac.GetScreenHeight())
+    offset = offset +  Options.HUDOffset * 10
+    if coopHUD.anchors.top_left ~= Vector.Zero + Vector(offset * 2, offset * 1.2) then
+        coopHUD.anchors.top_left = Vector.Zero + Vector(offset * 2, offset * 1.2)
     end
-    if coopHUD.anchors.top_right ~= Vector(coopHUD.getMinimapOffset().X,0) then
-        coopHUD.anchors.top_right = Vector(coopHUD.getMinimapOffset().X,0)
+    if coopHUD.anchors.bot_left ~= Vector(0,Isaac.GetScreenHeight()) + Vector(offset * 2.2, -offset * 1.6) then
+        coopHUD.anchors.bot_left = Vector(0,Isaac.GetScreenHeight()) + Vector(offset * 2.2, -offset * 1.6)
     end
-    if coopHUD.anchors.bot_right ~= Vector(Isaac.GetScreenWidth(),Isaac.GetScreenHeight()) then
-        coopHUD.anchors.bot_right = Vector(Isaac.GetScreenWidth(),Isaac.GetScreenHeight())
+    if coopHUD.anchors.top_right ~= Vector(coopHUD.getMinimapOffset().X,0) + Vector(-offset * 2.2, offset * 1.2) then
+        coopHUD.anchors.top_right = Vector(coopHUD.getMinimapOffset().X,0) + Vector(-offset * 2.2, offset * 1.2)
+    end
+    if coopHUD.anchors.bot_right ~= Vector(Isaac.GetScreenWidth(),Isaac.GetScreenHeight()) + Vector(-offset * 2.2, -offset * 1.6) then
+        coopHUD.anchors.bot_right = Vector(Isaac.GetScreenWidth(),Isaac.GetScreenHeight()) + Vector(-offset * 2.2, -offset * 1.6)
     end
 end
 function coopHUD.getMinimapOffset()
