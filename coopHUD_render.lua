@@ -1,20 +1,24 @@
-function coopHUD.renderActive(player,pos,mirrored)
+function coopHUD.renderActive(player,pos,mirrored,scale)
     local active_pivot = Vector(0,0) -- first item pivot
     local sec_pivot = Vector(0,0) -- second item pivot
     local charge_offset = Vector(0,0)
     local offset = Vector(0,0)
     local temp_pos = Vector(0,0)
     local final_offset = Vector(0,0)
+    -- Scale set
+    local sprite_scale = scale
+    if sprite_scale == nil then sprite_scale = Vector(1,1) end
+    --
     if mirrored then
-        active_pivot = Vector(-24,16)
-        sec_pivot = Vector(-24,8)
-        offset = Vector(-32,32)
-        charge_offset = Vector(-12,0)
+        active_pivot = Vector(-24*sprite_scale.X,16)
+        sec_pivot = Vector(-32*sprite_scale.X,8)
+        offset = Vector(-32*sprite_scale.X,32)
+        charge_offset = Vector(-12*sprite_scale.X,0)
     else
-        active_pivot = Vector(16,16)
+        active_pivot = Vector(16*sprite_scale.X,16)
         sec_pivot = Vector(8,8)
-        offset = Vector(32,32)
-        charge_offset = Vector(32,0)
+        offset = Vector(32*sprite_scale.X,32)
+        charge_offset = Vector(32*sprite_scale.X,0)
     end
     -- Second active render
     if player.sprites.second_active then
@@ -25,31 +29,35 @@ function coopHUD.renderActive(player,pos,mirrored)
     -- Second active render
     if player.sprites.first_active then
         temp_pos = Vector(pos.X + charge_offset.X,pos.Y)
-        charge_offset = coopHUD.renderChargeBar(player.sprites.first_active_charge,temp_pos,mirrored)
-        temp_pos = Vector(pos.X + active_pivot.X ,pos.Y+active_pivot.Y)
+        charge_offset = coopHUD.renderChargeBar(player.sprites.first_active_charge,temp_pos,mirrored,sprite_scale)
+        temp_pos = Vector(pos.X + active_pivot.X,pos.Y+active_pivot.Y)
+        player.sprites.first_active.Scale = sprite_scale
         player.sprites.first_active:Render(temp_pos)
         final_offset = Vector(offset.X+charge_offset.X,offset.Y)
     end
     return final_offset
 end
-function coopHUD.renderChargeBar(sprites,pos,mirrored)
+function coopHUD.renderChargeBar(sprites,pos,mirrored,scale)
     local offset = Vector(0,0)
     local pivot = Vector(0,0)
     local final_offset = Vector(0,0)
+    local sprite_scale = scale
+    if sprite_scale == nil then sprite_scale = Vector(1,1) end
     if mirrored then
-        pivot = Vector(8,16)
-        offset = Vector(-12,16)
+        pivot = Vector(8*sprite_scale.X,16)
+        offset = Vector(-12*sprite_scale.X,16)
     else
-        pivot = Vector(8,16)
-        offset = Vector(12,16)
+        pivot = Vector(8*sprite_scale.X,16)
+        offset = Vector(12*sprite_scale.X,16)
     end
     local temp_pos = Vector(pos.X + pivot.X,pos.Y + pivot.Y) -- Sets pivot for anim frame
     if  sprites then
         if sprites.charge then
+            sprites.charge.Scale = sprite_scale
             sprites.charge:RenderLayer(0,temp_pos)  -- renders background
-            final_offset = offset
         end
         if sprites.beth_charge then
+            sprites.beth_charge.Scale = sprite_scale
             sprites.beth_charge:RenderLayer(1,temp_pos) -- renders bethany charge
         end
         if sprites.charge then
@@ -57,35 +65,42 @@ function coopHUD.renderChargeBar(sprites,pos,mirrored)
             sprites.charge:RenderLayer(2,temp_pos)
         end
         if sprites.overlay then
+            sprites.overlay.Scale = sprite_scale
             sprites.overlay:Render(temp_pos)
         end
+        final_offset = offset
     end
     return final_offset
 end
-function coopHUD.renderHearts(player,pos,mirrored)
+function coopHUD.renderHearts(player,pos,mirrored,scale)
     local temp_pos
     local final_offset = Vector(0,0)
+    --
+    local sprite_scale = scale
+    if sprite_scale == nil then sprite_scale = Vector(1,1) end -- sets def sprite_scale
+    --
+    local heart_space = Vector(12*sprite_scale.X,10*sprite_scale.Y)  -- sets px space between hearts
     if player.total_hearts >= 6 then -- Determines how many columns will be
         hearts_span = 6
     else
         hearts_span = player.total_hearts % 6
     end
-    local n = 2 -- No. of rows in
-    if player.max_health_cap > 12 then
-        n = 3 -- No of rows in case of increased health cap - Maggy+Birthright
-    end
+    local n = player.max_health_cap / 6 -- No. of rows in
+    --if player.max_health_cap > 12 then
+    --    n = 3 -- No of rows in case of increased health cap - Maggy+Birthright
+    --end
     local m = math.floor(player.max_health_cap/n) -- No of columns in health grid
     if mirrored then
-        temp_pos = Vector(pos.X-12*(hearts_span),pos.Y+8)
-        final_offset = Vector(-12*(hearts_span)-6,8*n)
-        if Game():GetLevel():GetCurses() == 8 then
+        temp_pos = Vector(pos.X - heart_space.X * hearts_span,pos.Y + 8) -- sets anchor pos for all hearts
+        final_offset = Vector((-12*(hearts_span)*sprite_scale.X)-4,8) -- sets returning offset
+        if Game():GetLevel():GetCurses() == 8 then -- checks Curse of unknown
             temp_pos = Vector(pos.X-12,pos.Y+8)
             final_offset = Vector(-16,16)
         end
     else
         temp_pos = Vector(pos.X+8,pos.Y+8)
-        final_offset = Vector(12*(hearts_span)+4,8) -- sets returning offset
-        if Game():GetLevel():GetCurses() == 8 then final_offset = Vector(16,16) end
+        final_offset = Vector((12*(hearts_span)*sprite_scale.X)+4,8) -- sets returning offset
+        if Game():GetLevel():GetCurses() == 8 then final_offset = Vector(16,16) end -- checks Curse of unknown
     end
     -- Sub character hearts render
     counter = 0
@@ -104,7 +119,6 @@ function coopHUD.renderHearts(player,pos,mirrored)
     end
     -- Main character hearts render
     counter = 0
-    local heart_space = Vector(12,9)  -- sets px space between hearts
     for row=0,n-1,1 do
         for col=0,m-1,1 do
             if player.sprites.hearts[counter] then
@@ -114,14 +128,15 @@ function coopHUD.renderHearts(player,pos,mirrored)
                 if player.type == PlayerType.PLAYER_MAGDALENA_B and counter > t_maggy_hearts
                         and player.heart_types[counter].heart_type ~= 'EmptyHeart' then
                     -- According to main ticker changes alpha color of sprite this way animate item
-                    -- Probably not sufficient way but when I'll learn better animation I fix it
+                    -- Probably not sufficient way but when I'll learn better animation I'll fix it
                     local sprite_alpha = coopHUD.TICKER/60
                     if sprite_alpha > 0.4 then
                         local col = Color(1,1,1,sprite_alpha)
                         player.sprites.hearts[counter].Color = col
                     end
                 end
-                heart_pos = Vector(temp_pos.X + 12*col,temp_pos.Y+10*row)
+                heart_pos = Vector(temp_pos.X + heart_space.X*col,temp_pos.Y+heart_space.Y*row)
+                player.sprites.hearts[counter].Scale = sprite_scale
                 player.sprites.hearts[counter]:Render(heart_pos)
             end
             counter = counter + 1
@@ -129,11 +144,15 @@ function coopHUD.renderHearts(player,pos,mirrored)
     end
     return final_offset
 end
-function coopHUD.renderExtraLives(player,pos,mirrored)
+function coopHUD.renderExtraLives(player,pos,mirrored,scale)
     local temp_pos = Vector(0,0)
     local lives_pivot = Vector(0,0)
     local offset = Vector(0,0)
     local final_offset = Vector(0,0)
+     --
+    local sprite_scale = scale
+    if sprite_scale == nil then sprite_scale = Vector(1,1) end -- sets def sprite_scale
+    --
     if player.extra_lives ~= 0 then
         local f = Font()
         f:Load("font/pftempestasevencondensed.fnt")
@@ -145,13 +164,13 @@ function coopHUD.renderExtraLives(player,pos,mirrored)
             text =  string.format('x%d',player.extra_lives)
         end
         if mirrored then -- mirrored
-            offset = Vector(string.len(text)*-8,0)
-            lives_pivot = Vector(string.len(text)*-8,4)
+            offset = Vector(string.len(text)*-8,12)
+            lives_pivot = Vector(string.len(text)*(-8*sprite_scale.X),4)
         else -- normal
-            offset = Vector(string.len(text)*6,0)
+            offset = Vector(string.len(text)*6,12)
             lives_pivot = Vector(2,4)
         end
-        f:DrawString (text,pos.X+lives_pivot.X,pos.Y+lives_pivot.Y,KColor(1,1,1,1),0,true)
+        f:DrawStringScaled(text,pos.X+lives_pivot.X,pos.Y+lives_pivot.Y,sprite_scale.X,sprite_scale.Y,KColor(1,1,1,1),0,true)
         final_offset = offset
     end
     return final_offset
