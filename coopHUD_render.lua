@@ -417,4 +417,4 @@ function coopHUD.init_player()
 end
 coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.render)
 coopHUD:AddCallback(ModCallbacks.MC_INPUT_ACTION, coopHUD.is_joining)
-coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, coopHUD.ta)
+coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, coopHUD.init_player)
