@@ -266,18 +266,22 @@ function coopHUD.renderTrinkets(player,pos,mirrored)
     end
     return off
 end
-function coopHUD.renderBethanyCharge(player,pos,mirrored)
+function coopHUD.renderBethanyCharge(player,pos,mirrored,scale)
     if player.bethany_charge ~= nil then
         local temp_pos = Vector(0,0)
         local spr_pivot = Vector(0,0)
         local text_pivot = Vector(0,0)
         local f = Font()
         local bethany_charge = string.format('x%d',player.bethany_charge)
+        -- Scale set
+        local sprite_scale = scale
+        if sprite_scale == nil then sprite_scale = Vector(1,1) end
+        --
         if mirrored then
             spr_pivot = Vector(-7,8)
             text_pivot = Vector(-10 + string.len(bethany_charge)*-6,-1)
         else
-            spr_pivot = Vector(5,8)
+            spr_pivot = Vector(4,8)
             text_pivot = Vector(10,-2)
         end
         local beth_sprite = Sprite()
@@ -286,7 +290,7 @@ function coopHUD.renderBethanyCharge(player,pos,mirrored)
         else
             beth_sprite = coopHUD.getHeartSprite('RedHeartFull','None')
         end
-        beth_sprite.Scale = Vector(0.6,0.6)
+        beth_sprite.Scale = Vector(0.7,0.7)
         beth_sprite:Render(Vector(pos.X+spr_pivot.X,pos.Y+spr_pivot.Y))
         f:Load("font/luaminioutlined.fnt")
         f:DrawString (bethany_charge,pos.X+text_pivot.X,pos.Y+text_pivot.Y,KColor(1,1,1,1),0,true)
