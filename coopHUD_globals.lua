@@ -11,9 +11,9 @@ coopHUD.TICKER = 0
 coopHUD.players_config = {
         players_no = 0,
         [0] = {
-            anchor_top = 'top_right',
-            anchor_bot = 'bot_right',
-            mirrored = true,
+            anchor_top = 'top_left',
+            anchor_bot = 'bot_left',
+            mirrored = false,
         },
         [1] = {
             anchor_top = 'top_right',
