@@ -189,17 +189,21 @@ function coopHUD.renderPockets(player,pos,mirrored,scale,down_anchor)
     local f = Font()
     f:Load("font/pftempestasevencondensed.fnt")
     local color = KColor(1,1,1,1) -- TODO: sets according to player color
+    --
+    local sprite_scale = scale
+    if sprite_scale == nil then sprite_scale = Vector(1,1) end -- sets def sprite_scale
+    --
     if mirrored then
-        main_pocket_pivot.X = -16
-        charge_pivot.X = - 12
-        sec_po_pivot.X = -32
-        trd_po_pivot.X = -48
+        main_pocket_pivot.X = -16 * sprite_scale.X
+        charge_pivot.X = - 12 * sprite_scale.X
+        sec_po_pivot.X = -32 * sprite_scale.X
+        trd_po_pivot.X = -48 * sprite_scale.X
     else
-        main_pocket_pivot.X = 16
-        charge_pivot.X = 28
-        desc_pivot.X = 32
-        sec_po_pivot.X = 32
-        trd_po_pivot.X = 48
+        main_pocket_pivot.X = 16 * sprite_scale.X
+        charge_pivot.X = 28 * sprite_scale.X
+        desc_pivot.X = 32 * sprite_scale.X
+        sec_po_pivot.X = 32 * sprite_scale.X
+        trd_po_pivot.X = 48 * sprite_scale.X
     end
     --
     if down_anchor then -- defines if anchor for rendering is in in left down corner
@@ -222,32 +226,31 @@ function coopHUD.renderPockets(player,pos,mirrored,scale,down_anchor)
         if player.sprites.first_pocket:GetDefaultAnimation() == 'Idle' then -- checks if item is not pill of card
             if player.sprites.first_pocket_charge then
                 temp_pos = Vector(pos.X+charge_pivot.X,pos.Y+charge_pivot.Y)
-                charge_offset = coopHUD.renderChargeBar(player.sprites.first_pocket_charge,temp_pos,mirrored)
+                charge_offset = coopHUD.renderChargeBar(player.sprites.first_pocket_charge,temp_pos,mirrored,scale)
             end
         end
         temp_pos = Vector(pos.X+main_pocket_pivot.X,pos.Y+main_pocket_pivot.Y)
         if mirrored then temp_pos.X = temp_pos.X + charge_offset.X end
+        player.sprites.first_pocket.Scale = sprite_scale
         player.sprites.first_pocket:Render(temp_pos)
         -- Description
         if player.pocket_desc then
             temp_pos = Vector(pos.X+charge_offset.X+desc_pivot.X,pos.Y+desc_pivot.Y)
-            if  mirrored then temp_pos.X = temp_pos.X - 28 - string.len(player.pocket_desc)*5 end
+            if  mirrored then temp_pos.X = temp_pos.X - (28*sprite_scale.X) - string.len(player.pocket_desc)*(5*sprite_scale.X) end
             local text = player.pocket_desc
-            --if string.len(text) > 12 and mirrored then
-            --    text = string.format("%.12s...",text) end
-            f:DrawString (text,temp_pos.X,temp_pos.Y,color,0,true)
+            f:DrawStringScaled (text,temp_pos.X,temp_pos.Y,sprite_scale.X,sprite_scale.Y,color,0,true)
         end
         ------third pocket
         if player.sprites.third_pocket then
             temp_pos = Vector(pos.X+trd_po_pivot.X + charge_offset.X,pos.Y+trd_po_pivot.Y)
-            player.sprites.third_pocket.Scale = Vector(0.7,0.7) -- sets scale
+            player.sprites.third_pocket.Scale = Vector(0.7*sprite_scale.X,0.7 * sprite_scale.Y) -- sets scale
             player.sprites.third_pocket.Color = Color(1,1,1,0.5) -- sets sprite alpha
             player.sprites.third_pocket:Render(temp_pos)
         end
         -- Second pocket
         if player.sprites.second_pocket then
             temp_pos = Vector(pos.X+sec_po_pivot.X+charge_offset.X,pos.Y+sec_po_pivot.Y)
-            player.sprites.second_pocket.Scale = Vector(0.7,0.7)  -- sets scale
+            player.sprites.second_pocket.Scale = Vector(0.7*sprite_scale.X,0.7 * sprite_scale.Y)  -- sets scale
             player.sprites.second_pocket.Color = Color(1,1,1,0.5) -- sets sprite alpha
             player.sprites.second_pocket:Render(temp_pos)
         end
