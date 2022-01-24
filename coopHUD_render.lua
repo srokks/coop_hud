@@ -346,6 +346,52 @@ function coopHUD.renderPlayer(player_no)
     trinket_off = coopHUD.renderTrinkets(coopHUD.players[player_no],Vector(anchor_bot.X, anchor_bot.Y+pocket_off.Y),mirrored)
     --coopHUD.renderPockets(coopHUD.players[player_no],Vector(down_pos.X,down_pos.Y+pocket_off.Y+trinket_off.Y),mirrored) -- DEBUG: test offsets
 end
+function coopHUD.renderPlayerSmall(player_no)
+    local anchor = Vector(0,40)
+    local mirrored = false
+    local scale = Vector(0.7,0.7)
+    --
+    -- <Locals inits>
+    local active_off = Vector(0,0)
+    local hearts_off = Vector(0,0)
+    local exl_liv_off = Vector(0,0)
+    local pocket_off = Vector(0,0)
+    local trinket_off = Vector(0,0)
+    local extra_charge_off = Vector(0,0)
+    -- <First  top line render> --
+    active_off = coopHUD.renderActive(coopHUD.players[player_no], anchor,mirrored,scale)
+    hearts_off = coopHUD.renderHearts(coopHUD.players[player_no],Vector(anchor.X+active_off.X, anchor.Y),mirrored,scale)
+    exl_liv_off = coopHUD.renderExtraLives(coopHUD.players[player_no],Vector(anchor.X+active_off.X+hearts_off.X,
+            anchor.Y),mirrored,scale)
+    extra_charge_off = coopHUD.renderBethanyCharge(coopHUD.players[player_no],Vector(anchor.X+active_off.X+hearts_off.X,
+            anchor.Y+exl_liv_off.Y),mirrored,scale)
+    -- <Second  top line render> --
+    --coopHUD.renderActive(coopHUD.players[player_no], Vector(0,anchor.Y+active_off.Y),mirrored,scale)
+    coopHUD.renderTrinkets(coopHUD.players[player_no], Vector(0,anchor.Y+active_off.Y),mirrored)
+    --coopHUD.renderPockets(coopHUD.players[player_no],Vector(0,anchor.Y+active_off.Y+32),mirrored,scale)
+    --coopHUD.renderPoopSpells(coopHUD.players[player_no],Vector(pos.X,pos.Y + math.max(active_off.Y,hearts_off.Y)),mirrored)
+    -- </Second  top line render> --
+    ---
+    local anchor = Vector(coopHUD.anchors.top_right.X,40)
+    local mirrored = true
+    local scale = Vector(0.7,0.7)
+    -- <Locals inits>
+    local active_off = Vector(0,0)
+    local hearts_off = Vector(0,0)
+    local exl_liv_off = Vector(0,0)
+    local pocket_off = Vector(0,0)
+    local trinket_off = Vector(0,0)
+    local extra_charge_off = Vector(0,0)
+    -- <First  top line render> --
+    active_off = coopHUD.renderActive(coopHUD.players[player_no], anchor,mirrored,scale)
+    hearts_off = coopHUD.renderHearts(coopHUD.players[player_no],Vector(anchor.X+active_off.X, anchor.Y),mirrored,scale)
+    exl_liv_off = coopHUD.renderExtraLives(coopHUD.players[player_no],Vector(anchor.X+active_off.X+hearts_off.X,
+            anchor.Y),mirrored,scale)
+    extra_charge_off = coopHUD.renderBethanyCharge(coopHUD.players[player_no],Vector(anchor.X+active_off.X+hearts_off.X,
+            anchor.Y+exl_liv_off.Y),mirrored,scale)
+    -- <Second  top line render> --
+    -- </Second  top line render> --
+end
 function coopHUD.renderItems()
     -- TODO: Planetarium chances render
     -- TODO: Angel/Devil room chances
@@ -409,6 +455,7 @@ function  coopHUD.render()
         for i=0,coopHUD.players_config.players_no,1 do
             coopHUD.renderPlayer(i)
         end
+        coopHUD.renderPlayerSmall(0)
         coopHUD.renderItems()
     end
 end
