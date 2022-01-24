@@ -183,7 +183,6 @@ function coopHUD.renderPockets(player,pos,mirrored,scale,down_anchor)
     local desc_pivot = Vector(0,0)
     local sec_po_pivot = Vector(0,0)
     local trd_po_pivot = Vector(0,0)
-    local desc_pivot = Vector(0,0)
     local offset = Vector(0,0)
     local final_offset = Vector(0,0)
     local f = Font()
@@ -257,26 +256,37 @@ function coopHUD.renderPockets(player,pos,mirrored,scale,down_anchor)
     end
     return final_offset
 end
-function coopHUD.renderTrinkets(player,pos,mirrored)
+function coopHUD.renderTrinkets(player,pos,mirrored,scale,down_anchor)
     local temp_pos = Vector(0,0)
     local trinket_pivot = Vector(0,0)
     local sec_tr_pivot = Vector(0,0)
     local off = Vector(0,-24)
+    --
+    local sprite_scale = scale
+    if sprite_scale == nil then sprite_scale = Vector(1,1) end -- sets def sprite_scale
+    --
     if mirrored then
-        trinket_pivot  = Vector(-12,-12)
-        sec_tr_pivot = Vector(-32,-12)
+        trinket_pivot.X = -13 * sprite_scale.X
+        sec_tr_pivot.X = -12 * sprite_scale.X
     else
-        trinket_pivot = Vector(12,-12)
-        sec_tr_pivot = Vector(32,-12)
+        trinket_pivot.X = 12 * sprite_scale.X
+        sec_tr_pivot.X = 12 * sprite_scale.X
+    end
+    if down_anchor then
+        trinket_pivot.Y = -8 * sprite_scale.X
+        sec_tr_pivot.Y = -24 * sprite_scale.X
+    else
+        trinket_pivot.Y = 8 * sprite_scale.X
+        sec_tr_pivot.Y = 24 * sprite_scale.X
     end
     if player.sprites.first_trinket then
         if player.sprites.second_trinket then
             temp_pos = Vector(pos.X + sec_tr_pivot.X,pos.Y + sec_tr_pivot.Y)
-            player.sprites.second_trinket.Scale = Vector(0.7,0.7)
+            player.sprites.second_trinket.Scale = Vector(0.7*sprite_scale.X,0.7*sprite_scale.Y)
             player.sprites.second_trinket:Render(temp_pos)
         end
         temp_pos = Vector(pos.X + trinket_pivot.X,pos.Y + trinket_pivot.Y)
-        player.sprites.first_trinket.Scale = Vector(0.7,0.7)
+        player.sprites.first_trinket.Scale = Vector(0.7*sprite_scale.X,0.7*sprite_scale.Y)
         player.sprites.first_trinket:Render(temp_pos)
     end
     return off
