@@ -149,7 +149,7 @@ function coopHUD.renderExtraLives(player,pos,mirrored,scale)
     local lives_pivot = Vector(0,0)
     local offset = Vector(0,0)
     local final_offset = Vector(0,0)
-     --
+    --
     local sprite_scale = scale
     if sprite_scale == nil then sprite_scale = Vector(1,1) end -- sets def sprite_scale
     --
