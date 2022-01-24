@@ -301,6 +301,7 @@ function coopHUD.getMinimapOffset()
                 minimap_offset = Vector(screen_size.X - 0,2)
             end
         elseif MinimapAPI:GetConfig("HideInCombat") == 3 then
+            -- FIXME: broke when in angel/devil room
             if not r:IsClear() then
                 minimap_offset = Vector(screen_size.X - 0,2)
             end
