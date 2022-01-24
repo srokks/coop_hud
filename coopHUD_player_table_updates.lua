@@ -280,7 +280,8 @@ function coopHUD.getMinimapOffset()
         local is_large = MinimapAPI:IsLarge()
         if not is_large and MinimapAPI:GetConfig("DisplayMode") == 2 then -- BOUNDED MAP
             minimap_offset = Vector(screen_size.X - MinimapAPI:GetConfig("MapFrameWidth") - MinimapAPI:GetConfig("PositionX") - 0,2)
-        elseif not is_large and MinimapAPI:GetConfig("DisplayMode") == 4 then -- NO MAP
+        elseif not is_large and MinimapAPI:GetConfig("DisplayMode") == 4 or Game():GetLevel():GetCurses() == 2 then
+            -- NO MAP or cure of the lost active
             minimap_offset = Vector(screen_size.X - 4,2)
         else -- LARGE
             local minx = screen_size.X
