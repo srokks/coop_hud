@@ -12,12 +12,12 @@ function coopHUD.renderActive(player,pos,mirrored,scale)
     if mirrored then
         active_pivot = Vector(-24*sprite_scale.X,16)
         sec_pivot = Vector(-32*sprite_scale.X,8)
-        offset = Vector(-32*sprite_scale.X,32)
+        offset = Vector(-32*sprite_scale.X,32*sprite_scale.Y)
         charge_offset = Vector(-12*sprite_scale.X,0)
     else
         active_pivot = Vector(16*sprite_scale.X,16)
         sec_pivot = Vector(8,8)
-        offset = Vector(32*sprite_scale.X,32)
+        offset = Vector(32*sprite_scale.X,32*sprite_scale.Y)
         charge_offset = Vector(32*sprite_scale.X,0)
     end
     -- Second active render
