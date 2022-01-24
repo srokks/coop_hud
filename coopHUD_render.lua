@@ -485,6 +485,16 @@ function coopHUD.init_player()
         Game():GetHUD():SetVisible(false)
     end
 end
+function coopHUD.on_start(_,cont)
+    -- init tables
+    coopHUD.init()
+    print('CoopHUD loaded')
+    if  Game():GetHUD():IsVisible() then Game():GetHUD():SetVisible(false) end
+    if cont then -- game is continuing
+        -- read from save`
+    end
+end
 coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.render)
 coopHUD:AddCallback(ModCallbacks.MC_INPUT_ACTION, coopHUD.is_joining)
 coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, coopHUD.init_player)
+coopHUD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, coopHUD.on_start)
