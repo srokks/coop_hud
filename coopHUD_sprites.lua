@@ -64,11 +64,12 @@ function coopHUD.getActiveItemSprite(player,slot)
         end
         this_sprite:SetFrame('WispJar',coopHUD.jar_of_wisp_charge + wisp_charge) -- sets proper frame
     end
+    -- TODO: Hold item sprite integration
     -- Urn of soul
     -- For this moment can only show when urn is open/closed no api function
     -- FIXME: Urn of soul charge: wait till api is fixed
     if active_item == CollectibleType.COLLECTIBLE_URN_OF_SOULS then
-         -- sets frame
+        -- sets frame
         local tempEffects = player:GetEffects()
         local urn_state = tempEffects:GetCollectibleEffectNum(640) -- gets effect of item 0-closed urn/1- opened
         local state = 0  -- closed urn frame no
@@ -205,6 +206,7 @@ function coopHUD.getPocketItemSprite(player,slot)
     return pocket_sprite
 end
 function coopHUD.getMainPocketDesc(player)
+    -- TODO: Item descprition not working
     desc = 'Error'
     if player:GetPill(0) < 1 and player:GetCard(0) < 1 then
         if player:GetActiveItem(2) > 0 then
@@ -244,6 +246,7 @@ function coopHUD.getHeartType(player,heart_pos)
     local eternal = false
     local golden = false
     local remain_souls = 0
+    local overlay = 'None'
     if player_type == 10 or player_type == 31 then
         if heart_pos == 0 then -- only returns for first pos
             -- checks if Holy Mantle is loaded
@@ -265,8 +268,10 @@ function coopHUD.getHeartType(player,heart_pos)
         if player:GetGoldenHearts() > 0 and (heart_pos >= total_hearts - (player:GetGoldenHearts()+empty_hearts)) then   ---(total_hearts - (player:GetGoldenHearts()+empty_hearts)))
         golden = true
         end
+        -- <Normal hearts>
         if player:GetMaxHearts()/2 > heart_pos then -- red heart type
-            if player_type == 14 or player_type == 33 then -- Keeper
+            -- <Keeper Hearts>
+            if player_type == 14 or player_type == 33 then
                 golden = false
                 if player:GetHearts()-(heart_pos*2) > 1 then
                     heart_type = "CoinHeartFull"
@@ -275,29 +280,25 @@ function coopHUD.getHeartType(player,heart_pos)
                 else
                     heart_type = "CoinEmpty"
                 end
-            else -- Normal red hearts
-                if player_type == 21 then --TODO:Tainted maggy pulse heart
-                    if player:GetHearts()-(heart_pos*2) > 1 then
-                        heart_type = "RedHeartFullMaggy"
-                    elseif player:GetHearts()-(heart_pos*2) == 1 then
-                        heart_type = "RedHeartHalf"
-                    else
-                        heart_type = "EmptyHeart"
-                        golden = false
-                    end
+            -- </Keeper Hearts>
+            else
+                -- <Red Hearts Hearts>
+                if player:GetHearts()-(heart_pos*2) > 1 then
+                    heart_type = "RedHeartFull"
+                elseif player:GetHearts()-(heart_pos*2) == 1 then
+                    heart_type = "RedHeartHalf"
                 else
-                    if player:GetHearts()-(heart_pos*2) > 1 then
-                        heart_type = "RedHeartFull"
-                    elseif player:GetHearts()-(heart_pos*2) == 1 then
-                        heart_type = "RedHeartHalf"
-                    else
-                        heart_type = "EmptyHeart"
-                    end
+                    heart_type = "EmptyHeart"
                 end
+                -- </Red Hearts Hearts>
             end
-            if player:GetEternalHearts() > 0 and heart_pos+1 == player:GetMaxHearts()/2 and player:GetHearts()-(heart_pos*2) < 3  then
+            -- <Eternal check>
+            if player:GetEternalHearts() > 0 and -- checks if any eternal hearts
+                    heart_pos+1 == player:GetMaxHearts()/2 then -- checks if heart_pos is last pos
                 eternal = true
             end
+        -- </Normal hearts>
+        -- <BLue/Black hearts>
         elseif player:GetSoulHearts() > 0 or player:GetBoneHearts() > 0 then -- checks
             local red_offset = heart_pos-(player:GetMaxHearts()/2)
             if math.ceil(player:GetSoulHearts()/2) + player:GetBoneHearts() <= red_offset then
@@ -321,10 +322,6 @@ function coopHUD.getHeartType(player,heart_pos)
                         heart_type = "BoneHeartHalf"
                     else
                         heart_type = "BoneHeartEmpty"
-                    end
-                    -- HUDAPI
-                    if player:GetEternalHearts() > 0 and player:GetHearts() > player:GetMaxHearts() and player:GetHearts()-(heart_pos*2) > 0 and player:GetHearts()-(heart_pos*2) < 3 then
-                        eternal = true
                     end
                 else
                     local prev_bones = 0
@@ -357,40 +354,37 @@ function coopHUD.getHeartType(player,heart_pos)
                 end
             end
         end
-        if REPENTANCE and player:GetRottenHearts() > 0 then
+        -- </BLue/Black hearts>
+        -- <RottenHearts hearts>
+        if  player:GetRottenHearts() > 0 then
             local non_rotten_reds = player:GetHearts()/2 - player:GetRottenHearts()
             if  heart_type == "RedHeartFull" then
                 if heart_pos >= non_rotten_reds then
                     heart_type = "RottenHeartFull"
                 end
-                --elseif heart_type == "RedHeartHalf" then -- unnecesary no half rotten exsist in vanila REPENTANCE
-                --    heart_type = "RottenHalfHart"
             elseif heart_type == "BoneHeartFull" then
                 local overloader_reds = player:GetHearts()+remain_souls-(heart_pos*2)
                 if overloader_reds - player:GetRottenHearts()*2 <= 0 then
                     heart_type = "RottenBoneHeartFull"
                 end
-                --elseif heart_type == "BoneHeartHalf" then -- unnecesary no half rotten exsist in vanila REPENTANCE
-                --        heart_type = "RottenBoneHeartHalf"
             end
         end
-        -- Broken heart type  - https://bindingofisaacrebirth.fandom.com/wiki/Health#Broken_Hearts
+        -- </RottenHearts hearts>
+        -- <Broken heart type>  - https://bindingofisaacrebirth.fandom.com/wiki/Health#Broken_Hearts
         if player:GetBrokenHearts() > 0 then
             if heart_pos > total_hearts-1 and total_hearts + player:GetBrokenHearts() > heart_pos then
-                if player:GetPlayerType() == PlayerType.PLAYER_KEEPER or
+                if player:GetPlayerType() == PlayerType.PLAYER_KEEPER or -- Check if Keeper
                         player:GetPlayerType() == PlayerType.PLAYER_KEEPER_B then
                     heart_type = 'BrokenCoinHeart'
                 else
                     heart_type = 'BrokenHeart'
                 end
             end
-           --heart_pos >= total_hearts - (player:GetGoldenHearts()+empty_hearts)
---if player:GetGoldenHearts() > 0 and (heart_pos >= total_hearts - (player:GetGoldenHearts()+empty_hearts)) then
---        golden = true
---        end
         end
+        -- </Broken heart type>
+        -- <Overlays>
         if eternal and golden then
-            overlay = { "WhiteHeartOverlay","GoldHeartOverlay" }
+            overlay = "GoldWhiteOverlay"
         elseif eternal then
             overlay = "WhiteHeartOverlay"
         elseif golden then
@@ -402,16 +396,17 @@ function coopHUD.getHeartType(player,heart_pos)
     return heart_type,overlay
 end
 function coopHUD.getHeartSprite(heart_type,overlay)
-    --TODO: T. Maggy pulsing hearts
     if heart_type ~= 'None' then
         local sprite = Sprite()
         sprite:Load(coopHUD.GLOBALS.hearts_anim_path,true)
         sprite:SetFrame(heart_type, 0)
         if overlay ~= 'None'  then
-            if overlay == 'string' then
+            if overlay ~= 'GoldWhiteOverlay' then
                 sprite:SetOverlayFrame (overlay, 0 )
             else
-                --TODO: proper overlay set - eternal mixed with golden heart
+                sprite:ReplaceSpritesheet(0,"gfx/ui/ui_hearts_gold_coop.png") -- replaces png file to get
+                sprite:SetOverlayFrame ('WhiteHeartOverlay', 0 )
+                sprite:LoadGraphics()
             end
 
         end
@@ -424,9 +419,12 @@ function coopHUD.getHeartSpriteTable(player)
     local max_health_cap = 12
     local heart_type,overlay = ''
     local heart_sprites = {}
-    -- TODO: Maggy integrate with birthright - max cap increased to 18
-
-    for counter=0,12,1 do
+    -- Sets increased heatlh cap when playing Maggy with Birthright
+    if player:GetPlayerType() == PlayerType.PLAYER_MAGDALENA and -- checks if player is Maggy
+        player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
+        max_health_cap = 18
+    end
+    for counter=0,max_health_cap,1 do
         heart_type,overlay = coopHUD.getHeartType(player,counter)
         heart_sprites[counter] = coopHUD.getHeartSprite(heart_type,overlay)
     end
@@ -436,7 +434,12 @@ function coopHUD.getHeartTypeTable(player)
     local max_health_cap = 12
     local heart_type,overlay = ''
     local heart_types = {}
-    for counter=0,12,1 do
+    -- Sets increased heatlh cap when playing Maggy with Birthright
+    if player:GetPlayerType() == PlayerType.PLAYER_MAGDALENA and -- checks if player is Maggy
+        player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
+        max_health_cap = 18
+    end
+    for counter=0,max_health_cap,1 do
         heart_type,overlay = coopHUD.getHeartType(player,counter)
         heart_types[counter] = {
             heart_type = heart_type,
@@ -445,3 +448,31 @@ function coopHUD.getHeartTypeTable(player)
     end
     return heart_types
 end
+function coopHUD.getPoopSprite(player,i)
+    local spell_type
+    local layer_name = 'IdleSmall'
+    spell_type = player:GetPoopSpell(i)
+    if i == 0 then layer_name = 'Idle' end
+    if spell_type ~= 0 then
+        local sprite = Sprite()
+        sprite:Load(coopHUD.GLOBALS.poop_anim_path,true)
+        sprite:SetFrame(layer_name,spell_type)
+        if i >= player:GetPoopMana() then
+            local col = Color(1,1,1,1)
+            col:SetColorize(1, 1, 1, 1)
+            sprite.Color = Color(0.3,0.3,0.3,0.3)
+        end
+        return sprite
+    else
+        return nil
+    end
+end
+function coopHUD.getPoopSpriteTable(player)
+    local poop_table = {}
+    for i=0,PoopSpellType.SPELL_QUEUE_SIZE-1,1 do
+        poop_table[i] = coopHUD.getPoopSprite(player,i)
+    end
+    return poop_table
+end
+-- TODO: T.FOrgotten - weird heart render
+-- TODO: Jaccob/Essau - tint non used sprites -
