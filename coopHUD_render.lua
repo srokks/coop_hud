@@ -1,4 +1,4 @@
-function coopHUD.renderActive(player,pos,mirrored,scale)
+function coopHUD.renderActive(player,pos,mirrored,scale,down_anchor)
     local active_pivot = Vector(0,0) -- first item pivot
     local sec_pivot = Vector(0,0) -- second item pivot
     local charge_offset = Vector(0,0)
@@ -10,15 +10,27 @@ function coopHUD.renderActive(player,pos,mirrored,scale)
     if sprite_scale == nil then sprite_scale = Vector(1,1) end
     --
     if mirrored then
-        active_pivot = Vector(-24*sprite_scale.X,16)
-        sec_pivot = Vector(-32*sprite_scale.X,8)
-        offset = Vector(-32*sprite_scale.X,32*sprite_scale.Y)
-        charge_offset = Vector(-12*sprite_scale.X,0)
+        active_pivot.X = -28*sprite_scale.X
+        sec_pivot.X = -16*sprite_scale.X
+        offset.X = -32*sprite_scale.X
+        charge_offset.X = -12*sprite_scale.X
     else
-        active_pivot = Vector(16*sprite_scale.X,16)
-        sec_pivot = Vector(8,8)
-        offset = Vector(32*sprite_scale.X,32*sprite_scale.Y)
-        charge_offset = Vector(32*sprite_scale.X,0)
+        active_pivot.X = 16*sprite_scale.X
+        sec_pivot.X = 8
+        offset.X = 32*sprite_scale.X
+        charge_offset.X = 32*sprite_scale.X
+    end
+    --
+    if down_anchor then
+        active_pivot.Y = -16
+        sec_pivot.Y = -24
+        offset.Y = -32*sprite_scale.Y
+        charge_offset.Y = -32
+    else
+        active_pivot.Y = 16
+        sec_pivot.Y = 8
+        offset.Y = 32*sprite_scale.Y
+        charge_offset.Y = 0
     end
     -- Second active render
     if player.sprites.second_active then
@@ -28,7 +40,7 @@ function coopHUD.renderActive(player,pos,mirrored,scale)
     end
     -- Second active render
     if player.sprites.first_active then
-        temp_pos = Vector(pos.X + charge_offset.X,pos.Y)
+        temp_pos = Vector(pos.X + charge_offset.X,pos.Y+charge_offset.Y)
         charge_offset = coopHUD.renderChargeBar(player.sprites.first_active_charge,temp_pos,mirrored,sprite_scale)
         temp_pos = Vector(pos.X + active_pivot.X,pos.Y+active_pivot.Y)
         player.sprites.first_active.Scale = sprite_scale
@@ -72,8 +84,8 @@ function coopHUD.renderChargeBar(sprites,pos,mirrored,scale)
     end
     return final_offset
 end
-function coopHUD.renderHearts(player,pos,mirrored,scale)
-    local temp_pos
+function coopHUD.renderHearts(player,pos,mirrored,scale,down_anchor)
+    local temp_pos = Vector(0,0)
     local final_offset = Vector(0,0)
     --
     local sprite_scale = scale
@@ -85,22 +97,30 @@ function coopHUD.renderHearts(player,pos,mirrored,scale)
     else
         hearts_span = player.total_hearts % 6
     end
-    local n = player.max_health_cap / 6 -- No. of rows in
-    --if player.max_health_cap > 12 then
-    --    n = 3 -- No of rows in case of increased health cap - Maggy+Birthright
-    --end
+    local n = 2 -- No. of rows in
+    if player.max_health_cap > 12 then
+        n = 3 -- No of rows in case of increased health cap - Maggy+Birthright
+    end
     local m = math.floor(player.max_health_cap/n) -- No of columns in health grid
     if mirrored then
-        temp_pos = Vector(pos.X - heart_space.X * hearts_span,pos.Y + 8) -- sets anchor pos for all hearts
-        final_offset = Vector((-12*(hearts_span)*sprite_scale.X)-4,8) -- sets returning offset
+        temp_pos.X = pos.X - heart_space.X * hearts_span -- sets anchor pos for all hearts
+        final_offset.X = (-12*(hearts_span)*sprite_scale.X)-4 -- sets returning offset
         if Game():GetLevel():GetCurses() == 8 then -- checks Curse of unknown
             temp_pos = Vector(pos.X-12,pos.Y+8)
             final_offset = Vector(-16,16)
         end
     else
-        temp_pos = Vector(pos.X+8,pos.Y+8)
-        final_offset = Vector((12*(hearts_span)*sprite_scale.X)+4,8) -- sets returning offset
+        temp_pos.X = pos.X+8
+        final_offset.X = (12*(hearts_span)*sprite_scale.X)+4 -- sets returning offset
         if Game():GetLevel():GetCurses() == 8 then final_offset = Vector(16,16) end -- checks Curse of unknown
+    end
+    --
+    if down_anchor then
+        temp_pos.Y = pos.Y + -8 * math.ceil(player.total_hearts/6)
+        final_offset.Y = (-8 * math.ceil(player.total_hearts/6))-6
+    else
+        temp_pos.Y = pos.Y + 8
+        final_offset.Y = (8 * math.ceil(player.total_hearts/6)) + 6
     end
     -- Sub character hearts render
     counter = 0
@@ -123,7 +143,7 @@ function coopHUD.renderHearts(player,pos,mirrored,scale)
         for col=0,m-1,1 do
             if player.sprites.hearts[counter] then
                 local t_maggy_hearts = 1
-                -- Changes max non dissapearing hearst if player  has_birthright
+                -- Changes max non disappearing hearst if player  has_birthright
                 if player.has_birthright then t_maggy_hearts = 2 end
                 if player.type == PlayerType.PLAYER_MAGDALENA_B and counter > t_maggy_hearts
                         and player.heart_types[counter].heart_type ~= 'EmptyHeart' then
@@ -144,19 +164,21 @@ function coopHUD.renderHearts(player,pos,mirrored,scale)
     end
     return final_offset
 end
-function coopHUD.renderExtraLives(player,pos,mirrored,scale)
-    local temp_pos = Vector(0,0)
-    local lives_pivot = Vector(0,0)
-    local offset = Vector(0,0)
+function coopHUD.renderExtraLives(player,pos,mirrored,scale,down_anchor)
     local final_offset = Vector(0,0)
-    --
-    local sprite_scale = scale
-    if sprite_scale == nil then sprite_scale = Vector(1,1) end -- sets def sprite_scale
-    --
+    
     if player.extra_lives ~= 0 then
+        local temp_pos = Vector(0,0)
+        local lives_pivot = Vector(0,0)
+        local offset = Vector(0,0)
+        --
+        local sprite_scale = scale
+        if sprite_scale == nil then sprite_scale = Vector(1,1) end -- sets def sprite_scale
+        --
         local f = Font()
         f:Load("font/pftempestasevencondensed.fnt")
         local text
+        --
         if player.has_guppy then
             temp_pos = 1
             text = string.format('x%d?',player.extra_lives)
@@ -164,11 +186,18 @@ function coopHUD.renderExtraLives(player,pos,mirrored,scale)
             text =  string.format('x%d',player.extra_lives)
         end
         if mirrored then -- mirrored
-            offset = Vector(string.len(text)*-8,12)
-            lives_pivot = Vector(string.len(text)*(-8*sprite_scale.X),4)
+            offset.X = string.len(text)*-8
+            lives_pivot.X = string.len(text)*(-8*sprite_scale.X)
         else -- normal
-            offset = Vector(string.len(text)*6,12)
-            lives_pivot = Vector(2,4)
+            offset.X = string.len(text)*6
+            lives_pivot.X = 2
+        end
+        if down_anchor then
+            offset.Y =  -16
+            lives_pivot.Y = -16
+        else
+            offset.Y = 12
+            lives_pivot.Y = 2
         end
         f:DrawStringScaled(text,pos.X+lives_pivot.X,pos.Y+lives_pivot.Y,sprite_scale.X,sprite_scale.Y,KColor(1,1,1,1),0,true)
         final_offset = offset
@@ -176,50 +205,50 @@ function coopHUD.renderExtraLives(player,pos,mirrored,scale)
     return final_offset
 end
 function coopHUD.renderPockets(player,pos,mirrored,scale,down_anchor)
-    local temp_pos = Vector(0,0) -- temp pos for sprites
-    local main_pocket_pivot = Vector(0,0)
-    local charge_pivot = Vector(0,0)
-    local charge_offset = Vector(0,0)
-    local desc_pivot = Vector(0,0)
-    local sec_po_pivot = Vector(0,0)
-    local trd_po_pivot = Vector(0,0)
-    local offset = Vector(0,0)
     local final_offset = Vector(0,0)
-    local f = Font()
-    f:Load("font/pftempestasevencondensed.fnt")
-    local color = KColor(1,1,1,1) -- TODO: sets according to player color
-    --
-    local sprite_scale = scale
-    if sprite_scale == nil then sprite_scale = Vector(1,1) end -- sets def sprite_scale
-    --
-    if mirrored then
-        main_pocket_pivot.X = -16 * sprite_scale.X
-        charge_pivot.X = - 12 * sprite_scale.X
-        sec_po_pivot.X = -32 * sprite_scale.X
-        trd_po_pivot.X = -48 * sprite_scale.X
-    else
-        main_pocket_pivot.X = 16 * sprite_scale.X
-        charge_pivot.X = 28 * sprite_scale.X
-        desc_pivot.X = 32 * sprite_scale.X
-        sec_po_pivot.X = 32 * sprite_scale.X
-        trd_po_pivot.X = 48 * sprite_scale.X
-    end
-    --
-    if down_anchor then -- defines if anchor for rendering is in in left down corner
-        main_pocket_pivot.Y = -16
-        charge_pivot.Y = -28
-        desc_pivot.Y = -16
-        sec_po_pivot.Y = -24
-        trd_po_pivot.Y = -24
-    else -- or in right
-        main_pocket_pivot.Y = 16
-        charge_pivot.Y = 0
-        desc_pivot.Y = 16
-        sec_po_pivot.Y = 12
-        trd_po_pivot.Y = 12
-    end
     -- Main pocket
     if player.sprites.first_pocket then
+        local temp_pos = Vector(0,0) -- temp pos for sprites
+        local main_pocket_pivot = Vector(0,0)
+        local charge_pivot = Vector(0,0)
+        local charge_offset = Vector(0,0)
+        local desc_pivot = Vector(0,0)
+        local sec_po_pivot = Vector(0,0)
+        local trd_po_pivot = Vector(0,0)
+        local offset = Vector(0,0)
+        local f = Font()
+        f:Load("font/pftempestasevencondensed.fnt")
+        local color = KColor(1,1,1,1) -- TODO: sets according to player color
+        --
+        local sprite_scale = scale
+        if sprite_scale == nil then sprite_scale = Vector(1,1) end -- sets def sprite_scale
+        --
+        if mirrored then
+            main_pocket_pivot.X = -16 * sprite_scale.X
+            charge_pivot.X = - 12 * sprite_scale.X
+            sec_po_pivot.X = -32 * sprite_scale.X
+            trd_po_pivot.X = -48 * sprite_scale.X
+        else
+            main_pocket_pivot.X = 16 * sprite_scale.X
+            charge_pivot.X = 28 * sprite_scale.X
+            desc_pivot.X = 32 * sprite_scale.X
+            sec_po_pivot.X = 32 * sprite_scale.X
+            trd_po_pivot.X = 48 * sprite_scale.X
+        end
+        --
+        if down_anchor then -- defines if anchor for rendering is in in left down corner
+            main_pocket_pivot.Y = -16
+            charge_pivot.Y = -28
+            desc_pivot.Y = -16
+            sec_po_pivot.Y = -24
+            trd_po_pivot.Y = -24
+        else -- or in right
+            main_pocket_pivot.Y = 16
+            charge_pivot.Y = 0
+            desc_pivot.Y = 16
+            sec_po_pivot.Y = 12
+            trd_po_pivot.Y = 12
+        end
         final_offset = offset
         -- Main pocket charge
         if player.sprites.first_pocket:GetDefaultAnimation() == 'Idle' then -- checks if item is not pill of card
@@ -276,11 +305,11 @@ function coopHUD.renderTrinkets(player,pos,mirrored,scale,down_anchor)
             off.X = 24 * sprite_scale.X
         end
         if down_anchor then
-            trinket_pivot.Y = -8 * sprite_scale.X
-            sec_tr_pivot.Y = -24 * sprite_scale.X
+            trinket_pivot.Y = -16 * sprite_scale.X
+            sec_tr_pivot.Y = -32 * sprite_scale.X
         else
             trinket_pivot.Y = 8 * sprite_scale.X
-            sec_tr_pivot.Y = 24 * sprite_scale.X
+            sec_tr_pivot.Y = 28 * sprite_scale.X
         end
         if player.sprites.second_trinket then
             temp_pos = Vector(pos.X + sec_tr_pivot.X,pos.Y + sec_tr_pivot.Y)
@@ -293,9 +322,9 @@ function coopHUD.renderTrinkets(player,pos,mirrored,scale,down_anchor)
     end
     return off
 end
-function coopHUD.renderBethanyCharge(player,pos,mirrored,scale)
+function coopHUD.renderBethanyCharge(player,pos,mirrored,scale,down_anchor)
+    local final_offset = Vector(0,0)
     if player.bethany_charge ~= nil then
-        local temp_pos = Vector(0,0)
         local spr_pivot = Vector(0,0)
         local text_pivot = Vector(0,0)
         local f = Font()
@@ -305,11 +334,20 @@ function coopHUD.renderBethanyCharge(player,pos,mirrored,scale)
         if sprite_scale == nil then sprite_scale = Vector(1,1) end
         --
         if mirrored then
-            spr_pivot = Vector(-7,8)
-            text_pivot = Vector(-10 + string.len(bethany_charge)*-6,-1)
+            spr_pivot.X = -8
+            text_pivot.X = -12 + string.len(bethany_charge)*-6
         else
-            spr_pivot = Vector(4,8)
-            text_pivot = Vector(10,-2)
+            spr_pivot.X = 4
+            text_pivot.X = 10
+        end
+        if down_anchor then
+            spr_pivot.Y = 0
+            text_pivot.Y = -10
+            final_offset.Y = -8
+        else
+            spr_pivot.Y = 8
+            text_pivot.Y = -2
+            final_offset.Y = 8
         end
         local beth_sprite = Sprite()
         if player.type == PlayerType.PLAYER_BETHANY then -- Sets sprite frame according to player type
@@ -322,6 +360,7 @@ function coopHUD.renderBethanyCharge(player,pos,mirrored,scale)
         f:Load("font/luaminioutlined.fnt")
         f:DrawString (bethany_charge,pos.X+text_pivot.X,pos.Y+text_pivot.Y,KColor(1,1,1,1),0,true)
     end
+    return final_offset
 end
 function coopHUD.renderBagOfCrafting(player,pos,mirrored)
 end
@@ -340,10 +379,10 @@ function coopHUD.renderPoopSpells(player,pos,mirrored)
     end
     if  player.sprites.poops~= nil then
         for i=0,PoopSpellType.SPELL_QUEUE_SIZE-1,1 do
-        temp_pos = Vector(pos.X+main_offset.X+i*pos_multi,pos.Y+main_offset.Y)
-        if i == 0 then temp_pos = Vector(pos.X+first_off.X,pos.Y+first_off.Y) end
-        player.sprites.poops[i]:Render(temp_pos)
-    end
+            temp_pos = Vector(pos.X+main_offset.X+i*pos_multi,pos.Y+main_offset.Y)
+            if i == 0 then temp_pos = Vector(pos.X+first_off.X,pos.Y+first_off.Y) end
+            player.sprites.poops[i]:Render(temp_pos)
+        end
     end
 
 end
@@ -363,25 +402,27 @@ function coopHUD.renderPlayer(player_no)
     local trinket_off = Vector(0,0)
     local extra_charge_off = Vector(0,0)
     -- <First  top line render> --
-    active_off = coopHUD.renderActive(coopHUD.players[player_no], anchor_top,mirrored)
-    hearts_off = coopHUD.renderHearts(coopHUD.players[player_no],Vector(anchor_top.X+active_off.X, anchor_top.Y),mirrored)
-    exl_liv_off = coopHUD.renderExtraLives(coopHUD.players[player_no],Vector(anchor_top.X+active_off.X+hearts_off.X, anchor_top.Y),mirrored)
+    active_off = coopHUD.renderActive(coopHUD.players[player_no], anchor_top,mirrored,false)
+    hearts_off = coopHUD.renderHearts(coopHUD.players[player_no],Vector(anchor_top.X+active_off.X, anchor_top.Y),mirrored,false)
+    exl_liv_off = coopHUD.renderExtraLives(coopHUD.players[player_no],Vector(anchor_top.X+active_off.X+hearts_off.X, anchor_top.Y),mirrored,false)
     -- </First  top line render> --
     -- <Second  top line render> --
     --TODO: renderPlayerInfo: render head of current character and name <P1 .. P4>
-     extra_charge_off = coopHUD.renderBethanyCharge(coopHUD.players[player_no],Vector(anchor_top.X, anchor_top.Y + math.max(active_off.Y,hearts_off.Y)),mirrored)
+    extra_charge_off = coopHUD.renderBethanyCharge(coopHUD.players[player_no],Vector(anchor_top.X, anchor_top.Y + math.max(active_off.Y,hearts_off.Y)),mirrored)
     --coopHUD.renderPoopSpells(coopHUD.players[player_no],Vector(pos.X,pos.Y + math.max(active_off.Y,hearts_off.Y)),mirrored)
     -- </Second  top line render> --
     -- <Down  line>
-    pocket_off = coopHUD.renderPockets(coopHUD.players[player_no], anchor_bot,mirrored)
-    trinket_off = coopHUD.renderTrinkets(coopHUD.players[player_no],Vector(anchor_bot.X, anchor_bot.Y+pocket_off.Y),mirrored)
+    pocket_off = coopHUD.renderPockets(coopHUD.players[player_no], anchor_bot,mirrored,nil,true)
+    trinket_off = coopHUD.renderTrinkets(coopHUD.players[player_no],Vector(anchor_bot.X, anchor_bot.Y+pocket_off.Y),mirrored,true)
     --coopHUD.renderPockets(coopHUD.players[player_no],Vector(down_pos.X,down_pos.Y+pocket_off.Y+trinket_off.Y),mirrored) -- DEBUG: test offsets
 end
 function coopHUD.renderPlayerSmall(player_no)
-    local anchor = Vector(0,40)
-    local mirrored = false
-    local scale = Vector(0.7,0.7)
+    local anchor = coopHUD.anchors[coopHUD.players_config.small[player_no].anchor]
+    local mirrored = coopHUD.players_config.small[player_no].mirrored
+    local scale = coopHUD.players_config.small[player_no].scale
+    local down_anchor = coopHUD.players_config.small[player_no].down_anchor
     --
+    --player_no = 0 --DEBUG: all anchor pos test
     -- <Locals inits>
     local active_off = Vector(0,0)
     local hearts_off = Vector(0,0)
@@ -390,44 +431,36 @@ function coopHUD.renderPlayerSmall(player_no)
     local trinket_off = Vector(0,0)
     local extra_charge_off = Vector(0,0)
     -- <First  top line render> --
-    active_off = coopHUD.renderActive(coopHUD.players[player_no], anchor,mirrored,scale)
-    hearts_off = coopHUD.renderHearts(coopHUD.players[player_no],Vector(anchor.X+active_off.X, anchor.Y),mirrored,scale)
-    exl_liv_off = coopHUD.renderExtraLives(coopHUD.players[player_no],Vector(anchor.X+active_off.X+hearts_off.X,
-            anchor.Y),mirrored,scale)
-    extra_charge_off = coopHUD.renderBethanyCharge(coopHUD.players[player_no],Vector(anchor.X+active_off.X+hearts_off.X,
-            anchor.Y+exl_liv_off.Y),mirrored,scale)
+    active_off = coopHUD.renderActive(coopHUD.players[player_no], anchor,
+                                      mirrored,scale,down_anchor)
+    hearts_off = coopHUD.renderHearts(coopHUD.players[player_no],Vector(anchor.X+active_off.X, anchor.Y),
+                                      mirrored,scale,down_anchor)
+    exl_liv_off = coopHUD.renderExtraLives(coopHUD.players[player_no],
+                                           Vector(anchor.X+active_off.X+hearts_off.X, anchor.Y),
+                                           mirrored,scale,down_anchor)
+    extra_charge_off = coopHUD.renderBethanyCharge(coopHUD.players[player_no],
+                                                   Vector(anchor.X+active_off.X+hearts_off.X, anchor.Y+exl_liv_off.Y),
+                                                   mirrored,scale,down_anchor)
     -- <Second  top line render> --
-    --coopHUD.renderActive(coopHUD.players[player_no], Vector(0,anchor.Y+active_off.Y),mirrored,scale)
-    coopHUD.renderTrinkets(coopHUD.players[player_no], Vector(0,anchor.Y+active_off.Y),mirrored)
-    --coopHUD.renderPockets(coopHUD.players[player_no],Vector(0,anchor.Y+active_off.Y+32),mirrored,scale)
-    --coopHUD.renderPoopSpells(coopHUD.players[player_no],Vector(pos.X,pos.Y + math.max(active_off.Y,hearts_off.Y)),mirrored)
-    -- </Second  top line render> --
-    ---
-    local anchor = Vector(coopHUD.anchors.top_right.X,40)
-    local mirrored = true
-    local scale = Vector(0.7,0.7)
-    -- <Locals inits>
-    local active_off = Vector(0,0)
-    local hearts_off = Vector(0,0)
-    local exl_liv_off = Vector(0,0)
-    local pocket_off = Vector(0,0)
-    local trinket_off = Vector(0,0)
-    local extra_charge_off = Vector(0,0)
-    -- <First  top line render> --
-    active_off = coopHUD.renderActive(coopHUD.players[player_no], anchor,mirrored,scale)
-    hearts_off = coopHUD.renderHearts(coopHUD.players[player_no],Vector(anchor.X+active_off.X, anchor.Y),mirrored,scale)
-    exl_liv_off = coopHUD.renderExtraLives(coopHUD.players[player_no],Vector(anchor.X+active_off.X+hearts_off.X,
-            anchor.Y),mirrored,scale)
-    extra_charge_off = coopHUD.renderBethanyCharge(coopHUD.players[player_no],Vector(anchor.X+active_off.X+hearts_off.X,
-            anchor.Y+exl_liv_off.Y),mirrored,scale)
-    -- <Second  top line render> --
+    local first_line_offset = Vector(0,0)
+    if down_anchor then
+        first_line_offset.Y = math.min(active_off.Y,hearts_off.Y,(exl_liv_off.Y+extra_charge_off.Y))
+    else
+        first_line_offset.Y = math.max(active_off.Y,hearts_off.Y,exl_liv_off.Y+extra_charge_off.Y)
+    end
+    trinket_off = coopHUD.renderTrinkets(coopHUD.players[player_no],
+                                         Vector(anchor.X,anchor.Y+first_line_offset.Y),
+                                         mirrored,scale,down_anchor)
+    pockets_off = coopHUD.renderPockets(coopHUD.players[player_no],
+                                        Vector(anchor.X+trinket_off.X,anchor.Y+first_line_offset.Y),
+                                        mirrored,scale,down_anchor)
     -- </Second  top line render> --
 end
 function coopHUD.renderItems()
     -- TODO: Planetarium chances render
     -- TODO: Angel/Devil room chances
     -- TODO: GigaBomb integration
-    -- TODO: T.??? PoopSpeel integration
+    -- TODO: T.??? PoopSpell integration
     anchor = Vector(ScreenHelper.GetScreenSize().X/2,ScreenHelper.GetScreenBottomLeft().Y-16)
     local pos = Vector(anchor.X - 12,anchor.Y)
     local Anim = "gfx/ui/hudpickups.anm2"
@@ -483,10 +516,19 @@ function  coopHUD.render()
     if coopHUD.TICKER  == 60 then coopHUD.TICKER = 0 end
     coopHUD.TICKER = coopHUD.TICKER + 1
     if coopHUD.onRender then
-        for i=0,coopHUD.players_config.players_no,1 do
-            coopHUD.renderPlayer(i)
+         for i=0,coopHUD.players_config.players_no,1 do
+            --coopHUD.renderPlayer(i)
         end
-        coopHUD.renderPlayerSmall(0)
+        for i = 0,3,1 do
+            coopHUD.renderPlayerSmall(i)
+        end
+        
+        
+        --DEBUG: tests of all anchors
+        --print(coopHUD.renderHearts(coopHUD.players[0],coopHUD.anchors.top_left,false,scl,false),
+        --coopHUD.renderHearts(coopHUD.players[0],coopHUD.anchors.bot_left,false,scl,true),
+        --coopHUD.renderHearts(coopHUD.players[0],coopHUD.anchors.top_right,true,scl,false),
+        --coopHUD.renderHearts(coopHUD.players[0],coopHUD.anchors.bot_right,true,scl,true))
         coopHUD.renderItems()
     end
 end
