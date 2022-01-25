@@ -9,17 +9,39 @@ coopHUD.GLOBALS = {
 coopHUD.players = {}
 coopHUD.TICKER = 0
 coopHUD.players_config = {
-        players_no = 0,
+    players_no = 0,
+    [0] = {
+        anchor_top = 'top_left',
+        anchor_bot = 'bot_left',
+        mirrored = false,
+    },
+    [1] = {
+        anchor_top = 'top_right',
+        anchor_bot = 'bot_right',
+        mirrored = true,
+    },
+    small = {
         [0] = {
-            anchor_top = 'top_left',
-            anchor_bot = 'bot_left',
+            anchor = 'top_left',
             mirrored = false,
+            down_anchor = false
         },
         [1] = {
-            anchor_top = 'top_right',
-            anchor_bot = 'bot_right',
+            anchor = 'top_right',
             mirrored = true,
+            down_anchor = false
         },
+        [2] = {
+            anchor = 'bot_left',
+            mirrored = false,
+            down_anchor = true
+        },
+        [3] = {
+            anchor = 'bot_right',
+            mirrored = false,
+            down_anchor = true
+        },
+    }
 }
 coopHUD.anchors = {
     top_left = Vector(0,0),
