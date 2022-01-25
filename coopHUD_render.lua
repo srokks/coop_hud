@@ -517,13 +517,12 @@ function  coopHUD.render()
     coopHUD.TICKER = coopHUD.TICKER + 1
     if coopHUD.onRender then
          for i=0,coopHUD.players_config.players_no,1 do
-            --coopHUD.renderPlayer(i)
+            if coopHUD.players_config.players_no<2 then
+                coopHUD.renderPlayer(i)
+            else
+                coopHUD.renderPlayerSmall(i)
+            end
         end
-        for i = 0,3,1 do
-            coopHUD.renderPlayerSmall(i)
-        end
-        
-        
         --DEBUG: tests of all anchors
         --print(coopHUD.renderHearts(coopHUD.players[0],coopHUD.anchors.top_left,false,scl,false),
         --coopHUD.renderHearts(coopHUD.players[0],coopHUD.anchors.bot_left,false,scl,true),
