@@ -7,7 +7,7 @@ function coopHUD.renderActive(player,pos,mirrored,scale,down_anchor)
     local final_offset = Vector(0,0)
     -- Scale set
     local sprite_scale = scale
-    if sprite_scale == nil then sprite_scale = Vector(1,1) end
+    if scale == nil then sprite_scale = Vector(1,1) end
     --
     if mirrored then
         active_pivot.X = -28*sprite_scale.X
@@ -402,18 +402,29 @@ function coopHUD.renderPlayer(player_no)
     local trinket_off = Vector(0,0)
     local extra_charge_off = Vector(0,0)
     -- <First  top line render> --
-    active_off = coopHUD.renderActive(coopHUD.players[player_no], anchor_top,mirrored,false)
-    hearts_off = coopHUD.renderHearts(coopHUD.players[player_no],Vector(anchor_top.X+active_off.X, anchor_top.Y),mirrored,false)
-    exl_liv_off = coopHUD.renderExtraLives(coopHUD.players[player_no],Vector(anchor_top.X+active_off.X+hearts_off.X, anchor_top.Y),mirrored,false)
+    active_off = coopHUD.renderActive(coopHUD.players[player_no],
+                                      anchor_top,mirrored,nil,false)
+    hearts_off = coopHUD.renderHearts(coopHUD.players[player_no],
+                                      Vector(anchor_top.X+active_off.X, anchor_top.Y),
+                                      mirrored,nil,false)
+    exl_liv_off = coopHUD.renderExtraLives(coopHUD.players[player_no],
+                                           Vector(anchor_top.X+active_off.X+hearts_off.X, anchor_top.Y),
+                                           mirrored,nil,false)
     -- </First  top line render> --
     -- <Second  top line render> --
     --TODO: renderPlayerInfo: render head of current character and name <P1 .. P4>
-    extra_charge_off = coopHUD.renderBethanyCharge(coopHUD.players[player_no],Vector(anchor_top.X, anchor_top.Y + math.max(active_off.Y,hearts_off.Y)),mirrored)
+    extra_charge_off = coopHUD.renderBethanyCharge(coopHUD.players[player_no],
+                                                   Vector(anchor_top.X, anchor_top.Y + math.max(active_off.Y,hearts_off.Y)),
+                                                   mirrored,nil,false)
     --coopHUD.renderPoopSpells(coopHUD.players[player_no],Vector(pos.X,pos.Y + math.max(active_off.Y,hearts_off.Y)),mirrored)
     -- </Second  top line render> --
     -- <Down  line>
-    pocket_off = coopHUD.renderPockets(coopHUD.players[player_no], anchor_bot,mirrored,nil,true)
-    trinket_off = coopHUD.renderTrinkets(coopHUD.players[player_no],Vector(anchor_bot.X, anchor_bot.Y+pocket_off.Y),mirrored,true)
+    pocket_off = coopHUD.renderPockets(coopHUD.players[player_no],
+                                       anchor_bot,
+                                       mirrored,nil,true)
+    trinket_off = coopHUD.renderTrinkets(coopHUD.players[player_no],
+                                         Vector(anchor_bot.X, anchor_bot.Y+pocket_off.Y),
+                                         mirrored,nil,true)
     --coopHUD.renderPockets(coopHUD.players[player_no],Vector(down_pos.X,down_pos.Y+pocket_off.Y+trinket_off.Y),mirrored) -- DEBUG: test offsets
 end
 function coopHUD.renderPlayerSmall(player_no)
