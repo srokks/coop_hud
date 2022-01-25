@@ -517,7 +517,7 @@ function  coopHUD.render()
     coopHUD.TICKER = coopHUD.TICKER + 1
     if coopHUD.onRender then
          for i=0,coopHUD.players_config.players_no,1 do
-            if coopHUD.players_config.players_no<2 then
+            if coopHUD.players_config<2 then
                 coopHUD.renderPlayer(i)
             else
                 coopHUD.renderPlayerSmall(i)
