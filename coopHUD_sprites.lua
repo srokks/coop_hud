@@ -64,12 +64,12 @@ function coopHUD.getActiveItemSprite(player,slot)
         end
         this_sprite:SetFrame('WispJar',coopHUD.jar_of_wisp_charge + wisp_charge) -- sets proper frame
     end
+    -- TODO: Hold item sprite integration
     -- Urn of soul
     -- For this moment can only show when urn is open/closed no api function
     -- FIXME: Urn of soul charge: wait till api is fixed
-    -- TODO: Hold item sprite integration
     if active_item == CollectibleType.COLLECTIBLE_URN_OF_SOULS then
-         -- sets frame
+        -- sets frame
         local tempEffects = player:GetEffects()
         local urn_state = tempEffects:GetCollectibleEffectNum(640) -- gets effect of item 0-closed urn/1- opened
         local state = 0  -- closed urn frame no
