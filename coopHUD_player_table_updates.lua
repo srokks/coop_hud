@@ -167,7 +167,7 @@ function coopHUD.updateHearts(player_no)
         coopHUD.players[player_no].total_hearts = temp_total_hearts
         if coopHUD.players[player_no].max_health_cap ~= 18 and -- prevent from changing after birthright picked
             coopHUD.players[player_no].type == PlayerType.PLAYER_MAGDALENA and -- checks if payer is Maggy
-            player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
+            coopHUD.players[player_no].has_birthright then
             coopHUD.players[player_no].max_health_cap = 18
         end
     end
