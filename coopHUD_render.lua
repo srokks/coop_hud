@@ -567,7 +567,7 @@ end
 function coopHUD.on_start(_,cont)
     -- init tables
     coopHUD.init()
-    print('CoopHUD loaded')
+    print('CoopHUD '..coopHUD.VERSION..'loaded')
     if  Game():GetHUD():IsVisible() then Game():GetHUD():SetVisible(false) end
     if cont then -- game is continuing
         -- read from save`
