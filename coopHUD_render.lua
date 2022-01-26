@@ -521,12 +521,16 @@ function coopHUD.renderItems()
 end
 coopHUD.onRender = true
 coopHUD.is_joining = false
+--coopHUD.text = 'test' -- DEBUG: on screen string
 function  coopHUD.render()
-    --if coopHUD.players_config.players_no > 2 then onRender = false end -- prevents to render if more than 2 players
+    if coopHUD.players_config.players_no+1 > 4 then -- prevents to render if more than 2 players
+        coopHUD.onRender = false
+        Game():GetHUD():SetVisible(true)
+    end
     if coopHUD.TICKER  == 60 then coopHUD.TICKER = 0 end
     coopHUD.TICKER = coopHUD.TICKER + 1
     if coopHUD.onRender then
-         for i=0,coopHUD.players_config.players_no,1 do
+        for i=0,coopHUD.players_config.players_no,1 do
             if coopHUD.players_config.players_no<2 then
                 coopHUD.renderPlayer(i)
             else
@@ -538,12 +542,18 @@ function  coopHUD.render()
         --coopHUD.renderHearts(coopHUD.players[0],coopHUD.anchors.bot_left,false,scl,true),
         --coopHUD.renderHearts(coopHUD.players[0],coopHUD.anchors.top_right,true,scl,false),
         --coopHUD.renderHearts(coopHUD.players[0],coopHUD.anchors.bot_right,true,scl,true))
+        --
         coopHUD.renderItems()
     end
+    --DEBUG: tests draw debug string on screen
+    --local f = Font()
+    --f:Load("font/luaminioutlined.fnt")
+    --f:DrawString(coopHUD.text,100,100,KColor(1,1,1,1),0,true)
+    --
 end
 function coopHUD.is_joining()
-    for i=0,coopHUD.players_config.players_no+1,1 do
-        if Input.IsActionTriggered(ButtonAction.ACTION_JOINMULTIPLAYER, i) then
+    for i=0,8,1 do
+        if Input.IsActionTriggered(ButtonAction.ACTION_JOINMULTIPLAYER, i) and  coopHUD.players[i] == nil then
             coopHUD.is_joining = true
             coopHUD.onRender=false
             Game():GetHUD():SetVisible(true)
@@ -566,7 +576,7 @@ end
 function coopHUD.on_start(_,cont)
     -- init tables
     coopHUD.init()
-    print('CoopHUD '..coopHUD.VERSION..'loaded')
+    print('CoopHUD '..coopHUD.VERSION..' loaded successfully!')
     if  Game():GetHUD():IsVisible() then Game():GetHUD():SetVisible(false) end
     if cont then -- game is continuing
         -- read from save`
