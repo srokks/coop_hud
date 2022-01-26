@@ -419,13 +419,12 @@ function coopHUD.renderPlayer(player_no)
     --coopHUD.renderPoopSpells(coopHUD.players[player_no],Vector(pos.X,pos.Y + math.max(active_off.Y,hearts_off.Y)),mirrored)
     -- </Second  top line render> --
     -- <Down  line>
-    pocket_off = coopHUD.renderPockets(coopHUD.players[player_no],
-                                       anchor_bot,
-                                       mirrored,nil,true)
     trinket_off = coopHUD.renderTrinkets(coopHUD.players[player_no],
-                                         Vector(anchor_bot.X, anchor_bot.Y+pocket_off.Y),
+                                         anchor_bot,
                                          mirrored,nil,true)
-    --coopHUD.renderPockets(coopHUD.players[player_no],Vector(down_pos.X,down_pos.Y+pocket_off.Y+trinket_off.Y),mirrored) -- DEBUG: test offsets
+    pocket_off = coopHUD.renderPockets(coopHUD.players[player_no],
+                                       Vector(anchor_bot.X+trinket_off.X,anchor_bot.Y),
+                                       mirrored,nil,true)
 end
 function coopHUD.renderPlayerSmall(player_no)
     local anchor = coopHUD.anchors[coopHUD.players_config.small[player_no].anchor]
