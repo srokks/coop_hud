@@ -166,8 +166,8 @@ function coopHUD.updateHearts(player_no)
     if coopHUD.players[player_no].total_hearts ~= temp_total_hearts then
         coopHUD.players[player_no].total_hearts = temp_total_hearts
         if coopHUD.players[player_no].max_health_cap ~= 18 and -- prevent from changing after birthright picked
-            coopHUD.players[player_no].type == PlayerType.PLAYER_MAGDALENA and -- checks if payer is Maggy
-            coopHUD.players[player_no].has_birthright then
+                coopHUD.players[player_no].type == PlayerType.PLAYER_MAGDALENA and -- checks if payer is Maggy
+                coopHUD.players[player_no].has_birthright then
             coopHUD.players[player_no].max_health_cap = 18
         end
     end
@@ -189,7 +189,6 @@ function coopHUD.updateHearts(player_no)
         for i=max_health_cap,0,-1 do
             local test_type = coopHUD.getHeartType(sub_player,i)
             if coopHUD.players[player_no].sub_heart_types[i].heart_type ~= test_type then
-                print('zmiana serduszek')
                 local heart_type,overlay = coopHUD.getHeartType(sub_player,i)
                 coopHUD.players[player_no].sub_heart_types[i].heart_type = heart_type
                 coopHUD.players[player_no].sub_heart_types[i].overlay = overlay
@@ -274,7 +273,7 @@ end
 function coopHUD.getMinimapOffset()
     local minimap_offset = Vector(Isaac.GetScreenWidth(),0)
     if MinimapAPI ~= nil then
-        -- Modified function from minimap_api by Wolfsauge
+        -- Modified function from minimAPI by Wolfsauge
         --TODO: curse of the unknown integration
         local screen_size = Vector(Isaac.GetScreenWidth(),0)
         local is_large = MinimapAPI:IsLarge()

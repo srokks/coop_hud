@@ -88,11 +88,11 @@ function coopHUD.getActiveItemSprite(player,slot)
         end
         if player:GetPlayerType() == PlayerType.PLAYER_JUDAS and player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT)  then -- if judas and has birthrignt
             if player:HasCollectible(CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES) and active_item ~= CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES then
-                 item_sprite = 'gfx/ui/hud_bookofvirtueswithbelial.png' -- sets virt/belial sprite
+                item_sprite = 'gfx/ui/hud_bookofvirtueswithbelial.png' -- sets virt/belial sprite
                 this_sprite:ReplaceSpritesheet(3, item_sprite)
                 this_sprite:ReplaceSpritesheet(4, item_sprite)
             else
-                 item_sprite = 'gfx/ui/hud_bookofbelial.png' -- sets belial sprite
+                item_sprite = 'gfx/ui/hud_bookofbelial.png' -- sets belial sprite
                 this_sprite:ReplaceSpritesheet(3, item_sprite)
                 this_sprite:ReplaceSpritesheet(4, item_sprite)
             end
@@ -206,8 +206,8 @@ function coopHUD.getPocketItemSprite(player,slot)
     return pocket_sprite
 end
 function coopHUD.getMainPocketDesc(player)
-    -- TODO: Item descprition not working
     desc = 'Error'
+    -- TODO: check if lang api is installed and loaded
     if player:GetPill(0) < 1 and player:GetCard(0) < 1 then
         if player:GetActiveItem(2) > 0 then
             desc = Isaac.GetItemConfig():GetCollectible(player:GetActiveItem(2)).Name
