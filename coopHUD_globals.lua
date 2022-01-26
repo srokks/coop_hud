@@ -22,29 +22,26 @@ coopHUD.players_config = {
         mirrored = true,
     },
     small = {
+        scale = Vector(0.8,0.8),
         [0] = {
             anchor = 'top_left',
             mirrored = false,
             down_anchor = false,
-            scale = Vector(1,1)
         },
         [1] = {
             anchor = 'top_right',
             mirrored = true,
             down_anchor = false,
-            scale = Vector(1,1)
         },
         [2] = {
             anchor = 'bot_left',
             mirrored = false,
             down_anchor = true,
-            scale = Vector(1,1)
         },
         [3] = {
             anchor = 'bot_right',
             mirrored = true,
             down_anchor = true,
-            scale = Vector(1,1)
         },
     }
 }

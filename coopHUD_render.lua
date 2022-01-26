@@ -308,7 +308,7 @@ function coopHUD.renderTrinkets(player,pos,mirrored,scale,down_anchor)
             trinket_pivot.Y = -10 * sprite_scale.Y
             sec_tr_pivot.Y = -32 * sprite_scale.Y
         else
-            trinket_pivot.Y = 8 * sprite_scale.Y
+            trinket_pivot.Y = 10 * sprite_scale.Y
             sec_tr_pivot.Y = 28 * sprite_scale.Y
         end
         if player.sprites.second_trinket then
@@ -429,7 +429,7 @@ end
 function coopHUD.renderPlayerSmall(player_no)
     local anchor = coopHUD.anchors[coopHUD.players_config.small[player_no].anchor]
     local mirrored = coopHUD.players_config.small[player_no].mirrored
-    local scale = coopHUD.players_config.small[player_no].scale
+    local scale = coopHUD.players_config.small.scale
     local down_anchor = coopHUD.players_config.small[player_no].down_anchor
     --
     --player_no = 0 --DEBUG: all anchor pos test
