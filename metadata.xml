@@ -3,20 +3,24 @@
     <name>Coop HUD</name>
     <directory>coop_hud- wip</directory>
     <id>2731267631</id>
-    <description> [h1]Coop HUD[/h1]
+    <description> THIS MOD IS WORKING IN PROGRESS PLEASE SUBMIT ANY ISSUE
 THIS IS MOSTLY SKELETON FOR FUTURE UPDATES
-THIS MOD IS WORKING IN PROGRESS PLEASE SUBMIT ANY ISSUE
+
+[h1]Coop HUD[/h1]
+
+
 I've been tired of playing Isaac in coop with vanilla broken hud so I've created a new one.
 This mod is my try to render proper HUD for game.
-It renders only HUD so I'm sugesting using [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1978904635] MiniMAPI[/url] (for map) and [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2635267643]Enhanced Boss Bars[/url])
+It renders only HUD so I'm sugesting using [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1978904635] MiniMAPI[/url] (for map) and [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2635267643]Enhanced Boss Bars[/url]
 For right now this mod do not show stats
-
 [h2]Features[/h2]
 [list]
 [*] Renders HUD with proper positioning - no weird sprites for coop player
 [*] Customizable hud positions (*)
-[*] Suport modded pockets items
+[*] Suport modded pockets items/
 [*] Bethany charges/ colored charge bar
+[*] Display names for pockets
+[*] Vanilla like prompts (using cards/ pills/ activeitems) (*)
 [list]
 [h3]Tainted Characters[/h3]
 [*] Poop spells integration for Tainted ??? (*)
@@ -27,6 +31,7 @@ For right now this mod do not show stats
 (*)  - future releases
 [h2]Issues/ not working/missing[/h2]
 [*] Jacob and Essau - won't render properly - WIP
+[*] Forgotten - won't render properly - WIP
 [*] Urn of soul - only show open/close sprite state - no modding API function
 [*] Jar of Wisp - manual charge detection/ resets on restart- no modding API function
 </description>
