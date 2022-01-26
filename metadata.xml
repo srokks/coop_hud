@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <metadata>
-    <name>Coop HUD *TEST*</name>
+    <name>Coop HUD *WIP*</name>
     <directory>coop_hud</directory>
     <id>2731267631</id>
     <description> THIS MOD IS WORKING IN PROGRESS PLEASE SUBMIT ANY ISSUE
@@ -35,7 +35,7 @@ For right now this mod do not show stats
 [*] Urn of soul - only show open/close sprite state - no modding API function
 [*] Jar of Wisp - manual charge detection/ resets on restart- no modding API function
 </description>
-    <version>0.2</version>
+    <version>0.3</version>
     <visibility>Public</visibility>
     <tag id="Lua"/>
     <tag id="Tweaks"/>
