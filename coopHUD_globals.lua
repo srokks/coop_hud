@@ -1,4 +1,4 @@
-coopHUD.VERSION = 0.2
+coopHUD.VERSION = '0.2.2' --DEBUG: test name for in game recognition
 coopHUD.GLOBALS = {
     item_anim_path = '/gfx/ui/items_coop.anm2',
     card_anim_path = "gfx/ui/hud_card_coop.anm2",
