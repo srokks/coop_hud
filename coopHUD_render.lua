@@ -547,6 +547,8 @@ function  coopHUD.render()
         --coopHUD.renderHearts(coopHUD.players[0],coopHUD.anchors.bot_right,true,scl,true))
         --
         coopHUD.renderItems()
+    else
+        Game():GetHUD():SetVisible(true)
     end
     --DEBUG: tests draw debug string on screen
     --local f = Font()
@@ -554,7 +556,14 @@ function  coopHUD.render()
     --f:DrawString(coopHUD.text,100,100,KColor(1,1,1,1),0,true)
     --
 end
-function coopHUD.is_joining()
+function coopHUD.is_joining(_,ent,hook,btn)
+    -- DEBUG: handler to quick turn on/off hud on pressing 'H' on keyboard
+    if Input.IsButtonTriggered(Keyboard.KEY_H,0) and coopHUD.onRender then
+        coopHUD.onRender = false
+    elseif Input.IsButtonTriggered(Keyboard.KEY_H,0) and not coopHUD.onRender then
+        coopHUD.onRender = true
+    end
+    --
     for i=0,8,1 do
         if Input.IsActionTriggered(ButtonAction.ACTION_JOINMULTIPLAYER, i)  then
             print('Join ',i)
