@@ -474,5 +474,17 @@ function coopHUD.getPoopSpriteTable(player)
     end
     return poop_table
 end
+function coopHUD.getPlayerHeadSprite(player_type)
+    if 0 <= player_type and player_type <= 37 then
+        local sprite = Sprite()
+        sprite:Load(coopHUD.GLOBALS.player_head_anim_path,true)
+        sprite:SetFrame('Main',player_type+1)
+        sprite:ReplaceSpritesheet(1, "/gfx/ui/blank.png")
+        sprite:LoadGraphics()
+        return sprite
+    else
+        return false
+    end
+end
 -- TODO: T.FOrgotten - weird heart render
 -- TODO: Jaccob/Essau - tint non used sprites -
