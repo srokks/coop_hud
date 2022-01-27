@@ -11,7 +11,8 @@ coopHUD.GLOBALS = {
     pill_anim_path = "gfx/ui/hud_pills_coop.anm2",
     hearts_anim_path = "gfx/ui/ui_hearts.anm2",
     charge_anim_path = "gfx/ui/activechargebar_coop.anm2",
-    poop_anim_path = "gfx/ui/ui_poops.anm2"
+    poop_anim_path = "gfx/ui/ui_poops.anm2",
+    player_head_anim_path = "gfx/ui/coop menu.anm2",
 }
 coopHUD.players = {}
 coopHUD.TICKER = 0
@@ -21,11 +22,13 @@ coopHUD.players_config = {
         anchor_top = 'top_left',
         anchor_bot = 'bot_left',
         mirrored = false,
+        name = 'P1'
     },
     [1] = {
         anchor_top = 'top_right',
         anchor_bot = 'bot_right',
         mirrored = true,
+        name = 'P2'
     },
     small = {
         scale = Vector(0.8,0.8),
@@ -33,21 +36,25 @@ coopHUD.players_config = {
             anchor = 'top_left',
             mirrored = false,
             down_anchor = false,
+            name = 'P1'
         },
         [1] = {
             anchor = 'top_right',
             mirrored = true,
             down_anchor = false,
+            name = 'P2'
         },
         [2] = {
             anchor = 'bot_left',
             mirrored = false,
             down_anchor = true,
+            name = 'P3',
         },
         [3] = {
             anchor = 'bot_right',
             mirrored = true,
             down_anchor = true,
+            name = 'P4'
         },
     }
 }

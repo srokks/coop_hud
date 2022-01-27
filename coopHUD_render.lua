@@ -386,8 +386,44 @@ function coopHUD.renderPoopSpells(player,pos,mirrored)
     end
 
 end
-function coopHUD.renderPlayerInfo(player,pos,mirrored)
-
+function coopHUD.renderPlayerInfo(player,pos,mirrored,scale,down_anchor)
+    local final_offset = Vector(0,0)
+    if player.sprites.player_head ~= nil and coopHUD.options.render_player_info then
+        local head_pivot = Vector(0,0)
+        local name_pivot = Vector(0,0)
+        local offset = Vector(0,0)
+        local sprite_scale = scale
+        if sprite_scale == nil then sprite_scale = Vector(1,1) end
+        if mirrored then
+            head_pivot.X = head_pivot.X - 16 * sprite_scale.X
+            name_pivot.X = name_pivot.X - 20 * sprite_scale.X
+            offset.X = -22 * sprite_scale.X
+        else
+            head_pivot.X = head_pivot.X + 16 * sprite_scale.X
+            name_pivot.X = name_pivot.X + 12 * sprite_scale.X
+            offset.X = 22 * sprite_scale.X
+        end
+        if down_anchor then
+            head_pivot.Y = head_pivot.Y - 20 * sprite_scale.Y
+            name_pivot.Y = name_pivot.Y - 16 * sprite_scale.Y
+            offset.Y = -24 * sprite_scale.Y
+        else
+            head_pivot.Y = head_pivot.Y + 16 * sprite_scale.Y
+            name_pivot.Y = name_pivot.Y + 20 * sprite_scale.Y
+            offset.Y = 24 * sprite_scale.Y
+        end
+        player.sprites.player_head.Scale = sprite_scale
+        player.sprites.player_head:Render(Vector(pos.X+head_pivot.X,pos.Y+head_pivot.Y))
+        local f = Font()
+        f:Load("font/luaminioutlined.fnt")
+        f:DrawStringScaled(player.name,
+                           pos.X+name_pivot.X,pos.Y+name_pivot.Y,
+                           sprite_scale.X,sprite_scale.Y,
+                           KColor(1,1,1,1),0,true)
+        final_offset = offset
+    end
+    
+    return final_offset
 end
 function coopHUD.renderPlayer(player_no)
     --
@@ -395,6 +431,7 @@ function coopHUD.renderPlayer(player_no)
     local anchor_bot = coopHUD.anchors[coopHUD.players_config[player_no].anchor_bot]
     local mirrored = coopHUD.players_config[player_no].mirrored
     -- <Locals inits>
+    local info_off = Vector(0, 0)
     local active_off = Vector(0,0)
     local hearts_off = Vector(0,0)
     local exl_liv_off = Vector(0,0)
@@ -402,13 +439,16 @@ function coopHUD.renderPlayer(player_no)
     local trinket_off = Vector(0,0)
     local extra_charge_off = Vector(0,0)
     -- <First  top line render> --
+    info_off = coopHUD.renderPlayerInfo(coopHUD.players[player_no],
+                                        anchor_top, mirrored, Vector(0.9,0.9), false)
     active_off = coopHUD.renderActive(coopHUD.players[player_no],
-                                      anchor_top,mirrored,nil,false)
+                                      Vector(anchor_top.X+info_off.X,anchor_top.Y),
+                                      mirrored,nil,false)
     hearts_off = coopHUD.renderHearts(coopHUD.players[player_no],
-                                      Vector(anchor_top.X+active_off.X, anchor_top.Y),
+                                      Vector(anchor_top.X+info_off.X+active_off.X, anchor_top.Y),
                                       mirrored,nil,false)
     exl_liv_off = coopHUD.renderExtraLives(coopHUD.players[player_no],
-                                           Vector(anchor_top.X+active_off.X+hearts_off.X, anchor_top.Y),
+                                           Vector(anchor_top.X+info_off.X+active_off.X+hearts_off.X, anchor_top.Y),
                                            mirrored,nil,false)
     -- </First  top line render> --
     -- <Second  top line render> --
@@ -437,6 +477,7 @@ function coopHUD.renderPlayerSmall(player_no)
     --
     --player_no = 0 --DEBUG: all anchor pos test
     -- <Locals inits>
+    local info_off = Vector(0,0)
     local active_off = Vector(0,0)
     local hearts_off = Vector(0,0)
     local exl_liv_off = Vector(0,0)
@@ -444,15 +485,19 @@ function coopHUD.renderPlayerSmall(player_no)
     local trinket_off = Vector(0,0)
     local extra_charge_off = Vector(0,0)
     -- <First  top line render> --
-    active_off = coopHUD.renderActive(coopHUD.players[player_no], anchor,
+    info_off = coopHUD.renderPlayerInfo(coopHUD.players[player_no],
+                                        anchor, mirrored, Vector(0.7,0.7), down_anchor)
+    active_off = coopHUD.renderActive(coopHUD.players[player_no],
+                                      Vector(anchor.X+info_off.X,anchor.Y),
                                       mirrored,scale,down_anchor)
-    hearts_off = coopHUD.renderHearts(coopHUD.players[player_no],Vector(anchor.X+active_off.X, anchor.Y),
+    hearts_off = coopHUD.renderHearts(coopHUD.players[player_no],
+                                      Vector(anchor.X+info_off.X+active_off.X, anchor.Y),
                                       mirrored,scale,down_anchor)
     exl_liv_off = coopHUD.renderExtraLives(coopHUD.players[player_no],
-                                           Vector(anchor.X+active_off.X+hearts_off.X, anchor.Y),
+                                           Vector(anchor.X+info_off.X+active_off.X+hearts_off.X, anchor.Y),
                                            mirrored,scale,down_anchor)
     extra_charge_off = coopHUD.renderBethanyCharge(coopHUD.players[player_no],
-                                                   Vector(anchor.X+active_off.X+hearts_off.X, anchor.Y+exl_liv_off.Y),
+                                                   Vector(anchor.X+info_off.X+active_off.X+hearts_off.X, anchor.Y+exl_liv_off.Y),
                                                    mirrored,scale,down_anchor)
     -- <Second  top line render> --
     local first_line_offset = Vector(0,0)

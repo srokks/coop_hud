@@ -50,12 +50,14 @@ function coopHUD.updatePlayer(player_no)
         poops = nil,
         ---
         type = temp_player:GetPlayerType(),
+        name = coopHUD.players_config.small[player_no].name,
         ---
         has_sub = false,
         has_birthright = false,
         has_guppy = false,
         ---
         sprites = {
+            player_head = coopHUD.getPlayerHeadSprite(temp_player:GetPlayerType()),
             first_active = coopHUD.getActiveItemSprite(temp_player,0),
             first_active_charge = coopHUD.getChargeSprites(temp_player,0),
             first_active_bethany_charge = nil,
