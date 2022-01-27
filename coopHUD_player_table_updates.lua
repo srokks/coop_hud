@@ -21,6 +21,7 @@ function coopHUD.updatePlayer(player_no)
     local player_table = {}
     player_table = {
         --
+        -- Items
         first_active = temp_player:GetActiveItem(0),
         first_active_charge = temp_player:GetActiveCharge(0),
         second_active = temp_player:GetActiveItem(1),
@@ -32,17 +33,21 @@ function coopHUD.updatePlayer(player_no)
         second_pocket = coopHUD.getPocketID(temp_player,1),
         third_pocket = coopHUD.getPocketID(temp_player,2),
         pocket_desc = coopHUD.getMainPocketDesc(temp_player),
-        extra_lives = temp_player:GetExtraLives(),
-        bethany_charge = nil, -- inits charge for Bethany
+        -- Hearts
         heart_types = coopHUD.getHeartTypeTable(temp_player),
         sub_heart_types = {},
-        wisp_jar_use = 0, -- holds info about used jar of wisp FIXME:
         total_hearts = math.ceil((temp_player:GetEffectiveMaxHearts() + temp_player:GetSoulHearts())/2),
         max_health_cap = 12,
+        extra_lives = temp_player:GetExtraLives(),
+        -- Charges
+        bethany_charge = nil, -- inits charge for Bethany
+        wisp_jar_use = 0, -- holds info about used jar of wisp
+        -- Stats
+        
         --- T ??? - specifics
         poop_mana = 0,
         max_poop_mana = 0,
-        poops = coopHUD.getPoopSpellTable(player_no),
+        poops = nil,
         ---
         type = temp_player:GetPlayerType(),
         ---
@@ -64,7 +69,7 @@ function coopHUD.updatePlayer(player_no)
             third_pocket = coopHUD.getPocketItemSprite(temp_player,2),
             hearts = coopHUD.getHeartSpriteTable(temp_player),
             sub_hearts = nil,
-            poops = coopHUD.getPoopSpriteTable(temp_player),
+            poops = nil,
         },
     }
     -- Bethany/T.Bethany check
@@ -85,6 +90,12 @@ function coopHUD.updatePlayer(player_no)
     if player_table.type == 19 then -- Jacob/Essau check
         --TODO: Jacob/Essau: make player_num+1-> render second in oposite corner/ restrict only when 1
         --players.has_sub = true
+    end
+    if player_table.type == PlayerType.PLAYER_XXX_B then -- T. ??? check
+        player_table.poops = coopHUD.getPoopSpellTable(player_no)
+        player_table.sprites.poops = coopHUD.getPoopSpriteTable(temp_player)
+        player_table.poop_mana = player:GetPoopMana()
+        player_table.max_poop_mana = 9
     end
     return player_table
 end
@@ -278,8 +289,9 @@ function coopHUD.getMinimapOffset()
         local screen_size = Vector(Isaac.GetScreenWidth(),0)
         local is_large = MinimapAPI:IsLarge()
         if not is_large and MinimapAPI:GetConfig("DisplayMode") == 2 then -- BOUNDED MAP
-            minimap_offset = Vector(screen_size.X - MinimapAPI:GetConfig("MapFrameWidth") - MinimapAPI:GetConfig("PositionX") - 0,2)
-        elseif not is_large and MinimapAPI:GetConfig("DisplayMode") == 4 or Game():GetLevel():GetCurses() == 2 then
+            minimap_offset = Vector(screen_size.X - MinimapAPI:GetConfig("MapFrameWidth") - MinimapAPI:GetConfig("PositionX") - 4,2)
+        elseif not is_large and MinimapAPI:GetConfig("DisplayMode") == 4
+                or Game():GetLevel():GetCurses() == LevelCurse.CURSE_OF_THE_LOST then
             -- NO MAP or cure of the lost active
             minimap_offset = Vector(screen_size.X - 4,2)
         else -- LARGE
