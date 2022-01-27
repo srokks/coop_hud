@@ -566,10 +566,9 @@ function coopHUD.is_joining(_,ent,hook,btn)
     --
     for i=0,8,1 do
         if Input.IsActionTriggered(ButtonAction.ACTION_JOINMULTIPLAYER, i)  then
-            print('Join ',i)
-            coopHUD.is_joining =true
-            coopHUD.onRender = false
-            Game():GetHUD():SetVisible(true)
+            if i > coopHUD.players_config.players_no then
+                coopHUD.is_joining =true
+                coopHUD.onRender = false end
         end
         if Input.IsActionTriggered(ButtonAction.ACTION_MENUBACK, i) and coopHUD.is_joining then
             coopHUD.is_joining =false
