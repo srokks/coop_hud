@@ -1,6 +1,10 @@
 coopHUD.VERSION = '0.2.2' --DEBUG: test name for in game recognition
 coopHUD.onRender = true
 coopHUD.is_joining = false
+coopHUD.options = {
+    render_player_info = true,
+    force_small_hud = true,
+}
 coopHUD.GLOBALS = {
     item_anim_path = '/gfx/ui/items_coop.anm2',
     card_anim_path = "gfx/ui/hud_card_coop.anm2",

@@ -534,7 +534,7 @@ function  coopHUD.render()
     if coopHUD.onRender then
         Game():GetHUD():SetVisible(false)
         for i=0,coopHUD.players_config.players_no,1 do
-            if coopHUD.players_config.players_no<2 then
+            if coopHUD.players_config.players_no<2 and not coopHUD.options.force_small_hud then
                 coopHUD.renderPlayer(i)
             else
                 coopHUD.renderPlayerSmall(i)
