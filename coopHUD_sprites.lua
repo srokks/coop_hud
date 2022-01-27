@@ -46,6 +46,14 @@ function coopHUD.getActiveItemSprite(player,slot)
         if active_item == CollectibleType.COLLECTIBLE_JAR_OF_FLIES then frame = player:GetJarFlies() end --gets no of flies in jar of flies
         this_sprite:SetFrame("Jar", frame)
     end
+    -- Hold - charge set
+    if active_item == CollectibleType.COLLECTIBLE_HOLD then
+        -- SKELETON
+        if Isaac.GetPlayer(0).QueuedItem.Item ~= nil then
+        print(Isaac.GetPlayer(0).QueuedItem.Item.Name)
+        
+        end
+    end
     -- Everything Jar - charges set
     if active_item == CollectibleType.COLLECTIBLE_EVERYTHING_JAR  then
         fi_charge = player:GetActiveCharge()

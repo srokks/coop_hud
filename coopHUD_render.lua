@@ -416,6 +416,9 @@ function coopHUD.renderPlayer(player_no)
     extra_charge_off = coopHUD.renderBethanyCharge(coopHUD.players[player_no],
                                                    Vector(anchor_top.X, anchor_top.Y + math.max(active_off.Y,hearts_off.Y)),
                                                    mirrored,nil,false)
+    coopHUD.renderPoopSpells(coopHUD.players[player_no],
+                             Vector(anchor_top.X, anchor_top.Y + math.max(active_off.Y,hearts_off.Y)),
+                             mirrored)
     --coopHUD.renderPoopSpells(coopHUD.players[player_no],Vector(pos.X,pos.Y + math.max(active_off.Y,hearts_off.Y)),mirrored)
     -- </Second  top line render> --
     -- <Down  line>
