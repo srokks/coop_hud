@@ -1,5 +1,5 @@
 if ModConfigMenu then
-	local mod_name = "Lala"
+	local mod_name = "Coop HUD"
 	--= Used to reset the config, remove on retail.
 	local categoryToChange = ModConfigMenu.GetCategoryIDByName(mod_name)
 	if categoryToChange then
