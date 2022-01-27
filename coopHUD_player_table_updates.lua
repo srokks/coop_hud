@@ -21,6 +21,7 @@ function coopHUD.updatePlayer(player_no)
     local player_table = {}
     player_table = {
         --
+        -- Items
         first_active = temp_player:GetActiveItem(0),
         first_active_charge = temp_player:GetActiveCharge(0),
         second_active = temp_player:GetActiveItem(1),
@@ -32,13 +33,17 @@ function coopHUD.updatePlayer(player_no)
         second_pocket = coopHUD.getPocketID(temp_player,1),
         third_pocket = coopHUD.getPocketID(temp_player,2),
         pocket_desc = coopHUD.getMainPocketDesc(temp_player),
-        extra_lives = temp_player:GetExtraLives(),
-        bethany_charge = nil, -- inits charge for Bethany
+        -- Hearts
         heart_types = coopHUD.getHeartTypeTable(temp_player),
         sub_heart_types = {},
-        wisp_jar_use = 0, -- holds info about used jar of wisp FIXME:
         total_hearts = math.ceil((temp_player:GetEffectiveMaxHearts() + temp_player:GetSoulHearts())/2),
         max_health_cap = 12,
+        extra_lives = temp_player:GetExtraLives(),
+        -- Charges
+        bethany_charge = nil, -- inits charge for Bethany
+        wisp_jar_use = 0, -- holds info about used jar of wisp
+        -- Stats
+        
         --- T ??? - specifics
         poop_mana = 0,
         max_poop_mana = 0,
