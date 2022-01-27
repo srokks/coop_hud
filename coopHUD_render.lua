@@ -416,9 +416,9 @@ function coopHUD.renderPlayer(player_no)
     extra_charge_off = coopHUD.renderBethanyCharge(coopHUD.players[player_no],
                                                    Vector(anchor_top.X, anchor_top.Y + math.max(active_off.Y,hearts_off.Y)),
                                                    mirrored,nil,false)
-    coopHUD.renderPoopSpells(coopHUD.players[player_no],
-                             Vector(anchor_top.X, anchor_top.Y + math.max(active_off.Y,hearts_off.Y)),
-                             mirrored)
+    --coopHUD.renderPoopSpells(coopHUD.players[player_no],
+    --                         Vector(anchor_top.X, anchor_top.Y + math.max(active_off.Y,hearts_off.Y)),
+    --                         mirrored)
     --coopHUD.renderPoopSpells(coopHUD.players[player_no],Vector(pos.X,pos.Y + math.max(active_off.Y,hearts_off.Y)),mirrored)
     -- </Second  top line render> --
     -- <Down  line>
@@ -522,10 +522,9 @@ function coopHUD.renderItems()
     key_no = string.format("%.2i", key_no)
     f:DrawString(key_no,pos.X+16,pos.Y,color,0,true)
 end
-coopHUD.onRender = true
-coopHUD.is_joining = false
 --coopHUD.text = 'test' -- DEBUG: on screen string
 function  coopHUD.render()
+    --if Game():IsPaused() then coopHUD.onRender = false end -- turn off on pause
     if coopHUD.players_config.players_no+1 > 4 then -- prevents to render if more than 2 players
         coopHUD.onRender = false
         Game():GetHUD():SetVisible(true)
@@ -533,6 +532,7 @@ function  coopHUD.render()
     if coopHUD.TICKER  == 60 then coopHUD.TICKER = 0 end
     coopHUD.TICKER = coopHUD.TICKER + 1
     if coopHUD.onRender then
+        Game():GetHUD():SetVisible(false)
         for i=0,coopHUD.players_config.players_no,1 do
             if coopHUD.players_config.players_no<2 then
                 coopHUD.renderPlayer(i)
@@ -556,15 +556,15 @@ function  coopHUD.render()
 end
 function coopHUD.is_joining()
     for i=0,8,1 do
-        if Input.IsActionTriggered(ButtonAction.ACTION_JOINMULTIPLAYER, i) and  coopHUD.players[i] == nil then
-            coopHUD.is_joining = true
-            coopHUD.onRender=false
+        if Input.IsActionTriggered(ButtonAction.ACTION_JOINMULTIPLAYER, i)  then
+            print('Join ',i)
+            coopHUD.is_joining =true
+            coopHUD.onRender = false
             Game():GetHUD():SetVisible(true)
         end
         if Input.IsActionTriggered(ButtonAction.ACTION_MENUBACK, i) and coopHUD.is_joining then
             coopHUD.is_joining =false
-            coopHUD.onRender=true
-            Game():GetHUD():SetVisible(false)
+            coopHUD.onRender = true
         end
     end
 end
@@ -573,7 +573,6 @@ function coopHUD.init_player()
         coopHUD.players_config.players_no = Game():GetNumPlayers()
         coopHUD.init()
         coopHUD.onRender=true
-        Game():GetHUD():SetVisible(false)
     end
 end
 function coopHUD.on_start(_,cont)
