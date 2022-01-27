@@ -305,15 +305,15 @@ function coopHUD.renderTrinkets(player,pos,mirrored,scale,down_anchor)
             off.X = 24 * sprite_scale.X
         end
         if down_anchor then
-            trinket_pivot.Y = -10 * sprite_scale.Y
-            sec_tr_pivot.Y = -32 * sprite_scale.Y
+            trinket_pivot.Y = -16 * sprite_scale.Y
+            sec_tr_pivot.Y = -48 * sprite_scale.Y
         else
-            trinket_pivot.Y = 10 * sprite_scale.Y
-            sec_tr_pivot.Y = 28 * sprite_scale.Y
+            trinket_pivot.Y = 16  * sprite_scale.Y
+            sec_tr_pivot.Y = 40 * sprite_scale.Y
         end
         if player.sprites.second_trinket then
             temp_pos = Vector(pos.X + sec_tr_pivot.X,pos.Y + sec_tr_pivot.Y)
-            player.sprites.second_trinket.Scale = Vector(0.7*sprite_scale.X,0.7*sprite_scale.Y)
+            player.sprites.second_trinket.Scale = Vector(1*sprite_scale.X,1*sprite_scale.Y)
             player.sprites.second_trinket:Render(temp_pos)
         end
         temp_pos = Vector(pos.X + trinket_pivot.X,pos.Y + trinket_pivot.Y)
