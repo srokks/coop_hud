@@ -1,12 +1,12 @@
 if ModConfigMenu then
 	local mod_name = "Coop HUD"
 	--= Used to reset the config, remove on retail.
-	local categoryToChange = ModConfigMenu.GetCategoryIDByName(mod_name)
-	if categoryToChange then
-		ModConfigMenu.MenuData[categoryToChange] = {}
-		ModConfigMenu.MenuData[categoryToChange].Name = tostring(mod_name)
-		ModConfigMenu.MenuData[categoryToChange].Subcategories = {}
-	end
+	--local categoryToChange = ModConfigMenu.GetCategoryIDByName(mod_name)
+	--if categoryToChange then
+	--	ModConfigMenu.MenuData[categoryToChange] = {}
+	--	ModConfigMenu.MenuData[categoryToChange].Name = tostring(mod_name)
+	--	ModConfigMenu.MenuData[categoryToChange].Subcategories = {}
+	--end
 	ModConfigMenu.UpdateCategory(mod_name, {
 		Info = {
 			"coopHUD Settings.",

@@ -3,7 +3,7 @@ coopHUD.onRender = true
 coopHUD.is_joining = false
 coopHUD.options = {
     render_player_info = true,
-    force_small_hud = true,
+    force_small_hud = false,
 }
 coopHUD.GLOBALS = {
     item_anim_path = '/gfx/ui/items_coop.anm2',
