@@ -47,7 +47,7 @@ function coopHUD.updatePlayer(player_no)
         --- T ??? - specifics
         poop_mana = 0,
         max_poop_mana = 0,
-        poops = coopHUD.getPoopSpellTable(player_no),
+        poops = nil,
         ---
         type = temp_player:GetPlayerType(),
         ---
@@ -69,7 +69,7 @@ function coopHUD.updatePlayer(player_no)
             third_pocket = coopHUD.getPocketItemSprite(temp_player,2),
             hearts = coopHUD.getHeartSpriteTable(temp_player),
             sub_hearts = nil,
-            poops = coopHUD.getPoopSpriteTable(temp_player),
+            poops = nil,
         },
     }
     -- Bethany/T.Bethany check
@@ -90,6 +90,12 @@ function coopHUD.updatePlayer(player_no)
     if player_table.type == 19 then -- Jacob/Essau check
         --TODO: Jacob/Essau: make player_num+1-> render second in oposite corner/ restrict only when 1
         --players.has_sub = true
+    end
+    if player_table.type == PlayerType.PLAYER_XXX_B then -- T. ??? check
+        player_table.poops = coopHUD.getPoopSpellTable(player_no)
+        player_table.sprites.poops = coopHUD.getPoopSpriteTable(temp_player)
+        player_table.poop_mana = player:GetPoopMana()
+        player_table.max_poop_mana = 9
     end
     return player_table
 end
