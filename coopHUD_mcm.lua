@@ -1,3 +1,14 @@
+local json = require("json")
+if coopHUD:HasData() then
+    local save = json.decode(coopHUD:LoadData())
+    coopHUD.options = save.options
+end
+function coopHUD.save_options()
+    local save =  {}
+    save.options = coopHUD.options
+    coopHUD:SaveData(json.encode(save))
+end
+coopHUD:AddCallback(ModCallbacks.MC_PRE_GAME_EXIT,coopHUD.save_options)
 if ModConfigMenu then
 	local mod_name = "Coop HUD"
 	--= Used to reset the config, remove on retail.
@@ -16,20 +27,20 @@ if ModConfigMenu then
 	ModConfigMenu.AddSetting(mod_name, "Settings", {
 		Type = ModConfigMenu.OptionType.BOOLEAN,
 		CurrentSetting = function()
-			return coopHUD.onRender
+			return coopHUD.options.onRender
 		end,
-		Default = coopHUD.onRender,
+		Default = coopHUD.options.onRender,
 		
 		Display = function()
 			local onOff = "Disabled"
-			if coopHUD.onRender then
+			if coopHUD.options.onRender then
 				onOff = "Enabled"
 			end
 			
 			return "show coopHUD: " .. onOff
 		end,
 		OnChange = function(currentBool)
-			coopHUD.onRender = currentBool
+			coopHUD.options.onRender = currentBool
 		end,
 		Info = function()
 			local TotalText = "Turn on/off coopHUD"

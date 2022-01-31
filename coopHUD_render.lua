@@ -525,13 +525,13 @@ function coopHUD.renderItems()
     coopHUD.HUD_table.sprites.coin_sprite:Render(pos)
     --coopHUD.HUD_table.sprites.coin_sprite:Render(Vector(pos.X+8,pos.Y))
     text = string.format("%.2i", coopHUD.HUD_table.coin_no)
-    local test = coopHUD.HUD_table.sprites.item_font:GetStringWidth(text)
     if coopHUD.checkDeepPockets() then
         text = string.format("%.3i", coopHUD.HUD_table.coin_no) end
+    local test = coopHUD.HUD_table.sprites.item_font:GetStringWidth(text)
     pos.X = pos.X+4+test
     coopHUD.HUD_table.sprites.item_font:DrawString(text,pos.X,pos.Y,color,0,false)
     ------
-    pos = Vector(pos.X + 8 + test,pos.Y)
+    pos = Vector(pos.X + 4 + test,pos.Y)
     coopHUD.HUD_table.sprites.bomb_sprite:Render(pos)
     text = string.format("%.2i", coopHUD.HUD_table.bomb_no)
     coopHUD.HUD_table.sprites.item_font:DrawString(text,pos.X+16,pos.Y,color,0,true)
@@ -598,12 +598,12 @@ end
 function  coopHUD.render()
     --if Game():IsPaused() then coopHUD.onRender = false end -- turn off on pause
     if coopHUD.players_config.players_no+1 > 4 then -- prevents to render if more than 2 players
-        coopHUD.onRender = false
+        coopHUD.options.onRender = false
         Game():GetHUD():SetVisible(true)
     end
     if coopHUD.TICKER  == 60 then coopHUD.TICKER = 0 end
     coopHUD.TICKER = coopHUD.TICKER + 1
-    if coopHUD.onRender then
+    if coopHUD.options.onRender then
         Game():GetHUD():SetVisible(false)
         for i=0,coopHUD.players_config.players_no,1 do
             if coopHUD.players_config.players_no<2 and not coopHUD.options.force_small_hud then
@@ -630,21 +630,24 @@ function  coopHUD.render()
 end
 function coopHUD.is_joining(_,ent,hook,btn)
     -- DEBUG: handler to quick turn on/off hud on pressing 'H' on keyboard
-    if Input.IsButtonTriggered(Keyboard.KEY_H,0) and coopHUD.onRender then
-        coopHUD.onRender = false
-    elseif Input.IsButtonTriggered(Keyboard.KEY_H,0) and not coopHUD.onRender then
-        coopHUD.onRender = true
+    if Input.IsButtonTriggered(Keyboard.KEY_H,0)  then
+        if coopHUD.options.onRender then
+            coopHUD.options.onRender = false
+        else
+            coopHUD.options.onRender = true
+        end
     end
     --
     for i=0,8,1 do
-        if Input.IsActionTriggered(ButtonAction.ACTION_JOINMULTIPLAYER, i)  then
+        if Input.IsActionTriggered(ButtonAction.ACTION_JOINMULTIPLAYER, i)
+                and coopHUD.options.onRender  then
             if i > coopHUD.players_config.players_no then
                 coopHUD.is_joining =true
-                coopHUD.onRender = false end
+                coopHUD.options.onRender = false end
         end
         if Input.IsActionTriggered(ButtonAction.ACTION_MENUBACK, i) and coopHUD.is_joining then
             coopHUD.is_joining =false
-            coopHUD.onRender = true
+            coopHUD.options.onRender = true
         end
     end
 end
@@ -652,11 +655,12 @@ function coopHUD.init_player()
     if coopHUD.is_joining then
         coopHUD.players_config.players_no = Game():GetNumPlayers()
         coopHUD.init()
-        coopHUD.onRender=true
+        coopHUD.options.onRender=true
     end
 end
 function coopHUD.on_start(_,cont)
     -- init tables
+    coopHUD.initHudTables()
     coopHUD.init()
     print('CoopHUD '..coopHUD.VERSION..' loaded successfully!')
     if  Game():GetHUD():IsVisible() then Game():GetHUD():SetVisible(false) end
