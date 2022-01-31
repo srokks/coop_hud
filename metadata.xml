@@ -15,13 +15,13 @@ It renders only HUD so I'm sugesting using [url=https://steamcommunity.com/share
 For right now this mod do not show stats
 [h2]Features[/h2]
 [list]
-[*] Renders HUD with proper positioning - no weird sprites for coop player
-[*] Customizable hud positions (*)
-[*] Suport modded pockets items/
-[*] Bethany charges/ colored charge bar
-[*] Display names for pockets
-[*] Vanilla like prompts (using cards/ pills/ activeitems) (*)
-[list]
+        [*] Vanilla like prompts (using cards/ pills/ activeitems) <b> NEW </b>
+        [*] Renders HUD with proper positioning - no weird sprites for coop player
+        [*] Customizable hud positions (*)
+        [*] Suport modded pockets items/
+        [*] Bethany charges/ colored charge bar
+        [*] Display names for pockets
+        [list]
 [h3]Tainted Characters[/h3]
 [*] Poop spells integration for Tainted ??? (*)
 [*] Bag of crafting integration (*)
