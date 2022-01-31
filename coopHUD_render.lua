@@ -550,13 +550,17 @@ function coopHUD.renderItems()
     --
     time_string = string.format('Time: %.2i:%.2i:%.2i',hours,mins,secs) -- formats
     --
-    if coopHUD.options.timer_always_on then
-        coopHUD.HUD_table.sprites.timer_font:DrawString(time_string,
-                                                        coopHUD.anchors.bot_right.X/2,0,
-                                                        KColor(1,1,1,0.5),1,true)
+    local map_button_pressed = Input.IsActionPressed(ButtonAction.ACTION_MAP,0)
+    local f_col = KColor(0.5,0.5,0.5,0) -- Default font color font color with 0.5 alpha
+    if coopHUD.options.timer_always_on then f_col.Alpha = 0.5 end
+    if map_button_pressed then
+        f_col.Alpha = 1
+    end -- Sets alpha to 1
+    coopHUD.HUD_table.sprites.timer_font:DrawString(time_string,
+                                                    coopHUD.anchors.bot_right.X/2,0,
+                                                    f_col,1,true)
     end
     -------
-end
 function coopHUD.renderStreak(sprite, first_line, second_line, pos, signal)
     --[[ Function renders streak text on a based sprite/based position
     sprite: prepared loaded streak sprite object
