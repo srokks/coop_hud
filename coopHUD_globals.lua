@@ -2,6 +2,9 @@ coopHUD.VERSION = '0.2.7' --DEBUG: test name for in game recognition
 coopHUD.is_joining = false
 coopHUD.showExtraInfo = false
 coopHUD.HUD_table = {}
+coopHUD.signals = {
+    map = false,
+}
 coopHUD.options = {
     onRender = true,
     render_player_info = true,

@@ -553,8 +553,11 @@ function coopHUD.renderItems()
     local map_button_pressed = Input.IsActionPressed(ButtonAction.ACTION_MAP,0)
     local f_col = KColor(0.5,0.5,0.5,0) -- Default font color font color with 0.5 alpha
     if coopHUD.options.timer_always_on then f_col.Alpha = 0.5 end
-    if map_button_pressed then
+    if coopHUD.signals.map then
         f_col.Alpha = 1
+        if coopHUD.HUD_table.streak:IsFinished() then
+            coopHUD.HUD_table.streak:Play("Text",true)
+        end
     end -- Sets alpha to 1
     coopHUD.HUD_table.sprites.timer_font:DrawString(time_string,
                                                     coopHUD.anchors.bot_right.X/2,0,
@@ -598,7 +601,7 @@ function coopHUD.renderStreak(sprite, first_line, second_line, pos, signal)
         sec_font:DrawString(second_line, first_line_pos.X, first_line_pos.Y+30, KColor(0, 0, 0, 1, 0, 0, 0), 1, true)
     end
 end
---coopHUD.text = 'test' -- DEBUG: on screen string
+coopHUD.text = 'test' -- DEBUG: on screen string
 function  coopHUD.render()
     --if Game():IsPaused() then coopHUD.onRender = false end -- turn off on pause
     if coopHUD.players_config.players_no+1 > 4 then -- prevents to render if more than 2 players
@@ -609,6 +612,7 @@ function  coopHUD.render()
     coopHUD.TICKER = coopHUD.TICKER + 1
     if coopHUD.options.onRender then
         Game():GetHUD():SetVisible(false)
+        coopHUD.renderItems()
         for i=0,coopHUD.players_config.players_no,1 do
             if coopHUD.players_config.players_no<2 and not coopHUD.options.force_small_hud then
                 coopHUD.renderPlayer(i)
@@ -622,7 +626,6 @@ function  coopHUD.render()
         --coopHUD.renderHearts(coopHUD.players[0],coopHUD.anchors.top_right,true,scl,false),
         --coopHUD.renderHearts(coopHUD.players[0],coopHUD.anchors.bot_right,true,scl,true))
         --
-        coopHUD.renderItems()
     else
         Game():GetHUD():SetVisible(true)
     end
@@ -632,7 +635,9 @@ function  coopHUD.render()
     --f:DrawString(coopHUD.text,100,100,KColor(1,1,1,1),0,true)
     --
 end
+local btn_held = 0
 function coopHUD.is_joining(_,ent,hook,btn)
+    --
     -- DEBUG: handler to quick turn on/off hud on pressing 'H' on keyboard
     if Input.IsButtonTriggered(Keyboard.KEY_H,0)  then
         if coopHUD.options.onRender then
@@ -657,11 +662,28 @@ function coopHUD.is_joining(_,ent,hook,btn)
                 coopHUD.is_joining =true
                 coopHUD.options.onRender = false end
         end
+        -- Catches if back button is pressed when in joining mode
         if Input.IsActionTriggered(ButtonAction.ACTION_MENUBACK, i) and coopHUD.is_joining then
             coopHUD.is_joining =false
             coopHUD.options.onRender = true
         end
     end
+    -- MAP BUTTON
+    local mapPressed = false
+    for i = 0, Game():GetNumPlayers() - 1 do
+        local player = Isaac.GetPlayer(i)
+        mapPressed = mapPressed or Input.IsActionPressed(ButtonAction.ACTION_MAP, player.ControllerIndex)
+    end
+    if mapPressed then
+        btn_held = btn_held + 1
+        if btn_held > 1200 then
+            coopHUD.signals.map = true
+        end
+    else
+        coopHUD.signals.map = false
+        btn_held = 0
+    end
+    ---
 end
 function coopHUD.init_player()
     if coopHUD.is_joining then
