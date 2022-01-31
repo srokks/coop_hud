@@ -346,7 +346,7 @@ function coopHUD.initHudTables()
     coopHUD.HUD_table.streak = coopHUD.getStreakSprite()
     coopHUD.HUD_table.coin_no = 0
     coopHUD.HUD_table.bomb_no = 0
-    coopHUD.HUD_table.coin_no = 0
+    coopHUD.HUD_table.key_no = 0
 end
 function coopHUD.updateItems()
     local player = Isaac.GetPlayer(0)
@@ -356,8 +356,8 @@ function coopHUD.updateItems()
     if coopHUD.HUD_table.bomb_no ~= player:GetNumBombs() then
         coopHUD.HUD_table.bomb_no = player:GetNumBombs()
     end
-    if coopHUD.HUD_table.coin_no ~= player:GetNumKeys() then
-        coopHUD.HUD_table.coin_no = player:GetNumBombs()
+    if coopHUD.HUD_table.key_no ~= player:GetNumKeys() then
+        coopHUD.HUD_table.key_no = player:GetNumKeys()
     end
 end
 ---
