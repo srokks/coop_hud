@@ -6,6 +6,7 @@ coopHUD.HUD_table = {}
 coopHUD.options = {
     render_player_info = true,
     force_small_hud = false,
+    timer_always_on = true,
 }
 coopHUD.GLOBALS = {
     item_anim_path = '/gfx/ui/items_coop.anm2',

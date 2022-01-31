@@ -542,7 +542,22 @@ function coopHUD.renderItems()
     coopHUD.HUD_table.sprites.key_sprite:Render(pos)
     text = string.format("%.2i", coopHUD.HUD_table.key_no)
     coopHUD.HUD_table.sprites.item_font:DrawString(text,pos.X+16,pos.Y,color,0,true)
-    -----`-
+    ------ TIMER RENDER
+    -- Code from TBoI Api by wofsauge
+    local curTime = Game():GetFrameCount()
+    local msecs= curTime%30 * (10/3) -- turns the millisecond value range from [0 to 30] to [0 to 100]
+    local secs= math.floor(curTime/30)%60
+    local mins= math.floor(curTime/30/60)%60
+    local hours= math.floor(curTime/30/60/60)%60
+    --
+    time_string = string.format('Time: %.2i:%.2i:%.2i',hours,mins,secs) -- formats
+    --
+    if coopHUD.options.timer_always_on then
+        coopHUD.HUD_table.sprites.timer_font:DrawString(time_string,
+                                                        coopHUD.anchors.bot_right.X/2,0,
+                                                        KColor(1,1,1,0.5),1,true)
+    end
+    -------
 end
 function coopHUD.renderStreak(sprite, first_line, second_line, pos, signal)
     --[[ Function renders streak text on a based sprite/based position

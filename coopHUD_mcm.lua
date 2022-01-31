@@ -92,4 +92,33 @@ if ModConfigMenu then
 			return TotalText
 		end
 	})
+	-- Timer always on setting
+	ModConfigMenu.AddSetting(mod_name, "Settings", {
+		Type = ModConfigMenu.OptionType.BOOLEAN,
+		CurrentSetting = function()
+			return coopHUD.options.timer_always_on
+		end,
+		Default = coopHUD.options.timer_always_on,
+		
+		Display = function()
+			local onOff = "Off"
+			if coopHUD.options.timer_always_on then
+				onOff = "On"
+			end
+			
+			return "Timer always on: " .. onOff
+		end,
+		OnChange = function(currentBool)
+			coopHUD.options.timer_always_on = currentBool
+		end,
+		Info = function()
+			local TotalText
+			if coopHUD.options.timer_always_on then
+				TotalText = "Always show timer"
+			else
+				TotalText = "Timer only on map key"
+			end
+			return TotalText
+		end
+	})
 end

@@ -502,6 +502,9 @@ function coopHUD.getHUDSprites()
     --Items font
     local item_font = Font()
     item_font:Load("font/pftempestasevencondensed.fnt")
+    --
+    local timer_font = Font()
+    timer_font:Load("font/teammeatfont10.fnt")
     -- Coin sprite
     local coin_sprite= Sprite()
     coin_sprite:Load(coopHUD.GLOBALS.hud_el_anim_path,true)
@@ -518,6 +521,7 @@ function coopHUD.getHUDSprites()
     key_sprite:SetFrame('Idle',1)
     if player:HasGoldenKey()  then key_sprite:SetFrame('Idle',3 ) end
     return {['item_font']=item_font,
+            ['timer_font']=timer_font,
             ['coin_sprite']=coin_sprite,
             ['bomb_sprite']=bomb_sprite,
             ['key_sprite']=key_sprite}
