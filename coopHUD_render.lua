@@ -515,57 +515,34 @@ function coopHUD.renderPlayerSmall(player_no)
     -- </Second  top line render> --
 end
 function coopHUD.renderItems()
+    local color = KColor(1,1,1,1)
     -- TODO: Planetarium chances render
     -- TODO: Angel/Devil room chances
     -- TODO: GigaBomb integration
     -- TODO: T.??? PoopSpell integration
-    anchor = Vector(ScreenHelper.GetScreenSize().X/2,ScreenHelper.GetScreenBottomLeft().Y-16)
-    local pos = Vector(anchor.X - 12,anchor.Y)
-    local Anim = "gfx/ui/hudpickups.anm2"
-    local coin_no,bomb_no,key_no = 0
-
-    --,key_sprite
-
-    local f = Font()
-    f:Load("font/luaminioutlined.fnt")
-
-    local color = KColor(1,1,1,1)
-    local player = Isaac.GetPlayer(0)
-    local coin_sprite= Sprite()
-    local has_deep_pockets = false
-    coin_no = Isaac.GetPlayer(0):GetNumCoins()
-    pos.X = pos.X - 24
-    coin_sprite:Load(Anim,true)
-    coin_sprite:SetFrame('Idle', 0)
-    coin_no = string.format("%.2i", coin_no)
+    local anchor = Vector(Isaac.GetScreenWidth()/2-64,Isaac.GetScreenHeight()-16) -- middle of screen
+    local text = ''
+    --
+    local pos = Vector(anchor.X+4,anchor.Y)
+    coopHUD.HUD_table.sprites.coin_sprite:Render(pos)
+    --coopHUD.HUD_table.sprites.coin_sprite:Render(Vector(pos.X+8,pos.Y))
+    text = string.format("%.2i", coopHUD.HUD_table.coin_no)
+    local test = coopHUD.HUD_table.sprites.item_font:GetStringWidth(text)
     if coopHUD.checkDeepPockets() then
-        pos.X = pos.X - 4
-        coin_no = string.format("%.3i", coin_no) end
-    coin_sprite:Render(pos,VECTOR_ZERO,VECTOR_ZERO)
-
-
-    f:DrawString(coin_no,pos.X+16,pos.Y,color,0,true)
-
-    --
-    local pos = Vector(anchor.X - 12,anchor.Y)
-    local bomb_sprite = Sprite()
-    bomb_sprite:Load(Anim,true)
-    bomb_sprite:SetFrame('Idle',2)
-    if player:HasGoldenBomb()  then bomb_sprite:SetFrame('Idle',6) end
-    bomb_sprite:Render(pos,VECTOR_ZERO,VECTOR_ZERO)
-    bomb_no = player:GetNumBombs()
-    bomb_no = string.format("%.2i", bomb_no)
-    f:DrawString(bomb_no,pos.X+16,pos.Y,color,0,true)
-    --
-    pos.X = pos.X + 24
-    local key_sprite = Sprite()
-    key_sprite:Load(Anim,true)
-    key_sprite:SetFrame('Idle',1)
-    if player:HasGoldenKey()  then key_sprite:SetFrame('Idle',3 ) end
-    key_sprite:Render(pos,VECTOR_ZERO,VECTOR_ZERO)
-    key_no = player:GetNumKeys()
-    key_no = string.format("%.2i", key_no)
-    f:DrawString(key_no,pos.X+16,pos.Y,color,0,true)
+        text = string.format("%.3i", coopHUD.HUD_table.coin_no) end
+    pos.X = pos.X+4+test
+    coopHUD.HUD_table.sprites.item_font:DrawString(text,pos.X,pos.Y,color,0,false)
+    ------
+    pos = Vector(pos.X + 8 + test,pos.Y)
+    coopHUD.HUD_table.sprites.bomb_sprite:Render(pos)
+    text = string.format("%.2i", coopHUD.HUD_table.bomb_no)
+    coopHUD.HUD_table.sprites.item_font:DrawString(text,pos.X+16,pos.Y,color,0,true)
+    --------
+    pos = Vector(pos.X + 16 + test,pos.Y)
+    coopHUD.HUD_table.sprites.key_sprite:Render(pos)
+    text = string.format("%.2i", coopHUD.HUD_table.key_no)
+    coopHUD.HUD_table.sprites.item_font:DrawString(text,pos.X+16,pos.Y,color,0,true)
+    -----`-
 end
 function coopHUD.renderStreak(sprite, first_line, second_line, pos, signal)
     --[[ Function renders streak text on a based sprite/based position

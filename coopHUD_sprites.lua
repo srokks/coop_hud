@@ -501,7 +501,7 @@ function coopHUD.getHUDSprites()
     local player = Isaac.GetPlayer(0)
     --Items font
     local item_font = Font()
-    item_font:Load("font/luaminioutlined.fnt")
+    item_font:Load("font/pftempestasevencondensed.fnt")
     -- Coin sprite
     local coin_sprite= Sprite()
     coin_sprite:Load(coopHUD.GLOBALS.hud_el_anim_path,true)
