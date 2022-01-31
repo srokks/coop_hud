@@ -497,5 +497,37 @@ function coopHUD.getPlayerHeadSprite(player_type)
         return false
     end
 end
+function coopHUD.getHUDSprites()
+    local player = Isaac.GetPlayer(0)
+    --Items font
+    local item_font = Font()
+    item_font:Load("font/luaminioutlined.fnt")
+    -- Coin sprite
+    local coin_sprite= Sprite()
+    coin_sprite:Load(coopHUD.GLOBALS.hud_el_anim_path,true)
+    coin_sprite:SetFrame('Idle', 0)
+    -- Bomb sprite
+    local bomb_sprite = Sprite()
+    bomb_sprite:Load(coopHUD.GLOBALS.hud_el_anim_path,true)
+    bomb_sprite:SetFrame('Idle',2)
+    if player:HasGoldenBomb()  then bomb_sprite:SetFrame('Idle',6) end
+    if player:GetNumGigaBombs() > 0 then bomb_sprite:SetFrame('Idle',14) end
+    -- Key sprite
+    local key_sprite = Sprite()
+    key_sprite:Load(coopHUD.GLOBALS.hud_el_anim_path,true)
+    key_sprite:SetFrame('Idle',1)
+    if player:HasGoldenKey()  then key_sprite:SetFrame('Idle',3 ) end
+    return {['item_font']=item_font,
+            ['coin_sprite']=coin_sprite,
+            ['bomb_sprite']=bomb_sprite,
+            ['key_sprite']=key_sprite}
+end
+function coopHUD.getStreakSprite()
+    sprite = Sprite()
+    sprite:Load(coopHUD.GLOBALS.streak_anim_path,false)
+    sprite:ReplaceSpritesheet(0,'/gfx/ui/effect_024_streak_coop.png')
+    sprite:LoadGraphics()
+    return sprite
+end
 -- TODO: T.FOrgotten - weird heart render
 -- TODO: Jaccob/Essau - tint non used sprites -
