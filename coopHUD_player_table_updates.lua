@@ -156,8 +156,8 @@ function coopHUD.updateActives(player_no)
         end
         if coopHUD.players[player_no].first_active_charge ~= temp_player:GetActiveCharge(0) or forceUpdateActives then
         coopHUD.players[player_no].first_active_charge = temp_player:GetActiveCharge(0)
-        coopHUD.players[player_no].sprites.first_active = coopHUD.getActiveItemSprite(temp_player,0)
-        coopHUD.players[player_no].sprites.first_active_charge = coopHUD.getChargeSprites(temp_player,0)
+    coopHUD.players[player_no].sprites.first_active = coopHUD.getActiveItemSprite(temp_player,0)
+    coopHUD.players[player_no].sprites.first_active_charge = coopHUD.getChargeSprites(temp_player,0)
     end
     end
     end
@@ -328,7 +328,6 @@ function coopHUD.getMinimapOffset()
     end
     return minimap_offset
 end
-
 coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM, coopHUD.forceUpdateActives)
 function coopHUD.checkDeepPockets()
     local deep_check = false
@@ -375,7 +374,6 @@ end
 coopHUD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, coopHUD.init) -- refresh tables when entering game floor callback
 coopHUD:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, coopHUD.init) -- refresh tables when entering new floor callback
 coopHUD:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, coopHUD.init) -- refresh tables when entering new room callback
-
 function coopHUD.updateTables()
     if coopHUD.TICKER % 15 == 0 then -- updates tables every second
         coopHUD.updateAnchors()
@@ -394,5 +392,4 @@ function coopHUD.updateTables()
     end
 
 end
-
 coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.updateTables)
