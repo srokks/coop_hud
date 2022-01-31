@@ -24,6 +24,7 @@ if ModConfigMenu then
 		}
 	})
 	ModConfigMenu.AddTitle(mod_name, "Settings", "General")
+	-- SHOW HUD
 	ModConfigMenu.AddSetting(mod_name, "Settings", {
 		Type = ModConfigMenu.OptionType.BOOLEAN,
 		CurrentSetting = function()
@@ -43,10 +44,11 @@ if ModConfigMenu then
 			coopHUD.options.onRender = currentBool
 		end,
 		Info = function()
-			local TotalText = "Turn on/off coopHUD"
+			local TotalText = "Turn on/off coopHUD. Toggled by 'H' on keyboard"
 			return TotalText
 		end
 	})
+	-- Force small
 	ModConfigMenu.AddSetting(mod_name, "Settings", {
 		Type = ModConfigMenu.OptionType.BOOLEAN,
 		CurrentSetting = function()
@@ -66,15 +68,10 @@ if ModConfigMenu then
 			coopHUD.options.force_small_hud = currentBool
 		end,
 		Info = function()
-			local TotalText
-			if coopHUD.options.force_small_hud then
-				TotalText = "Small HUD will be used forced in 2 player mode"
-			else
-				TotalText = "Normal HUD will be used in 2 player mode"
-			end
-			return TotalText
+			return 'Force small (compacted) player HUD in < 2 players'
 		end
 	})
+	-- PLAYERS NAME/HEAD
 	ModConfigMenu.AddSetting(mod_name, "Settings", {
 		Type = ModConfigMenu.OptionType.BOOLEAN,
 		CurrentSetting = function()
@@ -123,13 +120,7 @@ if ModConfigMenu then
 			coopHUD.options.timer_always_on = currentBool
 		end,
 		Info = function()
-			local TotalText
-			if coopHUD.options.timer_always_on then
-				TotalText = "Always show timer"
-			else
-				TotalText = "Timer only on map key"
-			end
-			return TotalText
+			return "Timer toggle. Accesible by pressing 'T' on keyboard"
 		end
 	})
 end
