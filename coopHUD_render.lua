@@ -551,18 +551,39 @@ function coopHUD.renderItems()
     time_string = string.format('Time: %.2i:%.2i:%.2i',hours,mins,secs) -- formats
     local f_col = KColor(0.5,0.5,0.5,0) -- Default font color font color with 0.5 alpha
     if coopHUD.options.timer_always_on then f_col.Alpha = 0.5 end
-    if coopHUD.signals.map then
+    --
+    local level_name = Game():GetLevel():GetName()
+    local curse_name = Game():GetLevel():GetCurseName()
+    --
+    if curse_name == '' then curse_name = nil end
+    if coopHUD.signals.map then -- Catches if map button is pressed
         f_col.Alpha = 1
-        if coopHUD.HUD_table.streak:IsFinished() then
-            coopHUD.HUD_table.streak:Play("Text",true)
+        if coopHUD.HUD_table.floor_info:IsFinished() then
+            coopHUD.HUD_table.floor_info:Play("Text",true)
         end
-    end -- Sets alpha to 1
+    end
+    coopHUD.renderStreak(coopHUD.HUD_table.floor_info,level_name,curse_name,
+                         Vector((coopHUD.anchors.bot_right.X/2)-208, coopHUD.anchors.bot_left.Y-96),
+                         coopHUD.signals.map)
+    -- TIMER STRING DRAW
     coopHUD.HUD_table.sprites.timer_font:DrawString(time_string,
                                                     coopHUD.anchors.bot_right.X/2,0,
                                                     f_col,1,true)
-    coopHUD.renderStreak(coopHUD.HUD_table.streak,'Basement','Test',
-                         Vector((coopHUD.anchors.bot_right.X/2)-208, coopHUD.anchors.bot_left.Y-96),
-                         coopHUD.signals.map)
+    ---
+    if coopHUD.streak_main_line ~= nil then -- Triggers animation if global string not nil
+        if coopHUD.HUD_table.streak:IsFinished() then
+            coopHUD.HUD_table.streak:Play('Text',true)
+        end
+    end
+    -- Renders prompt
+    if secs > 0 then -- Prevents showing too early on start
+        coopHUD.renderStreak(coopHUD.HUD_table.streak,coopHUD.streak_main_line,coopHUD.streak_sec_line,
+                             Vector((coopHUD.anchors.bot_right.X/2)-208, 30),
+                             false)
+    end
+    if coopHUD.HUD_table.streak:IsFinished() then -- Resets string(trigger)
+        coopHUD.streak_main_line = nil
+    end
 end
     -------
 function coopHUD.renderStreak(sprite, first_line, second_line, pos, signal)
@@ -582,9 +603,6 @@ function coopHUD.renderStreak(sprite, first_line, second_line, pos, signal)
     if cur_frame > 33 and signal then
     else
         sprite:Update()
-    end
-    if not signal and cur_frame < 4 then
-        sprite:SetLastFrame()
     end
     -- sets pos of text to animate it according to sprite frame
     if cur_frame < 5  then
@@ -636,9 +654,9 @@ function  coopHUD.render()
         Game():GetHUD():SetVisible(true)
     end
     --DEBUG: tests draw debug string on screen
-    --local f = Font()
-    --f:Load("font/luaminioutlined.fnt")
-    --f:DrawString(coopHUD.text,100,100,KColor(1,1,1,1),0,true)
+    local f = Font()
+    f:Load("font/luaminioutlined.fnt")
+    f:DrawString(coopHUD.text,100,100,KColor(1,1,1,1),0,true)
     --
 end
 local btn_held = 0
@@ -707,8 +725,28 @@ function coopHUD.on_start(_,cont)
     if cont then -- game is continuing
         -- read from save`
     end
+    coopHUD.streak_main_line = Game():GetLevel():GetName()
+    coopHUD.streak_sec_line = Game():GetLevel():GetCurseName()
+    if coopHUD.streak_sec_line == '' then coopHUD.streak_sec_line = nil end
 end
+--
+function coopHUD.on_pill_use(_,effect_no)
+    --[[
+    By changing coopHUD.activated_pill with used pill name triggers streak prompt with used pill name
+    ]]
+    if coopHUD.HUD_table.streak:IsFinished() then
+        local pill_sys_name = Isaac.GetItemConfig():GetPillEffect(effect_no).Name
+        pill_sys_name = string.sub(pill_sys_name,2) --  get rid of # on front of
+        if langAPI ~= nil then
+            coopHUD.streak_main_line = langAPI.getPocketName(pill_sys_name)
+        end
+    end
+    --
+end
+coopHUD:AddCallback(ModCallbacks.MC_USE_PILL, coopHUD.on_pill_use)
+--
 coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.render)
 coopHUD:AddCallback(ModCallbacks.MC_INPUT_ACTION, coopHUD.is_joining)
 coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, coopHUD.init_player)
 coopHUD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, coopHUD.on_start)
+

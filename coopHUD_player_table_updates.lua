@@ -343,6 +343,7 @@ end
 -- HUD_table
 function coopHUD.initHudTables()
     coopHUD.HUD_table.sprites = coopHUD.getHUDSprites()
+    coopHUD.HUD_table.floor_info = coopHUD.getStreakSprite()
     coopHUD.HUD_table.streak = coopHUD.getStreakSprite()
     coopHUD.HUD_table.coin_no = 0
     coopHUD.HUD_table.bomb_no = 0
