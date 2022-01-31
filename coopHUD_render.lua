@@ -637,6 +637,14 @@ function coopHUD.is_joining(_,ent,hook,btn)
             coopHUD.options.onRender = true
         end
     end
+    -- Handler for turning timer on of on key
+    if Input.IsButtonTriggered(Keyboard.KEY_T,0)  then
+        if coopHUD.options.timer_always_on then
+            coopHUD.options.timer_always_on = false
+        else
+            coopHUD.options.timer_always_on = true
+        end
+    end
     --
     for i=0,8,1 do
         if Input.IsActionTriggered(ButtonAction.ACTION_JOINMULTIPLAYER, i)
