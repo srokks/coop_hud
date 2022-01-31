@@ -510,6 +510,8 @@ function coopHUD.getHUDSprites()
     coin_sprite:Load(coopHUD.GLOBALS.hud_el_anim_path,true)
     coin_sprite:SetFrame('Idle', 0)
     -- Bomb sprite
+    -- TODO: GigaBomb integration
+    -- TODO: T.??? PoopSpell integration
     local bomb_sprite = Sprite()
     bomb_sprite:Load(coopHUD.GLOBALS.hud_el_anim_path,true)
     bomb_sprite:SetFrame('Idle',2)

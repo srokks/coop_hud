@@ -518,8 +518,6 @@ function coopHUD.renderItems()
     local color = KColor(1,1,1,1)
     -- TODO: Planetarium chances render
     -- TODO: Angel/Devil room chances
-    -- TODO: GigaBomb integration
-    -- TODO: T.??? PoopSpell integration
     local anchor = Vector(Isaac.GetScreenWidth()/2-64,Isaac.GetScreenHeight()-16) -- middle of screen
     local text = ''
     --
