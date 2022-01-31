@@ -567,6 +567,43 @@ function coopHUD.renderItems()
     key_no = string.format("%.2i", key_no)
     f:DrawString(key_no,pos.X+16,pos.Y,color,0,true)
 end
+function coopHUD.renderStreak(sprite, first_line, second_line, pos, signal)
+    --[[ Function renders streak text on a based sprite/based position
+    sprite: prepared loaded streak sprite object
+    first_line: main line to be rendered - name of floor/used pill
+    second_line: second line - nam of course
+    pos: base anchor for sprite for left-top corner - it's anchoring there - accepts Vector
+    signal: when true animation starts and stops to show all if false only show prompt
+    ]]
+    local main_font = Font()
+    main_font:Load("font/upheaval.fnt")
+    local sec_font = Font()
+    sec_font:Load("font/teammeatfont10.fnt")
+    local first_line_pos = Vector(pos.X, pos.Y+4+main_font:GetBaselineHeight())
+    local cur_frame = sprite:GetFrame()
+    if cur_frame > 33 and signal then
+    else
+        sprite:Update()
+    end
+    if not signal and cur_frame < 4 then
+        sprite:SetLastFrame()
+    end
+    -- sets pos of text to animate it according to sprite frame
+    if cur_frame < 5  then
+        first_line_pos.X = pos.X + 4 * cur_frame
+    end
+    if cur_frame >= 5 and cur_frame <= 60 then
+        first_line_pos.X = pos.X + 208
+    end
+    if cur_frame > 60 then
+        first_line_pos.X = pos.X + 208 + 10 * cur_frame
+    end
+    if not sprite:IsFinished('Text') and sprite:IsPlaying('Text') then -- Renders only when animation
+        sprite:Render(Vector(pos.X+208,pos.Y+30))
+        main_font:DrawString(first_line, first_line_pos.X, first_line_pos.Y, KColor(1, 1, 1, 1, 0, 0, 0), 1, true)
+        sec_font:DrawString(second_line, first_line_pos.X, first_line_pos.Y+30, KColor(0, 0, 0, 1, 0, 0, 0), 1, true)
+    end
+end
 --coopHUD.text = 'test' -- DEBUG: on screen string
 function  coopHUD.render()
     --if Game():IsPaused() then coopHUD.onRender = false end -- turn off on pause
