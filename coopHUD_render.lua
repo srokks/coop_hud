@@ -549,8 +549,6 @@ function coopHUD.renderItems()
     local hours= math.floor(curTime/30/60/60)%60
     --
     time_string = string.format('Time: %.2i:%.2i:%.2i',hours,mins,secs) -- formats
-    --
-    local map_button_pressed = Input.IsActionPressed(ButtonAction.ACTION_MAP,0)
     local f_col = KColor(0.5,0.5,0.5,0) -- Default font color font color with 0.5 alpha
     if coopHUD.options.timer_always_on then f_col.Alpha = 0.5 end
     if coopHUD.signals.map then
@@ -562,7 +560,10 @@ function coopHUD.renderItems()
     coopHUD.HUD_table.sprites.timer_font:DrawString(time_string,
                                                     coopHUD.anchors.bot_right.X/2,0,
                                                     f_col,1,true)
-    end
+    coopHUD.renderStreak(coopHUD.HUD_table.streak,'Basement','Test',
+                         Vector((coopHUD.anchors.bot_right.X/2)-208, coopHUD.anchors.bot_left.Y-96),
+                         coopHUD.signals.map)
+end
     -------
 function coopHUD.renderStreak(sprite, first_line, second_line, pos, signal)
     --[[ Function renders streak text on a based sprite/based position
@@ -596,9 +597,14 @@ function coopHUD.renderStreak(sprite, first_line, second_line, pos, signal)
         first_line_pos.X = pos.X + 208 + 10 * cur_frame
     end
     if not sprite:IsFinished('Text') and sprite:IsPlaying('Text') then -- Renders only when animation
-        sprite:Render(Vector(pos.X+208,pos.Y+30))
-        main_font:DrawString(first_line, first_line_pos.X, first_line_pos.Y, KColor(1, 1, 1, 1, 0, 0, 0), 1, true)
-        sec_font:DrawString(second_line, first_line_pos.X, first_line_pos.Y+30, KColor(0, 0, 0, 1, 0, 0, 0), 1, true)
+        if first_line then
+            sprite:RenderLayer(0,Vector(pos.X+208,pos.Y+30))
+            main_font:DrawString(first_line, first_line_pos.X, first_line_pos.Y, KColor(1, 1, 1, 1, 0, 0, 0), 1, true)
+        end
+        if second_line then
+            sprite:RenderLayer(1,Vector(pos.X+208,pos.Y+30))
+            sec_font:DrawString(second_line, first_line_pos.X, first_line_pos.Y+30, KColor(0, 0, 0, 1, 0, 0, 0), 1, true)
+        end
     end
 end
 coopHUD.text = 'test' -- DEBUG: on screen string
