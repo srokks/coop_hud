@@ -559,9 +559,11 @@ function coopHUD.renderItems()
     if coopHUD.signals.map then -- Catches if map button is pressed
         f_col.Alpha = 1
         if coopHUD.HUD_table.floor_info:IsFinished() then
+            coopHUD.HUD_table.streak_sec_color = KColor(0, 0, 0, 1, 0, 0, 0)
             coopHUD.HUD_table.floor_info:Play("Text",true)
         end
     end
+    -- Renders prompt on map button pressed
     coopHUD.renderStreak(coopHUD.HUD_table.floor_info,level_name,curse_name,
                          Vector((coopHUD.anchors.bot_right.X/2)-208, coopHUD.anchors.bot_left.Y-96),
                          coopHUD.signals.map)
@@ -575,14 +577,15 @@ function coopHUD.renderItems()
             coopHUD.HUD_table.streak:Play('Text',true)
         end
     end
-    -- Renders prompt
+    -- Renders prompt on start
     if secs > 0 then -- Prevents showing too early on start
         coopHUD.renderStreak(coopHUD.HUD_table.streak,coopHUD.streak_main_line,coopHUD.streak_sec_line,
                              Vector((coopHUD.anchors.bot_right.X/2)-208, 30),
-                             false)
+                             coopHUD.signals.picked_up)
     end
     if coopHUD.HUD_table.streak:IsFinished() then -- Resets string(trigger)
         coopHUD.streak_main_line = nil
+        coopHUD.HUD_table.streak_sec_color = KColor(0, 0, 0, 1, 0, 0, 0)
     end
 end
     -------
@@ -621,7 +624,7 @@ function coopHUD.renderStreak(sprite, first_line, second_line, pos, signal)
         end
         if second_line then
             sprite:RenderLayer(1,Vector(pos.X+208,pos.Y+30))
-            sec_font:DrawString(second_line, first_line_pos.X, first_line_pos.Y+30, KColor(0, 0, 0, 1, 0, 0, 0), 1, true)
+            sec_font:DrawString(second_line, first_line_pos.X, first_line_pos.Y+30, coopHUD.HUD_table.streak_sec_color, 1, true)
         end
     end
 end
@@ -654,9 +657,9 @@ function  coopHUD.render()
         Game():GetHUD():SetVisible(true)
     end
     --DEBUG: tests draw debug string on screen
-    local f = Font()
-    f:Load("font/luaminioutlined.fnt")
-    f:DrawString(coopHUD.text,100,100,KColor(1,1,1,1),0,true)
+    --local f = Font()
+    --f:Load("font/luaminioutlined.fnt")
+    --f:DrawString(coopHUD.text,100,100,KColor(1,1,1,1),0,true)
     --
 end
 local btn_held = 0
@@ -709,6 +712,7 @@ function coopHUD.is_joining(_,ent,hook,btn)
     end
     ---
 end
+--
 function coopHUD.init_player()
     if coopHUD.is_joining then
         coopHUD.players_config.players_no = Game():GetNumPlayers()
@@ -716,6 +720,7 @@ function coopHUD.init_player()
         coopHUD.options.onRender=true
     end
 end
+coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, coopHUD.init_player)
 function coopHUD.on_start(_,cont)
     -- init tables
     coopHUD.initHudTables()
@@ -745,8 +750,28 @@ function coopHUD.on_pill_use(_,effect_no)
 end
 coopHUD:AddCallback(ModCallbacks.MC_USE_PILL, coopHUD.on_pill_use)
 --
+local item = {ID = -1}
+function coopHUD.on_evaluate(_,player)
+    if player.QueuedItem.Item ~= nil then
+        --if item.ID ~= player.QueuedItem.Item.ID then
+        item = player.QueuedItem.Item
+        if langAPI then
+            coopHUD.HUD_table.streak:ReplaceSpritesheet(1,"/gfx/ui/blank.png")
+            coopHUD.HUD_table.streak:LoadGraphics()
+            coopHUD.streak_main_line = langAPI.getItemName(string.sub(item.Name,2))
+            coopHUD.streak_sec_line = langAPI.getItemName(string.sub(item.Description,2))
+            coopHUD.HUD_table.streak_sec_color = KColor(1,1,1,1)
+            coopHUD.signals.picked_up = true
+        end
+        
+        --end
+    else
+        coopHUD.signals.picked_up = false
+    end
+end
+coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, coopHUD.on_evaluate)
+--
 coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.render)
 coopHUD:AddCallback(ModCallbacks.MC_INPUT_ACTION, coopHUD.is_joining)
-coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, coopHUD.init_player)
 coopHUD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, coopHUD.on_start)
 

@@ -4,6 +4,7 @@ coopHUD.showExtraInfo = false
 coopHUD.HUD_table = {}
 coopHUD.signals = {
     map = false,
+    picked_up = false,
 }
 coopHUD.options = {
     onRender = true,
@@ -20,7 +21,7 @@ coopHUD.GLOBALS = {
     poop_anim_path = "gfx/ui/ui_poops.anm2",
     player_head_anim_path = "gfx/ui/coop menu.anm2",
     hud_el_anim_path = "gfx/ui/hudpickups.anm2",
-    streak_anim_path = "gfx/ui/ui_streak_coop.anm2"
+    streak_anim_path = "gfx/ui/ui_streak.anm2"
 }
 coopHUD.players = {}
 coopHUD.TICKER = 0

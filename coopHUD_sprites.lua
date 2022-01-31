@@ -530,9 +530,7 @@ function coopHUD.getHUDSprites()
 end
 function coopHUD.getStreakSprite()
     sprite = Sprite()
-    sprite:Load(coopHUD.GLOBALS.streak_anim_path,false)
-    sprite:ReplaceSpritesheet(0,'/gfx/ui/effect_024_streak_coop.png')
-    sprite:LoadGraphics()
+    sprite:Load(coopHUD.GLOBALS.streak_anim_path,true)
     return sprite
 end
 -- TODO: T.FOrgotten - weird heart render
