@@ -128,37 +128,39 @@ function coopHUD.updatePockets(player_no)
 end
 function coopHUD.updateActives(player_no)
     local temp_player = Isaac.GetPlayer(player_no)
-    if coopHUD.players[player_no].first_active == 685 and coopHUD.jar_of_wisp_charge == nil then
-        coopHUD.jar_of_wisp_charge = 0  -- sets default val if item is picked first time
-    end
-    -- Catches if player uses jar of the wisp, checks effects of jar of wisp in this run
-    -- and increment global charge value.
-    -- Dont work on dubled jar of wisp due to item pool or in ex. Dipoipia
-    -- It's workaround due broken ActiveItemDesc.VarData api function
-    -- FIXME: Jar of wisp charge: wait till api is fixed
-    if Input.IsActionPressed(ButtonAction.ACTION_ITEM, 0) and coopHUD.players[player_no].first_active == 685 then
-        local tempEffects = player:GetEffects()
-        if coopHUD.jar_of_wisp_charge ~= tempEffects:GetCollectibleEffectNum(685) then
-            coopHUD.jar_of_wisp_charge = tempEffects:GetCollectibleEffectNum(685)
-            if coopHUD.jar_of_wisp_charge >= 12 then
-                coopHUD.jar_of_wisp_charge = 11
+    if coopHUD.players[player_no] ~= nil then
+        if coopHUD.players[player_no].first_active == 685 and coopHUD.jar_of_wisp_charge == nil then
+            coopHUD.jar_of_wisp_charge = 0  -- sets default val if item is picked first time
+        end
+        -- Catches if player uses jar of the wisp, checks effects of jar of wisp in this run
+        -- and increment global charge value.
+        -- Dont work on dubled jar of wisp due to item pool or in ex. Dipoipia
+        -- It's workaround due broken ActiveItemDesc.VarData api function
+        -- FIXME: Jar of wisp charge: wait till api is fixed
+        if Input.IsActionPressed(ButtonAction.ACTION_ITEM, 0) and coopHUD.players[player_no].first_active == 685 then
+            local tempEffects = player:GetEffects()
+            if coopHUD.jar_of_wisp_charge ~= tempEffects:GetCollectibleEffectNum(685) then
+                coopHUD.jar_of_wisp_charge = tempEffects:GetCollectibleEffectNum(685)
+                if coopHUD.jar_of_wisp_charge >= 12 then
+                    coopHUD.jar_of_wisp_charge = 11
+                end
             end
         end
-    end
-    if coopHUD.players[player_no].first_active ~= temp_player:GetActiveItem(0)  then
-        coopHUD.players[player_no].first_active = temp_player:GetActiveItem(0)
-        coopHUD.players[player_no].second_active = temp_player:GetActiveItem(1)
-        coopHUD.players[player_no].sprites.first_active = coopHUD.getActiveItemSprite(temp_player,0)
-        coopHUD.players[player_no].sprites.first_active_charge = coopHUD.getChargeSprites(temp_player,0)
-        coopHUD.players[player_no].sprites.second_active = coopHUD.getActiveItemSprite(temp_player,1)
-        coopHUD.players[player_no].sprites.second_active_charge = coopHUD.getChargeSprites(temp_player,1)
-    end
-    if coopHUD.players[player_no].first_active_charge ~= temp_player:GetActiveCharge(0) or forceUpdateActives then
+        if coopHUD.players[player_no].first_active ~= temp_player:GetActiveItem(0)  then
+            coopHUD.players[player_no].first_active = temp_player:GetActiveItem(0)
+            coopHUD.players[player_no].second_active = temp_player:GetActiveItem(1)
+            coopHUD.players[player_no].sprites.first_active = coopHUD.getActiveItemSprite(temp_player,0)
+            coopHUD.players[player_no].sprites.first_active_charge = coopHUD.getChargeSprites(temp_player,0)
+            coopHUD.players[player_no].sprites.second_active = coopHUD.getActiveItemSprite(temp_player,1)
+            coopHUD.players[player_no].sprites.second_active_charge = coopHUD.getChargeSprites(temp_player,1)
+        end
+        if coopHUD.players[player_no].first_active_charge ~= temp_player:GetActiveCharge(0) or forceUpdateActives then
         coopHUD.players[player_no].first_active_charge = temp_player:GetActiveCharge(0)
-        coopHUD.players[player_no].sprites.first_active = coopHUD.getActiveItemSprite(temp_player,0)
-        coopHUD.players[player_no].sprites.first_active_charge = coopHUD.getChargeSprites(temp_player,0)
+    coopHUD.players[player_no].sprites.first_active = coopHUD.getActiveItemSprite(temp_player,0)
+    coopHUD.players[player_no].sprites.first_active_charge = coopHUD.getChargeSprites(temp_player,0)
     end
-end
+    end
+    end
 function coopHUD.updateTrinkets(player_no)
     local temp_player = Isaac.GetPlayer(player_no)
     if coopHUD.players[player_no].first_trinket ~= temp_player:GetTrinket(0) then
@@ -326,7 +328,6 @@ function coopHUD.getMinimapOffset()
     end
     return minimap_offset
 end
-
 coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM, coopHUD.forceUpdateActives)
 function coopHUD.checkDeepPockets()
     local deep_check = false
@@ -339,8 +340,34 @@ function coopHUD.checkDeepPockets()
     end
     return deep_check
 end
+-- HUD_table
+function coopHUD.initHudTables()
+    coopHUD.HUD_table.sprites = coopHUD.getHUDSprites()
+    coopHUD.HUD_table.floor_info = coopHUD.getStreakSprite()
+    coopHUD.HUD_table.streak = coopHUD.getStreakSprite()
+    coopHUD.HUD_table.streak_sec_color = KColor(0, 0, 0, 1, 0, 0, 0)
+    coopHUD.HUD_table.coin_no = 0
+    coopHUD.HUD_table.bomb_no = 0
+    coopHUD.HUD_table.key_no = 0
+end
+function coopHUD.updateItems()
+    local player = Isaac.GetPlayer(0)
+    if coopHUD.HUD_table.coin_no ~= player:GetNumCoins() then
+        coopHUD.HUD_table.coin_no = player:GetNumCoins()
+    end
+    if coopHUD.HUD_table.bomb_no ~= player:GetNumBombs() then
+        coopHUD.HUD_table.bomb_no = player:GetNumBombs()
+    end
+    if coopHUD.HUD_table.key_no ~= player:GetNumKeys() then
+        coopHUD.HUD_table.key_no = player:GetNumKeys()
+    end
+end
+---
 function coopHUD.init() -- inits/updates all player infos
     -- TODO: custom apis integration from save file - jar of wisp/
+    if coopHUD.HUD_table == nil then
+        coopHUD.HUD_table.sprites = coopHUD.getHUDSprites()
+    end
     coopHUD.players_config.players_no = Game():GetNumPlayers()-1
     for i=0,coopHUD.players_config.players_no,1 do
         coopHUD.players[i] = coopHUD.updatePlayer(i)
@@ -349,7 +376,6 @@ end
 coopHUD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, coopHUD.init) -- refresh tables when entering game floor callback
 coopHUD:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, coopHUD.init) -- refresh tables when entering new floor callback
 coopHUD:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, coopHUD.init) -- refresh tables when entering new room callback
-
 function coopHUD.updateTables()
     if coopHUD.TICKER % 15 == 0 then -- updates tables every second
         coopHUD.updateAnchors()
@@ -362,10 +388,10 @@ function coopHUD.updateTables()
             coopHUD.updateBethanyCharge(i)
             coopHUD.updateCollectible(i)
             coopHUD.updatePoopMana(i)
+            coopHUD.updateItems()
         end
 
     end
 
 end
-
 coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.updateTables)

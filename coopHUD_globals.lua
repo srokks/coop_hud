@@ -1,9 +1,16 @@
-coopHUD.VERSION = '0.2.2' --DEBUG: test name for in game recognition
-coopHUD.onRender = true
+coopHUD.VERSION = '0.2.7' --DEBUG: test name for in game recognition
 coopHUD.is_joining = false
+coopHUD.showExtraInfo = false
+coopHUD.HUD_table = {}
+coopHUD.signals = {
+    map = false,
+    picked_up = false,
+}
 coopHUD.options = {
+    onRender = true,
     render_player_info = true,
     force_small_hud = false,
+    timer_always_on = true,
 }
 coopHUD.GLOBALS = {
     item_anim_path = '/gfx/ui/items_coop.anm2',
@@ -13,6 +20,8 @@ coopHUD.GLOBALS = {
     charge_anim_path = "gfx/ui/activechargebar_coop.anm2",
     poop_anim_path = "gfx/ui/ui_poops.anm2",
     player_head_anim_path = "gfx/ui/coop menu.anm2",
+    hud_el_anim_path = "gfx/ui/hudpickups.anm2",
+    streak_anim_path = "gfx/ui/ui_streak.anm2"
 }
 coopHUD.players = {}
 coopHUD.TICKER = 0
