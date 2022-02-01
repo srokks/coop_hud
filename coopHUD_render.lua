@@ -341,8 +341,8 @@ function coopHUD.renderBethanyCharge(player,pos,mirrored,scale,down_anchor)
             text_pivot.X = 10
         end
         if down_anchor then
-            spr_pivot.Y = 0
-            text_pivot.Y = -10
+            spr_pivot.Y = -4
+            text_pivot.Y = -14
             final_offset.Y = -8
         else
             spr_pivot.Y = 8
@@ -406,11 +406,11 @@ function coopHUD.renderPlayerInfo(player,pos,mirrored,scale,down_anchor)
         if down_anchor then
             head_pivot.Y = head_pivot.Y - 20 * sprite_scale.Y
             name_pivot.Y = name_pivot.Y - 16 * sprite_scale.Y
-            offset.Y = -24 * sprite_scale.Y
+            offset.Y = -32 * sprite_scale.Y
         else
             head_pivot.Y = head_pivot.Y + 16 * sprite_scale.Y
             name_pivot.Y = name_pivot.Y + 20 * sprite_scale.Y
-            offset.Y = 24 * sprite_scale.Y
+            offset.Y = 32 * sprite_scale.Y
         end
         player.sprites.player_head.Scale = sprite_scale
         player.sprites.player_head:Render(Vector(pos.X+head_pivot.X,pos.Y+head_pivot.Y))
@@ -452,9 +452,9 @@ function coopHUD.renderPlayer(player_no)
                                            mirrored,nil,false)
     -- </First  top line render> --
     -- <Second  top line render> --
-    --TODO: renderPlayerInfo: render head of current character and name <P1 .. P4>
     extra_charge_off = coopHUD.renderBethanyCharge(coopHUD.players[player_no],
-                                                   Vector(anchor_top.X, anchor_top.Y + math.max(active_off.Y,hearts_off.Y)),
+                                                   Vector(anchor_top.X, anchor_top.Y +
+                                                           math.max(active_off.Y,hearts_off.Y,info_off.Y)),
                                                    mirrored,nil,false)
     --coopHUD.renderPoopSpells(coopHUD.players[player_no],
     --                         Vector(anchor_top.X, anchor_top.Y + math.max(active_off.Y,hearts_off.Y)),
