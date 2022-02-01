@@ -46,6 +46,14 @@ function coopHUD.getActiveItemSprite(player,slot)
         if active_item == CollectibleType.COLLECTIBLE_JAR_OF_FLIES then frame = player:GetJarFlies() end --gets no of flies in jar of flies
         this_sprite:SetFrame("Jar", frame)
     end
+    -- Hold - charge set
+    if active_item == CollectibleType.COLLECTIBLE_HOLD then
+        -- SKELETON
+        if Isaac.GetPlayer(0).QueuedItem.Item ~= nil then
+        print(Isaac.GetPlayer(0).QueuedItem.Item.Name)
+        
+        end
+    end
     -- Everything Jar - charges set
     if active_item == CollectibleType.COLLECTIBLE_EVERYTHING_JAR  then
         fi_charge = player:GetActiveCharge()
@@ -206,36 +214,40 @@ function coopHUD.getPocketItemSprite(player,slot)
     return pocket_sprite
 end
 function coopHUD.getMainPocketDesc(player)
-    desc = 'Error'
+    local desc = 'Error'
     -- TODO: check if lang api is installed and loaded
-    if player:GetPill(0) < 1 and player:GetCard(0) < 1 then
-        if player:GetActiveItem(2) > 0 then
-            desc = Isaac.GetItemConfig():GetCollectible(player:GetActiveItem(2)).Name
-        elseif player:GetActiveItem(3) > 0 then
-            desc = Isaac.GetItemConfig():GetCollectible(player:GetActiveItem(3)).Name
-        else
-            return false
+    if langAPI ~= nil then
+        if player:GetPill(0) < 1 and player:GetCard(0) < 1 then
+            if player:GetActiveItem(2) > 0 then
+                desc = Isaac.GetItemConfig():GetCollectible(player:GetActiveItem(2)).Name
+            elseif player:GetActiveItem(3) > 0 then
+                desc = Isaac.GetItemConfig():GetCollectible(player:GetActiveItem(3)).Name
+            else
+                return false
+            end
+            desc = string.sub(desc,2) --  get rid of # on front of
+            desc = langAPI.getItemName(desc)
         end
-        desc = string.sub(desc,2) --  get rid of # on front of
-        desc = langAPI.getItemName(desc)
-
-    end
-    if player:GetCard(0) > 0 then
-        desc = Isaac.GetItemConfig():GetCard(player:GetCard(0)).Name
-        if Input.IsActionPressed(ButtonAction.ACTION_MAP, player.ControllerIndex) then
-            desc = Isaac.GetItemConfig():GetCard(player:GetCard(0)).Description
-        end
-        desc = string.sub(desc,2) --  get rid of # on front of
-        desc = langAPI.getPocketName(desc)
-    elseif player:GetPill(0) > 0 then
-        desc = "???" .. " "
-        local item_pool = Game():GetItemPool()
-        if item_pool:IsPillIdentified (player:GetPill(0)) then
-            local pill_effect = item_pool:GetPillEffect(player:GetPill(0))
-            desc = Isaac.GetItemConfig():GetPillEffect(pill_effect).Name
+        if player:GetCard(0) > 0 then
+            desc = Isaac.GetItemConfig():GetCard(player:GetCard(0)).Name
+            if Input.IsActionPressed(ButtonAction.ACTION_MAP, player.ControllerIndex) then
+                desc = Isaac.GetItemConfig():GetCard(player:GetCard(0)).Description
+            end
             desc = string.sub(desc,2) --  get rid of # on front of
             desc = langAPI.getPocketName(desc)
+        elseif player:GetPill(0) > 0 then
+            desc = "???" .. " "
+            local pill = player:GetPill(0)
+            local item_pool = Game():GetItemPool()
+            if item_pool:IsPillIdentified (pill) then
+                local pill_effect = item_pool:GetPillEffect(pill,player)
+                desc = Isaac.GetItemConfig():GetPillEffect(pill_effect).Name
+                desc = string.sub(desc,2) --  get rid of # on front of
+                desc = langAPI.getPocketName(desc)
+            end
         end
+    else
+        desc = 'Error! - langAPI not installed'
     end
     return desc
 end
@@ -494,6 +506,9 @@ function coopHUD.getHUDSprites()
     --
     local timer_font = Font()
     timer_font:Load("font/teammeatfont10.fnt")
+     --
+    local streak_sec_line_font = Font()
+    streak_sec_line_font:Load("font/teammeatfont10.fnt")
     -- Coin sprite
     local coin_sprite= Sprite()
     coin_sprite:Load(coopHUD.GLOBALS.hud_el_anim_path,true)
@@ -513,6 +528,7 @@ function coopHUD.getHUDSprites()
     if player:HasGoldenKey()  then key_sprite:SetFrame('Idle',3 ) end
     return {['item_font']=item_font,
             ['timer_font']=timer_font,
+            ['streak_sec_line_font']=streak_sec_line_font,
             ['coin_sprite']=coin_sprite,
             ['bomb_sprite']=bomb_sprite,
             ['key_sprite']=key_sprite}

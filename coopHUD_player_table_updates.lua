@@ -317,13 +317,9 @@ function coopHUD.getMinimapOffset()
                 minimap_offset = Vector(screen_size.X - 0,2)
             end
         elseif MinimapAPI:GetConfig("HideInCombat") == 3 then
-            -- FIXME: broke when in angel/devil room
-            if not r:IsClear() then
+            if r~=nil and not r:IsClear() then
                 minimap_offset = Vector(screen_size.X - 0,2)
             end
-        end
-        if MinimapAPI:GetConfig('ShowLevelFlags') then
-            MinimapAPI.Config.ShowLevelFlags = false
         end
     end
     return minimap_offset

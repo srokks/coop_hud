@@ -341,8 +341,8 @@ function coopHUD.renderBethanyCharge(player,pos,mirrored,scale,down_anchor)
             text_pivot.X = 10
         end
         if down_anchor then
-            spr_pivot.Y = 0
-            text_pivot.Y = -10
+            spr_pivot.Y = -4
+            text_pivot.Y = -14
             final_offset.Y = -8
         else
             spr_pivot.Y = 8
@@ -406,11 +406,11 @@ function coopHUD.renderPlayerInfo(player,pos,mirrored,scale,down_anchor)
         if down_anchor then
             head_pivot.Y = head_pivot.Y - 20 * sprite_scale.Y
             name_pivot.Y = name_pivot.Y - 16 * sprite_scale.Y
-            offset.Y = -24 * sprite_scale.Y
+            offset.Y = -32 * sprite_scale.Y
         else
             head_pivot.Y = head_pivot.Y + 16 * sprite_scale.Y
             name_pivot.Y = name_pivot.Y + 20 * sprite_scale.Y
-            offset.Y = 24 * sprite_scale.Y
+            offset.Y = 32 * sprite_scale.Y
         end
         player.sprites.player_head.Scale = sprite_scale
         player.sprites.player_head:Render(Vector(pos.X+head_pivot.X,pos.Y+head_pivot.Y))
@@ -452,9 +452,9 @@ function coopHUD.renderPlayer(player_no)
                                            mirrored,nil,false)
     -- </First  top line render> --
     -- <Second  top line render> --
-    --TODO: renderPlayerInfo: render head of current character and name <P1 .. P4>
     extra_charge_off = coopHUD.renderBethanyCharge(coopHUD.players[player_no],
-                                                   Vector(anchor_top.X, anchor_top.Y + math.max(active_off.Y,hearts_off.Y)),
+                                                   Vector(anchor_top.X, anchor_top.Y +
+                                                           math.max(active_off.Y,hearts_off.Y,info_off.Y)),
                                                    mirrored,nil,false)
     --coopHUD.renderPoopSpells(coopHUD.players[player_no],
     --                         Vector(anchor_top.X, anchor_top.Y + math.max(active_off.Y,hearts_off.Y)),
@@ -585,7 +585,8 @@ function coopHUD.renderItems()
     end
     if coopHUD.HUD_table.streak:IsFinished() then -- Resets string(trigger)
         coopHUD.streak_main_line = nil
-        coopHUD.HUD_table.streak_sec_color = KColor(0, 0, 0, 1, 0, 0, 0)
+        coopHUD.streak_sec_line = nil
+        coopHUD.HUD_table.streak_sec_line_font = coopHUD.getHUDSprites().streak_sec_line_font
     end
 end
     -------
@@ -600,7 +601,7 @@ function coopHUD.renderStreak(sprite, first_line, second_line, pos, signal)
     local main_font = Font()
     main_font:Load("font/upheaval.fnt")
     local sec_font = Font()
-    sec_font:Load("font/teammeatfont10.fnt")
+    sec_font = coopHUD.HUD_table.streak_sec_line_font
     local first_line_pos = Vector(pos.X, pos.Y+4+main_font:GetBaselineHeight())
     local cur_frame = sprite:GetFrame()
     if cur_frame > 33 and signal then
@@ -668,7 +669,7 @@ function coopHUD.is_joining(_,ent,hook,btn)
     -- DEBUG: handler to quick turn on/off hud on pressing 'H' on keyboard
     if Input.IsButtonTriggered(Keyboard.KEY_H,0)  then
         if coopHUD.options.onRender then
-            coopHUD.options.onRender = false
+        coopHUD.options.onRender = false
         else
             coopHUD.options.onRender = true
         end
@@ -750,10 +751,8 @@ function coopHUD.on_pill_use(_,effect_no)
 end
 coopHUD:AddCallback(ModCallbacks.MC_USE_PILL, coopHUD.on_pill_use)
 --
-local item = {ID = -1}
 function coopHUD.on_evaluate(_,player)
-    if player.QueuedItem.Item ~= nil then
-        --if item.ID ~= player.QueuedItem.Item.ID then
+    if player.QueuedItem.Item ~= nil and item.ID ~= player.QueuedItem.Item.ID then
         item = player.QueuedItem.Item
         if langAPI then
             coopHUD.HUD_table.streak:ReplaceSpritesheet(1,"/gfx/ui/blank.png")
@@ -761,6 +760,7 @@ function coopHUD.on_evaluate(_,player)
             coopHUD.streak_main_line = langAPI.getItemName(string.sub(item.Name,2))
             coopHUD.streak_sec_line = langAPI.getItemName(string.sub(item.Description,2))
             coopHUD.HUD_table.streak_sec_color = KColor(1,1,1,1)
+            coopHUD.HUD_table.streak_sec_line_font:Load("font/pftempestasevencondensed.fnt")
             coopHUD.signals.picked_up = true
         end
         

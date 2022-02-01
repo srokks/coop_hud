@@ -132,3 +132,10 @@ end
 if HPBars then
 	if HPBars.UserConfig.ScreenPadding < 24 then  HPBars.UserConfig.ScreenPadding = 24 end
 end
+-- Overrides MinimapAPI  mod setting to show on coopHUD
+if MinimapAPI then
+	if not MinimapAPI.Config.DisplayOnNoHUD  then  MinimapAPI.Config.DisplayOnNoHUD = true end
+	if MinimapAPI:GetConfig('ShowLevelFlags') then
+		MinimapAPI.Config.ShowLevelFlags = false
+	end
+end
