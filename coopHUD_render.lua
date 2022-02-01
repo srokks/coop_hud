@@ -578,7 +578,7 @@ function coopHUD.renderItems()
         end
     end
     -- Renders prompt on start
-    if secs > 0 then -- Prevents showing too early on start
+    if not Game():IsPaused() and secs > 0 then -- Prevents showing too early on start
         coopHUD.renderStreak(coopHUD.HUD_table.streak,coopHUD.streak_main_line,coopHUD.streak_sec_line,
                              Vector((coopHUD.anchors.bot_right.X/2)-208, 30),
                              coopHUD.signals.picked_up)
@@ -600,7 +600,6 @@ function coopHUD.renderStreak(sprite, first_line, second_line, pos, signal)
     ]]
     local main_font = Font()
     main_font:Load("font/upheaval.fnt")
-    local sec_font = Font()
     sec_font = coopHUD.HUD_table.streak_sec_line_font
     local first_line_pos = Vector(pos.X, pos.Y+4+main_font:GetBaselineHeight())
     local cur_frame = sprite:GetFrame()
@@ -663,6 +662,8 @@ function  coopHUD.render()
     --f:DrawString(coopHUD.text,100,100,KColor(1,1,1,1),0,true)
     --
 end
+coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.render)
+--
 local btn_held = 0
 function coopHUD.is_joining(_,ent,hook,btn)
     --
@@ -713,6 +714,7 @@ function coopHUD.is_joining(_,ent,hook,btn)
     end
     ---
 end
+coopHUD:AddCallback(ModCallbacks.MC_INPUT_ACTION, coopHUD.is_joining)
 --
 function coopHUD.init_player()
     if coopHUD.is_joining then
@@ -731,10 +733,8 @@ function coopHUD.on_start(_,cont)
     if cont then -- game is continuing
         -- read from save`
     end
-    coopHUD.streak_main_line = Game():GetLevel():GetName()
-    coopHUD.streak_sec_line = Game():GetLevel():GetCurseName()
-    if coopHUD.streak_sec_line == '' then coopHUD.streak_sec_line = nil end
 end
+coopHUD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, coopHUD.on_start)
 --
 function coopHUD.on_pill_use(_,effect_no)
     --[[
@@ -751,6 +751,7 @@ function coopHUD.on_pill_use(_,effect_no)
 end
 coopHUD:AddCallback(ModCallbacks.MC_USE_PILL, coopHUD.on_pill_use)
 --
+local item = { ID = -1}
 function coopHUD.on_evaluate(_,player)
     if player.QueuedItem.Item ~= nil and item.ID ~= player.QueuedItem.Item.ID then
         item = player.QueuedItem.Item
@@ -771,7 +772,11 @@ function coopHUD.on_evaluate(_,player)
 end
 coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, coopHUD.on_evaluate)
 --
-coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.render)
-coopHUD:AddCallback(ModCallbacks.MC_INPUT_ACTION, coopHUD.is_joining)
-coopHUD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, coopHUD.on_start)
+coopHUD:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function(self)
+    coopHUD.streak_main_line = Game():GetLevel():GetName()
+    coopHUD.streak_sec_line = Game():GetLevel():GetCurseName()
+    if coopHUD.streak_sec_line == '' then coopHUD.streak_sec_line = nil end
+end)
+
+
 

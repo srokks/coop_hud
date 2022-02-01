@@ -303,7 +303,9 @@ function coopHUD.getMinimapOffset()
             for i,v in ipairs(MinimapAPI:GetLevel()) do
                 if v ~= nil then
                     if v:GetDisplayFlags() > 0 then
-                        minx = math.min(minx, v.RenderOffset.X)
+                        if v.RenderOffset~= nil then
+                            minx = math.min(minx, v.RenderOffset.X)
+                        end
                     end
                 end
 
@@ -317,8 +319,10 @@ function coopHUD.getMinimapOffset()
                 minimap_offset = Vector(screen_size.X - 0,2)
             end
         elseif MinimapAPI:GetConfig("HideInCombat") == 3 then
-            if r~=nil and not r:IsClear() then
-                minimap_offset = Vector(screen_size.X - 0,2)
+            if r~=nil then
+                if  not r:IsClear() then
+                    minimap_offset = Vector(screen_size.X - 0,2)
+                end
             end
         end
     end
