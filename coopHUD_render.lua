@@ -662,6 +662,8 @@ function  coopHUD.render()
     --f:DrawString(coopHUD.text,100,100,KColor(1,1,1,1),0,true)
     --
 end
+coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.render)
+--
 local btn_held = 0
 function coopHUD.is_joining(_,ent,hook,btn)
     --
@@ -712,6 +714,7 @@ function coopHUD.is_joining(_,ent,hook,btn)
     end
     ---
 end
+coopHUD:AddCallback(ModCallbacks.MC_INPUT_ACTION, coopHUD.is_joining)
 --
 function coopHUD.init_player()
     if coopHUD.is_joining then
@@ -734,6 +737,7 @@ function coopHUD.on_start(_,cont)
     coopHUD.streak_sec_line = Game():GetLevel():GetCurseName()
     if coopHUD.streak_sec_line == '' then coopHUD.streak_sec_line = nil end
 end
+coopHUD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, coopHUD.on_start)
 --
 function coopHUD.on_pill_use(_,effect_no)
     --[[
@@ -771,7 +775,7 @@ function coopHUD.on_evaluate(_,player)
 end
 coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, coopHUD.on_evaluate)
 --
-coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.render)
-coopHUD:AddCallback(ModCallbacks.MC_INPUT_ACTION, coopHUD.is_joining)
-coopHUD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, coopHUD.on_start)
+
+
+
 
