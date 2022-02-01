@@ -586,7 +586,7 @@ function coopHUD.renderItems()
     if coopHUD.HUD_table.streak:IsFinished() then -- Resets string(trigger)
         coopHUD.streak_main_line = nil
         coopHUD.streak_sec_line = nil
-        coopHUD.HUD_table.streak_sec_color = KColor(0, 0, 0, 1, 0, 0, 0)
+        coopHUD.HUD_table.streak_sec_line_font = coopHUD.getHUDSprites().streak_sec_line_font
     end
 end
     -------
@@ -601,7 +601,7 @@ function coopHUD.renderStreak(sprite, first_line, second_line, pos, signal)
     local main_font = Font()
     main_font:Load("font/upheaval.fnt")
     local sec_font = Font()
-    sec_font:Load("font/teammeatfont10.fnt")
+    sec_font = coopHUD.HUD_table.streak_sec_line_font
     local first_line_pos = Vector(pos.X, pos.Y+4+main_font:GetBaselineHeight())
     local cur_frame = sprite:GetFrame()
     if cur_frame > 33 and signal then
@@ -669,7 +669,7 @@ function coopHUD.is_joining(_,ent,hook,btn)
     -- DEBUG: handler to quick turn on/off hud on pressing 'H' on keyboard
     if Input.IsButtonTriggered(Keyboard.KEY_H,0)  then
         if coopHUD.options.onRender then
-            coopHUD.options.onRender = false
+        coopHUD.options.onRender = false
         else
             coopHUD.options.onRender = true
         end
@@ -752,7 +752,7 @@ end
 coopHUD:AddCallback(ModCallbacks.MC_USE_PILL, coopHUD.on_pill_use)
 --
 function coopHUD.on_evaluate(_,player)
-    if player.QueuedItem.Item ~= nil then
+    if player.QueuedItem.Item ~= nil and item.ID ~= player.QueuedItem.Item.ID then
         item = player.QueuedItem.Item
         if langAPI then
             coopHUD.HUD_table.streak:ReplaceSpritesheet(1,"/gfx/ui/blank.png")
@@ -760,6 +760,7 @@ function coopHUD.on_evaluate(_,player)
             coopHUD.streak_main_line = langAPI.getItemName(string.sub(item.Name,2))
             coopHUD.streak_sec_line = langAPI.getItemName(string.sub(item.Description,2))
             coopHUD.HUD_table.streak_sec_color = KColor(1,1,1,1)
+            coopHUD.HUD_table.streak_sec_line_font:Load("font/pftempestasevencondensed.fnt")
             coopHUD.signals.picked_up = true
         end
         
