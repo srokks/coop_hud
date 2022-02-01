@@ -600,7 +600,6 @@ function coopHUD.renderStreak(sprite, first_line, second_line, pos, signal)
     ]]
     local main_font = Font()
     main_font:Load("font/upheaval.fnt")
-    local sec_font = Font()
     sec_font = coopHUD.HUD_table.streak_sec_line_font
     local first_line_pos = Vector(pos.X, pos.Y+4+main_font:GetBaselineHeight())
     local cur_frame = sprite:GetFrame()
@@ -751,6 +750,7 @@ function coopHUD.on_pill_use(_,effect_no)
 end
 coopHUD:AddCallback(ModCallbacks.MC_USE_PILL, coopHUD.on_pill_use)
 --
+local item = { ID = -1}
 function coopHUD.on_evaluate(_,player)
     if player.QueuedItem.Item ~= nil and item.ID ~= player.QueuedItem.Item.ID then
         item = player.QueuedItem.Item
