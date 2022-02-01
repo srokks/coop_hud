@@ -585,6 +585,7 @@ function coopHUD.renderItems()
     end
     if coopHUD.HUD_table.streak:IsFinished() then -- Resets string(trigger)
         coopHUD.streak_main_line = nil
+        coopHUD.streak_sec_line = nil
         coopHUD.HUD_table.streak_sec_color = KColor(0, 0, 0, 1, 0, 0, 0)
     end
 end
@@ -750,10 +751,8 @@ function coopHUD.on_pill_use(_,effect_no)
 end
 coopHUD:AddCallback(ModCallbacks.MC_USE_PILL, coopHUD.on_pill_use)
 --
-local item = {ID = -1}
 function coopHUD.on_evaluate(_,player)
     if player.QueuedItem.Item ~= nil then
-        --if item.ID ~= player.QueuedItem.Item.ID then
         item = player.QueuedItem.Item
         if langAPI then
             coopHUD.HUD_table.streak:ReplaceSpritesheet(1,"/gfx/ui/blank.png")
