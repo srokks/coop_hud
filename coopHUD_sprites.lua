@@ -237,9 +237,10 @@ function coopHUD.getMainPocketDesc(player)
             desc = langAPI.getPocketName(desc)
         elseif player:GetPill(0) > 0 then
             desc = "???" .. " "
+            local pill = player:GetPill(0)
             local item_pool = Game():GetItemPool()
-            if item_pool:IsPillIdentified (player:GetPill(0)) then
-                local pill_effect = item_pool:GetPillEffect(player:GetPill(0))
+            if item_pool:IsPillIdentified (pill) then
+                local pill_effect = item_pool:GetPillEffect(pill,player)
                 desc = Isaac.GetItemConfig():GetPillEffect(pill_effect).Name
                 desc = string.sub(desc,2) --  get rid of # on front of
                 desc = langAPI.getPocketName(desc)
