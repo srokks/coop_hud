@@ -373,7 +373,7 @@ coopHUD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, coopHUD.init) -- refresh 
 coopHUD:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, coopHUD.init) -- refresh tables when entering new floor callback
 coopHUD:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, coopHUD.init) -- refresh tables when entering new room callback
 function coopHUD.updateTables()
-    if coopHUD.TICKER % 15 == 0 then -- updates tables every second
+    if ((Isaac.GetFrameCount()/30)%60)%4 == 0 then -- updates players every 4 seconds
         coopHUD.updateAnchors()
         for i=0,coopHUD.players_config.players_no,1 do
             coopHUD.updateActives(i)
