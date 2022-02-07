@@ -589,7 +589,7 @@ function coopHUD.renderItems()
         coopHUD.HUD_table.streak_sec_line_font = coopHUD.getHUDSprites().streak_sec_line_font
     end
 end
-    -------
+-------
 function coopHUD.renderStreak(sprite, first_line, second_line, pos, signal)
     --[[ Function renders streak text on a based sprite/based position
     sprite: prepared loaded streak sprite object
@@ -638,19 +638,18 @@ function  coopHUD.render()
             coopHUD.options.onRender = true
         end
     end
-    --if Game():IsPaused() then coopHUD.onRender = false end -- turn off on pause
-    if coopHUD.players_config.players_no+1 > 4 then -- prevents to render if more than 2 players
+    if coopHUD.players_config.players_no+1 > 4 then -- prevents to render if more than 4 players for now
         coopHUD.options.onRender = false
         Game():GetHUD():SetVisible(true)
     end
-    if coopHUD.TICKER  == 60 then coopHUD.TICKER = 0 end
-    coopHUD.TICKER = coopHUD.TICKER + 1
-    if coopHUD.options.onRender then
-        Game():GetHUD():SetVisible(false)
-        coopHUD.renderItems()
+    -- _____ Main render function
+    local paused = Game():IsPaused()
+    if coopHUD.options.onRender and not paused then -- Renders HUD if game not paused and option turned on
+        Game():GetHUD():SetVisible(false) -- sets off vanilla hud
+        coopHUD.renderItems() -- renders items/streaks
         for i=0,coopHUD.players_config.players_no,1 do
-            if coopHUD.players_config.players_no<2 and not coopHUD.options.force_small_hud then
-                coopHUD.renderPlayer(i)
+            if coopHUD.players_config.players_no<2 and not coopHUD.options.force_small_hud  then
+                coopHUD.renderPlayer(i) -- renders big hud on when 2 < no of players
             else
                 coopHUD.renderPlayerSmall(i)
             end
@@ -661,8 +660,10 @@ function  coopHUD.render()
         --coopHUD.renderHearts(coopHUD.players[0],coopHUD.anchors.top_right,true,scl,false),
         --coopHUD.renderHearts(coopHUD.players[0],coopHUD.anchors.bot_right,true,scl,true))
         --
+    elseif paused and coopHUD.options.onRender then -- Prevents from rendering anything on pause
+        Game():GetHUD():SetVisible(false)
     else
-        Game():GetHUD():SetVisible(true)
+        Game():GetHUD():SetVisible(true) -- Turns on vanilla HUD
     end
     --DEBUG: tests draw debug string on screen
     --local f = Font()
