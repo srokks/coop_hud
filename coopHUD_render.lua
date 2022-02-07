@@ -763,4 +763,4 @@ function coopHUD.on_player_init()
     coopHUD.signals.is_joining = false
     coopHUD.options.onRender = true
 end
-coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, coopHUD.on_player_init)
+coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, coopHUD.on_player_init,0)
