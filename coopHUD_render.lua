@@ -639,10 +639,15 @@ function coopHUD.on_input(_,ent,hook,btn)
             coopHUD.options.timer_always_on = true
         end
     end
-    -- _____
+    -- _____ Joining new players logic
     for i=0,8,1 do
         if Input.IsActionTriggered(ButtonAction.ACTION_JOINMULTIPLAYER,i) and not coopHUD.signals.is_joining and
-                coopHUD.players[coopHUD.getPlayerNumByControllerIndex(i)] == nil then
+                coopHUD.players[coopHUD.getPlayerNumByControllerIndex(i)] == nil and
+                Game():IsGreedMode() == false and Game():GetRoom():IsFirstVisit() == true and
+                Game():GetLevel():GetAbsoluteStage() == LevelStage.STAGE1_1 and
+                Game():GetLevel():GetCurrentRoomIndex() == Game():GetLevel():GetStartingRoomIndex()
+                and not string.match(Game():GetLevel():GetName(), "Downpour")
+                and not string.match(Game():GetLevel():GetName(), "Dross") then
             coopHUD.options.onRender = false
             coopHUD.signals.is_joining = true
         end
@@ -720,7 +725,7 @@ function coopHUD.getPlayerNumByControllerIndex(controller_index)
     end
     return final_index
 end
--- _____
+-- _____ RENDER
 function  coopHUD.render()
     -- DEBUG: handler to quick turn on/off hud on pressing 'H' on keyboard
     if Input.IsButtonTriggered(Keyboard.KEY_H,0)  then
