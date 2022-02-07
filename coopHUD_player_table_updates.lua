@@ -16,7 +16,7 @@ function coopHUD.updateCollectible(player_no)
         coopHUD.players[player_no].has_guppy = true
     end
 end
-function coopHUD.updatePlayer(player_no)
+function coopHUD.initPlayer(player_no)
     local temp_player = Isaac.GetPlayer(player_no)
     local player_table = {}
     player_table = {
@@ -365,20 +365,6 @@ function coopHUD.updateItems()
         coopHUD.HUD_table.key_no = player:GetNumKeys()
     end
 end
----
-function coopHUD.init() -- inits/updates all player infos
-    -- TODO: custom apis integration from save file - jar of wisp/
-    if coopHUD.HUD_table == nil then
-        coopHUD.HUD_table.sprites = coopHUD.getHUDSprites()
-    end
-    coopHUD.players_config.players_no = Game():GetNumPlayers()-1
-    for i=0,coopHUD.players_config.players_no,1 do
-        coopHUD.players[i] = coopHUD.updatePlayer(i)
-    end
-end
-coopHUD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, coopHUD.init) -- refresh tables when entering game floor callback
-coopHUD:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, coopHUD.init) -- refresh tables when entering new floor callback
-coopHUD:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, coopHUD.init) -- refresh tables when entering new room callback
 function coopHUD.updateTables()
     if ((Isaac.GetFrameCount()/30)%60)%4 == 0 then -- updates players every 4 seconds
         coopHUD.updateAnchors()

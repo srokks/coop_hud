@@ -6,6 +6,7 @@ coopHUD.signals = {
     map = false,
     picked_up = false,
 }
+coopHUD.players = {}
 coopHUD.options = {
     onRender = true,
     render_player_info = true,

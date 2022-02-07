@@ -628,7 +628,6 @@ function coopHUD.renderStreak(sprite, first_line, second_line, pos, signal)
         end
     end
 end
-coopHUD.text = 'test' -- DEBUG: on screen string
 function  coopHUD.render()
     -- DEBUG: handler to quick turn on/off hud on pressing 'H' on keyboard
     if Input.IsButtonTriggered(Keyboard.KEY_H,0)  then
@@ -646,55 +645,22 @@ function  coopHUD.render()
     local paused = Game():IsPaused()
     if coopHUD.options.onRender and not paused then -- Renders HUD if game not paused and option turned on
         Game():GetHUD():SetVisible(false) -- sets off vanilla hud
-        coopHUD.renderItems() -- renders items/streaks
-        for i=0,coopHUD.players_config.players_no,1 do
-            if coopHUD.players_config.players_no<2 and not coopHUD.options.force_small_hud  then
-                coopHUD.renderPlayer(i) -- renders big hud on when 2 < no of players
-            else
-                coopHUD.renderPlayerSmall(i)
-            end
-        end
-        --DEBUG: tests of all anchors
-        --print(coopHUD.renderHearts(coopHUD.players[0],coopHUD.anchors.top_left,false,scl,false),
-        --coopHUD.renderHearts(coopHUD.players[0],coopHUD.anchors.bot_left,false,scl,true),
-        --coopHUD.renderHearts(coopHUD.players[0],coopHUD.anchors.top_right,true,scl,false),
-        --coopHUD.renderHearts(coopHUD.players[0],coopHUD.anchors.bot_right,true,scl,true))
-        --
     elseif paused and coopHUD.options.onRender then -- Prevents from rendering anything on pause
         Game():GetHUD():SetVisible(false)
     else
         Game():GetHUD():SetVisible(true) -- Turns on vanilla HUD
     end
-    --DEBUG: tests draw debug string on screen
-    --local f = Font()
-    --f:Load("font/luaminioutlined.fnt")
-    --f:DrawString(coopHUD.text,100,100,KColor(1,1,1,1),0,true)
-    --
 end
 coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.render)
---
+-- _____ INPUTS
 local btn_held = 0
-function coopHUD.is_joining(_,ent,hook,btn)
+function coopHUD.on_input(_,ent,hook,btn)
     -- Handler for turning timer on of on key
     if Input.IsButtonTriggered(Keyboard.KEY_T,0)  then
         if coopHUD.options.timer_always_on then
             coopHUD.options.timer_always_on = false
         else
             coopHUD.options.timer_always_on = true
-        end
-    end
-    --
-    for i=0,8,1 do
-        if Input.IsActionTriggered(ButtonAction.ACTION_JOINMULTIPLAYER, i)
-                and coopHUD.options.onRender
-                and coopHUD.players[coopHUD.getPlayerNumByControllerIndex(i)] == nil then -- prevents for showing if player inited
-            coopHUD.is_joining =true
-            coopHUD.options.onRender = false
-        end
-        -- Catches if back button is pressed when in joining mode
-        if Input.IsActionTriggered(ButtonAction.ACTION_MENUBACK, i) and coopHUD.is_joining then
-            coopHUD.is_joining =false
-            coopHUD.options.onRender = true
         end
     end
     -- MAP BUTTON
@@ -712,30 +678,9 @@ function coopHUD.is_joining(_,ent,hook,btn)
         coopHUD.signals.map = false
         btn_held = 0
     end
-    ---
 end
-coopHUD:AddCallback(ModCallbacks.MC_INPUT_ACTION, coopHUD.is_joining)
---
-function coopHUD.init_player()
-    if coopHUD.is_joining then
-        coopHUD.players_config.players_no = Game():GetNumPlayers()
-        coopHUD.init()
-        coopHUD.options.onRender=true
-    end
-end
-coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, coopHUD.init_player)
-function coopHUD.on_start(_,cont)
-    -- init tables
-    coopHUD.initHudTables()
-    coopHUD.init()
-    print('CoopHUD '..coopHUD.VERSION..' loaded successfully!')
-    if  Game():GetHUD():IsVisible() then Game():GetHUD():SetVisible(false) end
-    if cont then -- game is continuing
-        -- read from save`
-    end
-end
-coopHUD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, coopHUD.on_start)
--- _____
+coopHUD:AddCallback(ModCallbacks.MC_INPUT_ACTION, coopHUD.on_input)
+-- _____ On pill use
 function coopHUD.on_pill_use(_,effect_no)
     -- Triggers streak text on pill use
     if coopHUD.HUD_table.streak:IsFinished() then
@@ -748,7 +693,7 @@ function coopHUD.on_pill_use(_,effect_no)
     --
 end
 coopHUD:AddCallback(ModCallbacks.MC_USE_PILL, coopHUD.on_pill_use)
--- _____
+-- _____ On evaluate
 local item = { ID = -1}
 function coopHUD.on_evaluate(_,player)
     if player.QueuedItem.Item ~= nil and item.ID ~= player.QueuedItem.Item.ID then
@@ -770,22 +715,23 @@ function coopHUD.on_evaluate(_,player)
     
 end
 coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, coopHUD.on_evaluate)
--- _____
+-- _____ Triggers streak when on new level
 coopHUD:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function(self)
     coopHUD.streak_main_line = Game():GetLevel():GetName()
     coopHUD.streak_sec_line = Game():GetLevel():GetCurseName()
     if coopHUD.streak_sec_line == '' then coopHUD.streak_sec_line = nil end
 end)
+-- ______
 function coopHUD.getPlayerNumByControllerIndex(controller_index)
-    for num,player in pairs(coopHUD.players) do
+    -- Function returns player number searching coopHUD.player table for matching controller index
+    for i,player in pairs(coopHUD.players) do
         if player.controller_index == controller_index then
-            return num
+            return i
+        else
+            return -1
         end
     end
-    return -1
+    
 end
-coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,function(self,type,rng,player)
-    coopHUD.updateActives(coopHUD.getPlayerNumByControllerIndex(player.ControllerIndex))
-end)
-
+-- _____
 
