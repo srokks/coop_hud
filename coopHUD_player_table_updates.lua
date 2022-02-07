@@ -266,9 +266,6 @@ function coopHUD.getPoopSpellTable(player_no)
     end
     return poop_table
 end
-function coopHUD.forceUpdateActives()
-    forceUpdateActives = true
-end
 function coopHUD.updateAnchors()
     local offset = 0
     if SHExists then
@@ -331,7 +328,6 @@ function coopHUD.getMinimapOffset()
     end
     return minimap_offset
 end
-coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM, coopHUD.forceUpdateActives)
 function coopHUD.checkDeepPockets()
     local deep_check = false
     local player_no = Game():GetNumPlayers()-1
@@ -342,6 +338,13 @@ function coopHUD.checkDeepPockets()
         end
     end
     return deep_check
+end
+function coopHUD.updateControllerIndex()
+    for num,player in pairs(coopHUD.players) do
+        if player.controller_index ~= Isaac.GetPlayer(num).ControllerIndex then
+            player.controller_index = Isaac.GetPlayer(num).ControllerIndex
+        end
+    end
 end
 -- HUD_table
 function coopHUD.initHudTables()
@@ -368,19 +371,8 @@ end
 function coopHUD.updateTables()
     if ((Isaac.GetFrameCount()/30)%60)%4 == 0 then -- updates players every 4 seconds
         coopHUD.updateAnchors()
-        for i=0,coopHUD.players_config.players_no,1 do
-            coopHUD.updateActives(i)
-            coopHUD.updateTrinkets(i)
-            coopHUD.updatePockets(i)
-            coopHUD.updateHearts(i)
-            coopHUD.updateExtraLives(i)
-            coopHUD.updateBethanyCharge(i)
-            coopHUD.updateCollectible(i)
-            coopHUD.updatePoopMana(i)
-            coopHUD.updateItems()
-        end
-
+        coopHUD.updateControllerIndex()
     end
-
+    
 end
 coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.updateTables)

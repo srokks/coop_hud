@@ -628,30 +628,6 @@ function coopHUD.renderStreak(sprite, first_line, second_line, pos, signal)
         end
     end
 end
-function  coopHUD.render()
-    -- DEBUG: handler to quick turn on/off hud on pressing 'H' on keyboard
-    if Input.IsButtonTriggered(Keyboard.KEY_H,0)  then
-        if coopHUD.options.onRender then
-            coopHUD.options.onRender = false
-        else
-            coopHUD.options.onRender = true
-        end
-    end
-    if coopHUD.players_config.players_no+1 > 4 then -- prevents to render if more than 4 players for now
-        coopHUD.options.onRender = false
-        Game():GetHUD():SetVisible(true)
-    end
-    -- _____ Main render function
-    local paused = Game():IsPaused()
-    if coopHUD.options.onRender and not paused then -- Renders HUD if game not paused and option turned on
-        Game():GetHUD():SetVisible(false) -- sets off vanilla hud
-    elseif paused and coopHUD.options.onRender then -- Prevents from rendering anything on pause
-        Game():GetHUD():SetVisible(false)
-    else
-        Game():GetHUD():SetVisible(true) -- Turns on vanilla HUD
-    end
-end
-coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.render)
 -- _____ INPUTS
 local btn_held = 0
 function coopHUD.on_input(_,ent,hook,btn)
@@ -661,6 +637,18 @@ function coopHUD.on_input(_,ent,hook,btn)
             coopHUD.options.timer_always_on = false
         else
             coopHUD.options.timer_always_on = true
+        end
+    end
+    -- _____
+    for i=0,8,1 do
+        if Input.IsActionTriggered(ButtonAction.ACTION_JOINMULTIPLAYER,i) and not coopHUD.signals.is_joining and
+                coopHUD.players[coopHUD.getPlayerNumByControllerIndex(i)] == nil then
+            coopHUD.options.onRender = false
+            coopHUD.signals.is_joining = true
+        end
+        if Input.IsActionTriggered(ButtonAction.ACTION_MENUBACK,i) and  coopHUD.signals.is_joining then
+            coopHUD.signals.is_joining = false
+            coopHUD.options.onRender = true
         end
     end
     -- MAP BUTTON
@@ -734,4 +722,46 @@ function coopHUD.getPlayerNumByControllerIndex(controller_index)
     
 end
 -- _____
+function  coopHUD.render()
+    -- DEBUG: handler to quick turn on/off hud on pressing 'H' on keyboard
+    if Input.IsButtonTriggered(Keyboard.KEY_H,0)  then
+        if coopHUD.options.onRender then
+            coopHUD.options.onRender = false
+        else
+            coopHUD.options.onRender = true
+        end
+        -- DEBUG - print table
+        for i,p in pairs(coopHUD.players) do
+            print(i,p.controller_index)
+        end
+    end
+    if coopHUD.players_config.players_no+1 > 4 then -- prevents to render if more than 4 players for now
+        coopHUD.options.onRender = false
+        Game():GetHUD():SetVisible(true)
+    end
+    -- _____ Main render function
+    local paused = Game():IsPaused()
+    if coopHUD.options.onRender and not paused then -- Renders HUD if game not paused and option turned on
+        Game():GetHUD():SetVisible(false) -- sets off vanilla hud
+    elseif paused and coopHUD.options.onRender then -- Prevents from rendering anything on pause
+        Game():GetHUD():SetVisible(false)
+    else
+        Game():GetHUD():SetVisible(true) -- Turns on vanilla HUD
+    end
+end
+coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.render)
+-- __________ On start
+function coopHUD.on_start(_,cont)
 
+end
+coopHUD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, coopHUD.on_start)
+-- __________ On player init
+function coopHUD.on_player_init()
+    for i=0,Game():GetNumPlayers()-1,1 do
+        coopHUD.players [i] = coopHUD.initPlayer(i)
+    end
+    coopHUD.updateControllerIndex()
+    coopHUD.signals.is_joining = false
+    coopHUD.options.onRender = true
+end
+coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, coopHUD.on_player_init)

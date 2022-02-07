@@ -7,5 +7,5 @@ include("coopHUD_sprites.lua")
 include("coopHUD_player_table_updates.lua")
 include("coopHUD_render.lua")
 --
-coopHUD.initHudTables()
---coopHUD.on_player_init() -- DEBUG: to reload tables on manually load mod
+-- Inits tables when manual loaded mod
+if coopHUD.players[0] == nil then coopHUD.on_player_init() end
