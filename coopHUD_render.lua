@@ -712,14 +712,13 @@ end)
 -- ______
 function coopHUD.getPlayerNumByControllerIndex(controller_index)
     -- Function returns player number searching coopHUD.player table for matching controller index
-    for i,player in pairs(coopHUD.players) do
-        if player.controller_index == controller_index then
-            return i
-        else
-            return -1
+    local final_index = -1
+    for i,p in pairs(coopHUD.players) do
+        if p.controller_index == controller_index then
+            final_index = i
         end
     end
-    
+    return final_index
 end
 -- _____
 function  coopHUD.render()
@@ -732,7 +731,7 @@ function  coopHUD.render()
         end
         -- DEBUG - print table
         for i,p in pairs(coopHUD.players) do
-            print(i,p.controller_index)
+            print('Index: ',i,'Name: ',p.name,'controller: ',p.controller_index)
         end
     end
     if coopHUD.players_config.players_no+1 > 4 then -- prevents to render if more than 4 players for now
@@ -752,7 +751,7 @@ end
 coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.render)
 -- __________ On start
 function coopHUD.on_start(_,cont)
-
+    if coopHUD.players[0] == nil then coopHUD.on_player_init() end
 end
 coopHUD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, coopHUD.on_start)
 -- __________ On player init
