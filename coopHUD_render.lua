@@ -686,10 +686,10 @@ function coopHUD.is_joining(_,ent,hook,btn)
     --
     for i=0,8,1 do
         if Input.IsActionTriggered(ButtonAction.ACTION_JOINMULTIPLAYER, i)
-                and coopHUD.options.onRender  then
-            if i > coopHUD.players_config.players_no then
-                coopHUD.is_joining =true
-                coopHUD.options.onRender = false end
+                and coopHUD.options.onRender
+                and coopHUD.players[coopHUD.getPlayerNumByControllerIndex(i)] == nil then -- prevents for showing if player inited
+            coopHUD.is_joining =true
+            coopHUD.options.onRender = false
         end
         -- Catches if back button is pressed when in joining mode
         if Input.IsActionTriggered(ButtonAction.ACTION_MENUBACK, i) and coopHUD.is_joining then
@@ -767,6 +767,7 @@ function coopHUD.on_evaluate(_,player)
     else
         coopHUD.signals.picked_up = false
     end
+    
 end
 coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, coopHUD.on_evaluate)
 -- _____
