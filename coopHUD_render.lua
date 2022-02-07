@@ -735,6 +735,8 @@ function  coopHUD.render()
         else
             coopHUD.options.onRender = true
         end
+    end
+    if Input.IsButtonTriggered(Keyboard.KEY_I,0)  then
         -- DEBUG - print table
         for i,p in pairs(coopHUD.players) do
             print('Index: ',i,'Name: ',p.name,'controller: ',p.controller_index)
@@ -748,6 +750,15 @@ function  coopHUD.render()
     local paused = Game():IsPaused()
     if coopHUD.options.onRender and not paused then -- Renders HUD if game not paused and option turned on
         Game():GetHUD():SetVisible(false) -- sets off vanilla hud
+        -- RENDER LOGIC
+        coopHUD.renderItems()
+        for i,p in pairs(coopHUD.players) do
+            if Game():GetNumPlayers()-1<2 and not coopHUD.options.force_small_hud then
+                coopHUD.renderPlayer(i)
+            else
+                coopHUD.renderPlayerSmall(i)
+            end
+        end
     elseif paused and coopHUD.options.onRender then -- Prevents from rendering anything on pause
         Game():GetHUD():SetVisible(false)
     else
@@ -757,6 +768,7 @@ end
 coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.render)
 -- __________ On start
 function coopHUD.on_start(_,cont)
+    coopHUD.initHudTables()
     if coopHUD.players[0] == nil then coopHUD.on_player_init() end
 end
 coopHUD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, coopHUD.on_start)
