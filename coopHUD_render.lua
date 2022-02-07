@@ -735,11 +735,9 @@ function coopHUD.on_start(_,cont)
     end
 end
 coopHUD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, coopHUD.on_start)
---
+-- _____
 function coopHUD.on_pill_use(_,effect_no)
-    --[[
-    By changing coopHUD.activated_pill with used pill name triggers streak prompt with used pill name
-    ]]
+    -- Triggers streak text on pill use
     if coopHUD.HUD_table.streak:IsFinished() then
         local pill_sys_name = Isaac.GetItemConfig():GetPillEffect(effect_no).Name
         pill_sys_name = string.sub(pill_sys_name,2) --  get rid of # on front of
@@ -750,7 +748,7 @@ function coopHUD.on_pill_use(_,effect_no)
     --
 end
 coopHUD:AddCallback(ModCallbacks.MC_USE_PILL, coopHUD.on_pill_use)
---
+-- _____
 local item = { ID = -1}
 function coopHUD.on_evaluate(_,player)
     if player.QueuedItem.Item ~= nil and item.ID ~= player.QueuedItem.Item.ID then
@@ -771,12 +769,22 @@ function coopHUD.on_evaluate(_,player)
     end
 end
 coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, coopHUD.on_evaluate)
---
+-- _____
 coopHUD:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function(self)
     coopHUD.streak_main_line = Game():GetLevel():GetName()
     coopHUD.streak_sec_line = Game():GetLevel():GetCurseName()
     if coopHUD.streak_sec_line == '' then coopHUD.streak_sec_line = nil end
 end)
-
+function coopHUD.getPlayerNumByControllerIndex(controller_index)
+    for num,player in pairs(coopHUD.players) do
+        if player.controller_index == controller_index then
+            return num
+        end
+    end
+    return -1
+end
+coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,function(self,type,rng,player)
+    coopHUD.updateActives(coopHUD.getPlayerNumByControllerIndex(player.ControllerIndex))
+end)
 
 

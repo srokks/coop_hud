@@ -21,6 +21,7 @@ function coopHUD.updatePlayer(player_no)
     local player_table = {}
     player_table = {
         --
+        controller_index = temp_player.ControllerIndex,
         -- Items
         first_active = temp_player:GetActiveItem(0),
         first_active_charge = temp_player:GetActiveCharge(0),
@@ -33,6 +34,8 @@ function coopHUD.updatePlayer(player_no)
         second_pocket = coopHUD.getPocketID(temp_player,1),
         third_pocket = coopHUD.getPocketID(temp_player,2),
         pocket_desc = coopHUD.getMainPocketDesc(temp_player),
+        -- Collectibles
+        collectibles = {},
         -- Hearts
         heart_types = coopHUD.getHeartTypeTable(temp_player),
         sub_heart_types = {},
