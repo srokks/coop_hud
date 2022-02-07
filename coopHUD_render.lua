@@ -149,7 +149,8 @@ function coopHUD.renderHearts(player,pos,mirrored,scale,down_anchor)
                         and player.heart_types[counter].heart_type ~= 'EmptyHeart' then
                     -- According to main ticker changes alpha color of sprite this way animate item
                     -- Probably not sufficient way but when I'll learn better animation I'll fix it
-                    local sprite_alpha = coopHUD.TICKER/60
+                    --TODO: animate pulsing hearts
+                    local sprite_alpha = 1
                     if sprite_alpha > 0.4 then
                         local col = Color(1,1,1,sprite_alpha)
                         player.sprites.hearts[counter].Color = col
