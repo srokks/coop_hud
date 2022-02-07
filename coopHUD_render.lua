@@ -630,6 +630,14 @@ function coopHUD.renderStreak(sprite, first_line, second_line, pos, signal)
 end
 coopHUD.text = 'test' -- DEBUG: on screen string
 function  coopHUD.render()
+    -- DEBUG: handler to quick turn on/off hud on pressing 'H' on keyboard
+    if Input.IsButtonTriggered(Keyboard.KEY_H,0)  then
+        if coopHUD.options.onRender then
+            coopHUD.options.onRender = false
+        else
+            coopHUD.options.onRender = true
+        end
+    end
     --if Game():IsPaused() then coopHUD.onRender = false end -- turn off on pause
     if coopHUD.players_config.players_no+1 > 4 then -- prevents to render if more than 2 players
         coopHUD.options.onRender = false
@@ -666,15 +674,6 @@ coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.render)
 --
 local btn_held = 0
 function coopHUD.is_joining(_,ent,hook,btn)
-    --
-    -- DEBUG: handler to quick turn on/off hud on pressing 'H' on keyboard
-    if Input.IsButtonTriggered(Keyboard.KEY_H,0)  then
-        if coopHUD.options.onRender then
-        coopHUD.options.onRender = false
-        else
-            coopHUD.options.onRender = true
-        end
-    end
     -- Handler for turning timer on of on key
     if Input.IsButtonTriggered(Keyboard.KEY_T,0)  then
         if coopHUD.options.timer_always_on then
