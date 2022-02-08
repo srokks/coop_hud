@@ -102,7 +102,6 @@ function coopHUD.initPlayer(player_no)
 end
 function coopHUD.updatePockets(player_no)
     local temp_player = Isaac.GetPlayer(player_no)
-    -- TODO: refresh pocket items on use
     if coopHUD.players[player_no].first_pocket ~= coopHUD.getPocketID(temp_player,0) then
         coopHUD.players[player_no].first_pocket = coopHUD.getPocketID(temp_player,0)
         coopHUD.players[player_no].sprites.first_pocket = coopHUD.getPocketItemSprite(temp_player,0)
@@ -115,8 +114,16 @@ function coopHUD.updatePockets(player_no)
         coopHUD.players[player_no].third_pocket = coopHUD.getPocketID(temp_player,2)
         coopHUD.players[player_no].sprites.third_pocket = coopHUD.getPocketItemSprite(temp_player,2)
     end
-    if coopHUD.players[player_no].pocket_desc ~= coopHUD.getMainPocketDesc(temp_player) then
+    if coopHUD.players[player_no].pocket_desc.name ~= coopHUD.getMainPocketDesc(temp_player).name then
         coopHUD.players[player_no].pocket_desc = coopHUD.getMainPocketDesc(temp_player)
+        if coopHUD.getPocketID(temp_player,0)[2] == 1 then
+            coopHUD.HUD_table.streak:ReplaceSpritesheet(1,"/gfx/ui/blank.png")
+            coopHUD.HUD_table.streak:LoadGraphics()
+            coopHUD.streak_main_line = coopHUD.players[coopHUD.signals.on_pockets_update].pocket_desc.name
+            coopHUD.streak_sec_line = coopHUD.players[coopHUD.signals.on_pockets_update].pocket_desc.desc
+            coopHUD.HUD_table.streak_sec_color = KColor(1,1,1,1)
+            coopHUD.HUD_table.streak_sec_line_font:Load("font/pftempestasevencondensed.fnt")
+        end
     end
     if coopHUD.players[player_no].first_pocket_charge ~= temp_player:GetActiveCharge(2) or forceUpdateActives then
         coopHUD.players[player_no].first_pocket_charge = temp_player:GetActiveCharge(2)
@@ -385,6 +392,10 @@ function coopHUD.updateTables()
         coopHUD.updateItems()
         coopHUD.signals.on_item_update = nil
     end
+    if coopHUD.signals.on_pockets_update then
+        coopHUD.updatePockets(coopHUD.signals.on_pockets_update)
+        coopHUD.signals.on_pockets_update = nil
+    end
 end
 coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.updateTables)
 -- Modified  Version of POST_ITEM_PICKUP from pedroff_1 - https://steamcommunity.com/sharedfiles/filedetails/?id=2577953432&searchtext=callback
@@ -420,7 +431,6 @@ function PostItemPickup (_,player)
         elseif itemqueue.Item.Type == ItemType.ITEM_TRINKET then
             coopHUD.updateTrinkets(pl_index)
         else
-            print(itemqueue.Item)
             --coopHUD.players[pl_index].collectibles[#coopHUD.players[pl_index].collectibles+1] = itemqueue.Item.Name
         end
     end

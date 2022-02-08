@@ -266,7 +266,10 @@ function coopHUD.renderPockets(player,pos,mirrored,scale,down_anchor)
         if player.pocket_desc then
             temp_pos = Vector(pos.X+charge_offset.X+desc_pivot.X,pos.Y+desc_pivot.Y)
             if  mirrored then temp_pos.X = temp_pos.X - (28*sprite_scale.X) - string.len(player.pocket_desc)*(5*sprite_scale.X) end
-            local text = player.pocket_desc
+            local text = player.pocket_desc.name
+            if coopHUD.signals.map then
+                text = player.pocket_desc.desc
+            end
             f:DrawStringScaled (text,temp_pos.X,temp_pos.Y,sprite_scale.X,sprite_scale.Y,color,0,true)
         end
         ------third pocket
@@ -656,6 +659,10 @@ function coopHUD.on_input(_,ent,hook,btn)
             coopHUD.signals.is_joining = false
             coopHUD.options.onRender = true
         end
+        if Input.IsActionTriggered(6,i) and coopHUD.signals.on_item_update then
+            
+            coopHUD.test_str = true
+        end
     end
     -- MAP BUTTON
     local mapPressed = false
@@ -684,12 +691,17 @@ function coopHUD.on_pill_use(_,effect_no,ent_player)
             coopHUD.streak_main_line = langAPI.getPocketName(pill_sys_name)
         end
     end
-    --
-    
-    coopHUD.updatePockets(coopHUD.getPlayerNumByControllerIndex(ent_player.ControllerIndex))
+    -- Triggers pocket update signal
+    coopHUD.signals.on_pockets_update = coopHUD.getPlayerNumByControllerIndex(ent_player.ControllerIndex)
 end
 coopHUD:AddCallback(ModCallbacks.MC_USE_PILL, coopHUD.on_pill_use)
--- _____ Triggers streak when on new level
+-- _____ On card use
+function coopHUD.on_card_use(_,effect_no,ent_player)
+    --Triggers pocket update signal
+    coopHUD.signals.on_pockets_update = coopHUD.getPlayerNumByControllerIndex(ent_player.ControllerIndex)
+end
+coopHUD:AddCallback(ModCallbacks.MC_USE_CARD, coopHUD.on_card_use)
+-- _____ Triggers STREAK when on new level
 coopHUD:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function(self)
     coopHUD.streak_main_line = Game():GetLevel():GetName()
     coopHUD.streak_sec_line = Game():GetLevel():GetCurseName()
@@ -757,7 +769,7 @@ function coopHUD.on_player_init()
     coopHUD.options.onRender = true
 end
 coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, coopHUD.on_player_init,0)
---
+-- __________ On active item/pocket activate
 function coopHUD.on_activate(_,type,RNG, EntityPlayer, UseFlags, used_slot, CustomVarData)
     local player_index = coopHUD.getPlayerNumByControllerIndex(EntityPlayer.ControllerIndex)
     -- Hold on use change sprite
@@ -773,25 +785,32 @@ function coopHUD.on_activate(_,type,RNG, EntityPlayer, UseFlags, used_slot, Cust
     if used_slot <= 1  then
         -- Update actives
         coopHUD.signals.on_active_update = player_index
+        coopHUD.updatePockets(player_index)
     else
         -- updates pockets on pocket use
-        coopHUD.updatePockets(player_index)
     end
 end
 coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM, coopHUD.on_activate)
+-- __________ On item pickup
 function coopHUD.on_item_pickup(_, ent_player, ent_collider, Low)
     -- Checks if player entity collides with item
     if ent_collider and ent_collider.Type == EntityType.ENTITY_PICKUP then
+        local player_index = coopHUD.getPlayerNumByControllerIndex(ent_player.ControllerIndex)
         if ent_collider.Variant == PickupVariant.PICKUP_HEART then -- check if collides with heart
-            coopHUD.signals.on_heart_update = coopHUD.getPlayerNumByControllerIndex(ent_player.ControllerIndex)
+            coopHUD.signals.on_heart_update = player_index
         elseif ent_collider.Variant == PickupVariant.PICKUP_COIN or -- check if collides with coin
                 ent_collider.Variant == PickupVariant.PICKUP_KEY or -- or with key
                 ent_collider.Variant == PickupVariant.PICKUP_BOMB then -- or with bomb
             coopHUD.signals.on_item_update = true -- triggers item update by signal
+        elseif ent_collider.Variant == PickupVariant.PICKUP_TAROTCARD then
+            coopHUD.signals.on_pockets_update = player_index -- triggers pocket update by signal
+        elseif ent_collider.Variant == PickupVariant.PICKUP_PILL then
+            coopHUD.signals.on_pockets_update = player_index -- triggers pocket update by signal
         end
     end
 end
 coopHUD:AddCallback(ModCallbacks.MC_PRE_PLAYER_COLLISION, coopHUD.on_item_pickup)
+-- _____ On damage
 function coopHUD.on_damage(_,ent_player)
     coopHUD.signals.on_heart_update = coopHUD.getPlayerNumByControllerIndex(ent_player:ToPlayer().ControllerIndex)
 end
