@@ -402,7 +402,12 @@ function PostItemPickup (_,player)
             coopHUD.HUD_table.streak_sec_line_font:Load("font/pftempestasevencondensed.fnt")
         end
         --_____ Updates actives of player
-        coopHUD.updateActives(coopHUD.getPlayerNumByControllerIndex(player.ControllerIndex))
+        if itemqueue.Item.Type == ItemType.ITEM_ACTIVE then
+            coopHUD.updateActives(coopHUD.getPlayerNumByControllerIndex(player.ControllerIndex))
+        end
+        if itemqueue.Item.Type == ItemType.ITEM_TRINKET then
+            coopHUD.updateTrinkets(coopHUD.getPlayerNumByControllerIndex(player.ControllerIndex))
+        end
     end
 end
   coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, PostItemPickup)
