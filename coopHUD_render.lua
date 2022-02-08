@@ -714,12 +714,6 @@ function  coopHUD.render()
             coopHUD.options.onRender = true
         end
     end
-    if Input.IsButtonTriggered(Keyboard.KEY_I,0)  then
-        -- DEBUG - print table
-        for i,p in pairs(coopHUD.players) do
-            print('Index: ',i,'Name: ',p.name,'controller: ',p.controller_index)
-        end
-    end
     if coopHUD.players_config.players_no+1 > 4 then -- prevents to render if more than 4 players for now
         coopHUD.options.onRender = false
         Game():GetHUD():SetVisible(true)
