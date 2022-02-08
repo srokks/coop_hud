@@ -675,7 +675,7 @@ function coopHUD.on_input(_,ent,hook,btn)
 end
 coopHUD:AddCallback(ModCallbacks.MC_INPUT_ACTION, coopHUD.on_input)
 -- _____ On pill use
-function coopHUD.on_pill_use(_,effect_no)
+function coopHUD.on_pill_use(_,effect_no,ent_player)
     -- Triggers streak text on pill use
     if coopHUD.HUD_table.streak:IsFinished() then
         local pill_sys_name = Isaac.GetItemConfig():GetPillEffect(effect_no).Name
@@ -685,6 +685,8 @@ function coopHUD.on_pill_use(_,effect_no)
         end
     end
     --
+    
+    coopHUD.updatePockets(coopHUD.getPlayerNumByControllerIndex(ent_player.ControllerIndex))
 end
 coopHUD:AddCallback(ModCallbacks.MC_USE_PILL, coopHUD.on_pill_use)
 -- _____ Triggers streak when on new level
@@ -742,6 +744,7 @@ coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.render)
 function coopHUD.on_start(_,cont)
     coopHUD.initHudTables()
     if coopHUD.players[0] == nil then coopHUD.on_player_init() end
+    coopHUD.updateItems()
 end
 coopHUD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, coopHUD.on_start)
 -- __________ On player init
@@ -755,7 +758,7 @@ function coopHUD.on_player_init()
 end
 coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, coopHUD.on_player_init,0)
 --
-function coopHUD.on_activate(_,type,RNG, EntityPlayer, UseFlags, ActiveSlot, CustomVarData)
+function coopHUD.on_activate(_,type,RNG, EntityPlayer, UseFlags, used_slot, CustomVarData)
     local player_index = coopHUD.getPlayerNumByControllerIndex(EntityPlayer.ControllerIndex)
     print(type,' ',ActiveSlot)
     -- Hold on use change sprite
@@ -763,13 +766,34 @@ function coopHUD.on_activate(_,type,RNG, EntityPlayer, UseFlags, ActiveSlot, Cus
         if coopHUD.players[player_index].hold_spell == nil  then
             coopHUD.players[player_index].hold_spell = EntityPlayer:GetPoopSpell(0)
             coopHUD.updatePockets(player_index)
-            print('in')
         else
             coopHUD.players[player_index].hold_spell = nil
-            print('out')
         end
         coopHUD.updatePoopMana(player_index)
     end
-    coopHUD.updatePockets(player_index)
+    if used_slot <= 1  then
+        -- Update actives
+        coopHUD.signals.on_active_update = player_index
+    else
+        -- updates pockets on pocket use
+        coopHUD.updatePockets(player_index)
+    end
 end
-coopHUD:AddCallback(ModCallbacks.MC_PRE_USE_ITEM, coopHUD.on_activate,715)
+coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM, coopHUD.on_activate)
+function coopHUD.on_item_pickup(_, ent_player, ent_collider, Low)
+    -- Checks if player entity collides with item
+    if ent_collider and ent_collider.Type == EntityType.ENTITY_PICKUP then
+        if ent_collider.Variant == PickupVariant.PICKUP_HEART then -- check if collides with heart
+            coopHUD.signals.on_heart_update = coopHUD.getPlayerNumByControllerIndex(ent_player.ControllerIndex)
+        elseif ent_collider.Variant == PickupVariant.PICKUP_COIN or -- check if collides with coin
+                ent_collider.Variant == PickupVariant.PICKUP_KEY or -- or with key
+                ent_collider.Variant == PickupVariant.PICKUP_BOMB then -- or with bomb
+            coopHUD.signals.on_item_update = true -- triggers item update by signal
+        end
+    end
+end
+coopHUD:AddCallback(ModCallbacks.MC_PRE_PLAYER_COLLISION, coopHUD.on_item_pickup)
+function coopHUD.on_damage(_,ent_player)
+    coopHUD.signals.on_heart_update = coopHUD.getPlayerNumByControllerIndex(ent_player:ToPlayer().ControllerIndex)
+end
+coopHUD:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, coopHUD.on_damage, EntityType.ENTITY_PLAYER)

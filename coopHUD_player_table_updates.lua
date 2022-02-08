@@ -365,9 +365,25 @@ function coopHUD.updateItems()
     end
 end
 function coopHUD.updateTables()
+    coopHUD.updateAnchors()
     if ((Isaac.GetFrameCount()/30)%60)%4 == 0 then -- updates players every 4 seconds
-        coopHUD.updateAnchors()
         coopHUD.updateControllerIndex()
+        for i,_ in pairs(coopHUD.players) do
+            coopHUD.signals.on_active_update = i
+        end
+        coopHUD.signals.on_item_update = true
+    end
+    if coopHUD.signals.on_active_update then
+        coopHUD.updateActives(coopHUD.signals.on_active_update)
+        coopHUD.signals.on_active_update = nil
+    end
+    if coopHUD.signals.on_heart_update then
+        coopHUD.updateHearts(coopHUD.signals.on_heart_update)
+        coopHUD.signals.on_heart_update = nil
+    end
+    if coopHUD.signals.on_item_update then
+        coopHUD.updateItems()
+        coopHUD.signals.on_item_update = nil
     end
 end
 coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.updateTables)
