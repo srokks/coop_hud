@@ -10,3 +10,4 @@ include("coopHUD_render.lua")
 -- Inits tables when manual loaded mod
 if coopHUD.players[0] == nil then coopHUD.on_player_init() end
 coopHUD.initHudTables()
+coopHUD.updateAnchors()

@@ -402,11 +402,13 @@ function PostItemPickup (_,player)
             coopHUD.HUD_table.streak_sec_line_font:Load("font/pftempestasevencondensed.fnt")
         end
         --_____ Updates actives of player
+        local pl_index = coopHUD.getPlayerNumByControllerIndex(player.ControllerIndex)
         if itemqueue.Item.Type == ItemType.ITEM_ACTIVE then
-            coopHUD.updateActives(coopHUD.getPlayerNumByControllerIndex(player.ControllerIndex))
-        end
-        if itemqueue.Item.Type == ItemType.ITEM_TRINKET then
-            coopHUD.updateTrinkets(coopHUD.getPlayerNumByControllerIndex(player.ControllerIndex))
+            coopHUD.updateActives(pl_index)
+        elseif itemqueue.Item.Type == ItemType.ITEM_TRINKET then
+            coopHUD.updateTrinkets(pl_index)
+        else
+            --coopHUD.players[pl_index].collectibles[#coopHUD.players[pl_index].collectibles+1] = itemqueue.Item.Name
         end
     end
 end
