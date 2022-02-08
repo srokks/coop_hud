@@ -43,9 +43,10 @@ function coopHUD.initPlayer(player_no)
         -- Stats
         
         --- T ??? - specifics
-        poop_mana = 0,
-        max_poop_mana = 0,
-        poops = nil,
+        poop_mana = 0, -- current mana (int)
+        max_poop_mana = 0, -- max cap of mana that player holds (int)
+        poops = nil, -- table of
+        hold_spell = nil, -- current spell stashed in hold (int)
         ---
         type = temp_player:GetPlayerType(),
         name = coopHUD.players_config.small[player_no].name,
@@ -94,7 +95,7 @@ function coopHUD.initPlayer(player_no)
     if player_table.type == PlayerType.PLAYER_XXX_B then -- T. ??? check
         player_table.poops = coopHUD.getPoopSpellTable(player_no)
         player_table.sprites.poops = coopHUD.getPoopSpriteTable(temp_player)
-        player_table.poop_mana = player:GetPoopMana()
+        player_table.poop_mana = temp_player:GetPoopMana()
         player_table.max_poop_mana = 9
     end
     return player_table

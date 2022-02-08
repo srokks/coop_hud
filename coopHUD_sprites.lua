@@ -49,10 +49,14 @@ function coopHUD.getActiveItemSprite(player,slot)
     -- Hold - charge set
     if active_item == CollectibleType.COLLECTIBLE_HOLD then
         -- SKELETON
-        if Isaac.GetPlayer(0).QueuedItem.Item ~= nil then
-        print(Isaac.GetPlayer(0).QueuedItem.Item.Name)
-        
+        this_sprite:ReplaceSpritesheet(3,'gfx/ui/ui_poops.png')
+        local hold_spell = 0
+        if coopHUD.players[coopHUD.getPlayerNumByControllerIndex(player.ControllerIndex)] and
+                -- prevents from error when not everything loaded
+                coopHUD.players[coopHUD.getPlayerNumByControllerIndex(player.ControllerIndex)].hold_spell then
+            hold_spell = coopHUD.players[coopHUD.getPlayerNumByControllerIndex(player.ControllerIndex)].hold_spell
         end
+        this_sprite:SetFrame('Hold',hold_spell)
     end
     -- Everything Jar - charges set
     if active_item == CollectibleType.COLLECTIBLE_EVERYTHING_JAR  then
@@ -72,7 +76,6 @@ function coopHUD.getActiveItemSprite(player,slot)
         end
         this_sprite:SetFrame('WispJar',coopHUD.jar_of_wisp_charge + wisp_charge) -- sets proper frame
     end
-    -- TODO: Hold item sprite integration
     -- Urn of soul
     -- For this moment can only show when urn is open/closed no api function
     -- FIXME: Urn of soul charge: wait till api is fixed

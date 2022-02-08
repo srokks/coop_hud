@@ -760,3 +760,22 @@ function coopHUD.on_player_init()
     coopHUD.options.onRender = true
 end
 coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, coopHUD.on_player_init,0)
+--
+function coopHUD.on_activate(_,type,RNG, EntityPlayer, UseFlags, ActiveSlot, CustomVarData)
+    local player_index = coopHUD.getPlayerNumByControllerIndex(EntityPlayer.ControllerIndex)
+    print(type,' ',ActiveSlot)
+    -- Hold on use change sprite
+    if type == CollectibleType.COLLECTIBLE_HOLD and coopHUD.players[player_index].poop_mana > 0 then
+        if coopHUD.players[player_index].hold_spell == nil  then
+            coopHUD.players[player_index].hold_spell = EntityPlayer:GetPoopSpell(0)
+            coopHUD.updatePockets(player_index)
+            print('in')
+        else
+            coopHUD.players[player_index].hold_spell = nil
+            print('out')
+        end
+        coopHUD.updatePoopMana(player_index)
+    end
+    coopHUD.updatePockets(player_index)
+end
+coopHUD:AddCallback(ModCallbacks.MC_PRE_USE_ITEM, coopHUD.on_activate,715)
