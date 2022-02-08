@@ -760,7 +760,6 @@ coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, coopHUD.on_player_init,0)
 --
 function coopHUD.on_activate(_,type,RNG, EntityPlayer, UseFlags, used_slot, CustomVarData)
     local player_index = coopHUD.getPlayerNumByControllerIndex(EntityPlayer.ControllerIndex)
-    print(type,' ',ActiveSlot)
     -- Hold on use change sprite
     if type == CollectibleType.COLLECTIBLE_HOLD and coopHUD.players[player_index].poop_mana > 0 then
         if coopHUD.players[player_index].hold_spell == nil  then
