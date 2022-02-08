@@ -687,28 +687,6 @@ function coopHUD.on_pill_use(_,effect_no)
     --
 end
 coopHUD:AddCallback(ModCallbacks.MC_USE_PILL, coopHUD.on_pill_use)
--- _____ On evaluate
-local item = { ID = -1}
-function coopHUD.on_evaluate(_,player)
-    if player.QueuedItem.Item ~= nil and item.ID ~= player.QueuedItem.Item.ID then
-        item = player.QueuedItem.Item
-        if langAPI then
-            coopHUD.HUD_table.streak:ReplaceSpritesheet(1,"/gfx/ui/blank.png")
-            coopHUD.HUD_table.streak:LoadGraphics()
-            coopHUD.streak_main_line = langAPI.getItemName(string.sub(item.Name,2))
-            coopHUD.streak_sec_line = langAPI.getItemName(string.sub(item.Description,2))
-            coopHUD.HUD_table.streak_sec_color = KColor(1,1,1,1)
-            coopHUD.HUD_table.streak_sec_line_font:Load("font/pftempestasevencondensed.fnt")
-            coopHUD.signals.picked_up = true
-        end
-        
-        --end
-    else
-        coopHUD.signals.picked_up = false
-    end
-    
-end
-coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, coopHUD.on_evaluate)
 -- _____ Triggers streak when on new level
 coopHUD:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function(self)
     coopHUD.streak_main_line = Game():GetLevel():GetName()

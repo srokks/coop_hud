@@ -373,6 +373,50 @@ function coopHUD.updateTables()
         coopHUD.updateAnchors()
         coopHUD.updateControllerIndex()
     end
-    
 end
 coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.updateTables)
+-- Modified  Version of POST_ITEM_PICKUP from pedroff_1 - https://steamcommunity.com/sharedfiles/filedetails/?id=2577953432&searchtext=callback
+function PostItemPickup (_,player)
+    local itemqueue = player.QueuedItem
+    if itemqueue and itemqueue.Item then
+        local list = PostItemPickupFunctions
+        if list[itemqueue.Item.ID] then
+            for i,v in pairs(list[itemqueue.Item.ID]) do
+                v(_,player)
+            end
+        end
+        list = PostItemPickupFunctions[-1]
+        if list then
+            for i,v in pairs(list) do
+                v(_,player,itemqueue.Item.ID)
+            end
+        end
+        player:FlushQueueItem()
+        --____ Flashes triggers streak text with picked up name
+        if langAPI then
+            coopHUD.HUD_table.streak:ReplaceSpritesheet(1,"/gfx/ui/blank.png")
+            coopHUD.HUD_table.streak:LoadGraphics()
+            coopHUD.streak_main_line = langAPI.getItemName(string.sub(itemqueue.Item.Name,2))
+            coopHUD.streak_sec_line = langAPI.getItemName(string.sub(itemqueue.Item.Description,2))
+            coopHUD.HUD_table.streak_sec_color = KColor(1,1,1,1)
+            coopHUD.HUD_table.streak_sec_line_font:Load("font/pftempestasevencondensed.fnt")
+        end
+        --_____ Updates actives of player
+        coopHUD.updateActives(coopHUD.getPlayerNumByControllerIndex(player.ControllerIndex))
+    end
+end
+  coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, PostItemPickup)
+  local addCallbackOld = Isaac.AddCallback
+  ModCallbacks.MC_POST_ITEM_PICKUP = 271
+  PostItemPickupFunctions = PostItemPickupFunctions or {}
+function  addCallbackNew(mod,callback,func,arg1,arg2,arg3,arg4)
+    if callback == ModCallbacks.MC_POST_ITEM_PICKUP then
+        arg1 = arg1 or -1
+        PostItemPickupFunctions[arg1] = PostItemPickupFunctions[arg1] or {}
+        PostItemPickupFunctions[arg1][tostring(func)]= func
+    else
+        addCallbackOld(mod,callback,func,arg1,arg2,arg3,arg4)
+    end
+  end
+  Isaac.AddCallback = addCallbackNew
+---- End of standalone module
