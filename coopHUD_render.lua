@@ -764,9 +764,18 @@ function coopHUD.on_start(_,cont)
 end
 coopHUD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, coopHUD.on_start)
 -- __________ On player init
+local essau_counter = 0
 function coopHUD.on_player_init()
     for i=0,Game():GetNumPlayers()-1,1 do
-        coopHUD.players [i] = coopHUD.initPlayer(i)
+        --if Isaac.GetPlayer(i):GetPlayerType() ~= PlayerType.PLAYER_ESAU then
+        coopHUD.players [i-essau_counter] = coopHUD.initPlayer(i)
+        --else
+        --    i = i + 1
+        --end
+        if coopHUD.players [i] == nil then
+            i = i+1
+            essau_counter = essau_counter + 1
+        end
     end
     coopHUD.updateControllerIndex()
     coopHUD.signals.is_joining = false

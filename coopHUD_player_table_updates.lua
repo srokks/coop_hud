@@ -80,17 +80,22 @@ function coopHUD.initPlayer(player_no)
         player_table.sprites.sub_hearts = coopHUD.getHeartSpriteTable(sub)
         player_table.sub_heart_types = coopHUD.getHeartTypeTable(sub)
     end
-    -- Jacob/Essau check
-    if player_table.type == 19 then
-        --TODO: Jacob/Essau: make player_num+1-> render second in oposite corner/ restrict only when 1
-        --players.has_sub = true
-    end
     -- T. ??? check
     if player_table.type == PlayerType.PLAYER_XXX_B then
         player_table.poops = coopHUD.getPoopSpellTable(player_no)
         player_table.sprites.poops = coopHUD.getPoopSpriteTable(temp_player)
         player_table.poop_mana = temp_player:GetPoopMana()
         player_table.max_poop_mana = 9
+    end
+    -- Jacob check
+    if player_table.type == 20 then
+        -- In case of
+        has_sub = true
+    end
+    -- Essau check
+    if player_table.type == 20 then
+        -- In case of
+        player_table = nil
     end
     return player_table
 end
@@ -326,8 +331,8 @@ end
 function coopHUD.updateTables()
     coopHUD.updateAnchors()
     -- charges update constantly due to items such as spinning wheel
-    for i=0,Game():GetNumPlayers() - 1 do
-        coopHUD.updateCharge(i)
+    for i,_ in pairs(coopHUD.players) do
+        --coopHUD.updateCharge(i)
     end
     --
     if ((Isaac.GetFrameCount()/30)%60)%4 == 0 then -- updates players every 4 seconds
