@@ -1,3 +1,4 @@
+-- Sprites get function
 function coopHUD.getActiveItemSprite(player,slot)
     local overlay = ''
     local active_item = player:GetActiveItem(slot)
@@ -168,33 +169,6 @@ function coopHUD.getTrinketSprite(player, trinket_pos)
     sprite:SetFrame("Idle", 0)
     return sprite
 end
-function coopHUD.getPocketID(player,slot)
-    local pocket_id = 0
-    local pocket_type = 0 -- 0 - none, 1 - card, 2 - pill, 3 - item
-    if player:GetCard(slot) > 0 then
-        pocket_id = player:GetCard(slot)
-        pocket_type = 1
-    elseif player:GetPill(slot) > 0 then
-        pocket_id = player:GetPill(slot)
-        pocket_type = 2
-    else
-        if slot == 1 then
-            if coopHUD.getPocketID(player,0)[2] ~= 3 then
-                pocket_id = player:GetActiveItem(2)
-                pocket_type = 3
-            end
-        elseif slot == 2 then
-            if coopHUD.getPocketID(player,0)[2] ~= 3 and coopHUD.getPocketID(player,1)[2] ~= 3 then
-                pocket_id = player:GetActiveItem(2)
-                pocket_type = 3
-            end
-        else
-            pocket_id = player:GetActiveItem(2)
-            pocket_type = 3
-        end
-    end
-    return {pocket_id,pocket_type}
-end
 function coopHUD.getPocketItemSprite(player,slot)
     -- cards/runes/
     local pocket_sprite = Sprite()
@@ -216,45 +190,121 @@ function coopHUD.getPocketItemSprite(player,slot)
     end
     return pocket_sprite
 end
-function coopHUD.getMainPocketDesc(player)
-    local name = 'Error'
-    local desc = nil
-    if langAPI ~= nil then
-        if player:GetPill(0) < 1 and player:GetCard(0) < 1 then
-            if player:GetActiveItem(2) > 0 then
-                name = Isaac.GetItemConfig():GetCollectible(player:GetActiveItem(2)).Name
-            elseif player:GetActiveItem(3) > 0 then
-                name = Isaac.GetItemConfig():GetCollectible(player:GetActiveItem(3)).Name
+function coopHUD.getHeartSprite(heart_type,overlay)
+    if heart_type ~= 'None' then
+        local sprite = Sprite()
+        sprite:Load(coopHUD.GLOBALS.hearts_anim_path,true)
+        sprite:SetFrame(heart_type, 0)
+        if overlay ~= 'None'  then
+            if overlay ~= 'GoldWhiteOverlay' then
+                sprite:SetOverlayFrame (overlay, 0 )
             else
-                return false
+                sprite:ReplaceSpritesheet(0,"gfx/ui/ui_hearts_gold_coop.png") -- replaces png file to get
+                sprite:SetOverlayFrame ('WhiteHeartOverlay', 0 )
+                sprite:LoadGraphics()
             end
-            name = string.sub(name, 2) --  get rid of # on front of
-            name = langAPI.getItemName(name)
+
         end
-        if player:GetCard(0) > 0 then
-            name = Isaac.GetItemConfig():GetCard(player:GetCard(0)).Name
-            name = string.sub(name, 2) --  get rid of # on front of
-            name = langAPI.getPocketName(name)
-            --
-            desc = Isaac.GetItemConfig():GetCard(player:GetCard(0)).Description
-            desc = string.sub(desc, 2) --  get rid of # on front of
-            desc = langAPI.getPocketName(desc)
-        elseif player:GetPill(0) > 0 then
-            name = "???" .. " "
-            local pill = player:GetPill(0)
-            local item_pool = Game():GetItemPool()
-            if item_pool:IsPillIdentified (pill) then
-                local pill_effect = item_pool:GetPillEffect(pill,player)
-                name = Isaac.GetItemConfig():GetPillEffect(pill_effect).Name
-                name = string.sub(name, 2) --  get rid of # on front of
-                name = langAPI.getPocketName(name)
-            end
-        end
+        return sprite
     else
-        name = 'Error! - langAPI not installed'
+        return False
     end
-    return {['name']=name,['desc']=desc}
 end
+function coopHUD.getHeartSpriteTable(player)
+    local max_health_cap = 12
+    local heart_type,overlay = ''
+    local heart_sprites = {}
+    -- Sets increased heatlh cap when playing Maggy with Birthright
+    if player:GetPlayerType() == PlayerType.PLAYER_MAGDALENA and -- checks if player is Maggy
+        player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
+        max_health_cap = 18
+    end
+    for counter=0,max_health_cap,1 do
+        heart_type,overlay = coopHUD.getHeartType(player,counter)
+        heart_sprites[counter] = coopHUD.getHeartSprite(heart_type,overlay)
+    end
+    return heart_sprites
+end
+function coopHUD.getPoopSprite(player,i)
+    local spell_type
+    local layer_name = 'IdleSmall'
+    spell_type = player:GetPoopSpell(i)
+    if i == 0 then layer_name = 'Idle' end
+    if spell_type ~= 0 then
+        local sprite = Sprite()
+        sprite:Load(coopHUD.GLOBALS.poop_anim_path,true)
+        sprite:SetFrame(layer_name,spell_type)
+        if i >= player:GetPoopMana() then
+            local col = Color(1,1,1,1)
+            col:SetColorize(1, 1, 1, 1)
+            sprite.Color = Color(0.3,0.3,0.3,0.3)
+        end
+        return sprite
+    else
+        return nil
+    end
+end
+function coopHUD.getPoopSpriteTable(player)
+    local poop_table = {}
+    for i=0,PoopSpellType.SPELL_QUEUE_SIZE-1,1 do
+        poop_table[i] = coopHUD.getPoopSprite(player,i)
+    end
+    return poop_table
+end
+function coopHUD.getPlayerHeadSprite(player_type)
+    if 0 <= player_type and player_type <= 37 then
+        local sprite = Sprite()
+        sprite:Load(coopHUD.GLOBALS.player_head_anim_path,true)
+        sprite:SetFrame('Main',player_type+1)
+        sprite:ReplaceSpritesheet(1, "/gfx/ui/blank.png")
+        sprite:LoadGraphics()
+        return sprite
+    else
+        return false
+    end
+end
+function coopHUD.getHUDSprites()
+    local player = Isaac.GetPlayer(0)
+    --Items font
+    local item_font = Font()
+    item_font:Load("font/pftempestasevencondensed.fnt")
+    --
+    local timer_font = Font()
+    timer_font:Load("font/teammeatfont10.fnt")
+     --
+    local streak_sec_line_font = Font()
+    streak_sec_line_font:Load("font/teammeatfont10.fnt")
+    -- Coin sprite
+    local coin_sprite= Sprite()
+    coin_sprite:Load(coopHUD.GLOBALS.hud_el_anim_path,true)
+    coin_sprite:SetFrame('Idle', 0)
+    -- Bomb sprite
+    -- TODO: GigaBomb integration
+    -- TODO: T.??? PoopSpell integration
+    local bomb_sprite = Sprite()
+    bomb_sprite:Load(coopHUD.GLOBALS.hud_el_anim_path,true)
+    bomb_sprite:SetFrame('Idle',2)
+    if player and player:HasGoldenBomb()  then bomb_sprite:SetFrame('Idle',6) end
+    if player and player:GetNumGigaBombs() > 0 then bomb_sprite:SetFrame('Idle',14) end
+    -- Key sprite
+    local key_sprite = Sprite()
+    key_sprite:Load(coopHUD.GLOBALS.hud_el_anim_path,true)
+    key_sprite:SetFrame('Idle',1)
+    if player:HasGoldenKey()  then key_sprite:SetFrame('Idle',3 ) end
+    return {['item_font']=item_font,
+            ['timer_font']=timer_font,
+            ['streak_sec_line_font']=streak_sec_line_font,
+            ['coin_sprite']=coin_sprite,
+            ['bomb_sprite']=bomb_sprite,
+            ['key_sprite']=key_sprite}
+end
+function coopHUD.getStreakSprite()
+    sprite = Sprite()
+    sprite:Load(coopHUD.GLOBALS.streak_anim_path,true)
+    return sprite
+end
+--___ Help functions
+-- Hearts
 function coopHUD.getHeartType(player,heart_pos)
     ---- Modified function from HUD_API from NeatPotato mod
     local player_type = player:GetPlayerType()
@@ -411,41 +461,6 @@ function coopHUD.getHeartType(player,heart_pos)
     end
     return heart_type,overlay
 end
-function coopHUD.getHeartSprite(heart_type,overlay)
-    if heart_type ~= 'None' then
-        local sprite = Sprite()
-        sprite:Load(coopHUD.GLOBALS.hearts_anim_path,true)
-        sprite:SetFrame(heart_type, 0)
-        if overlay ~= 'None'  then
-            if overlay ~= 'GoldWhiteOverlay' then
-                sprite:SetOverlayFrame (overlay, 0 )
-            else
-                sprite:ReplaceSpritesheet(0,"gfx/ui/ui_hearts_gold_coop.png") -- replaces png file to get
-                sprite:SetOverlayFrame ('WhiteHeartOverlay', 0 )
-                sprite:LoadGraphics()
-            end
-
-        end
-        return sprite
-    else
-        return False
-    end
-end
-function coopHUD.getHeartSpriteTable(player)
-    local max_health_cap = 12
-    local heart_type,overlay = ''
-    local heart_sprites = {}
-    -- Sets increased heatlh cap when playing Maggy with Birthright
-    if player:GetPlayerType() == PlayerType.PLAYER_MAGDALENA and -- checks if player is Maggy
-        player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
-        max_health_cap = 18
-    end
-    for counter=0,max_health_cap,1 do
-        heart_type,overlay = coopHUD.getHeartType(player,counter)
-        heart_sprites[counter] = coopHUD.getHeartSprite(heart_type,overlay)
-    end
-    return heart_sprites
-end
 function coopHUD.getHeartTypeTable(player)
     local max_health_cap = 12
     local heart_type,overlay = ''
@@ -464,83 +479,133 @@ function coopHUD.getHeartTypeTable(player)
     end
     return heart_types
 end
-function coopHUD.getPoopSprite(player,i)
-    local spell_type
-    local layer_name = 'IdleSmall'
-    spell_type = player:GetPoopSpell(i)
-    if i == 0 then layer_name = 'Idle' end
-    if spell_type ~= 0 then
-        local sprite = Sprite()
-        sprite:Load(coopHUD.GLOBALS.poop_anim_path,true)
-        sprite:SetFrame(layer_name,spell_type)
-        if i >= player:GetPoopMana() then
-            local col = Color(1,1,1,1)
-            col:SetColorize(1, 1, 1, 1)
-            sprite.Color = Color(0.3,0.3,0.3,0.3)
-        end
-        return sprite
+-- Pockets
+function coopHUD.getPocketID(player,slot)
+    local pocket_id = 0
+    local pocket_type = 0 -- 0 - none, 1 - card, 2 - pill, 3 - item
+    if player:GetCard(slot) > 0 then
+        pocket_id = player:GetCard(slot)
+        pocket_type = 1
+    elseif player:GetPill(slot) > 0 then
+        pocket_id = player:GetPill(slot)
+        pocket_type = 2
     else
-        return nil
+        if slot == 1 then
+            if coopHUD.getPocketID(player,0)[2] ~= 3 then
+                pocket_id = player:GetActiveItem(2)
+                pocket_type = 3
+            end
+        elseif slot == 2 then
+            if coopHUD.getPocketID(player,0)[2] ~= 3 and coopHUD.getPocketID(player,1)[2] ~= 3 then
+                pocket_id = player:GetActiveItem(2)
+                pocket_type = 3
+            end
+        else
+            pocket_id = player:GetActiveItem(2)
+            pocket_type = 3
+        end
     end
+    return {pocket_id,pocket_type}
 end
-function coopHUD.getPoopSpriteTable(player)
+function coopHUD.getMainPocketDesc(player)
+    local name = 'Error'
+    local desc = nil
+    if langAPI ~= nil then
+        if player:GetPill(0) < 1 and player:GetCard(0) < 1 then
+            if player:GetActiveItem(2) > 0 then
+                name = Isaac.GetItemConfig():GetCollectible(player:GetActiveItem(2)).Name
+            elseif player:GetActiveItem(3) > 0 then
+                name = Isaac.GetItemConfig():GetCollectible(player:GetActiveItem(3)).Name
+            else
+                return false
+            end
+            name = string.sub(name, 2) --  get rid of # on front of
+            name = langAPI.getItemName(name)
+        end
+        if player:GetCard(0) > 0 then
+            name = Isaac.GetItemConfig():GetCard(player:GetCard(0)).Name
+            name = string.sub(name, 2) --  get rid of # on front of
+            name = langAPI.getPocketName(name)
+            --
+            desc = Isaac.GetItemConfig():GetCard(player:GetCard(0)).Description
+            desc = string.sub(desc, 2) --  get rid of # on front of
+            desc = langAPI.getPocketName(desc)
+        elseif player:GetPill(0) > 0 then
+            name = "???" .. " "
+            local pill = player:GetPill(0)
+            local item_pool = Game():GetItemPool()
+            if item_pool:IsPillIdentified (pill) then
+                local pill_effect = item_pool:GetPillEffect(pill,player)
+                name = Isaac.GetItemConfig():GetPillEffect(pill_effect).Name
+                name = string.sub(name, 2) --  get rid of # on front of
+                name = langAPI.getPocketName(name)
+            end
+        end
+    else
+        name = 'Error! - langAPI not installed'
+    end
+    return {['name']=name,['desc']=desc}
+end
+function coopHUD.getPoopSpellTable(player_no)
     local poop_table = {}
-    for i=0,PoopSpellType.SPELL_QUEUE_SIZE-1,1 do
-        poop_table[i] = coopHUD.getPoopSprite(player,i)
+    for i=0,PoopSpellType.SPELL_QUEUE_SIZE,1 do
+        poop_table[i] = Isaac.GetPlayer(player_no):GetPoopSpell(i)
     end
     return poop_table
 end
-function coopHUD.getPlayerHeadSprite(player_type)
-    if 0 <= player_type and player_type <= 37 then
-        local sprite = Sprite()
-        sprite:Load(coopHUD.GLOBALS.player_head_anim_path,true)
-        sprite:SetFrame('Main',player_type+1)
-        sprite:ReplaceSpritesheet(1, "/gfx/ui/blank.png")
-        sprite:LoadGraphics()
-        return sprite
-    else
-        return false
+-- Other
+function coopHUD.getMinimapOffset()
+    local minimap_offset = Vector(Isaac.GetScreenWidth(),0)
+    if MinimapAPI ~= nil then
+        -- Modified function from minimAPI by Wolfsauge
+        local screen_size = Vector(Isaac.GetScreenWidth(),0)
+        local is_large = MinimapAPI:IsLarge()
+        if not is_large and MinimapAPI:GetConfig("DisplayMode") == 2 then -- BOUNDED MAP
+            minimap_offset = Vector(screen_size.X - MinimapAPI:GetConfig("MapFrameWidth") - MinimapAPI:GetConfig("PositionX") - 4,2)
+        elseif not is_large and MinimapAPI:GetConfig("DisplayMode") == 4
+                or Game():GetLevel():GetCurses() == LevelCurse.CURSE_OF_THE_LOST then
+            -- NO MAP or cure of the lost active
+            minimap_offset = Vector(screen_size.X - 4,2)
+        else -- LARGE
+            local minx = screen_size.X
+            for i,v in ipairs(MinimapAPI:GetLevel()) do
+                if v ~= nil then
+                    if v:GetDisplayFlags() > 0 then
+                        if v.RenderOffset~= nil then
+                            minx = math.min(minx, v.RenderOffset.X)
+                        end
+                    end
+                end
+
+            end
+            minimap_offset = Vector(minx-4,2) -- Small
+        end
+        if MinimapAPI:GetConfig("Disable") or MinimapAPI.Disable then minimap_offset = Vector(screen_size.X - 4,2)  end
+        local r = MinimapAPI:GetCurrentRoom()
+        if MinimapAPI:GetConfig("HideInCombat") == 2 then
+            if not r:IsClear() and r:GetType() == RoomType.ROOM_BOSS then
+                minimap_offset = Vector(screen_size.X - 0,2)
+            end
+        elseif MinimapAPI:GetConfig("HideInCombat") == 3 then
+            if r~=nil then
+                if  not r:IsClear() then
+                    minimap_offset = Vector(screen_size.X - 0,2)
+                end
+            end
+        end
     end
+    return minimap_offset
 end
-function coopHUD.getHUDSprites()
-    local player = Isaac.GetPlayer(0)
-    --Items font
-    local item_font = Font()
-    item_font:Load("font/pftempestasevencondensed.fnt")
-    --
-    local timer_font = Font()
-    timer_font:Load("font/teammeatfont10.fnt")
-     --
-    local streak_sec_line_font = Font()
-    streak_sec_line_font:Load("font/teammeatfont10.fnt")
-    -- Coin sprite
-    local coin_sprite= Sprite()
-    coin_sprite:Load(coopHUD.GLOBALS.hud_el_anim_path,true)
-    coin_sprite:SetFrame('Idle', 0)
-    -- Bomb sprite
-    -- TODO: GigaBomb integration
-    -- TODO: T.??? PoopSpell integration
-    local bomb_sprite = Sprite()
-    bomb_sprite:Load(coopHUD.GLOBALS.hud_el_anim_path,true)
-    bomb_sprite:SetFrame('Idle',2)
-    if player and player:HasGoldenBomb()  then bomb_sprite:SetFrame('Idle',6) end
-    if player and player:GetNumGigaBombs() > 0 then bomb_sprite:SetFrame('Idle',14) end
-    -- Key sprite
-    local key_sprite = Sprite()
-    key_sprite:Load(coopHUD.GLOBALS.hud_el_anim_path,true)
-    key_sprite:SetFrame('Idle',1)
-    if player:HasGoldenKey()  then key_sprite:SetFrame('Idle',3 ) end
-    return {['item_font']=item_font,
-            ['timer_font']=timer_font,
-            ['streak_sec_line_font']=streak_sec_line_font,
-            ['coin_sprite']=coin_sprite,
-            ['bomb_sprite']=bomb_sprite,
-            ['key_sprite']=key_sprite}
-end
-function coopHUD.getStreakSprite()
-    sprite = Sprite()
-    sprite:Load(coopHUD.GLOBALS.streak_anim_path,true)
-    return sprite
+function coopHUD.checkDeepPockets()
+    local deep_check = false
+    local player_no = Game():GetNumPlayers()-1
+    for i=0,player_no,1 do
+        local deep = Isaac.GetPlayer(i):HasCollectible(416)
+        if  deep  then
+            deep_check = true
+        end
+    end
+    return deep_check
 end
 -- TODO: T.FOrgotten - weird heart render
 -- TODO: Jaccob/Essau - tint non used sprites -

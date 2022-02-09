@@ -1,29 +1,24 @@
 local SHExists, ScreenHelper = pcall(require, "scripts.screenhelper")
 coopHUD.jar_of_wisp_charge = nil -- Global value of jar_of_wisp_charge
-function coopHUD.updateCollectible(player_no)
-    local player = Isaac.GetPlayer(player_no)
-    -- Update if player has birthright
-    if not coopHUD.players[player_no].has_birthright and player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
-        coopHUD.players[player_no].has_birthright = true
-    end
-    -- Update if player has guppy's collar
-    if not coopHUD.players[player_no].has_guppy and player:HasCollectible(CollectibleType.COLLECTIBLE_GUPPYS_COLLAR) then
-        coopHUD.players[player_no].has_guppy = true
-    end
-end
+-- _____
 function coopHUD.initPlayer(player_no)
     local temp_player = Isaac.GetPlayer(player_no)
     local player_table = {}
     player_table = {
-        --
+        --- INFO
+        type = temp_player:GetPlayerType(),
+        name = coopHUD.players_config.small[player_no].name,
         controller_index = temp_player.ControllerIndex,
-        -- Items
+        -- ITEMS
+        -- Actives
         first_active = temp_player:GetActiveItem(0),
         first_active_charge = temp_player:GetActiveCharge(0),
         second_active = temp_player:GetActiveItem(1),
         second_active_charge = temp_player:GetActiveCharge(1),
+        -- Trinkets
         first_trinket = temp_player:GetTrinket(0),
         second_trinket = temp_player:GetTrinket(1),
+        -- Pockets
         first_pocket = coopHUD.getPocketID(temp_player,0),
         first_pocket_charge = temp_player:GetActiveCharge(2),
         second_pocket = coopHUD.getPocketID(temp_player,1),
@@ -33,25 +28,22 @@ function coopHUD.initPlayer(player_no)
         collectibles = {},
         -- Hearts
         heart_types = coopHUD.getHeartTypeTable(temp_player),
-        sub_heart_types = {},
         total_hearts = math.ceil((temp_player:GetEffectiveMaxHearts() + temp_player:GetSoulHearts())/2),
         max_health_cap = 12,
         extra_lives = temp_player:GetExtraLives(),
+        -- Sub player
+        has_sub = false,
+        sub_heart_types = {},
+        -- Stats
         -- Charges
         bethany_charge = nil, -- inits charge for Bethany
         wisp_jar_use = 0, -- holds info about used jar of wisp
-        -- Stats
-        
         --- T ??? - specifics
         poop_mana = 0, -- current mana (int)
         max_poop_mana = 0, -- max cap of mana that player holds (int)
         poops = nil, -- table of
         hold_spell = nil, -- current spell stashed in hold (int)
         ---
-        type = temp_player:GetPlayerType(),
-        name = coopHUD.players_config.small[player_no].name,
-        ---
-        has_sub = false,
         has_birthright = false,
         has_guppy = false,
         ---
@@ -88,17 +80,32 @@ function coopHUD.initPlayer(player_no)
         player_table.sprites.sub_hearts = coopHUD.getHeartSpriteTable(sub)
         player_table.sub_heart_types = coopHUD.getHeartTypeTable(sub)
     end
-    if player_table.type == 19 then -- Jacob/Essau check
+    -- Jacob/Essau check
+    if player_table.type == 19 then
         --TODO: Jacob/Essau: make player_num+1-> render second in oposite corner/ restrict only when 1
         --players.has_sub = true
     end
-    if player_table.type == PlayerType.PLAYER_XXX_B then -- T. ??? check
+    -- T. ??? check
+    if player_table.type == PlayerType.PLAYER_XXX_B then
         player_table.poops = coopHUD.getPoopSpellTable(player_no)
         player_table.sprites.poops = coopHUD.getPoopSpriteTable(temp_player)
         player_table.poop_mana = temp_player:GetPoopMana()
         player_table.max_poop_mana = 9
     end
     return player_table
+end
+-- _____ Updates
+function coopHUD.updateCollectible(player_no)
+    --TODO: update when item picked up
+    local player = Isaac.GetPlayer(player_no)
+    -- Update if player has birthright
+    if not coopHUD.players[player_no].has_birthright and player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
+        coopHUD.players[player_no].has_birthright = true
+    end
+    -- Update if player has guppy's collar
+    if not coopHUD.players[player_no].has_guppy and player:HasCollectible(CollectibleType.COLLECTIBLE_GUPPYS_COLLAR) then
+        coopHUD.players[player_no].has_guppy = true
+    end
 end
 function coopHUD.updatePockets(player_no)
     local temp_player = Isaac.GetPlayer(player_no)
@@ -262,13 +269,6 @@ function coopHUD.updatePoopMana(player_no)
         end
     end
 end
-function coopHUD.getPoopSpellTable(player_no)
-    local poop_table = {}
-    for i=0,PoopSpellType.SPELL_QUEUE_SIZE,1 do
-        poop_table[i] = Isaac.GetPlayer(player_no):GetPoopSpell(i)
-    end
-    return poop_table
-end
 function coopHUD.updateAnchors()
     local offset = 0
     if SHExists then
@@ -288,60 +288,6 @@ function coopHUD.updateAnchors()
         coopHUD.anchors.bot_right = Vector(Isaac.GetScreenWidth(),Isaac.GetScreenHeight()) + Vector(-offset * 2.2, -offset * 1.6)
     end
 end
-function coopHUD.getMinimapOffset()
-    local minimap_offset = Vector(Isaac.GetScreenWidth(),0)
-    if MinimapAPI ~= nil then
-        -- Modified function from minimAPI by Wolfsauge
-        --TODO: curse of the unknown integration
-        local screen_size = Vector(Isaac.GetScreenWidth(),0)
-        local is_large = MinimapAPI:IsLarge()
-        if not is_large and MinimapAPI:GetConfig("DisplayMode") == 2 then -- BOUNDED MAP
-            minimap_offset = Vector(screen_size.X - MinimapAPI:GetConfig("MapFrameWidth") - MinimapAPI:GetConfig("PositionX") - 4,2)
-        elseif not is_large and MinimapAPI:GetConfig("DisplayMode") == 4
-                or Game():GetLevel():GetCurses() == LevelCurse.CURSE_OF_THE_LOST then
-            -- NO MAP or cure of the lost active
-            minimap_offset = Vector(screen_size.X - 4,2)
-        else -- LARGE
-            local minx = screen_size.X
-            for i,v in ipairs(MinimapAPI:GetLevel()) do
-                if v ~= nil then
-                    if v:GetDisplayFlags() > 0 then
-                        if v.RenderOffset~= nil then
-                            minx = math.min(minx, v.RenderOffset.X)
-                        end
-                    end
-                end
-
-            end
-            minimap_offset = Vector(minx-4,2) -- Small
-        end
-        if MinimapAPI:GetConfig("Disable") or MinimapAPI.Disable then minimap_offset = Vector(screen_size.X - 4,2)  end
-        local r = MinimapAPI:GetCurrentRoom()
-        if MinimapAPI:GetConfig("HideInCombat") == 2 then
-            if not r:IsClear() and r:GetType() == RoomType.ROOM_BOSS then
-                minimap_offset = Vector(screen_size.X - 0,2)
-            end
-        elseif MinimapAPI:GetConfig("HideInCombat") == 3 then
-            if r~=nil then
-                if  not r:IsClear() then
-                    minimap_offset = Vector(screen_size.X - 0,2)
-                end
-            end
-        end
-    end
-    return minimap_offset
-end
-function coopHUD.checkDeepPockets()
-    local deep_check = false
-    local player_no = Game():GetNumPlayers()-1
-    for i=0,player_no,1 do
-        local deep = Isaac.GetPlayer(i):HasCollectible(416)
-        if  deep  then
-            deep_check = true
-        end
-    end
-    return deep_check
-end
 function coopHUD.updateControllerIndex()
     for num,player in pairs(coopHUD.players) do
         if player.controller_index ~= Isaac.GetPlayer(num).ControllerIndex then
@@ -349,6 +295,8 @@ function coopHUD.updateControllerIndex()
         end
     end
 end
+-- _____
+
 -- HUD_table
 function coopHUD.initHudTables()
     coopHUD.HUD_table.sprites = coopHUD.getHUDSprites()
