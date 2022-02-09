@@ -264,12 +264,13 @@ function coopHUD.renderPockets(player,pos,mirrored,scale,down_anchor)
         player.sprites.first_pocket:Render(temp_pos)
         -- Description
         if player.pocket_desc then
-            temp_pos = Vector(pos.X+charge_offset.X+desc_pivot.X,pos.Y+desc_pivot.Y)
-            if  mirrored then temp_pos.X = temp_pos.X - (28*sprite_scale.X) - string.len(player.pocket_desc)*(5*sprite_scale.X) end
             local text = player.pocket_desc.name
-            if coopHUD.signals.map then
+            if Input.IsActionPressed(ButtonAction.ACTION_MAP, player.controller_index) and
+                    player.pocket_desc.desc then
                 text = player.pocket_desc.desc
             end
+            temp_pos = Vector(pos.X+charge_offset.X+desc_pivot.X,pos.Y+desc_pivot.Y)
+            if  mirrored then temp_pos.X = temp_pos.X - (28*sprite_scale.X) - string.len(text)*(5*sprite_scale.X) end
             f:DrawStringScaled (text,temp_pos.X,temp_pos.Y,sprite_scale.X,sprite_scale.Y,color,0,true)
         end
         ------third pocket
@@ -585,7 +586,7 @@ function coopHUD.renderItems()
     if not Game():IsPaused() and secs > 0 then -- Prevents showing too early on start
         coopHUD.renderStreak(coopHUD.HUD_table.streak,coopHUD.streak_main_line,coopHUD.streak_sec_line,
                              Vector((coopHUD.anchors.bot_right.X/2)-208, 30),
-                             coopHUD.signals.picked_up)
+                             false)
     end
     if coopHUD.HUD_table.streak:IsFinished() then -- Resets string(trigger)
         coopHUD.streak_main_line = nil
@@ -667,19 +668,19 @@ function coopHUD.on_input(_,ent,hook,btn)
     -- MAP BUTTON
     local mapPressed = false
     for i = 0, Game():GetNumPlayers() - 1 do
-        local player = Isaac.GetPlayer(i)
-        mapPressed = mapPressed or Input.IsActionPressed(ButtonAction.ACTION_MAP, player.ControllerIndex)
+    local player = Isaac.GetPlayer(i)
+    mapPressed = mapPressed or Input.IsActionPressed(ButtonAction.ACTION_MAP, player.ControllerIndex)
     end
     if mapPressed then
-        btn_held = btn_held + 1
-        if btn_held > 1200 then
-            coopHUD.signals.map = true
-        end
-    else
-        coopHUD.signals.map = false
-        btn_held = 0
+    btn_held = btn_held + 1
+    if btn_held > 1200 then
+    coopHUD.signals.map = true
     end
-end
+    else
+    coopHUD.signals.map = false
+    btn_held = 0
+    end
+    end
 coopHUD:AddCallback(ModCallbacks.MC_INPUT_ACTION, coopHUD.on_input)
 -- _____ On pill use
 function coopHUD.on_pill_use(_,effect_no,ent_player)

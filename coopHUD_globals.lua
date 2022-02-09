@@ -1,10 +1,13 @@
-coopHUD.VERSION = '0.3.1' --DEBUG: test name for in game recognition
+coopHUD.VERSION = '0.3.2' --DEBUG: test name for in game recognition
 coopHUD.showExtraInfo = false
 coopHUD.HUD_table = {}
 coopHUD.signals = {
-    map = false,
-    picked_up = false,
-    is_joining = false,
+    map = false, -- emits true when map btn hold - global signal
+    is_joining = false, -- to maintain back button when joining
+    on_active_update = nil, --nil or emit player num
+    on_item_update = nil, --nil or emit player num
+    on_heart_update = nil, --nil or emit player num
+    on_pockets_update = nil, --nil or emit player num
 }
 coopHUD.players = {}
 coopHUD.options = {

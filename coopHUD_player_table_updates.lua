@@ -431,7 +431,6 @@ function PostItemPickup (_,player)
         elseif itemqueue.Item.Type == ItemType.ITEM_TRINKET then
             coopHUD.updateTrinkets(pl_index)
         else
-            --coopHUD.players[pl_index].collectibles[#coopHUD.players[pl_index].collectibles+1] = itemqueue.Item.Name
         end
     end
 end
