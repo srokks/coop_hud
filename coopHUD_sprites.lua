@@ -219,7 +219,6 @@ end
 function coopHUD.getMainPocketDesc(player)
     local name = 'Error'
     local desc = nil
-    -- TODO: check if lang api is installed and loaded
     if langAPI ~= nil then
         if player:GetPill(0) < 1 and player:GetCard(0) < 1 then
             if player:GetActiveItem(2) > 0 then
@@ -524,8 +523,8 @@ function coopHUD.getHUDSprites()
     local bomb_sprite = Sprite()
     bomb_sprite:Load(coopHUD.GLOBALS.hud_el_anim_path,true)
     bomb_sprite:SetFrame('Idle',2)
-    if player:HasGoldenBomb()  then bomb_sprite:SetFrame('Idle',6) end
-    if player:GetNumGigaBombs() > 0 then bomb_sprite:SetFrame('Idle',14) end
+    if player and player:HasGoldenBomb()  then bomb_sprite:SetFrame('Idle',6) end
+    if player and player:GetNumGigaBombs() > 0 then bomb_sprite:SetFrame('Idle',14) end
     -- Key sprite
     local key_sprite = Sprite()
     key_sprite:Load(coopHUD.GLOBALS.hud_el_anim_path,true)
