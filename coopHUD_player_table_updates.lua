@@ -163,7 +163,7 @@ function coopHUD.updateActives(player_no)
             coopHUD.players[player_no].first_active = temp_player:GetActiveItem(0)
             coopHUD.players[player_no].second_active = temp_player:GetActiveItem(1)
             coopHUD.players[player_no].sprites.first_active = coopHUD.getActiveItemSprite(temp_player,0)
-            coopHUD.players[player_no].sprites.first_active_charge = coopHUD.getChargeSprites(temp_player,0)
+            coopHUD.updateCharge(player_no)
             coopHUD.players[player_no].sprites.second_active = coopHUD.getActiveItemSprite(temp_player,1)
             coopHUD.players[player_no].sprites.second_active_charge = coopHUD.getChargeSprites(temp_player,1)
         end
@@ -174,6 +174,10 @@ function coopHUD.updateActives(player_no)
         end
     end
     end
+function coopHUD.updateCharge(player_no)
+    local temp_player = Isaac.GetPlayer(player_no)
+        coopHUD.players[player_no].sprites.first_active_charge = coopHUD.getChargeSprites(temp_player,0)
+end
 function coopHUD.updateTrinkets(player_no)
     local temp_player = Isaac.GetPlayer(player_no)
     if coopHUD.players[player_no].first_trinket ~= temp_player:GetTrinket(0) then
@@ -321,6 +325,11 @@ function coopHUD.updateItems()
 end
 function coopHUD.updateTables()
     coopHUD.updateAnchors()
+    -- charges update constantly due to items such as spinning wheel
+    for i=0,Game():GetNumPlayers() - 1 do
+        coopHUD.updateCharge(i)
+    end
+    --
     if ((Isaac.GetFrameCount()/30)%60)%4 == 0 then -- updates players every 4 seconds
         coopHUD.updateControllerIndex()
         for i,_ in pairs(coopHUD.players) do

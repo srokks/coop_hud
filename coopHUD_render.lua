@@ -669,6 +669,9 @@ function coopHUD.on_input(_,ent,hook,btn)
     local mapPressed = false
     for i = 0, Game():GetNumPlayers() - 1 do
     local player = Isaac.GetPlayer(i)
+        if Input.IsActionPressed(ButtonAction.ACTION_ITEM, player.ControllerIndex) then
+            coopHUD.updateActives(coopHUD.getPlayerNumByControllerIndex(player.ControllerIndex))
+        end
     mapPressed = mapPressed or Input.IsActionPressed(ButtonAction.ACTION_MAP, player.ControllerIndex)
     end
     if mapPressed then
@@ -783,13 +786,11 @@ function coopHUD.on_activate(_,type,RNG, EntityPlayer, UseFlags, used_slot, Cust
         end
         coopHUD.updatePoopMana(player_index)
     end
-    if used_slot <= 1  then
-        -- Update actives
-        coopHUD.signals.on_active_update = player_index
-        coopHUD.updatePockets(player_index)
-    else
-        -- updates pockets on pocket use
-    end
+    -- Update actives
+    coopHUD.signals.on_active_update = player_index
+    coopHUD.signals.on_pockets_update = player_index
+    print(player_index)
+    
 end
 coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM, coopHUD.on_activate)
 -- __________ On item pickup
