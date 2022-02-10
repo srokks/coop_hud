@@ -129,7 +129,7 @@ if EID then
 	if EID.UserConfig.YPosition < 80 then EID.UserConfig.YPosition = 80 end
 end
 -- Overrides Enhanced Boss Bars  mod setting to better fit with HUD
-if HPBars then
+if HPBars and HPBars.UserConfig then
 	if HPBars.UserConfig.ScreenPadding < 24 then  HPBars.UserConfig.ScreenPadding = 24 end
 end
 -- Overrides MinimapAPI  mod setting to show on coopHUD
