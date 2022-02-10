@@ -252,6 +252,7 @@ function coopHUD.getPoopSpriteTable(player)
     return poop_table
 end
 function coopHUD.getPlayerHeadSprite(player_type)
+    if player_type == 40 then player_type = 36 end
     if 0 <= player_type and player_type <= 37 then
         local sprite = Sprite()
         sprite:Load(coopHUD.GLOBALS.player_head_anim_path,true)
