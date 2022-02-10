@@ -11,6 +11,7 @@ function coopHUD.initPlayer(player_no,ent_player)
         --- INFO
         type = temp_player:GetPlayerType(),
         controller_index = temp_player.ControllerIndex,
+        game_index = player_no,
         -- ITEMS
         -- Actives
         first_active = temp_player:GetActiveItem(0),
@@ -110,7 +111,7 @@ end
 -- _____ Updates
 function coopHUD.updateCollectible(player_no)
     --TODO: update when item picked up
-    local player = Isaac.GetPlayer(player_no)
+    local player = Isaac.GetPlayer(coopHUD.players[player_no].game_index)
     -- Update if player has birthright
     if not coopHUD.players[player_no].has_birthright and player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
         coopHUD.players[player_no].has_birthright = true
@@ -121,7 +122,7 @@ function coopHUD.updateCollectible(player_no)
     end
 end
 function coopHUD.updatePockets(player_no)
-    local temp_player = Isaac.GetPlayer(player_no)
+    local temp_player = Isaac.GetPlayer(coopHUD.players[player_no].game_index)
     if coopHUD.players[player_no].first_pocket ~= coopHUD.getPocketID(temp_player,0) then
         coopHUD.players[player_no].first_pocket = coopHUD.getPocketID(temp_player,0)
         coopHUD.players[player_no].sprites.first_pocket = coopHUD.getPocketItemSprite(temp_player,0)
@@ -134,18 +135,20 @@ function coopHUD.updatePockets(player_no)
         coopHUD.players[player_no].third_pocket = coopHUD.getPocketID(temp_player,2)
         coopHUD.players[player_no].sprites.third_pocket = coopHUD.getPocketItemSprite(temp_player,2)
     end
-    if coopHUD.getMainPocketDesc(temp_player) and
-            coopHUD.players[player_no].pocket_desc.name ~= coopHUD.getMainPocketDesc(temp_player).name then
-        coopHUD.players[player_no].pocket_desc = coopHUD.getMainPocketDesc(temp_player)
-        if coopHUD.getPocketID(temp_player,0)[2] == 1 then
-            coopHUD.HUD_table.streak:ReplaceSpritesheet(1,"/gfx/ui/blank.png")
-            coopHUD.HUD_table.streak:LoadGraphics()
-            coopHUD.streak_main_line = coopHUD.players[coopHUD.signals.on_pockets_update].pocket_desc.name
-            coopHUD.streak_sec_line = coopHUD.players[coopHUD.signals.on_pockets_update].pocket_desc.desc
-            coopHUD.HUD_table.streak_sec_color = KColor(1,1,1,1)
-            coopHUD.HUD_table.streak_sec_line_font:Load("font/pftempestasevencondensed.fnt")
-        end
+    if coopHUD.players[player_no].pocket_desc then
+        if coopHUD.players[player_no].pocket_desc.name ~= coopHUD.getMainPocketDesc(temp_player).name then
+          coopHUD.players[player_no].pocket_desc = coopHUD.getMainPocketDesc(temp_player)
+             if coopHUD.getPocketID(temp_player,0)[2] == 1 then
+                 coopHUD.HUD_table.streak:ReplaceSpritesheet(1,"/gfx/ui/blank.png")
+                 coopHUD.HUD_table.streak:LoadGraphics()
+                 coopHUD.streak_main_line = coopHUD.players[coopHUD.signals.on_pockets_update].pocket_desc.name
+                 coopHUD.streak_sec_line = coopHUD.players[coopHUD.signals.on_pockets_update].pocket_desc.desc
+                 coopHUD.HUD_table.streak_sec_color = KColor(1,1,1,1)
+                 coopHUD.HUD_table.streak_sec_line_font:Load("font/pftempestasevencondensed.fnt")
+             end
     end
+    end
+    
     if coopHUD.players[player_no].first_pocket_charge ~= temp_player:GetActiveCharge(2) or forceUpdateActives then
         coopHUD.players[player_no].first_pocket_charge = temp_player:GetActiveCharge(2)
         coopHUD.players[player_no].sprites.first_pocket_charge = coopHUD.getChargeSprites(temp_player,2)
@@ -187,7 +190,7 @@ function coopHUD.updatePockets(player_no)
     end
 end
 function coopHUD.updateActives(player_no)
-    local temp_player = Isaac.GetPlayer(player_no)
+    local temp_player = Isaac.GetPlayer(coopHUD.players[player_no].game_index)
     if coopHUD.players[player_no] ~= nil then
         if coopHUD.players[player_no].first_active == 685 and coopHUD.jar_of_wisp_charge == nil then
             coopHUD.jar_of_wisp_charge = 0  -- sets default val if item is picked first time
@@ -237,11 +240,11 @@ function coopHUD.updateActives(player_no)
     end
     end
 function coopHUD.updateCharge(player_no)
-    local temp_player = Isaac.GetPlayer(player_no)
+    local temp_player = Isaac.GetPlayer(coopHUD.players[player_no].game_index)
         coopHUD.players[player_no].sprites.first_active_charge = coopHUD.getChargeSprites(temp_player,0)
 end
 function coopHUD.updateTrinkets(player_no)
-    local temp_player = Isaac.GetPlayer(player_no)
+    local temp_player = Isaac.GetPlayer(coopHUD.players[player_no].game_index)
     if coopHUD.players[player_no].first_trinket ~= temp_player:GetTrinket(0) then
         coopHUD.players[player_no].first_trinket = temp_player:GetTrinket(0)
         coopHUD.players[player_no].sprites.first_trinket = coopHUD.getTrinketSprite(temp_player,0)
@@ -263,7 +266,7 @@ function coopHUD.updateTrinkets(player_no)
     end
 end
 function coopHUD.updateHearts(player_no)
-    local temp_player = Isaac.GetPlayer(player_no)
+    local temp_player = Isaac.GetPlayer(coopHUD.players[player_no].game_index)
     local max_health_cap = 12
     local sub_player = nil
     local temp_total_hearts = math.ceil((temp_player:GetEffectiveMaxHearts() + temp_player:GetSoulHearts())/2)
@@ -320,10 +323,17 @@ function coopHUD.updateHearts(player_no)
     end
 end
 function coopHUD.updateExtraLives(player_no)
-    local temp_player = Isaac.GetPlayer(player_no)
+    local temp_player = Isaac.GetPlayer(coopHUD.players[player_no].game_index)
     if coopHUD.players[player_no].extra_lives ~= temp_player:GetExtraLives() then
         coopHUD.players[player_no].extra_lives = temp_player:GetExtraLives()
-        has_guppy = temp_player:HasCollectible(212)
+        coopHUD.players[player_no].has_guppy = temp_player:HasCollectible(212)
+    end
+    if coopHUD.players[player_no].has_twin then
+        local twin_player = temp_player:GetOtherTwin()
+        if coopHUD.players[player_no].twin.extra_lives ~= twin_player:GetExtraLives() then
+            coopHUD.players[player_no].twin.extra_lives = twin_player:GetExtraLives()
+            coopHUD.players[player_no].twin.has_guppy = twin_player:HasCollectible(212)
+        end
     end
 end
 function coopHUD.updateBethanyCharge(player_no)
@@ -383,9 +393,17 @@ function coopHUD.updateAnchors()
     end
 end
 function coopHUD.updateControllerIndex()
+    --[[
+    Function updates controller indexes in coopHUD player tables
+    ]]
     for num,player in pairs(coopHUD.players) do
-        if player.controller_index ~= Isaac.GetPlayer(num).ControllerIndex then
-            player.controller_index = Isaac.GetPlayer(num).ControllerIndex
+        temp_player = Isaac.GetPlayer(num)
+        if temp_player:GetPlayerType() == 20 then -- prevents from updating index if player is Essau
+            next(coopHUD.players) -- skips iterator
+        else
+            if player.controller_index ~= temp_player.ControllerIndex then
+                player.controller_index = temp_player.ControllerIndex -- updates controller index
+            end
         end
     end
 end
@@ -480,8 +498,8 @@ function PostItemPickup (_,player)
         end
         --_____ Updates actives of player
         local pl_index = coopHUD.getPlayerNumByControllerIndex(player.ControllerIndex)
+        coopHUD.updateExtraLives(pl_index)
         if itemqueue.Item.Type == ItemType.ITEM_ACTIVE then
-            print('pickup ',pl_index)
             coopHUD.updateActives(pl_index)
         elseif itemqueue.Item.Type == ItemType.ITEM_TRINKET then
             coopHUD.updateTrinkets(pl_index)

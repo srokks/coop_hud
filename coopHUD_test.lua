@@ -6,10 +6,7 @@ function  coopHUD.test_render()
         -- DEBUG - print table
         print('DEBUG "i"')
         for i,p in pairs(coopHUD.players) do
-            print(p.twin.first_pocket[1])
-            for j,k in pairs(p.twin) do
-                --print(k.first_pocket)
-            end
+            print(i,'-',p.controller_index)
         end
     end
     local f = Font()

@@ -510,7 +510,7 @@ function coopHUD.getPocketID(player,slot)
 end
 function coopHUD.getMainPocketDesc(player)
     local name = 'Error'
-    local desc = nil
+    local desc = 'Error'
     if langAPI ~= nil then
         if player:GetPill(0) < 1 and player:GetCard(0) < 1 then
             if player:GetActiveItem(2) > 0 then
@@ -544,6 +544,7 @@ function coopHUD.getMainPocketDesc(player)
         end
     else
         name = 'Error! - langAPI not installed'
+        desc = 'Install langAPI for compatibility'
     end
     return {['name']=name,['desc']=desc}
 end

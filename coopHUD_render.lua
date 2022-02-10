@@ -795,6 +795,11 @@ function coopHUD.on_start(_,cont)
         print('on start ',' cont')
         --[[coopHUD.essau_no = 0 -- resets Essau counter before player init
         if coopHUD.players[0] == nil then coopHUD.on_player_init() end]]
+        coopHUD.essau_no = 0 -- resets Essau counter before player init
+        if coopHUD.players[0] == nil then
+            coopHUD.signals.is_joining = true
+            coopHUD.on_player_init()
+        end
     else
         -- Logic when started new game/ restart thought dbg console
         
