@@ -291,7 +291,7 @@ function coopHUD.getHUDSprites()
     local key_sprite = Sprite()
     key_sprite:Load(coopHUD.GLOBALS.hud_el_anim_path,true)
     key_sprite:SetFrame('Idle',1)
-    if player:HasGoldenKey()  then key_sprite:SetFrame('Idle',3 ) end
+    if player and player:HasGoldenKey()  then key_sprite:SetFrame('Idle',3 ) end
     return {['item_font']=item_font,
             ['timer_font']=timer_font,
             ['streak_sec_line_font']=streak_sec_line_font,
