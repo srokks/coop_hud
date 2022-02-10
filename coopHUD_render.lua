@@ -732,7 +732,7 @@ function  coopHUD.render()
             coopHUD.options.onRender = true
         end
     end
-    if coopHUD.players_config.players_no+1 > 4 then -- prevents to render if more than 4 players for now
+    if #coopHUD.players > 4 then -- prevents to render if more than 4 players for now
         coopHUD.options.onRender = false
         Game():GetHUD():SetVisible(true)
     end
@@ -743,7 +743,7 @@ function  coopHUD.render()
         -- RENDER LOGIC
         coopHUD.renderItems()
         for i,p in pairs(coopHUD.players) do
-            if Game():GetNumPlayers()-1<2 and not coopHUD.options.force_small_hud then
+            if #coopHUD.players<2 and not coopHUD.options.force_small_hud then
                 coopHUD.renderPlayer(i)
             else
                 coopHUD.renderPlayerSmall(i)
@@ -759,22 +759,28 @@ coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.render)
 -- __________ On start
 function coopHUD.on_start(_,cont)
     coopHUD.initHudTables()
-    if coopHUD.players[0] == nil then coopHUD.on_player_init() end
     coopHUD.updateItems()
+    if cont then
+        -- Logic when game is continued
+    else
+        -- Logic when started new game/ restart thought dbg console
+        coopHUD.essau_no = 0 -- resets Essau counter before player init
+        if coopHUD.players[0] == nil then coopHUD.on_player_init() end
+    end
 end
 coopHUD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, coopHUD.on_start)
 -- __________ On player init
-local essau_counter = 0
 function coopHUD.on_player_init()
+    coopHUD.essau_no = 0
     for i=0,Game():GetNumPlayers()-1,1 do
         --if Isaac.GetPlayer(i):GetPlayerType() ~= PlayerType.PLAYER_ESAU then
-        coopHUD.players [i-essau_counter] = coopHUD.initPlayer(i)
-        --else
-        --    i = i + 1
-        --end
-        if coopHUD.players [i] == nil then
+        local temp_player_table = coopHUD.initPlayer(i)
+        if temp_player_table  then
+            coopHUD.players[i-coopHUD.essau_no] = temp_player_table
+        else
+            print('skip')
             i = i+1
-            essau_counter = essau_counter + 1
+            coopHUD.essau_no = coopHUD.essau_no + 1
         end
     end
     coopHUD.updateControllerIndex()

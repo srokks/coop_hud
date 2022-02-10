@@ -7,7 +7,6 @@ function coopHUD.initPlayer(player_no)
     player_table = {
         --- INFO
         type = temp_player:GetPlayerType(),
-        name = coopHUD.players_config.small[player_no].name,
         controller_index = temp_player.ControllerIndex,
         -- ITEMS
         -- Actives
@@ -88,10 +87,13 @@ function coopHUD.initPlayer(player_no)
         player_table.max_poop_mana = 9
     end
     -- Jacob check
-    if player_table.type == 20 then
+    local essau_no = coopHUD.essau_no
+    if player_table.type == 19 then
         -- In case of
-        has_sub = true
+        --has_sub = true
+        if player_no == 0 then essau_no = 0 end
     end
+    player_table.name = coopHUD.players_config.small[player_no-essau_no].name
     -- Essau check
     if player_table.type == 20 then
         -- In case of
@@ -209,7 +211,7 @@ function coopHUD.updateHearts(player_no)
         end
     end
     if coopHUD.players[player_no].has_sub then
-        sub_player = player:GetSubPlayer()
+        sub_player = temp_player:GetSubPlayer()
         max_health_cap = 6
     end
     for i=coopHUD.players[player_no].max_health_cap,0,-1 do
@@ -302,6 +304,13 @@ function coopHUD.updateControllerIndex()
         if player.controller_index ~= Isaac.GetPlayer(num).ControllerIndex then
             player.controller_index = Isaac.GetPlayer(num).ControllerIndex
         end
+    end
+end
+function coopHUD.updatePlayerType(player_no)
+    local temp_player = Isaac.GetPlayer(player_no)
+    if coopHUD.players[player_no].type ~= temp_player:GetPlayerType() then
+        coopHUD.players[player_no].type = temp_player:GetPlayerType()
+        coopHUD.players[player_no].sprites.player_head = coopHUD.getPlayerHeadSprite(coopHUD.players[player_no].type)
     end
 end
 -- _____
