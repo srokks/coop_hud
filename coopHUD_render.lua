@@ -792,7 +792,6 @@ function coopHUD.on_start(_,cont)
     coopHUD.players = {}
     if cont then
         -- Logic when game is continued
-        print('on start ',' cont')
         --[[coopHUD.essau_no = 0 -- resets Essau counter before player init
         if coopHUD.players[0] == nil then coopHUD.on_player_init() end]]
         coopHUD.essau_no = 0 -- resets Essau counter before player init
@@ -853,8 +852,6 @@ function coopHUD.on_activate(_,type,RNG, EntityPlayer, UseFlags, used_slot, Cust
     -- Update actives
     coopHUD.signals.on_active_update = player_index
     coopHUD.signals.on_pockets_update = player_index
-    print(player_index)
-    
 end
 coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM, coopHUD.on_activate)
 -- __________ On item pickup

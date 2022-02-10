@@ -9,7 +9,4 @@ include("coopHUD_player_table_updates.lua")
 include("coopHUD_render.lua")
 include("coopHUD_test.lua")
 --
--- Inits tables when manual loaded mod
---if coopHUD.players[0] == nil then coopHUD.on_player_init() end
---
---coopHUD.updateAnchors()
+print('CoopHUD v.'..tostring(coopHUD.VERSION)..' successfully!')
