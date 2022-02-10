@@ -1,12 +1,14 @@
 coopHUD.test_str = 'test'
+coopHUD.signals.is_joining = true
+coopHUD.on_player_init()
 function  coopHUD.test_render()
     if Input.IsButtonTriggered(Keyboard.KEY_I,0)  then
         -- DEBUG - print table
         print('DEBUG "i"')
         for i,p in pairs(coopHUD.players) do
-            print(i,p.has_twin)
-            if p.has_twin then
-                print(p.twin.type)
+            print(p.twin.first_pocket[1])
+            for j,k in pairs(p.twin) do
+                --print(k.first_pocket)
             end
         end
     end

@@ -1,10 +1,11 @@
 local SHExists, ScreenHelper = pcall(require, "scripts.screenhelper")
 coopHUD.jar_of_wisp_charge = nil -- Global value of jar_of_wisp_charge
 -- _____
-function coopHUD.initPlayer(player_no,essau)
+function coopHUD.initPlayer(player_no,ent_player)
     -- Gets player no according to coopHUD tables
     -- If essau == true function return Essau table else nil
     local temp_player = Isaac.GetPlayer(player_no)
+    if ent_player ~= nil then temp_player = ent_player end
     local player_table = {}
     player_table = {
         --- INFO
@@ -36,6 +37,7 @@ function coopHUD.initPlayer(player_no,essau)
         has_sub = false, -- Determines if player has sub as Forgotten/Soul
         has_twin = false, -- Determines if player has twin as Jacob/Essau
         sub_heart_types = {},
+        twin = {},
         -- Stats
         -- Charges
         bethany_charge = nil, -- inits charge for Bethany
@@ -94,13 +96,12 @@ function coopHUD.initPlayer(player_no,essau)
     if player_table.type == 19 then
         --
         player_table.has_twin = true
-        player_table.twin = coopHUD.initPlayer(player_no+1,true) -- inits
-        if player_no == 0 then essau_no = 0 end -- prevents errors on indexing <0 vals
+        if player_no == 0 or player_no == 1 then essau_no = 0 end -- prevents errors on indexing <0 vals
     end
     -- name of player, must be after func check essau_no
     player_table.name = coopHUD.players_config.small[player_no-essau_no].name
     -- ___ Essau check
-    if player_table.type == 20 and not essau then
+    if player_table.type == 20 and not ent_player then
         -- In player is Essau skip it. Essau table is determined inside Jacob player as twin
         player_table = nil
     end
@@ -133,7 +134,8 @@ function coopHUD.updatePockets(player_no)
         coopHUD.players[player_no].third_pocket = coopHUD.getPocketID(temp_player,2)
         coopHUD.players[player_no].sprites.third_pocket = coopHUD.getPocketItemSprite(temp_player,2)
     end
-    if coopHUD.players[player_no].pocket_desc.name ~= coopHUD.getMainPocketDesc(temp_player).name then
+    if coopHUD.getMainPocketDesc(temp_player) and
+            coopHUD.players[player_no].pocket_desc.name ~= coopHUD.getMainPocketDesc(temp_player).name then
         coopHUD.players[player_no].pocket_desc = coopHUD.getMainPocketDesc(temp_player)
         if coopHUD.getPocketID(temp_player,0)[2] == 1 then
             coopHUD.HUD_table.streak:ReplaceSpritesheet(1,"/gfx/ui/blank.png")
@@ -149,6 +151,39 @@ function coopHUD.updatePockets(player_no)
         coopHUD.players[player_no].sprites.first_pocket_charge = coopHUD.getChargeSprites(temp_player,2)
         coopHUD.players[player_no].first_pocket = coopHUD.getPocketID(temp_player,0)
         coopHUD.players[player_no].sprites.first_pocket = coopHUD.getPocketItemSprite(temp_player,0)
+    end
+    if coopHUD.players[player_no].has_twin then
+        local twin_player = temp_player:GetOtherTwin()
+        if coopHUD.players[player_no].twin.first_pocket ~= coopHUD.getPocketID(twin_player,0) then
+            coopHUD.players[player_no].twin.first_pocket = coopHUD.getPocketID(twin_player,0)
+            coopHUD.players[player_no].twin.sprites.first_pocket = coopHUD.getPocketItemSprite(twin_player,0)
+        end
+        if coopHUD.players[player_no].twin.second_pocket ~= coopHUD.getPocketID(twin_player,1) then
+            coopHUD.players[player_no].twin.second_pocket = coopHUD.getPocketID(twin_player,1)
+            coopHUD.players[player_no].twin.sprites.second_pocket = coopHUD.getPocketItemSprite(twin_player,1)
+        end
+        if coopHUD.players[player_no].twin.third_pocket ~= coopHUD.getPocketID(twin_player,2) then
+            coopHUD.players[player_no].twin.third_pocket = coopHUD.getPocketID(twin_player,2)
+            coopHUD.players[player_no].twin.sprites.third_pocket = coopHUD.getPocketItemSprite(twin_player,2)
+        end
+        if coopHUD.players[player_no].twin.pocket_desc and
+                coopHUD.players[player_no].twin.pocket_desc.name ~= coopHUD.getMainPocketDesc(twin_player).name then
+            coopHUD.players[player_no].twin.pocket_desc = coopHUD.getMainPocketDesc(twin_player)
+            if coopHUD.getPocketID(twin_player,0)[2] == 1 then
+                coopHUD.HUD_table.streak:ReplaceSpritesheet(1,"/gfx/ui/blank.png")
+                coopHUD.HUD_table.streak:LoadGraphics()
+                coopHUD.streak_main_line = coopHUD.players[coopHUD.signals.on_pockets_update].pocket_desc.name
+                coopHUD.streak_sec_line = coopHUD.players[coopHUD.signals.on_pockets_update].pocket_desc.desc
+                coopHUD.HUD_table.streak_sec_color = KColor(1,1,1,1)
+                coopHUD.HUD_table.streak_sec_line_font:Load("font/pftempestasevencondensed.fnt")
+            end
+        end
+        if coopHUD.players[player_no].twin.first_pocket_charge ~= twin_player:GetActiveCharge(2) or forceUpdateActives then
+            coopHUD.players[player_no].twin.first_pocket_charge = twin_player:GetActiveCharge(2)
+            coopHUD.players[player_no].twin.sprites.first_pocket_charge = coopHUD.getChargeSprites(twin_player,2)
+            coopHUD.players[player_no].twin.first_pocket = coopHUD.getPocketID(twin_player,0)
+            coopHUD.players[player_no].twin.sprites.first_pocket = coopHUD.getPocketItemSprite(twin_player,0)
+        end
     end
 end
 function coopHUD.updateActives(player_no)
@@ -184,6 +219,21 @@ function coopHUD.updateActives(player_no)
             coopHUD.players[player_no].sprites.first_active = coopHUD.getActiveItemSprite(temp_player,0)
             coopHUD.players[player_no].sprites.first_active_charge = coopHUD.getChargeSprites(temp_player,0)
         end
+        if coopHUD.players[player_no].has_twin then
+            local twin_player = temp_player:GetOtherTwin()
+            if coopHUD.players[player_no].twin.first_active ~= twin_player:GetActiveItem(0)  then
+                coopHUD.players[player_no].twin.first_active = twin_player:GetActiveItem(0)
+                coopHUD.players[player_no].twin.second_active = twin_player:GetActiveItem(1)
+                coopHUD.players[player_no].twin.sprites.first_active = coopHUD.getActiveItemSprite(twin_player,0)
+                coopHUD.players[player_no].twin.sprites.second_active = coopHUD.getActiveItemSprite(twin_player,1)
+                coopHUD.players[player_no].twin.sprites.second_active_charge = coopHUD.getChargeSprites(twin_player,1)
+            end
+            if coopHUD.players[player_no].twin.first_active_charge ~= twin_player:GetActiveCharge(0) or forceUpdateActives then
+                coopHUD.players[player_no].twin.first_active_charge = twin_player:GetActiveCharge(0)
+                coopHUD.players[player_no].twin.sprites.first_active = coopHUD.getActiveItemSprite(twin_player,0)
+                coopHUD.players[player_no].twin.sprites.first_active_charge = coopHUD.getChargeSprites(twin_player,0)
+            end
+        end
     end
     end
 function coopHUD.updateCharge(player_no)
@@ -199,6 +249,17 @@ function coopHUD.updateTrinkets(player_no)
     if coopHUD.players[player_no].second_trinket ~= temp_player:GetTrinket(1) then
         coopHUD.players[player_no].second_trinket = temp_player:GetTrinket(1)
         coopHUD.players[player_no].sprites.second_trinket = coopHUD.getTrinketSprite(temp_player,1)
+    end
+    if coopHUD.players[player_no].has_twin then
+        local twin_player = temp_player:GetOtherTwin()
+        if coopHUD.players[player_no].twin.first_trinket ~= twin_player:GetTrinket(0) then
+            coopHUD.players[player_no].twin.first_trinket = twin_player:GetTrinket(0)
+            coopHUD.players[player_no].twin.sprites.first_trinket = coopHUD.getTrinketSprite(twin_player,0)
+        end
+        if coopHUD.players[player_no].twin.second_trinket ~= twin_player:GetTrinket(1) then
+            coopHUD.players[player_no].twin.second_trinket = twin_player:GetTrinket(1)
+            coopHUD.players[player_no].twin.sprites.second_trinket = coopHUD.getTrinketSprite(twin_player,1)
+        end
     end
 end
 function coopHUD.updateHearts(player_no)
@@ -237,6 +298,23 @@ function coopHUD.updateHearts(player_no)
                 coopHUD.players[player_no].sub_heart_types[i].heart_type = heart_type
                 coopHUD.players[player_no].sub_heart_types[i].overlay = overlay
                 coopHUD.players[player_no].sprites.sub_hearts[i] = coopHUD.getHeartSprite(heart_type,overlay)
+            end
+        end
+    end
+    if coopHUD.players[player_no].has_twin then
+        local twin_player = temp_player:GetOtherTwin()
+        local twin_temp_total_hearts = math.ceil((temp_player:GetEffectiveMaxHearts() + temp_player:GetSoulHearts())/2)
+        if coopHUD.players[player_no].twin.total_hearts ~= twin_temp_total_hearts then
+            coopHUD.players[player_no].twin.total_hearts = twin_temp_total_hearts
+        end
+        for i=coopHUD.players[player_no].max_health_cap,0,-1 do
+            local heart_type,overlay = coopHUD.getHeartType(twin_player,i)
+            if (coopHUD.players[player_no].heart_types[i] == nil) or
+                    (coopHUD.players[player_no].twin.heart_types[i].heart_type ~= heart_type) or
+                    (coopHUD.players[player_no].twin.heart_types[i].overlay ~= overlay) then
+                coopHUD.players[player_no].twin.heart_types[i].heart_type = heart_type
+                coopHUD.players[player_no].twin.heart_types[i].overlay = overlay
+                coopHUD.players[player_no].twin.sprites.hearts[i] = coopHUD.getHeartSprite(heart_type,overlay)
             end
         end
     end
@@ -403,6 +481,7 @@ function PostItemPickup (_,player)
         --_____ Updates actives of player
         local pl_index = coopHUD.getPlayerNumByControllerIndex(player.ControllerIndex)
         if itemqueue.Item.Type == ItemType.ITEM_ACTIVE then
+            print('pickup ',pl_index)
             coopHUD.updateActives(pl_index)
         elseif itemqueue.Item.Type == ItemType.ITEM_TRINKET then
             coopHUD.updateTrinkets(pl_index)

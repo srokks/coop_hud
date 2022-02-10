@@ -432,6 +432,7 @@ function coopHUD.renderPlayerInfo(player,pos,mirrored,scale,down_anchor)
 end
 function coopHUD.renderPlayer(player_no)
     --
+    local essau_no = coopHUD.essau_no
     local anchor_top = coopHUD.anchors[coopHUD.players_config[player_no].anchor_top]
     local anchor_bot = coopHUD.anchors[coopHUD.players_config[player_no].anchor_bot]
     local mirrored = coopHUD.players_config[player_no].mirrored
@@ -465,6 +466,9 @@ function coopHUD.renderPlayer(player_no)
         local twin_active_off = Vector(0,0)
         local twin_hearts_off = Vector(0,0)
         local twin_exl_liv_off = Vector(0,0)
+        -- No essau head sprite
+        --info_off = coopHUD.renderPlayerInfo(coopHUD.players[player_no],
+                                            --Vector(49,49), mirrored, Vector(0.9,0.9), false)
         twin_active_off = coopHUD.renderActive(coopHUD.players[player_no].twin,
                                                Vector(anchor_top.X,math.max(active_off.Y,hearts_off.Y,info_off.Y)),
                                                mirrored,nil,false)
@@ -488,6 +492,16 @@ function coopHUD.renderPlayer(player_no)
     pocket_off = coopHUD.renderPockets(coopHUD.players[player_no],
                                        Vector(anchor_bot.X+trinket_off.X,anchor_bot.Y),
                                        mirrored,nil,true)
+    if coopHUD.players[player_no].has_twin then
+        local twin_trinket_off = Vector(0,0)
+        twin_trinket_off = coopHUD.renderTrinkets(coopHUD.players[player_no].twin,
+                                         Vector(anchor_bot.X,anchor_bot.Y-64),
+                                         mirrored,nil,true)
+        coopHUD.renderPockets(coopHUD.players[player_no].twin,
+                                       Vector(anchor_bot.X+twin_trinket_off.X,anchor_bot.Y-64),
+                                       mirrored,nil,true)
+    end
+    -- </Down line>
 end
 function coopHUD.renderPlayerSmall(player_no)
     local anchor = coopHUD.anchors[coopHUD.players_config.small[player_no].anchor]
@@ -775,39 +789,47 @@ end
 coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.render)
 -- __________ On start
 function coopHUD.on_start(_,cont)
-    
+    coopHUD.players = {}
     if cont then
         -- Logic when game is continued
         print('on start ',' cont')
         --[[coopHUD.essau_no = 0 -- resets Essau counter before player init
         if coopHUD.players[0] == nil then coopHUD.on_player_init() end]]
     else
-        print('on start ',' non cont')
         -- Logic when started new game/ restart thought dbg console
         
+        coopHUD.essau_no = 0 -- resets Essau counter before player init
+        if coopHUD.players[0] == nil then
+            coopHUD.signals.is_joining = true
+            coopHUD.on_player_init()
+        end
     end
-    --coopHUD.essau_no = 0 -- resets Essau counter before player init
-    --if coopHUD.players[0] == nil then coopHUD.on_player_init() end
-    --coopHUD.initHudTables()
-    --coopHUD.updateItems()
+    coopHUD.initHudTables()
+    coopHUD.updateItems()
 end
 coopHUD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, coopHUD.on_start)
 -- __________ On player init
 function coopHUD.on_player_init()
-    coopHUD.essau_no = 0
-    for i=0,Game():GetNumPlayers()-1,1 do
-        --if Isaac.GetPlayer(i):GetPlayerType() ~= PlayerType.PLAYER_ESAU then
-        local temp_player_table = coopHUD.initPlayer(i)
-        if temp_player_table  then
-            coopHUD.players[i-coopHUD.essau_no] = temp_player_table
-        else
-            i = i+1
-            coopHUD.essau_no = coopHUD.essau_no + 1
+    
+    if coopHUD.signals.is_joining then
+        coopHUD.essau_no = 0
+        for i=0,Game():GetNumPlayers()-1,1 do
+            local temp_player_table = coopHUD.initPlayer(i)
+            if temp_player_table  then
+                coopHUD.players[i-coopHUD.essau_no] = temp_player_table
+                if coopHUD.players[i-coopHUD.essau_no].has_twin then
+                    local temp_twin = Isaac.GetPlayer(i):GetOtherTwin()
+                    coopHUD.players[i-coopHUD.essau_no].twin = coopHUD.initPlayer(i,temp_twin) -- inits
+                    coopHUD.essau_no = coopHUD.essau_no + 1
+                end
+            end
         end
     end
+    --
     coopHUD.updateControllerIndex()
     coopHUD.signals.is_joining = false
     coopHUD.options.onRender = true
+    
 end
 coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, coopHUD.on_player_init,0)
 -- __________ On active item/pocket activate
