@@ -669,8 +669,10 @@ function coopHUD.on_input(_,ent,hook,btn)
     local mapPressed = false
     for i = 0, Game():GetNumPlayers() - 1 do
     local player = Isaac.GetPlayer(i)
-        if Input.IsActionPressed(ButtonAction.ACTION_ITEM, player.ControllerIndex) then
-            coopHUD.updateActives(coopHUD.getPlayerNumByControllerIndex(player.ControllerIndex))
+        local player_index = coopHUD.getPlayerNumByControllerIndex(player.ControllerIndex)
+        if Input.IsActionTriggered(ButtonAction.ACTION_DROP, player.ControllerIndex) then
+            coopHUD.updateHearts(player_index)
+            coopHUD.updatePlayerType(player_index)
         end
     mapPressed = mapPressed or Input.IsActionPressed(ButtonAction.ACTION_MAP, player.ControllerIndex)
     end
