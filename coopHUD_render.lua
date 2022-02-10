@@ -461,6 +461,21 @@ function coopHUD.renderPlayer(player_no)
                                                    Vector(anchor_top.X, anchor_top.Y +
                                                            math.max(active_off.Y,hearts_off.Y,info_off.Y)),
                                                    mirrored,nil,false)
+    if coopHUD.players[player_no].has_twin then
+        local twin_active_off = Vector(0,0)
+        local twin_hearts_off = Vector(0,0)
+        local twin_exl_liv_off = Vector(0,0)
+        twin_active_off = coopHUD.renderActive(coopHUD.players[player_no].twin,
+                                               Vector(anchor_top.X,math.max(active_off.Y,hearts_off.Y,info_off.Y)),
+                                               mirrored,nil,false)
+        twin_hearts_off = coopHUD.renderHearts(coopHUD.players[player_no].twin,
+                                               Vector(anchor_top.X+twin_active_off.X, math.max(active_off.Y,hearts_off.Y,info_off.Y)),
+                                               mirrored,nil,false)
+        twin_exl_liv_off = coopHUD.renderExtraLives(coopHUD.players[player_no].twin,
+                                                    Vector(anchor_top.X+twin_active_off.X+twin_hearts_off.X,
+                                                           math.max(active_off.Y,hearts_off.Y,info_off.Y)),
+                                                    mirrored,nil,false)
+    end
     --coopHUD.renderPoopSpells(coopHUD.players[player_no],
     --                         Vector(anchor_top.X, anchor_top.Y + math.max(active_off.Y,hearts_off.Y)),
     --                         mirrored)
@@ -760,15 +775,21 @@ end
 coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.render)
 -- __________ On start
 function coopHUD.on_start(_,cont)
-    coopHUD.initHudTables()
-    coopHUD.updateItems()
+    
     if cont then
         -- Logic when game is continued
+        print('on start ',' cont')
+        --[[coopHUD.essau_no = 0 -- resets Essau counter before player init
+        if coopHUD.players[0] == nil then coopHUD.on_player_init() end]]
     else
+        print('on start ',' non cont')
         -- Logic when started new game/ restart thought dbg console
-        coopHUD.essau_no = 0 -- resets Essau counter before player init
-        if coopHUD.players[0] == nil then coopHUD.on_player_init() end
+        
     end
+    --coopHUD.essau_no = 0 -- resets Essau counter before player init
+    --if coopHUD.players[0] == nil then coopHUD.on_player_init() end
+    --coopHUD.initHudTables()
+    --coopHUD.updateItems()
 end
 coopHUD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, coopHUD.on_start)
 -- __________ On player init
@@ -780,7 +801,6 @@ function coopHUD.on_player_init()
         if temp_player_table  then
             coopHUD.players[i-coopHUD.essau_no] = temp_player_table
         else
-            print('skip')
             i = i+1
             coopHUD.essau_no = coopHUD.essau_no + 1
         end

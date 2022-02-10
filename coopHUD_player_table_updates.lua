@@ -1,7 +1,9 @@
 local SHExists, ScreenHelper = pcall(require, "scripts.screenhelper")
 coopHUD.jar_of_wisp_charge = nil -- Global value of jar_of_wisp_charge
 -- _____
-function coopHUD.initPlayer(player_no)
+function coopHUD.initPlayer(player_no,essau)
+    -- Gets player no according to coopHUD tables
+    -- If essau == true function return Essau table else nil
     local temp_player = Isaac.GetPlayer(player_no)
     local player_table = {}
     player_table = {
@@ -31,7 +33,8 @@ function coopHUD.initPlayer(player_no)
         max_health_cap = 12,
         extra_lives = temp_player:GetExtraLives(),
         -- Sub player
-        has_sub = false,
+        has_sub = false, -- Determines if player has sub as Forgotten/Soul
+        has_twin = false, -- Determines if player has twin as Jacob/Essau
         sub_heart_types = {},
         -- Stats
         -- Charges
@@ -64,7 +67,7 @@ function coopHUD.initPlayer(player_no)
             poops = nil,
         },
     }
-    -- Bethany/T.Bethany check
+    -- ___ Bethany/T.Bethany check
     if player_table.type == 18 or player_table.type == 36 then
         if player_table.type == 18 then
             player_table.bethany_charge = temp_player:GetSoulCharge()
@@ -72,31 +75,33 @@ function coopHUD.initPlayer(player_no)
             player_table.bethany_charge = temp_player:GetBloodCharge()
         end
     end
-    -- Forgotten/Soul check
+    -- ___ Forgotten/Soul check
     if  player_table.type == 16 or player_table.type == 17 then
         player_table.has_sub = true
         local sub = temp_player:GetSubPlayer()
         player_table.sprites.sub_hearts = coopHUD.getHeartSpriteTable(sub)
         player_table.sub_heart_types = coopHUD.getHeartTypeTable(sub)
     end
-    -- T. ??? check
+    -- ___ T. ??? check
     if player_table.type == PlayerType.PLAYER_XXX_B then
         player_table.poops = coopHUD.getPoopSpellTable(player_no)
         player_table.sprites.poops = coopHUD.getPoopSpriteTable(temp_player)
         player_table.poop_mana = temp_player:GetPoopMana()
         player_table.max_poop_mana = 9
     end
-    -- Jacob check
+    -- ___ Jacob check
     local essau_no = coopHUD.essau_no
     if player_table.type == 19 then
-        -- In case of
-        --has_sub = true
-        if player_no == 0 then essau_no = 0 end
+        --
+        player_table.has_twin = true
+        player_table.twin = coopHUD.initPlayer(player_no+1,true) -- inits
+        if player_no == 0 then essau_no = 0 end -- prevents errors on indexing <0 vals
     end
+    -- name of player, must be after func check essau_no
     player_table.name = coopHUD.players_config.small[player_no-essau_no].name
-    -- Essau check
-    if player_table.type == 20 then
-        -- In case of
+    -- ___ Essau check
+    if player_table.type == 20 and not essau then
+        -- In player is Essau skip it. Essau table is determined inside Jacob player as twin
         player_table = nil
     end
     return player_table
