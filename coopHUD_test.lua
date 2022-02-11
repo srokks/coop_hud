@@ -17,4 +17,3 @@ end
 coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.test_render)
 --
 coopHUD.initHudTables()
-coopHUD.essau_no = 0

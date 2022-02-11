@@ -34,12 +34,48 @@ function coopHUD.renderActive(player,pos,mirrored,scale,down_anchor)
     end
     -- Second active render
     if player.sprites.second_active then
+        if player.has_twin then
+            -- Jacob/Essau sprite dims logic
+            local color = Color(1,1,1,1)
+            -- Triggers when drop button pressed
+            if Input.IsActionPressed(ButtonAction.ACTION_DROP,player.controller_index) then
+                color = Color(0.3,0.3,0.3,1)
+                color:SetColorize(0,0,0,0)
+            else
+                color = Color(1,1,1,1)
+                color:SetColorize(0,0,0,0)
+            end
+            -- Sets first active color when triggered
+            -- main player
+            player.sprites.second_active.Color = color
+            -- twin
+            if player.twin.sprites.second_active then
+                player.twin.sprites.second_active.Color = color
+            end
+        end
         temp_pos = Vector(pos.X + sec_pivot.X,pos.Y + sec_pivot.Y)
         player.sprites.second_active.Scale = Vector(0.5,0.5)
         player.sprites.second_active:Render(temp_pos)
     end
     -- Second active render
     if player.sprites.first_active then
+        if player.has_twin then
+            -- Jacob/Essau sprite dims logic
+            local color = Color(1,1,1,1)
+            -- Triggers when drop button pressed
+            if Input.IsActionPressed(ButtonAction.ACTION_DROP,player.controller_index) then
+                color = Color(0.3,0.3,0.3,1) -- Dims sprite color
+                color:SetColorize(0,0,0,0)
+            else
+                color = Color(1,1,1,1) -- Restore normal color
+                color:SetColorize(0,0,0,0)
+            end
+            -- Sets sprite  color when triggered
+            player.sprites.first_active.Color = color
+            if player.twin.sprites.first_active then
+                player.twin.sprites.first_active.Color = color
+            end
+        end
         temp_pos = Vector(pos.X + charge_offset.X,pos.Y+charge_offset.Y)
         charge_offset = coopHUD.renderChargeBar(player.sprites.first_active_charge,temp_pos,mirrored,sprite_scale)
         temp_pos = Vector(pos.X + active_pivot.X,pos.Y+active_pivot.Y)
@@ -219,7 +255,7 @@ function coopHUD.renderPockets(player,pos,mirrored,scale,down_anchor)
         local offset = Vector(0,0)
         local f = Font()
         f:Load("font/pftempestasevencondensed.fnt")
-        local color = KColor(1,1,1,1) -- TODO: sets according to player color
+        local font_color = KColor(1,1,1,1) -- TODO: sets according to player color
         --
         local sprite_scale = scale
         if sprite_scale == nil then sprite_scale = Vector(1,1) end -- sets def sprite_scale
@@ -261,6 +297,25 @@ function coopHUD.renderPockets(player,pos,mirrored,scale,down_anchor)
         temp_pos = Vector(pos.X+main_pocket_pivot.X,pos.Y+main_pocket_pivot.Y)
         if mirrored then temp_pos.X = temp_pos.X + charge_offset.X end
         player.sprites.first_pocket.Scale = sprite_scale
+        local color = Color(0.3,0.3,0.3,1) -- dims by default
+        -- Jacob/Essau sprite dims logic
+        if player.has_twin then
+            -- Triggers when drop button pressed
+            if Input.IsActionPressed(ButtonAction.ACTION_DROP,player.controller_index) then
+                color = Color(1,1,1,1)  -- normalize sprite on button
+                color:SetColorize(0,0,0,0)
+            else
+                color = Color(0.3,0.3,0.3,1) -- return to dim state
+                color:SetColorize(0,0,0,0)
+            end
+            -- Sets first active color when triggered
+            -- main player
+            player.sprites.first_pocket.Color = color
+            if player.twin.sprites.first_pocket then
+                player.twin.sprites.first_pocket.Color = color
+            end
+            --
+        end
         player.sprites.first_pocket:Render(temp_pos)
         -- Description
         if player.pocket_desc then
@@ -271,7 +326,7 @@ function coopHUD.renderPockets(player,pos,mirrored,scale,down_anchor)
             end
             temp_pos = Vector(pos.X+charge_offset.X+desc_pivot.X,pos.Y+desc_pivot.Y)
             if  mirrored then temp_pos.X = temp_pos.X - (28*sprite_scale.X) - string.len(text)*(5*sprite_scale.X) end
-            f:DrawStringScaled (text,temp_pos.X,temp_pos.Y,sprite_scale.X,sprite_scale.Y,color,0,true)
+            f:DrawStringScaled (text,temp_pos.X,temp_pos.Y,sprite_scale.X,sprite_scale.Y,font_color,0,true)
         end
         ------third pocket
         if player.sprites.third_pocket then
