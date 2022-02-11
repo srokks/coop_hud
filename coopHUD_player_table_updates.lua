@@ -135,7 +135,7 @@ function coopHUD.updatePockets(player_no)
         coopHUD.players[player_no].third_pocket = coopHUD.getPocketID(temp_player,2)
         coopHUD.players[player_no].sprites.third_pocket = coopHUD.getPocketItemSprite(temp_player,2)
     end
-    if coopHUD.players[player_no].pocket_desc then
+    if coopHUD.players[player_no].pocket_desc and coopHUD.getMainPocketDesc(temp_player) then
         if coopHUD.players[player_no].pocket_desc.name ~= coopHUD.getMainPocketDesc(temp_player).name then
           coopHUD.players[player_no].pocket_desc = coopHUD.getMainPocketDesc(temp_player)
              if coopHUD.getPocketID(temp_player,0)[2] == 1 then
