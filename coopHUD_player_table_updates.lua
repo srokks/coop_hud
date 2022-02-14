@@ -126,6 +126,16 @@ function coopHUD.updatePockets(player_no)
     if coopHUD.players[player_no].first_pocket ~= coopHUD.getPocketID(temp_player,0) then
         coopHUD.players[player_no].first_pocket = coopHUD.getPocketID(temp_player,0)
         coopHUD.players[player_no].sprites.first_pocket = coopHUD.getPocketItemSprite(temp_player,0)
+        coopHUD.players[player_no].pocket_desc = coopHUD.getMainPocketDesc(temp_player)
+        -- Refresh description on item change
+        if coopHUD.getPocketID(temp_player,0)[2] == 1 then
+            coopHUD.HUD_table.streak:ReplaceSpritesheet(1,"/gfx/ui/blank.png")
+            coopHUD.HUD_table.streak:LoadGraphics()
+            coopHUD.streak_main_line = coopHUD.players[coopHUD.signals.on_pockets_update].pocket_desc.name
+            coopHUD.streak_sec_line = coopHUD.players[coopHUD.signals.on_pockets_update].pocket_desc.desc
+            coopHUD.HUD_table.streak_sec_color = KColor(1,1,1,1)
+            coopHUD.HUD_table.streak_sec_line_font:Load("font/pftempestasevencondensed.fnt")
+        end
     end
     if coopHUD.players[player_no].second_pocket ~= coopHUD.getPocketID(temp_player,1) then
         coopHUD.players[player_no].second_pocket = coopHUD.getPocketID(temp_player,1)
@@ -135,20 +145,6 @@ function coopHUD.updatePockets(player_no)
         coopHUD.players[player_no].third_pocket = coopHUD.getPocketID(temp_player,2)
         coopHUD.players[player_no].sprites.third_pocket = coopHUD.getPocketItemSprite(temp_player,2)
     end
-    if coopHUD.players[player_no].pocket_desc and coopHUD.getMainPocketDesc(temp_player) then
-        if coopHUD.players[player_no].pocket_desc.name ~= coopHUD.getMainPocketDesc(temp_player).name then
-          coopHUD.players[player_no].pocket_desc = coopHUD.getMainPocketDesc(temp_player)
-             if coopHUD.getPocketID(temp_player,0)[2] == 1 then
-                 coopHUD.HUD_table.streak:ReplaceSpritesheet(1,"/gfx/ui/blank.png")
-                 coopHUD.HUD_table.streak:LoadGraphics()
-                 coopHUD.streak_main_line = coopHUD.players[coopHUD.signals.on_pockets_update].pocket_desc.name
-                 coopHUD.streak_sec_line = coopHUD.players[coopHUD.signals.on_pockets_update].pocket_desc.desc
-                 coopHUD.HUD_table.streak_sec_color = KColor(1,1,1,1)
-                 coopHUD.HUD_table.streak_sec_line_font:Load("font/pftempestasevencondensed.fnt")
-             end
-    end
-    end
-    
     if coopHUD.players[player_no].first_pocket_charge ~= temp_player:GetActiveCharge(2) or forceUpdateActives then
         coopHUD.players[player_no].first_pocket_charge = temp_player:GetActiveCharge(2)
         coopHUD.players[player_no].sprites.first_pocket_charge = coopHUD.getChargeSprites(temp_player,2)
@@ -160,6 +156,16 @@ function coopHUD.updatePockets(player_no)
         if coopHUD.players[player_no].twin.first_pocket ~= coopHUD.getPocketID(twin_player,0) then
             coopHUD.players[player_no].twin.first_pocket = coopHUD.getPocketID(twin_player,0)
             coopHUD.players[player_no].twin.sprites.first_pocket = coopHUD.getPocketItemSprite(twin_player,0)
+            -- Refresh description on item change
+            coopHUD.players[player_no].twin.pocket_desc = coopHUD.getMainPocketDesc(twin_player)
+            if coopHUD.getPocketID(twin_player,0)[2] == 1 then
+                coopHUD.HUD_table.streak:ReplaceSpritesheet(1,"/gfx/ui/blank.png")
+                coopHUD.HUD_table.streak:LoadGraphics()
+                coopHUD.streak_main_line = coopHUD.players[coopHUD.signals.on_pockets_update].pocket_desc.name
+                coopHUD.streak_sec_line = coopHUD.players[coopHUD.signals.on_pockets_update].pocket_desc.desc
+                coopHUD.HUD_table.streak_sec_color = KColor(1,1,1,1)
+                coopHUD.HUD_table.streak_sec_line_font:Load("font/pftempestasevencondensed.fnt")
+            end
         end
         if coopHUD.players[player_no].twin.second_pocket ~= coopHUD.getPocketID(twin_player,1) then
             coopHUD.players[player_no].twin.second_pocket = coopHUD.getPocketID(twin_player,1)
@@ -171,15 +177,6 @@ function coopHUD.updatePockets(player_no)
         end
         if coopHUD.players[player_no].twin.pocket_desc and coopHUD.getMainPocketDesc(twin_player) and
                 coopHUD.players[player_no].twin.pocket_desc.name ~= coopHUD.getMainPocketDesc(twin_player).name then
-            coopHUD.players[player_no].twin.pocket_desc = coopHUD.getMainPocketDesc(twin_player)
-            if coopHUD.getPocketID(twin_player,0)[2] == 1 then
-                coopHUD.HUD_table.streak:ReplaceSpritesheet(1,"/gfx/ui/blank.png")
-                coopHUD.HUD_table.streak:LoadGraphics()
-                coopHUD.streak_main_line = coopHUD.players[coopHUD.signals.on_pockets_update].pocket_desc.name
-                coopHUD.streak_sec_line = coopHUD.players[coopHUD.signals.on_pockets_update].pocket_desc.desc
-                coopHUD.HUD_table.streak_sec_color = KColor(1,1,1,1)
-                coopHUD.HUD_table.streak_sec_line_font:Load("font/pftempestasevencondensed.fnt")
-            end
         end
         if coopHUD.players[player_no].twin.first_pocket_charge ~= twin_player:GetActiveCharge(2) or forceUpdateActives then
             coopHUD.players[player_no].twin.first_pocket_charge = twin_player:GetActiveCharge(2)
