@@ -307,7 +307,7 @@ function coopHUD.renderPockets(player,pos,mirrored,scale,down_anchor)
         if mirrored then temp_pos.X = temp_pos.X + charge_offset.X end
         player.sprites.first_pocket.Scale = sprite_scale
         local color = Color(0.3,0.3,0.3,1) -- dims by default
-        local font_color = KColor(1,0.3,0.3,1)
+        local font_color = KColor(1,1,1,1)
         -- Jacob/Essau sprite dims logic
         if player.is_twin or player.has_twin then
             -- Triggers when drop button pressed
