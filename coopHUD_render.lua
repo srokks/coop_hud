@@ -1010,6 +1010,8 @@ function coopHUD.on_item_pickup(_, ent_player, ent_collider, Low)
                 ent_collider.Variant == PickupVariant.PICKUP_KEY or -- or with key
                 ent_collider.Variant == PickupVariant.PICKUP_BOMB then -- or with bomb
             coopHUD.signals.on_item_update = true -- triggers item update by signal
+        elseif ent_collider.Variant == PickupVariant.PICKUP_LIL_BATTERY then
+            coopHUD.signals.on_active_update = player_index
         elseif ent_collider.Variant == PickupVariant.PICKUP_TAROTCARD then
             coopHUD.signals.on_pockets_update = player_index -- triggers pocket update by signal
         elseif ent_collider.Variant == PickupVariant.PICKUP_PILL then
