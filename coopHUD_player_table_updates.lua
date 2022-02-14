@@ -393,8 +393,8 @@ function coopHUD.updateControllerIndex()
     --[[
     Function updates controller indexes in coopHUD player tables
     ]]
-    for num,player in pairs(coopHUD.players) do
-        temp_player = Isaac.GetPlayer(num)
+    for _,player in pairs(coopHUD.players) do
+        temp_player = Isaac.GetPlayer(player.game_index)
         if temp_player:GetPlayerType() == 20 then -- prevents from updating index if player is Essau
             next(coopHUD.players) -- skips iterator
         else
