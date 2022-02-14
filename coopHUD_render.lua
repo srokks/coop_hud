@@ -855,8 +855,13 @@ function coopHUD.on_pill_use(_,effect_no,ent_player)
             coopHUD.streak_main_line = langAPI.getPocketName(pill_sys_name)
         end
     end
+    local player_index = coopHUD.getPlayerNumByControllerIndex(ent_player.ControllerIndex)
     -- Triggers pocket update signal
-    coopHUD.signals.on_pockets_update = coopHUD.getPlayerNumByControllerIndex(ent_player.ControllerIndex)
+    coopHUD.signals.on_pockets_update = player_index
+    -- Updates trinkets if Gulp used
+    if effect_no == PillEffect.PILLEFFECT_GULP then
+        coopHUD.signals.on_trinket_update = player_index
+    end
 end
 coopHUD:AddCallback(ModCallbacks.MC_USE_PILL, coopHUD.on_pill_use)
 -- _____ On card use

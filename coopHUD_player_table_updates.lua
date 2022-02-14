@@ -461,6 +461,10 @@ function coopHUD.updateTables()
         coopHUD.updateItems()
         coopHUD.signals.on_item_update = nil
     end
+    if coopHUD.signals.on_trinket_update then
+        coopHUD.updateTrinkets(coopHUD.signals.on_trinket_update)
+        coopHUD.signals.on_trinket_update = nil
+    end
     if coopHUD.signals.on_pockets_update then
         coopHUD.updatePockets(coopHUD.signals.on_pockets_update)
         coopHUD.signals.on_pockets_update = nil

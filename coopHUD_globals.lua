@@ -7,6 +7,7 @@ coopHUD.signals = {
     on_active_update = nil, --nil or emit player num
     on_item_update = nil, --nil or emit player num
     on_heart_update = nil, --nil or emit player num
+    on_trinket_update = nil, --nil or emit player num
     on_pockets_update = nil, --nil or emit player num
 }
 coopHUD.players = {}
