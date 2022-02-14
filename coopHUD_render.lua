@@ -819,29 +819,29 @@ function coopHUD.on_input(_,ent,hook,btn)
             coopHUD.options.onRender = true
         end
         if Input.IsActionTriggered(6,i) and coopHUD.signals.on_item_update then
-            
             coopHUD.test_str = true
         end
     end
     -- MAP BUTTON
     local mapPressed = false
     for i = 0, Game():GetNumPlayers() - 1 do
-    local player = Isaac.GetPlayer(i)
+        local player = Isaac.GetPlayer(i)
         local player_index = coopHUD.getPlayerNumByControllerIndex(player.ControllerIndex)
         if Input.IsActionTriggered(ButtonAction.ACTION_DROP, player.ControllerIndex) then
             coopHUD.updateHearts(player_index)
             coopHUD.updatePlayerType(player_index)
+            coopHUD.updatePockets(player_index)
         end
-    mapPressed = mapPressed or Input.IsActionPressed(ButtonAction.ACTION_MAP, player.ControllerIndex)
+        mapPressed = mapPressed or Input.IsActionPressed(ButtonAction.ACTION_MAP, player.ControllerIndex)
     end
     if mapPressed then
-    btn_held = btn_held + 1
-    if btn_held > 1200 then
-    coopHUD.signals.map = true
-    end
+        btn_held = btn_held + 1
+        if btn_held > 1200 then
+            coopHUD.signals.map = true
+        end
     else
-    coopHUD.signals.map = false
-    btn_held = 0
+        coopHUD.signals.map = false
+        btn_held = 0
     end
     end
 coopHUD:AddCallback(ModCallbacks.MC_INPUT_ACTION, coopHUD.on_input)

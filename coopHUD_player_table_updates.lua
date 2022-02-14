@@ -123,12 +123,13 @@ function coopHUD.updateCollectible(player_no)
 end
 function coopHUD.updatePockets(player_no)
     local temp_player = Isaac.GetPlayer(coopHUD.players[player_no].game_index)
-    if coopHUD.players[player_no].first_pocket ~= coopHUD.getPocketID(temp_player,0) then
+    if coopHUD.players[player_no].first_pocket[1] ~= coopHUD.getPocketID(temp_player,0)[1] then
         coopHUD.players[player_no].first_pocket = coopHUD.getPocketID(temp_player,0)
         coopHUD.players[player_no].sprites.first_pocket = coopHUD.getPocketItemSprite(temp_player,0)
         coopHUD.players[player_no].pocket_desc = coopHUD.getMainPocketDesc(temp_player)
         -- Refresh description on item change
-        if coopHUD.getPocketID(temp_player,0)[2] == 1 then
+        if coopHUD.getPocketID(temp_player,0)[2] == 1 and
+                  coopHUD.signals.on_pockets_update then
             coopHUD.HUD_table.streak:ReplaceSpritesheet(1,"/gfx/ui/blank.png")
             coopHUD.HUD_table.streak:LoadGraphics()
             coopHUD.streak_main_line = coopHUD.players[coopHUD.signals.on_pockets_update].pocket_desc.name
@@ -153,16 +154,17 @@ function coopHUD.updatePockets(player_no)
     end
     if coopHUD.players[player_no].has_twin then
         local twin_player = temp_player:GetOtherTwin()
-        if coopHUD.players[player_no].twin.first_pocket ~= coopHUD.getPocketID(twin_player,0) then
+        if coopHUD.players[player_no].twin.first_pocket[1] ~= coopHUD.getPocketID(twin_player,0)[1] then
             coopHUD.players[player_no].twin.first_pocket = coopHUD.getPocketID(twin_player,0)
             coopHUD.players[player_no].twin.sprites.first_pocket = coopHUD.getPocketItemSprite(twin_player,0)
             -- Refresh description on item change
             coopHUD.players[player_no].twin.pocket_desc = coopHUD.getMainPocketDesc(twin_player)
-            if coopHUD.getPocketID(twin_player,0)[2] == 1 then
+            if coopHUD.getPocketID(twin_player,0)[2] == 1 and
+                    coopHUD.signals.on_pockets_update then
                 coopHUD.HUD_table.streak:ReplaceSpritesheet(1,"/gfx/ui/blank.png")
                 coopHUD.HUD_table.streak:LoadGraphics()
-                coopHUD.streak_main_line = coopHUD.players[coopHUD.signals.on_pockets_update].pocket_desc.name
-                coopHUD.streak_sec_line = coopHUD.players[coopHUD.signals.on_pockets_update].pocket_desc.desc
+                coopHUD.streak_main_line = coopHUD.players[coopHUD.signals.on_pockets_update].twin.pocket_desc.name
+                coopHUD.streak_sec_line = coopHUD.players[coopHUD.signals.on_pockets_update].twin.pocket_desc.desc
                 coopHUD.HUD_table.streak_sec_color = KColor(1,1,1,1)
                 coopHUD.HUD_table.streak_sec_line_font:Load("font/pftempestasevencondensed.fnt")
             end
