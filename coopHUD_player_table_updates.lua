@@ -473,18 +473,18 @@ end
 coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.updateTables)
 -- Modified  Version of POST_ITEM_PICKUP from pedroff_1 - https://steamcommunity.com/sharedfiles/filedetails/?id=2577953432&searchtext=callback
 function PostItemPickup (_,player)
-    local itemqueue = player.QueuedItem
-    if itemqueue and itemqueue.Item then
+    local item_queue = player.QueuedItem
+    if item_queue and item_queue.Item then
         local list = PostItemPickupFunctions
-        if list[itemqueue.Item.ID] then
-            for i,v in pairs(list[itemqueue.Item.ID]) do
+        if list[item_queue.Item.ID] then
+            for i,v in pairs(list[item_queue.Item.ID]) do
                 v(_,player)
             end
         end
         list = PostItemPickupFunctions[-1]
         if list then
             for i,v in pairs(list) do
-                v(_,player,itemqueue.Item.ID)
+                v(_, player, item_queue.Item.ID)
             end
         end
         player:FlushQueueItem()
@@ -492,18 +492,18 @@ function PostItemPickup (_,player)
         if langAPI then
             coopHUD.HUD_table.streak:ReplaceSpritesheet(1,"/gfx/ui/blank.png")
             coopHUD.HUD_table.streak:LoadGraphics()
-            coopHUD.streak_main_line = langAPI.getItemName(string.sub(itemqueue.Item.Name,2))
-            coopHUD.streak_sec_line = langAPI.getItemName(string.sub(itemqueue.Item.Description,2))
+            coopHUD.streak_main_line = langAPI.getItemName(string.sub(item_queue.Item.Name, 2))
+            coopHUD.streak_sec_line = langAPI.getItemName(string.sub(item_queue.Item.Description, 2))
             coopHUD.HUD_table.streak_sec_color = KColor(1,1,1,1)
             coopHUD.HUD_table.streak_sec_line_font:Load("font/pftempestasevencondensed.fnt")
         end
         --_____ Updates actives of player
-        local pl_index = coopHUD.getPlayerNumByControllerIndex(player.ControllerIndex)
-        coopHUD.updateExtraLives(pl_index)
-        if itemqueue.Item.Type == ItemType.ITEM_ACTIVE then
-            coopHUD.updateActives(pl_index)
-        elseif itemqueue.Item.Type == ItemType.ITEM_TRINKET then
-            coopHUD.updateTrinkets(pl_index)
+        local player_index = coopHUD.getPlayerNumByControllerIndex(player.ControllerIndex)
+        coopHUD.updateExtraLives(player_index)
+        if item_queue.Item.Type == ItemType.ITEM_ACTIVE then
+            coopHUD.updateActives(player_index)
+        elseif item_queue.Item.Type == ItemType.ITEM_TRINKET then
+            coopHUD.updateTrinkets(player_index)
         else
         end
     end
