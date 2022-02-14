@@ -367,14 +367,17 @@ function coopHUD.renderTrinkets(player,pos,mirrored,scale,down_anchor)
         if down_anchor then
             trinket_pivot.Y = -16 * sprite_scale.Y
             sec_tr_pivot.Y = -48 * sprite_scale.Y
+            off.Y = -32 * sprite_scale.Y
         else
             trinket_pivot.Y = 16  * sprite_scale.Y
             sec_tr_pivot.Y = 40 * sprite_scale.Y
+            off.Y = 24 * sprite_scale.Y
         end
         if player.sprites.second_trinket then
             temp_pos = Vector(pos.X + sec_tr_pivot.X,pos.Y + sec_tr_pivot.Y)
             player.sprites.second_trinket.Scale = Vector(1*sprite_scale.X,1*sprite_scale.Y)
             player.sprites.second_trinket:Render(temp_pos)
+            off.Y = off.Y * 2
         end
         temp_pos = Vector(pos.X + trinket_pivot.X,pos.Y + trinket_pivot.Y)
         player.sprites.first_trinket.Scale = Vector(1*sprite_scale.X,1*sprite_scale.Y)
@@ -461,7 +464,7 @@ function coopHUD.renderPlayerInfo(player,pos,mirrored,scale,down_anchor)
         else
             head_pivot.X = head_pivot.X + 16 * sprite_scale.X
             name_pivot.X = name_pivot.X + 12 * sprite_scale.X
-            offset.X = 22 * sprite_scale.X
+            offset.X = 24 * sprite_scale.X
         end
         if down_anchor then
             head_pivot.Y = head_pivot.Y - 20 * sprite_scale.Y
@@ -600,9 +603,9 @@ function coopHUD.renderPlayerSmall(player_no)
     -- <Second  top line render> --
     local first_line_offset = Vector(0,0)
     if down_anchor then
-        first_line_offset.Y = math.min(active_off.Y,hearts_off.Y,(exl_liv_off.Y+extra_charge_off.Y))
+        first_line_offset.Y = math.min(info_off.Y,active_off.Y,hearts_off.Y,(exl_liv_off.Y+extra_charge_off.Y))
     else
-        first_line_offset.Y = math.max(active_off.Y,hearts_off.Y,exl_liv_off.Y+extra_charge_off.Y)
+        first_line_offset.Y = math.max(info_off.Y,active_off.Y,hearts_off.Y,exl_liv_off.Y+extra_charge_off.Y)
     end
     trinket_off = coopHUD.renderTrinkets(coopHUD.players[player_no],
                                          Vector(anchor.X,anchor.Y+first_line_offset.Y),
@@ -610,8 +613,55 @@ function coopHUD.renderPlayerSmall(player_no)
     pockets_off = coopHUD.renderPockets(coopHUD.players[player_no],
                                         Vector(anchor.X+trinket_off.X,anchor.Y+first_line_offset.Y),
                                         mirrored,scale,down_anchor)
+    local sec_line_offset = Vector(0,0)
+    if down_anchor then
+        sec_line_offset.Y = math.min(trinket_off.Y,pocket_off.Y)
+    else
+        sec_line_offset.Y = math.max(trinket_off.Y,pocket_off.Y)
+    end
     -- </Second  top line render> --
-    
+    --
+    if coopHUD.players[player_no].has_twin then
+        --
+        local twin_anchor = Vector(anchor.X,
+                                   anchor.Y+first_line_offset.Y+sec_line_offset.Y)
+        -- <Locals inits>
+        local twin_info_off = Vector(0,0)
+        local twin_active_off = Vector(0,0)
+        local twin_hearts_off = Vector(0,0)
+        local twin_exl_liv_off = Vector(0,0)
+        local twin_pocket_off = Vector(0,0)
+        local twin_trinket_off = Vector(0,0)
+        local twin_extra_charge_off = Vector(0,0)
+        --
+        twin_active_off = coopHUD.renderActive(coopHUD.players[player_no].twin,
+                                               Vector(twin_anchor.X,twin_anchor.Y),
+                                               mirrored,scale,down_anchor)
+        twin_hearts_off = coopHUD.renderHearts(coopHUD.players[player_no].twin,
+                                               Vector(twin_anchor.X+twin_info_off.X+twin_active_off.X, twin_anchor.Y),
+                                               mirrored,scale,down_anchor)
+        twin_exl_liv_off = coopHUD.renderExtraLives(coopHUD.players[player_no].twin,
+                                                    Vector(twin_anchor.X+twin_info_off.X+twin_active_off.X+twin_hearts_off.X,
+                                                           twin_anchor.Y),
+                                                    mirrored,scale,down_anchor)
+        --
+        
+        local twin_first_line_offset = Vector(0,0)
+        if down_anchor then
+            twin_first_line_offset.Y =  math.min(twin_active_off.Y,twin_hearts_off.Y,
+                                                (twin_exl_liv_off.Y+extra_charge_off.Y))
+        else
+            twin_first_line_offset.Y =  math.max(twin_active_off.Y,twin_hearts_off.Y,
+                                                (twin_exl_liv_off.Y+twin_extra_charge_off.Y))
+        end
+        twin_trinket_off = coopHUD.renderTrinkets(coopHUD.players[player_no].twin,
+                                             Vector(twin_anchor.X,twin_anchor.Y+twin_first_line_offset.Y),
+                                             mirrored,scale,down_anchor)
+        twin_pocket_off = coopHUD.renderPockets(coopHUD.players[player_no].twin,
+                                                 Vector(twin_anchor.X + twin_trinket_off.X,
+                                                        twin_anchor.Y + twin_first_line_offset.Y),
+                                                 mirrored,scale,down_anchor)
+    end
 end
 function coopHUD.renderItems()
     local color = KColor(1,1,1,1)
