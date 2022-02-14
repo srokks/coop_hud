@@ -1,3 +1,10 @@
+--- Renders active items from  player table
+---@param player
+---@param pos Vector(x,y)
+---@param mirrored boolean
+---@param scale Vector(x,y)
+---@param down_anchor boolean
+---@return Vector(x,y)
 function coopHUD.renderActive(player,pos,mirrored,scale,down_anchor)
     local active_pivot = Vector(0,0) -- first item pivot
     local sec_pivot = Vector(0,0) -- second item pivot
