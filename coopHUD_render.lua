@@ -41,7 +41,7 @@ function coopHUD.renderActive(player,pos,mirrored,scale,down_anchor)
     end
     -- Second active render
     if player.sprites.second_active then
-        if player.has_twin then
+        if player.is_twin or player.has_twin then
             -- Jacob/Essau sprite dims logic
             local color = Color(1,1,1,1)
             -- Triggers when drop button pressed
@@ -52,6 +52,8 @@ function coopHUD.renderActive(player,pos,mirrored,scale,down_anchor)
                 color = Color(1,1,1,1)
                 color:SetColorize(0,0,0,0)
             end
+        end
+        if player.has_twin then
             -- Sets first active color when triggered
             -- main player
             player.sprites.second_active.Color = color
@@ -262,7 +264,6 @@ function coopHUD.renderPockets(player,pos,mirrored,scale,down_anchor)
         local offset = Vector(0,0)
         local f = Font()
         f:Load("font/pftempestasevencondensed.fnt")
-        local font_color = KColor(1,1,1,1) -- TODO: sets according to player color
         --
         local sprite_scale = scale
         if sprite_scale == nil then sprite_scale = Vector(1,1) end -- sets def sprite_scale
@@ -292,6 +293,7 @@ function coopHUD.renderPockets(player,pos,mirrored,scale,down_anchor)
             desc_pivot.Y = 16
             sec_po_pivot.Y = 12
             trd_po_pivot.Y = 12
+            offset.Y = 24
         end
         final_offset = offset
         -- Main pocket charge
@@ -305,16 +307,21 @@ function coopHUD.renderPockets(player,pos,mirrored,scale,down_anchor)
         if mirrored then temp_pos.X = temp_pos.X + charge_offset.X end
         player.sprites.first_pocket.Scale = sprite_scale
         local color = Color(0.3,0.3,0.3,1) -- dims by default
+        local font_color = KColor(1,0.3,0.3,1)
         -- Jacob/Essau sprite dims logic
-        if player.has_twin then
+        if player.is_twin or player.has_twin then
             -- Triggers when drop button pressed
             if Input.IsActionPressed(ButtonAction.ACTION_DROP,player.controller_index) then
                 color = Color(1,1,1,1)  -- normalize sprite on button
                 color:SetColorize(0,0,0,0)
+                font_color = KColor(1,1,1,1)
             else
                 color = Color(0.3,0.3,0.3,1) -- return to dim state
                 color:SetColorize(0,0,0,0)
+                font_color = KColor(0.3,0.3,0.3,1) -- return to dim state
             end
+        end
+        if player.has_twin then
             -- Sets first active color when triggered
             -- main player
             player.sprites.first_pocket.Color = color
@@ -961,6 +968,7 @@ function coopHUD.on_player_init()
                 if coopHUD.players[i-coopHUD.essau_no].has_twin then
                     local temp_twin = Isaac.GetPlayer(i):GetOtherTwin()
                     coopHUD.players[i-coopHUD.essau_no].twin = coopHUD.initPlayer(i,temp_twin) -- inits
+                    coopHUD.players[i-coopHUD.essau_no].twin.is_twin = true -- inits
                     coopHUD.essau_no = coopHUD.essau_no + 1
                 end
             end
