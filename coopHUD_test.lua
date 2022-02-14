@@ -13,8 +13,9 @@ function  coopHUD.test_render()
     if Input.IsButtonTriggered(Keyboard.KEY_I,0)  then
         -- DEBUG - print table
         print('DEBUG "i"')
-        if Input.IsButtonPressed(Keyboard.KEY_P,0)  then
-        
+        for i,p in pairs(coopHUD.players) do
+            print('i','game index','contr')
+            print(i,p.game_index,p.controller_index)
         end
     end
     -- Dump logic when pressed 'I' while holding 'P"
