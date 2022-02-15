@@ -305,7 +305,7 @@ function coopHUD.updateHearts(player_no)
     end
     if coopHUD.players[player_no].has_twin then
         local twin_player = temp_player:GetOtherTwin()
-        local twin_temp_total_hearts = math.ceil((temp_player:GetEffectiveMaxHearts() + temp_player:GetSoulHearts())/2)
+        local twin_temp_total_hearts = math.ceil((twin_player:GetEffectiveMaxHearts() + twin_player:GetSoulHearts())/2)
         if coopHUD.players[player_no].twin.total_hearts ~= twin_temp_total_hearts then
             coopHUD.players[player_no].twin.total_hearts = twin_temp_total_hearts
         end
