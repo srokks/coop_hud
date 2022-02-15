@@ -763,7 +763,7 @@ function coopHUD.renderStreak(sprite, first_line, second_line, pos, signal)
     ]]
     local main_font = Font()
     main_font:Load("font/upheaval.fnt")
-    sec_font = coopHUD.HUD_table.streak_sec_line_font
+    local sec_font = coopHUD.HUD_table.streak_sec_line_font
     local first_line_pos = Vector(pos.X, pos.Y+4+main_font:GetBaselineHeight())
     local cur_frame = sprite:GetFrame()
     if cur_frame > 33 and signal then
@@ -785,7 +785,7 @@ function coopHUD.renderStreak(sprite, first_line, second_line, pos, signal)
             sprite:RenderLayer(0,Vector(pos.X+208,pos.Y+30))
             main_font:DrawString(first_line, first_line_pos.X, first_line_pos.Y, KColor(1, 1, 1, 1, 0, 0, 0), 1, true)
         end
-        if second_line then
+        if second_line and sec_font then
             sprite:RenderLayer(1,Vector(pos.X+208,pos.Y+30))
             sec_font:DrawString(second_line, first_line_pos.X, first_line_pos.Y+30, coopHUD.HUD_table.streak_sec_color, 1, true)
         end
@@ -1011,6 +1011,8 @@ function coopHUD.on_activate(_,type,RNG, EntityPlayer, UseFlags, used_slot, Cust
     -- Update actives
     coopHUD.signals.on_active_update = player_index
     coopHUD.signals.on_pockets_update = player_index
+    coopHUD.signals.on_heart_update = player_index
+    print(type)
 end
 coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM, coopHUD.on_activate)
 -- __________ On item pickup
