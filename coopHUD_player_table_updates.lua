@@ -502,14 +502,15 @@ function PostItemPickup (_,player)
         end
         --_____ Updates actives of player
         local player_index = coopHUD.getPlayerNumByControllerIndex(player.ControllerIndex)
-        coopHUD.updateExtraLives(player_index)
         if item_queue.Item.Type == ItemType.ITEM_ACTIVE then
             coopHUD.updateActives(player_index)
         elseif item_queue.Item.Type == ItemType.ITEM_TRINKET then
             coopHUD.updateTrinkets(player_index)
         else
-            coopHUD.updateItems()
         end
+        coopHUD.updateExtraLives(player_index) -- triggers extra lives update
+        coopHUD.updateItems() -- triggers update items when picked up item - Shops
+        coopHUD.updateHearts(player_index) -- triggers update hearts if item picked up - Devil deals
     end
 end
   coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, PostItemPickup)
