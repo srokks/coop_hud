@@ -1,3 +1,10 @@
+--- Renders active items from  player table
+---@param player
+---@param pos Vector(x,y)
+---@param mirrored boolean
+---@param scale Vector(x,y)
+---@param down_anchor boolean
+---@return Vector(x,y)
 function coopHUD.renderActive(player,pos,mirrored,scale,down_anchor)
     local active_pivot = Vector(0,0) -- first item pivot
     local sec_pivot = Vector(0,0) -- second item pivot
@@ -34,12 +41,50 @@ function coopHUD.renderActive(player,pos,mirrored,scale,down_anchor)
     end
     -- Second active render
     if player.sprites.second_active then
+        if player.is_twin or player.has_twin then
+            -- Jacob/Essau sprite dims logic
+            local color = Color(1,1,1,1)
+            -- Triggers when drop button pressed
+            if Input.IsActionPressed(ButtonAction.ACTION_DROP,player.controller_index) then
+                color = Color(0.3,0.3,0.3,1)
+                color:SetColorize(0,0,0,0)
+            else
+                color = Color(1,1,1,1)
+                color:SetColorize(0,0,0,0)
+            end
+        end
+        if player.has_twin then
+            -- Sets first active color when triggered
+            -- main player
+            player.sprites.second_active.Color = color
+            -- twin
+            if player.twin.sprites.second_active then
+                player.twin.sprites.second_active.Color = color
+            end
+        end
         temp_pos = Vector(pos.X + sec_pivot.X,pos.Y + sec_pivot.Y)
         player.sprites.second_active.Scale = Vector(0.5,0.5)
         player.sprites.second_active:Render(temp_pos)
     end
     -- Second active render
     if player.sprites.first_active then
+        if player.has_twin then
+            -- Jacob/Essau sprite dims logic
+            local color = Color(1,1,1,1)
+            -- Triggers when drop button pressed
+            if Input.IsActionPressed(ButtonAction.ACTION_DROP,player.controller_index) then
+                color = Color(0.3,0.3,0.3,1) -- Dims sprite color
+                color:SetColorize(0,0,0,0)
+            else
+                color = Color(1,1,1,1) -- Restore normal color
+                color:SetColorize(0,0,0,0)
+            end
+            -- Sets sprite  color when triggered
+            player.sprites.first_active.Color = color
+            if player.twin.sprites.first_active then
+                player.twin.sprites.first_active.Color = color
+            end
+        end
         temp_pos = Vector(pos.X + charge_offset.X,pos.Y+charge_offset.Y)
         charge_offset = coopHUD.renderChargeBar(player.sprites.first_active_charge,temp_pos,mirrored,sprite_scale)
         temp_pos = Vector(pos.X + active_pivot.X,pos.Y+active_pivot.Y)
@@ -149,7 +194,8 @@ function coopHUD.renderHearts(player,pos,mirrored,scale,down_anchor)
                         and player.heart_types[counter].heart_type ~= 'EmptyHeart' then
                     -- According to main ticker changes alpha color of sprite this way animate item
                     -- Probably not sufficient way but when I'll learn better animation I'll fix it
-                    local sprite_alpha = coopHUD.TICKER/60
+                    --TODO: animate pulsing hearts
+                    local sprite_alpha = 1
                     if sprite_alpha > 0.4 then
                         local col = Color(1,1,1,sprite_alpha)
                         player.sprites.hearts[counter].Color = col
@@ -218,7 +264,6 @@ function coopHUD.renderPockets(player,pos,mirrored,scale,down_anchor)
         local offset = Vector(0,0)
         local f = Font()
         f:Load("font/pftempestasevencondensed.fnt")
-        local color = KColor(1,1,1,1) -- TODO: sets according to player color
         --
         local sprite_scale = scale
         if sprite_scale == nil then sprite_scale = Vector(1,1) end -- sets def sprite_scale
@@ -248,6 +293,7 @@ function coopHUD.renderPockets(player,pos,mirrored,scale,down_anchor)
             desc_pivot.Y = 16
             sec_po_pivot.Y = 12
             trd_po_pivot.Y = 12
+            offset.Y = 24
         end
         final_offset = offset
         -- Main pocket charge
@@ -260,13 +306,41 @@ function coopHUD.renderPockets(player,pos,mirrored,scale,down_anchor)
         temp_pos = Vector(pos.X+main_pocket_pivot.X,pos.Y+main_pocket_pivot.Y)
         if mirrored then temp_pos.X = temp_pos.X + charge_offset.X end
         player.sprites.first_pocket.Scale = sprite_scale
+        local color = Color(0.3,0.3,0.3,1) -- dims by default
+        local font_color = KColor(1,1,1,1)
+        -- Jacob/Essau sprite dims logic
+        if player.is_twin or player.has_twin then
+            -- Triggers when drop button pressed
+            if Input.IsActionPressed(ButtonAction.ACTION_DROP,player.controller_index) then
+                color = Color(1,1,1,1)  -- normalize sprite on button
+                color:SetColorize(0,0,0,0)
+                font_color = KColor(1,1,1,1)
+            else
+                color = Color(0.3,0.3,0.3,1) -- return to dim state
+                color:SetColorize(0,0,0,0)
+                font_color = KColor(0.3,0.3,0.3,1) -- return to dim state
+            end
+        end
+        if player.has_twin then
+            -- Sets first active color when triggered
+            -- main player
+            player.sprites.first_pocket.Color = color
+            if player.twin.sprites.first_pocket then
+                player.twin.sprites.first_pocket.Color = color
+            end
+            --
+        end
         player.sprites.first_pocket:Render(temp_pos)
         -- Description
         if player.pocket_desc then
+            local text = player.pocket_desc.name
+            if Input.IsActionPressed(ButtonAction.ACTION_MAP, player.controller_index) and
+                    player.pocket_desc.desc then
+                text = player.pocket_desc.desc
+            end
             temp_pos = Vector(pos.X+charge_offset.X+desc_pivot.X,pos.Y+desc_pivot.Y)
-            if  mirrored then temp_pos.X = temp_pos.X - (28*sprite_scale.X) - string.len(player.pocket_desc)*(5*sprite_scale.X) end
-            local text = player.pocket_desc
-            f:DrawStringScaled (text,temp_pos.X,temp_pos.Y,sprite_scale.X,sprite_scale.Y,color,0,true)
+            if  mirrored then temp_pos.X = temp_pos.X - (28*sprite_scale.X) - string.len(text)*(5*sprite_scale.X) end
+            f:DrawStringScaled (text,temp_pos.X,temp_pos.Y,sprite_scale.X,sprite_scale.Y,font_color,0,true)
         end
         ------third pocket
         if player.sprites.third_pocket then
@@ -307,14 +381,17 @@ function coopHUD.renderTrinkets(player,pos,mirrored,scale,down_anchor)
         if down_anchor then
             trinket_pivot.Y = -16 * sprite_scale.Y
             sec_tr_pivot.Y = -48 * sprite_scale.Y
+            off.Y = -32 * sprite_scale.Y
         else
             trinket_pivot.Y = 16  * sprite_scale.Y
             sec_tr_pivot.Y = 40 * sprite_scale.Y
+            off.Y = 24 * sprite_scale.Y
         end
         if player.sprites.second_trinket then
             temp_pos = Vector(pos.X + sec_tr_pivot.X,pos.Y + sec_tr_pivot.Y)
             player.sprites.second_trinket.Scale = Vector(1*sprite_scale.X,1*sprite_scale.Y)
             player.sprites.second_trinket:Render(temp_pos)
+            off.Y = off.Y * 2
         end
         temp_pos = Vector(pos.X + trinket_pivot.X,pos.Y + trinket_pivot.Y)
         player.sprites.first_trinket.Scale = Vector(1*sprite_scale.X,1*sprite_scale.Y)
@@ -401,7 +478,7 @@ function coopHUD.renderPlayerInfo(player,pos,mirrored,scale,down_anchor)
         else
             head_pivot.X = head_pivot.X + 16 * sprite_scale.X
             name_pivot.X = name_pivot.X + 12 * sprite_scale.X
-            offset.X = 22 * sprite_scale.X
+            offset.X = 24 * sprite_scale.X
         end
         if down_anchor then
             head_pivot.Y = head_pivot.Y - 20 * sprite_scale.Y
@@ -427,6 +504,7 @@ function coopHUD.renderPlayerInfo(player,pos,mirrored,scale,down_anchor)
 end
 function coopHUD.renderPlayer(player_no)
     --
+    local essau_no = coopHUD.essau_no
     local anchor_top = coopHUD.anchors[coopHUD.players_config[player_no].anchor_top]
     local anchor_bot = coopHUD.anchors[coopHUD.players_config[player_no].anchor_bot]
     local mirrored = coopHUD.players_config[player_no].mirrored
@@ -439,8 +517,8 @@ function coopHUD.renderPlayer(player_no)
     local trinket_off = Vector(0,0)
     local extra_charge_off = Vector(0,0)
     -- <First  top line render> --
-    info_off = coopHUD.renderPlayerInfo(coopHUD.players[player_no],
-                                        anchor_top, mirrored, Vector(0.9,0.9), false)
+    --info_off = coopHUD.renderPlayerInfo(coopHUD.players[player_no],
+    --                                    anchor_top, mirrored, Vector(0.9,0.9), false)
     active_off = coopHUD.renderActive(coopHUD.players[player_no],
                                       Vector(anchor_top.X+info_off.X,anchor_top.Y),
                                       mirrored,nil,false)
@@ -468,6 +546,43 @@ function coopHUD.renderPlayer(player_no)
     pocket_off = coopHUD.renderPockets(coopHUD.players[player_no],
                                        Vector(anchor_bot.X+trinket_off.X,anchor_bot.Y),
                                        mirrored,nil,true)
+    -- </Down line>
+    --
+    if coopHUD.players[player_no].has_twin then
+        -- SPECIAL VERSION OF BIG HUD FOR SIGNLEPLAYER JACCOB/ESSAU
+        local twin_anchor_top = coopHUD.anchors[coopHUD.players_config[player_no+1].anchor_top]
+        local twin_anchor_bot = coopHUD.anchors[coopHUD.players_config[player_no+1].anchor_bot]
+        local twin_mirrored = true
+        -- <Locals inits>
+        local twin_info_off = Vector(0, 0)
+        local twin_active_off = Vector(0,0)
+        local twin_hearts_off = Vector(0,0)
+        local twin_exl_liv_off = Vector(0,0)
+        local twin_pocket_off = Vector(0,0)
+        local twin_trinket_off = Vector(0,0)
+        local twin_extra_charge_off = Vector(0,0)
+        -- <First  top twin line render> --
+        -- No essau head sprite
+--[[        twin_info_off = coopHUD.renderPlayerInfo(coopHUD.players[player_no].twin,
+                                                 twin_anchor_top, mirrored, Vector(0.9,0.9), false)]]
+        twin_active_off = coopHUD.renderActive(coopHUD.players[player_no].twin,
+                                               Vector(twin_anchor_top.X+twin_info_off.X,twin_anchor_top.Y),
+                                               twin_mirrored,nil,false)
+        twin_hearts_off = coopHUD.renderHearts(coopHUD.players[player_no].twin,
+                                               Vector(twin_anchor_top.X+twin_info_off.X+twin_active_off.X, twin_anchor_top.Y),
+                                               twin_mirrored,nil,false)
+        twin_exl_liv_off = coopHUD.renderExtraLives(coopHUD.players[player_no].twin,
+                                                    Vector(twin_anchor_top.X+twin_info_off.X+twin_active_off.X+twin_hearts_off.X,
+                                                           twin_anchor_top.Y),
+                                                    twin_mirrored,nil,false)
+        -- <First  top twin line render> --
+        twin_trinket_off = coopHUD.renderTrinkets(coopHUD.players[player_no].twin,
+                                                  twin_anchor_bot,
+                                                  twin_mirrored,nil,true)
+        twin_pocket_off = coopHUD.renderPockets(coopHUD.players[player_no].twin,
+                                                Vector(twin_anchor_bot.X+twin_trinket_off.X,twin_anchor_bot.Y),
+                                                twin_mirrored,nil,true)
+    end
 end
 function coopHUD.renderPlayerSmall(player_no)
     local anchor = coopHUD.anchors[coopHUD.players_config.small[player_no].anchor]
@@ -502,9 +617,9 @@ function coopHUD.renderPlayerSmall(player_no)
     -- <Second  top line render> --
     local first_line_offset = Vector(0,0)
     if down_anchor then
-        first_line_offset.Y = math.min(active_off.Y,hearts_off.Y,(exl_liv_off.Y+extra_charge_off.Y))
+        first_line_offset.Y = math.min(info_off.Y,active_off.Y,hearts_off.Y,(exl_liv_off.Y+extra_charge_off.Y))
     else
-        first_line_offset.Y = math.max(active_off.Y,hearts_off.Y,exl_liv_off.Y+extra_charge_off.Y)
+        first_line_offset.Y = math.max(info_off.Y,active_off.Y,hearts_off.Y,exl_liv_off.Y+extra_charge_off.Y)
     end
     trinket_off = coopHUD.renderTrinkets(coopHUD.players[player_no],
                                          Vector(anchor.X,anchor.Y+first_line_offset.Y),
@@ -512,7 +627,55 @@ function coopHUD.renderPlayerSmall(player_no)
     pockets_off = coopHUD.renderPockets(coopHUD.players[player_no],
                                         Vector(anchor.X+trinket_off.X,anchor.Y+first_line_offset.Y),
                                         mirrored,scale,down_anchor)
+    local sec_line_offset = Vector(0,0)
+    if down_anchor then
+        sec_line_offset.Y = math.min(trinket_off.Y,pocket_off.Y)
+    else
+        sec_line_offset.Y = math.max(trinket_off.Y,pocket_off.Y)
+    end
     -- </Second  top line render> --
+    --
+    if coopHUD.players[player_no].has_twin then
+        --
+        local twin_anchor = Vector(anchor.X,
+                                   anchor.Y+first_line_offset.Y+sec_line_offset.Y)
+        -- <Locals inits>
+        local twin_info_off = Vector(0,0)
+        local twin_active_off = Vector(0,0)
+        local twin_hearts_off = Vector(0,0)
+        local twin_exl_liv_off = Vector(0,0)
+        local twin_pocket_off = Vector(0,0)
+        local twin_trinket_off = Vector(0,0)
+        local twin_extra_charge_off = Vector(0,0)
+        --
+        twin_active_off = coopHUD.renderActive(coopHUD.players[player_no].twin,
+                                               Vector(twin_anchor.X,twin_anchor.Y),
+                                               mirrored,scale,down_anchor)
+        twin_hearts_off = coopHUD.renderHearts(coopHUD.players[player_no].twin,
+                                               Vector(twin_anchor.X+twin_info_off.X+twin_active_off.X, twin_anchor.Y),
+                                               mirrored,scale,down_anchor)
+        twin_exl_liv_off = coopHUD.renderExtraLives(coopHUD.players[player_no].twin,
+                                                    Vector(twin_anchor.X+twin_info_off.X+twin_active_off.X+twin_hearts_off.X,
+                                                           twin_anchor.Y),
+                                                    mirrored,scale,down_anchor)
+        --
+        
+        local twin_first_line_offset = Vector(0,0)
+        if down_anchor then
+            twin_first_line_offset.Y =  math.min(twin_active_off.Y,twin_hearts_off.Y,
+                                                (twin_exl_liv_off.Y+extra_charge_off.Y))
+        else
+            twin_first_line_offset.Y =  math.max(twin_active_off.Y,twin_hearts_off.Y,
+                                                (twin_exl_liv_off.Y+twin_extra_charge_off.Y))
+        end
+        twin_trinket_off = coopHUD.renderTrinkets(coopHUD.players[player_no].twin,
+                                             Vector(twin_anchor.X,twin_anchor.Y+twin_first_line_offset.Y),
+                                             mirrored,scale,down_anchor)
+        twin_pocket_off = coopHUD.renderPockets(coopHUD.players[player_no].twin,
+                                                 Vector(twin_anchor.X + twin_trinket_off.X,
+                                                        twin_anchor.Y + twin_first_line_offset.Y),
+                                                 mirrored,scale,down_anchor)
+    end
 end
 function coopHUD.renderItems()
     local color = KColor(1,1,1,1)
@@ -581,7 +744,7 @@ function coopHUD.renderItems()
     if not Game():IsPaused() and secs > 0 then -- Prevents showing too early on start
         coopHUD.renderStreak(coopHUD.HUD_table.streak,coopHUD.streak_main_line,coopHUD.streak_sec_line,
                              Vector((coopHUD.anchors.bot_right.X/2)-208, 30),
-                             coopHUD.signals.picked_up)
+                             false)
     end
     if coopHUD.HUD_table.streak:IsFinished() then -- Resets string(trigger)
         coopHUD.streak_main_line = nil
@@ -589,7 +752,7 @@ function coopHUD.renderItems()
         coopHUD.HUD_table.streak_sec_line_font = coopHUD.getHUDSprites().streak_sec_line_font
     end
 end
-    -------
+-------
 function coopHUD.renderStreak(sprite, first_line, second_line, pos, signal)
     --[[ Function renders streak text on a based sprite/based position
     sprite: prepared loaded streak sprite object
@@ -600,7 +763,7 @@ function coopHUD.renderStreak(sprite, first_line, second_line, pos, signal)
     ]]
     local main_font = Font()
     main_font:Load("font/upheaval.fnt")
-    sec_font = coopHUD.HUD_table.streak_sec_line_font
+    local sec_font = coopHUD.HUD_table.streak_sec_line_font
     local first_line_pos = Vector(pos.X, pos.Y+4+main_font:GetBaselineHeight())
     local cur_frame = sprite:GetFrame()
     if cur_frame > 33 and signal then
@@ -622,59 +785,15 @@ function coopHUD.renderStreak(sprite, first_line, second_line, pos, signal)
             sprite:RenderLayer(0,Vector(pos.X+208,pos.Y+30))
             main_font:DrawString(first_line, first_line_pos.X, first_line_pos.Y, KColor(1, 1, 1, 1, 0, 0, 0), 1, true)
         end
-        if second_line then
+        if second_line and sec_font then
             sprite:RenderLayer(1,Vector(pos.X+208,pos.Y+30))
             sec_font:DrawString(second_line, first_line_pos.X, first_line_pos.Y+30, coopHUD.HUD_table.streak_sec_color, 1, true)
         end
     end
 end
-coopHUD.text = 'test' -- DEBUG: on screen string
-function  coopHUD.render()
-    --if Game():IsPaused() then coopHUD.onRender = false end -- turn off on pause
-    if coopHUD.players_config.players_no+1 > 4 then -- prevents to render if more than 2 players
-        coopHUD.options.onRender = false
-        Game():GetHUD():SetVisible(true)
-    end
-    if coopHUD.TICKER  == 60 then coopHUD.TICKER = 0 end
-    coopHUD.TICKER = coopHUD.TICKER + 1
-    if coopHUD.options.onRender then
-        Game():GetHUD():SetVisible(false)
-        coopHUD.renderItems()
-        for i=0,coopHUD.players_config.players_no,1 do
-            if coopHUD.players_config.players_no<2 and not coopHUD.options.force_small_hud then
-                coopHUD.renderPlayer(i)
-            else
-                coopHUD.renderPlayerSmall(i)
-            end
-        end
-        --DEBUG: tests of all anchors
-        --print(coopHUD.renderHearts(coopHUD.players[0],coopHUD.anchors.top_left,false,scl,false),
-        --coopHUD.renderHearts(coopHUD.players[0],coopHUD.anchors.bot_left,false,scl,true),
-        --coopHUD.renderHearts(coopHUD.players[0],coopHUD.anchors.top_right,true,scl,false),
-        --coopHUD.renderHearts(coopHUD.players[0],coopHUD.anchors.bot_right,true,scl,true))
-        --
-    else
-        Game():GetHUD():SetVisible(true)
-    end
-    --DEBUG: tests draw debug string on screen
-    --local f = Font()
-    --f:Load("font/luaminioutlined.fnt")
-    --f:DrawString(coopHUD.text,100,100,KColor(1,1,1,1),0,true)
-    --
-end
-coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.render)
---
+-- _____ INPUTS
 local btn_held = 0
-function coopHUD.is_joining(_,ent,hook,btn)
-    --
-    -- DEBUG: handler to quick turn on/off hud on pressing 'H' on keyboard
-    if Input.IsButtonTriggered(Keyboard.KEY_H,0)  then
-        if coopHUD.options.onRender then
-        coopHUD.options.onRender = false
-        else
-            coopHUD.options.onRender = true
-        end
-    end
+function coopHUD.on_input(_,ent,hook,btn)
     -- Handler for turning timer on of on key
     if Input.IsButtonTriggered(Keyboard.KEY_T,0)  then
         if coopHUD.options.timer_always_on then
@@ -683,24 +802,36 @@ function coopHUD.is_joining(_,ent,hook,btn)
             coopHUD.options.timer_always_on = true
         end
     end
-    --
+    -- _____ Joining new players logic
     for i=0,8,1 do
-        if Input.IsActionTriggered(ButtonAction.ACTION_JOINMULTIPLAYER, i)
-                and coopHUD.options.onRender  then
-            if i > coopHUD.players_config.players_no then
-                coopHUD.is_joining =true
-                coopHUD.options.onRender = false end
+        if Input.IsActionTriggered(ButtonAction.ACTION_JOINMULTIPLAYER,i) and not coopHUD.signals.is_joining and
+                coopHUD.players[coopHUD.getPlayerNumByControllerIndex(i)] == nil and
+                Game():IsGreedMode() == false and Game():GetRoom():IsFirstVisit() == true and
+                Game():GetLevel():GetAbsoluteStage() == LevelStage.STAGE1_1 and
+                Game():GetLevel():GetCurrentRoomIndex() == Game():GetLevel():GetStartingRoomIndex()
+                and not string.match(Game():GetLevel():GetName(), "Downpour")
+                and not string.match(Game():GetLevel():GetName(), "Dross") then
+            coopHUD.options.onRender = false
+            coopHUD.signals.is_joining = true
         end
-        -- Catches if back button is pressed when in joining mode
-        if Input.IsActionTriggered(ButtonAction.ACTION_MENUBACK, i) and coopHUD.is_joining then
-            coopHUD.is_joining =false
+        if Input.IsActionTriggered(ButtonAction.ACTION_MENUBACK,i) and  coopHUD.signals.is_joining then
+            coopHUD.signals.is_joining = false
             coopHUD.options.onRender = true
+        end
+        if Input.IsActionTriggered(6,i) and coopHUD.signals.on_item_update then
+            coopHUD.test_str = true
         end
     end
     -- MAP BUTTON
     local mapPressed = false
     for i = 0, Game():GetNumPlayers() - 1 do
         local player = Isaac.GetPlayer(i)
+        local player_index = coopHUD.getPlayerNumByControllerIndex(player.ControllerIndex)
+        if Input.IsActionTriggered(ButtonAction.ACTION_DROP, player.ControllerIndex) then
+            coopHUD.updateHearts(player_index)
+            coopHUD.updatePlayerType(player_index)
+            coopHUD.updatePockets(player_index)
+        end
         mapPressed = mapPressed or Input.IsActionPressed(ButtonAction.ACTION_MAP, player.ControllerIndex)
     end
     if mapPressed then
@@ -712,34 +843,11 @@ function coopHUD.is_joining(_,ent,hook,btn)
         coopHUD.signals.map = false
         btn_held = 0
     end
-    ---
-end
-coopHUD:AddCallback(ModCallbacks.MC_INPUT_ACTION, coopHUD.is_joining)
---
-function coopHUD.init_player()
-    if coopHUD.is_joining then
-        coopHUD.players_config.players_no = Game():GetNumPlayers()
-        coopHUD.init()
-        coopHUD.options.onRender=true
     end
-end
-coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, coopHUD.init_player)
-function coopHUD.on_start(_,cont)
-    -- init tables
-    coopHUD.initHudTables()
-    coopHUD.init()
-    print('CoopHUD '..coopHUD.VERSION..' loaded successfully!')
-    if  Game():GetHUD():IsVisible() then Game():GetHUD():SetVisible(false) end
-    if cont then -- game is continuing
-        -- read from save`
-    end
-end
-coopHUD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, coopHUD.on_start)
---
-function coopHUD.on_pill_use(_,effect_no)
-    --[[
-    By changing coopHUD.activated_pill with used pill name triggers streak prompt with used pill name
-    ]]
+coopHUD:AddCallback(ModCallbacks.MC_INPUT_ACTION, coopHUD.on_input)
+-- _____ On pill use
+function coopHUD.on_pill_use(_,effect_no,ent_player)
+    -- Triggers streak text on pill use
     if coopHUD.HUD_table.streak:IsFinished() then
         local pill_sys_name = Isaac.GetItemConfig():GetPillEffect(effect_no).Name
         pill_sys_name = string.sub(pill_sys_name,2) --  get rid of # on front of
@@ -747,36 +855,226 @@ function coopHUD.on_pill_use(_,effect_no)
             coopHUD.streak_main_line = langAPI.getPocketName(pill_sys_name)
         end
     end
-    --
+    local player_index = coopHUD.getPlayerNumByControllerIndex(ent_player.ControllerIndex)
+    -- Triggers pocket update signal
+    coopHUD.signals.on_pockets_update = player_index
+    -- Updates trinkets if Gulp used
+    if effect_no == PillEffect.PILLEFFECT_GULP then
+        coopHUD.signals.on_trinket_update = player_index
+    end
+    coopHUD.signals.on_heart_update = player_index
 end
 coopHUD:AddCallback(ModCallbacks.MC_USE_PILL, coopHUD.on_pill_use)
---
-local item = { ID = -1}
-function coopHUD.on_evaluate(_,player)
-    if player.QueuedItem.Item ~= nil and item.ID ~= player.QueuedItem.Item.ID then
-        item = player.QueuedItem.Item
-        if langAPI then
-            coopHUD.HUD_table.streak:ReplaceSpritesheet(1,"/gfx/ui/blank.png")
-            coopHUD.HUD_table.streak:LoadGraphics()
-            coopHUD.streak_main_line = langAPI.getItemName(string.sub(item.Name,2))
-            coopHUD.streak_sec_line = langAPI.getItemName(string.sub(item.Description,2))
-            coopHUD.HUD_table.streak_sec_color = KColor(1,1,1,1)
-            coopHUD.HUD_table.streak_sec_line_font:Load("font/pftempestasevencondensed.fnt")
-            coopHUD.signals.picked_up = true
-        end
-        
-        --end
-    else
-        coopHUD.signals.picked_up = false
-    end
+-- _____ On card use
+function coopHUD.on_card_use(_,effect_no,ent_player)
+    --Triggers pocket update signal
+    coopHUD.signals.on_pockets_update = coopHUD.getPlayerNumByControllerIndex(ent_player.ControllerIndex)
 end
-coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, coopHUD.on_evaluate)
---
+coopHUD:AddCallback(ModCallbacks.MC_USE_CARD, coopHUD.on_card_use)
+-- _____ Triggers STREAK when on new level
 coopHUD:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function(self)
     coopHUD.streak_main_line = Game():GetLevel():GetName()
     coopHUD.streak_sec_line = Game():GetLevel():GetCurseName()
     if coopHUD.streak_sec_line == '' then coopHUD.streak_sec_line = nil end
 end)
-
-
-
+-- ______
+function coopHUD.getPlayerNumByControllerIndex(controller_index)
+    -- Function returns player number searching coopHUD.player table for matching controller index
+    local final_index = -1
+    for i,p in pairs(coopHUD.players) do
+        if p.controller_index == controller_index then
+            final_index = i
+        end
+    end
+    return final_index
+end
+-- _____ RENDER
+function  coopHUD.render()
+    -- DEBUG: handler to quick turn on/off hud on pressing 'H' on keyboard
+    if Input.IsButtonTriggered(Keyboard.KEY_H,0)  then
+        if coopHUD.options.onRender then
+            coopHUD.options.onRender = false
+        else
+            coopHUD.options.onRender = true
+        end
+    end
+    if #coopHUD.players > 4 then -- prevents to render if more than 4 players for now
+        coopHUD.options.onRender = false
+        Game():GetHUD():SetVisible(true)
+    end
+    -- _____ Main render function
+    local paused = Game():IsPaused()
+    if coopHUD.options.onRender and not paused then -- Renders HUD if game not paused and option turned on
+        Game():GetHUD():SetVisible(false) -- sets off vanilla hud
+        -- RENDER LOGIC
+        coopHUD.renderItems()
+        for i,p in pairs(coopHUD.players) do
+            -- Logic of <2 players - big hud
+            if #coopHUD.players<2 and not coopHUD.options.force_small_hud then
+                -- Renders Hud when  Jacob and Essau in game
+                if coopHUD.essau_no > 0 then
+                    -- TODO:
+                    if #coopHUD.players == 0 then
+                        -- Renders special version of big hud for singleplayer
+                        coopHUD.renderPlayer(i)
+                        -- TODO: render singleplayer jacob/essau
+                    else
+                        -- Renders small hud when jacob/esaau present and no players>0
+                        coopHUD.renderPlayerSmall(i)
+                    end
+                else
+                    coopHUD.renderPlayer(i)
+                end
+                
+            else
+                coopHUD.renderPlayerSmall(i)
+            end
+        end
+    elseif paused and coopHUD.options.onRender then -- Prevents from rendering anything on pause
+        Game():GetHUD():SetVisible(false)
+    else
+        Game():GetHUD():SetVisible(true) -- Turns on vanilla HUD
+    end
+end
+coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.render)
+-- __________ On start
+function coopHUD.on_start(_,cont)
+    coopHUD.players = {}
+    if cont then
+        -- Logic when game is continued
+        --[[coopHUD.essau_no = 0 -- resets Essau counter before player init
+        if coopHUD.players[0] == nil then coopHUD.on_player_init() end]]
+        coopHUD.essau_no = 0 -- resets Essau counter before player init
+        if coopHUD.players[0] == nil then
+            coopHUD.signals.is_joining = true
+            coopHUD.on_player_init()
+        end
+    else
+        -- Logic when started new game/ restart thought dbg console
+        
+        coopHUD.essau_no = 0 -- resets Essau counter before player init
+        if coopHUD.players[0] == nil then
+            coopHUD.signals.is_joining = true
+            coopHUD.on_player_init()
+        end
+    end
+    coopHUD.initHudTables()
+    coopHUD.updateItems()
+end
+coopHUD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, coopHUD.on_start)
+-- __________ On player init
+function coopHUD.on_player_init()
+    
+    if coopHUD.signals.is_joining then
+        coopHUD.essau_no = 0
+        for i=0,Game():GetNumPlayers()-1,1 do
+            local temp_player_table = coopHUD.initPlayer(i)
+            if temp_player_table  then
+                coopHUD.players[i-coopHUD.essau_no] = temp_player_table
+                if coopHUD.players[i-coopHUD.essau_no].has_twin then
+                    local temp_twin = Isaac.GetPlayer(i):GetOtherTwin()
+                    coopHUD.players[i-coopHUD.essau_no].twin = coopHUD.initPlayer(i,temp_twin) -- inits
+                    coopHUD.players[i-coopHUD.essau_no].twin.is_twin = true -- inits
+                    coopHUD.essau_no = coopHUD.essau_no + 1
+                end
+            end
+        end
+    end
+    --
+    coopHUD.updateControllerIndex()
+    coopHUD.signals.is_joining = false
+    coopHUD.options.onRender = true
+    
+end
+coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, coopHUD.on_player_init,0)
+-- __________ On active item/pocket activate
+function coopHUD.on_activate(_,type,RNG, EntityPlayer, UseFlags, used_slot, CustomVarData)
+    local player_index = coopHUD.getPlayerNumByControllerIndex(EntityPlayer.ControllerIndex)
+    -- Hold on use change sprite
+    if type == CollectibleType.COLLECTIBLE_HOLD and coopHUD.players[player_index].poop_mana > 0 then
+        if coopHUD.players[player_index].hold_spell == nil  then
+            coopHUD.players[player_index].hold_spell = EntityPlayer:GetPoopSpell(0)
+            coopHUD.updatePockets(player_index)
+        else
+            coopHUD.players[player_index].hold_spell = nil
+        end
+        coopHUD.updatePoopMana(player_index)
+    end
+    -- Check if used Smelter
+    if type == CollectibleType.COLLECTIBLE_SMELTER then
+        coopHUD.signals.on_trinket_update = player_index -- update trinkets on smelt
+    end
+    if coopHUD.players[player_index].type == PlayerType.PLAYER_BETHANY or
+            coopHUD.players[player_index].type == PlayerType.PLAYER_BETHANY_B then
+        coopHUD.signals.on_bethany_update = player_index
+    end
+    -- Update actives
+    coopHUD.signals.on_active_update = player_index
+    coopHUD.signals.on_pockets_update = player_index
+    coopHUD.signals.on_heart_update = player_index
+    print(type)
+end
+coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM, coopHUD.on_activate)
+-- __________ On item pickup
+function coopHUD.on_item_pickup(_, ent_player, ent_collider, Low)
+    -- Checks if player entity collides with item
+    if ent_collider then
+        local player_index = coopHUD.getPlayerNumByControllerIndex(ent_player.ControllerIndex)
+        if ent_collider.Type == EntityType.ENTITY_PICKUP then -- checks if collide with item
+            if ent_collider.Variant == PickupVariant.PICKUP_HEART then -- check if collides with heart
+                coopHUD.signals.on_heart_update = player_index
+            elseif ent_collider.Variant == PickupVariant.PICKUP_COIN or -- check if collides with coin
+                    ent_collider.Variant == PickupVariant.PICKUP_KEY or -- or with key
+                    ent_collider.Variant == PickupVariant.PICKUP_BOMB then -- or with bomb
+                coopHUD.signals.on_item_update = true -- triggers item update by signal
+            elseif ent_collider.Variant == PickupVariant.PICKUP_LIL_BATTERY then
+                coopHUD.signals.on_active_update = player_index -- triggers active updates
+                coopHUD.signals.on_pockets_update = player_index -- triggers pockets updates
+            elseif ent_collider.Variant == PickupVariant.PICKUP_TAROTCARD then
+                coopHUD.signals.on_pockets_update = player_index -- triggers pocket update by signal
+            elseif ent_collider.Variant == PickupVariant.PICKUP_PILL then
+                coopHUD.signals.on_pockets_update = player_index -- triggers pocket update by signal
+            end
+        end
+        if ent_collider.Type == EntityType.ENTITY_SLOT then -- checks if collide with slot machine
+            coopHUD.signals.on_item_update = true -- triggers item update
+        end
+    end
+end
+coopHUD:AddCallback(ModCallbacks.MC_PRE_PLAYER_COLLISION, coopHUD.on_item_pickup)
+-- __________ On damage
+function coopHUD.on_damage(_,entity)
+    local ent_player = entity:ToPlayer() -- parse entity to player entity
+    local player_index = coopHUD.getPlayerNumByControllerIndex(ent_player.ControllerIndex) -- gets player index
+    coopHUD.signals.on_heart_update = player_index -- triggers heart update for player
+    if ent_player:HasCollectible(CollectibleType.COLLECTIBLE_MARBLES) then -- in case of marbles (can gulp trinket)
+        coopHUD.signals.on_trinket_update = player_index -- update trinkets
+    end
+end
+coopHUD:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, coopHUD.on_damage, EntityType.ENTITY_PLAYER)
+-- __________ On room clear
+function  coopHUD.on_room_clear()
+    -- Iterates through tables
+    for i,_ in pairs(coopHUD.players) do
+        coopHUD.updateActives(i) -- updates actives
+        coopHUD.updatePockets(i) -- updates pockets
+    end
+end
+coopHUD:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, coopHUD.on_room_clear)
+-- __________ Force update on new floor/room
+--- Function force updates all table. Triggers on new room/floor
+function coopHUD.force_update_all()
+    for i,_ in pairs(coopHUD.players) do
+        coopHUD.updateActives(i)
+        coopHUD.updateHearts(i)
+        coopHUD.updatePockets(i)
+        coopHUD.updateTrinkets(i)
+        coopHUD.updateExtraLives(i)
+        coopHUD.updateBethanyCharge(i)
+        coopHUD.updatePoopMana(i)
+    end
+    coopHUD.updateControllerIndex()
+end
+coopHUD:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, coopHUD.force_update_all)
+coopHUD:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, coopHUD.force_update_all)
+-- __________
