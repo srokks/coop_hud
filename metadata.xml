@@ -3,39 +3,49 @@
     <name>Coop HUD *WIP*</name>
     <directory>coop_hud</directory>
     <id>2731267631</id>
-    <description> THIS MOD IS WORKING IN PROGRESS PLEASE SUBMIT ANY ISSUE
-THIS IS MOSTLY SKELETON FOR FUTURE UPDATES
-
-[h1]Coop HUD[/h1]
-
+    <description> [h1]Coop HUD[/h1]
 
 I've been tired of playing Isaac in coop with vanilla broken hud so I've created a new one.
-This mod is my try to render proper HUD for game.
-It renders only HUD so I'm sugesting using [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1978904635] MiniMAPI[/url] (for map) and [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2635267643]Enhanced Boss Bars[/url]
-For right now this mod do not show stats
-[h2]Features[/h2]
+This mod is my try to render proper HUD for game like it should be from begging.
+
+[h3] [b] MOD IS STILL DEVELOPED PLEASE SUBMIT ANY WEIR BEHAV [/b] [/h3]
+
+[h2] *NEW* [/h2]
 [list]
-        [*] Vanilla like prompts (using cards/ pills/ activeitems) <b> NEW </b>
-        [*] Renders HUD with proper positioning - no weird sprites for coop player
-        [*] Customizable hud positions (*)
-        [*] Suport modded pockets items/
-        [*] Bethany charges/ colored charge bar
-        [*] Display names for pockets
-        [list]
-[h3]Tainted Characters[/h3]
-[*] Poop spells integration for Tainted ??? (*)
-[*] Bag of crafting integration (*)
-[*] Pulsing T.Maggy Heart
+    [*] Jacob and Essau FULL SUPPORT
+    [*] Mod sprites refreshes on demand
 [/list]
+[h2] What this mod do[/h2]
+[list]
+    [*] Renders proper HUD for single player
+    [*] Renders proper HUD for coop/multiplayer
+    [*] Shows pockets/pills/card names
+    [*] Bethany charges/ colored charge bar
+    [*] Vanilla like prompts (using cards/ pills/ active items )  
 [/list]
-(*)  - future releases
-[h2]Issues/ not working/missing[/h2]
-[*] Jacob and Essau - won't render properly - WIP
-[*] Forgotten - won't render properly - WIP
+[h2] Planned features [/h2]
+[*] Found HUD - render stats
+[list] 
+[list] [b] Tainted characters [/b]
+    [*] Pulsing Tainted Maggy hearts
+    [*] Poop spells for Tainted ???
+    [*] Tainted Isaac collectibles
+    [*] Tainted Cain -  Bag of Crafting
+[/list] 
+[*] Player colors
+[*] Extra HUD - render collectibles
+[/list]
+[h2] What this mod lack of[/h2]
+[list]
+    [*] Boss bars – I won’t be messing with. I suggest using [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2635267643] [Rep] Enhanced Boss Bars [/url] from  [url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge 
+    [*] Minimap – Same as boss bars – Use [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1978904635] MiniMAPI[/url] from [url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge
+ [h2]Issues/ not working/missing[/h2]
+[list]
 [*] Urn of soul - only show open/close sprite state - no modding API function
 [*] Jar of Wisp - manual charge detection/ resets on restart- no modding API function
+[/list]
 </description>
-    <version>0.3</version>
+    <version>0.4</version>
     <visibility>Public</visibility>
     <tag id="Lua"/>
     <tag id="Tweaks"/>
