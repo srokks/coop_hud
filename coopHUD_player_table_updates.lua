@@ -508,6 +508,7 @@ function PostItemPickup (_,player)
         elseif item_queue.Item.Type == ItemType.ITEM_TRINKET then
             coopHUD.updateTrinkets(player_index)
         else
+            coopHUD.updateItems()
         end
     end
 end
