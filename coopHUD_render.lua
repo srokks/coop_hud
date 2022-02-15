@@ -1011,6 +1011,7 @@ function coopHUD.on_item_pickup(_, ent_player, ent_collider, Low)
         local player_index = coopHUD.getPlayerNumByControllerIndex(ent_player.ControllerIndex)
         if ent_collider.Variant == PickupVariant.PICKUP_HEART then -- check if collides with heart
             coopHUD.signals.on_heart_update = player_index
+            
         elseif ent_collider.Variant == PickupVariant.PICKUP_COIN or -- check if collides with coin
                 ent_collider.Variant == PickupVariant.PICKUP_KEY or -- or with key
                 ent_collider.Variant == PickupVariant.PICKUP_BOMB then -- or with bomb
@@ -1026,8 +1027,17 @@ function coopHUD.on_item_pickup(_, ent_player, ent_collider, Low)
     end
 end
 coopHUD:AddCallback(ModCallbacks.MC_PRE_PLAYER_COLLISION, coopHUD.on_item_pickup)
--- _____ On damage
+-- __________ On damage
 function coopHUD.on_damage(_,ent_player)
     coopHUD.signals.on_heart_update = coopHUD.getPlayerNumByControllerIndex(ent_player:ToPlayer().ControllerIndex)
 end
 coopHUD:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, coopHUD.on_damage, EntityType.ENTITY_PLAYER)
+-- __________ On room clear
+function  coopHUD.on_room_clear()
+    -- Iterates through tables
+    for i,_ in pairs(coopHUD.players) do
+        coopHUD.updateActives(i) -- updates actives
+        coopHUD.updatePockets(i) -- updates pockets
+    end
+end
+coopHUD:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, coopHUD.on_room_clear)

@@ -212,10 +212,10 @@ function coopHUD.updateActives(player_no)
             coopHUD.players[player_no].first_active = temp_player:GetActiveItem(0)
             coopHUD.players[player_no].second_active = temp_player:GetActiveItem(1)
             coopHUD.players[player_no].sprites.first_active = coopHUD.getActiveItemSprite(temp_player,0)
-            coopHUD.updateCharge(player_no)
             coopHUD.players[player_no].sprites.second_active = coopHUD.getActiveItemSprite(temp_player,1)
             coopHUD.players[player_no].sprites.second_active_charge = coopHUD.getChargeSprites(temp_player,1)
         end
+        coopHUD.updateCharge(player_no)
         if coopHUD.players[player_no].first_active_charge ~= temp_player:GetActiveCharge(0) or forceUpdateActives then
             coopHUD.players[player_no].first_active_charge = temp_player:GetActiveCharge(0)
             coopHUD.players[player_no].sprites.first_active = coopHUD.getActiveItemSprite(temp_player,0)
@@ -240,7 +240,7 @@ function coopHUD.updateActives(player_no)
     end
 function coopHUD.updateCharge(player_no)
     local temp_player = Isaac.GetPlayer(coopHUD.players[player_no].game_index)
-        coopHUD.players[player_no].sprites.first_active_charge = coopHUD.getChargeSprites(temp_player,0)
+    coopHUD.players[player_no].sprites.first_active_charge = coopHUD.getChargeSprites(temp_player,0)
 end
 function coopHUD.updateTrinkets(player_no)
     local temp_player = Isaac.GetPlayer(coopHUD.players[player_no].game_index)
