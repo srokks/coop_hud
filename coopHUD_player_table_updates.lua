@@ -40,6 +40,14 @@ function coopHUD.initPlayer(player_no,ent_player)
         sub_heart_types = {},
         twin = {},
         -- Stats
+        stats = {
+            speed = temp_player.MoveSpeed,
+            tears_delay = 30 / (temp_player.MaxFireDelay + 1),
+            damage = temp_player.Damage,
+            range=(temp_player.TearRange/40),
+            shot_speed=temp_player.ShotSpeed,
+            luck = temp_player.Luck,
+        },
         -- Charges
         bethany_charge = nil, -- inits charge for Bethany
         wisp_jar_use = 0, -- holds info about used jar of wisp
@@ -418,6 +426,7 @@ end
 -- HUD_table
 function coopHUD.initHudTables()
     coopHUD.HUD_table.sprites = coopHUD.getHUDSprites()
+    coopHUD.HUD_table.stat_sprites = coopHUD.getStatSprites()
     coopHUD.HUD_table.floor_info = coopHUD.getStreakSprite()
     coopHUD.HUD_table.streak = coopHUD.getStreakSprite()
     coopHUD.HUD_table.streak_sec_color = KColor(0, 0, 0, 1, 0, 0, 0)
