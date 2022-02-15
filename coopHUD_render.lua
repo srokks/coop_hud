@@ -862,6 +862,7 @@ function coopHUD.on_pill_use(_,effect_no,ent_player)
     if effect_no == PillEffect.PILLEFFECT_GULP then
         coopHUD.signals.on_trinket_update = player_index
     end
+    coopHUD.signals.on_heart_update = player_index
 end
 coopHUD:AddCallback(ModCallbacks.MC_USE_PILL, coopHUD.on_pill_use)
 -- _____ On card use
