@@ -1007,22 +1007,26 @@ coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM, coopHUD.on_activate)
 -- __________ On item pickup
 function coopHUD.on_item_pickup(_, ent_player, ent_collider, Low)
     -- Checks if player entity collides with item
-    if ent_collider and ent_collider.Type == EntityType.ENTITY_PICKUP then
+    if ent_collider then
         local player_index = coopHUD.getPlayerNumByControllerIndex(ent_player.ControllerIndex)
-        if ent_collider.Variant == PickupVariant.PICKUP_HEART then -- check if collides with heart
-            coopHUD.signals.on_heart_update = player_index
-            
-        elseif ent_collider.Variant == PickupVariant.PICKUP_COIN or -- check if collides with coin
-                ent_collider.Variant == PickupVariant.PICKUP_KEY or -- or with key
-                ent_collider.Variant == PickupVariant.PICKUP_BOMB then -- or with bomb
-            coopHUD.signals.on_item_update = true -- triggers item update by signal
-        elseif ent_collider.Variant == PickupVariant.PICKUP_LIL_BATTERY then
-            coopHUD.signals.on_active_update = player_index -- triggers active updates
-            coopHUD.signals.on_pockets_update = player_index -- triggers pockets updates
-        elseif ent_collider.Variant == PickupVariant.PICKUP_TAROTCARD then
-            coopHUD.signals.on_pockets_update = player_index -- triggers pocket update by signal
-        elseif ent_collider.Variant == PickupVariant.PICKUP_PILL then
-            coopHUD.signals.on_pockets_update = player_index -- triggers pocket update by signal
+        if ent_collider.Type == EntityType.ENTITY_PICKUP then -- checks if collide with item
+            if ent_collider.Variant == PickupVariant.PICKUP_HEART then -- check if collides with heart
+                coopHUD.signals.on_heart_update = player_index
+            elseif ent_collider.Variant == PickupVariant.PICKUP_COIN or -- check if collides with coin
+                    ent_collider.Variant == PickupVariant.PICKUP_KEY or -- or with key
+                    ent_collider.Variant == PickupVariant.PICKUP_BOMB then -- or with bomb
+                coopHUD.signals.on_item_update = true -- triggers item update by signal
+            elseif ent_collider.Variant == PickupVariant.PICKUP_LIL_BATTERY then
+                coopHUD.signals.on_active_update = player_index -- triggers active updates
+                coopHUD.signals.on_pockets_update = player_index -- triggers pockets updates
+            elseif ent_collider.Variant == PickupVariant.PICKUP_TAROTCARD then
+                coopHUD.signals.on_pockets_update = player_index -- triggers pocket update by signal
+            elseif ent_collider.Variant == PickupVariant.PICKUP_PILL then
+                coopHUD.signals.on_pockets_update = player_index -- triggers pocket update by signal
+            end
+        end
+        if ent_collider.Type == EntityType.ENTITY_SLOT then -- checks if collide with slot machine
+            coopHUD.signals.on_item_update = true -- triggers item update
         end
     end
 end
