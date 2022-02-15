@@ -457,6 +457,7 @@ function coopHUD.updateTables()
     end
     if coopHUD.signals.on_heart_update then
         coopHUD.updateHearts(coopHUD.signals.on_heart_update)
+        coopHUD.updateBethanyCharge(coopHUD.signals.on_heart_update)
         coopHUD.signals.on_heart_update = nil
     end
     if coopHUD.signals.on_item_update then
