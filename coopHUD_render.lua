@@ -1033,8 +1033,13 @@ function coopHUD.on_item_pickup(_, ent_player, ent_collider, Low)
 end
 coopHUD:AddCallback(ModCallbacks.MC_PRE_PLAYER_COLLISION, coopHUD.on_item_pickup)
 -- __________ On damage
-function coopHUD.on_damage(_,ent_player)
-    coopHUD.signals.on_heart_update = coopHUD.getPlayerNumByControllerIndex(ent_player:ToPlayer().ControllerIndex)
+function coopHUD.on_damage(_,entity)
+    local ent_player = entity:ToPlayer() -- parse entity to player entity
+    local player_index = coopHUD.getPlayerNumByControllerIndex(ent_player.ControllerIndex) -- gets player index
+    coopHUD.signals.on_heart_update = player_index -- triggers heart update for player
+    if ent_player:HasCollectible(CollectibleType.COLLECTIBLE_MARBLES) then -- in case of marbles (can gulp trinket)
+        coopHUD.signals.on_trinket_update = player_index -- update trinkets
+    end
 end
 coopHUD:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, coopHUD.on_damage, EntityType.ENTITY_PLAYER)
 -- __________ On room clear
