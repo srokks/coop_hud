@@ -447,7 +447,7 @@ function coopHUD.updateTables()
     if ((Isaac.GetFrameCount()/30)%60)%4 == 0 then -- updates players every 4 seconds
         coopHUD.updateControllerIndex()
         for i,_ in pairs(coopHUD.players) do
-            coopHUD.signals.on_active_update = i
+            --coopHUD.signals.on_active_update = i
         end
         coopHUD.signals.on_item_update = true
     end
