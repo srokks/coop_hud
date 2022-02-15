@@ -1000,6 +1000,10 @@ function coopHUD.on_activate(_,type,RNG, EntityPlayer, UseFlags, used_slot, Cust
         end
         coopHUD.updatePoopMana(player_index)
     end
+    -- Check if used Smelter
+    if type == CollectibleType.COLLECTIBLE_SMELTER then
+        coopHUD.signals.on_trinket_update = player_index -- update trinkets on smelt
+    end
     -- Update actives
     coopHUD.signals.on_active_update = player_index
     coopHUD.signals.on_pockets_update = player_index
