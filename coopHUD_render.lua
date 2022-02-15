@@ -1041,3 +1041,20 @@ function  coopHUD.on_room_clear()
     end
 end
 coopHUD:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, coopHUD.on_room_clear)
+-- __________ Force update on new floor/room
+--- Function force updates all table. Triggers on new room/floor
+function coopHUD.force_update_all()
+    for i,_ in pairs(coopHUD.players) do
+        coopHUD.updateActives(i)
+        coopHUD.updateHearts(i)
+        coopHUD.updatePockets(i)
+        coopHUD.updateTrinkets(i)
+        coopHUD.updateExtraLives(i)
+        coopHUD.updateBethanyCharge(i)
+        coopHUD.updatePoopMana(i)
+    end
+    coopHUD.updateControllerIndex()
+end
+coopHUD:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, coopHUD.force_update_all)
+coopHUD:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, coopHUD.force_update_all)
+-- __________
