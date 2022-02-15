@@ -1004,6 +1004,10 @@ function coopHUD.on_activate(_,type,RNG, EntityPlayer, UseFlags, used_slot, Cust
     if type == CollectibleType.COLLECTIBLE_SMELTER then
         coopHUD.signals.on_trinket_update = player_index -- update trinkets on smelt
     end
+    if coopHUD.players[player_index].type == PlayerType.PLAYER_BETHANY or
+            coopHUD.players[player_index].type == PlayerType.PLAYER_BETHANY_B then
+        coopHUD.signals.on_bethany_update = player_index
+    end
     -- Update actives
     coopHUD.signals.on_active_update = player_index
     coopHUD.signals.on_pockets_update = player_index

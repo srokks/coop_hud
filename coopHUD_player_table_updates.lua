@@ -472,6 +472,10 @@ function coopHUD.updateTables()
         coopHUD.updatePockets(coopHUD.signals.on_pockets_update)
         coopHUD.signals.on_pockets_update = nil
     end
+    if coopHUD.signals.on_bethany_update then
+        coopHUD.updateBethanyCharge(coopHUD.signals.on_bethany_update)
+        coopHUD.signals.on_bethany_update = nil
+    end
 end
 coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.updateTables)
 -- Modified  Version of POST_ITEM_PICKUP from pedroff_1 - https://steamcommunity.com/sharedfiles/filedetails/?id=2577953432&searchtext=callback
