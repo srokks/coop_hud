@@ -441,7 +441,7 @@ function coopHUD.updateTables()
     coopHUD.updateAnchors()
     -- charges update constantly due to items such as spinning wheel
     for i,_ in pairs(coopHUD.players) do
-        --coopHUD.updateCharge(i)
+        coopHUD.updateCharge(i)
     end
     --
     if ((Isaac.GetFrameCount()/30)%60)%4 == 0 then -- updates players every 4 seconds
