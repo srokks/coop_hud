@@ -40,13 +40,14 @@ function coopHUD.initPlayer(player_no,ent_player)
         sub_heart_types = {},
         twin = {},
         -- Stats
+        -- holds player stats [1] - stat; [2] change
         stats = {
-            speed = temp_player.MoveSpeed,
-            tears_delay = 30 / (temp_player.MaxFireDelay + 1),
-            damage = temp_player.Damage,
-            range=(temp_player.TearRange/40),
-            shot_speed=temp_player.ShotSpeed,
-            luck = temp_player.Luck,
+            speed = { temp_player.MoveSpeed,0 },
+            tears_delay = { 30 / (temp_player.MaxFireDelay + 1),0 },
+            damage = { temp_player.Damage ,0},
+            range={(temp_player.TearRange/40),0},
+            shot_speed={temp_player.ShotSpeed,0},
+            luck = {temp_player.Luck,0},
         },
         -- Charges
         bethany_charge = nil, -- inits charge for Bethany
