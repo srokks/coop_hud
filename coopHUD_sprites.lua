@@ -304,6 +304,29 @@ function coopHUD.getStreakSprite()
     sprite:Load(coopHUD.GLOBALS.streak_anim_path,true)
     return sprite
 end
+function coopHUD.getStatSprites()
+    stats = {
+        speed = Sprite(),
+        tears_delay = Sprite(),
+        damage = Sprite(),
+        range=Sprite(),
+        shot_speed=Sprite(),
+        luck = Sprite(),
+    }
+    stats.speed:Load(coopHUD.GLOBALS.hud_stats_anim_path,true)
+    stats.speed:SetFrame('Idle',0)
+    stats.tears_delay:Load(coopHUD.GLOBALS.hud_stats_anim_path,true)
+    stats.tears_delay:SetFrame('Idle',1)
+    stats.damage:Load(coopHUD.GLOBALS.hud_stats_anim_path,true)
+    stats.damage:SetFrame('Idle',2)
+    stats.range:Load(coopHUD.GLOBALS.hud_stats_anim_path,true)
+    stats.range:SetFrame('Idle',3)
+    stats.shot_speed:Load(coopHUD.GLOBALS.hud_stats_anim_path,true)
+    stats.shot_speed:SetFrame('Idle',4)
+    stats.luck:Load(coopHUD.GLOBALS.hud_stats_anim_path,true)
+    stats.luck:SetFrame('Idle',5)
+    return stats
+end
 --___ Help functions
 -- Hearts
 function coopHUD.getHeartType(player,heart_pos)
