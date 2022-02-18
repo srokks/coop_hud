@@ -21,14 +21,15 @@ if ModConfigMenu then
 		ModConfigMenu.MenuData[categoryToChange].Name = tostring(mod_name)
 		ModConfigMenu.MenuData[categoryToChange].Subcategories = {}
 	end
+	--
 	ModConfigMenu.UpdateCategory(mod_name, {
 		Info = {
 			"coopHUD Settings.",
 		}
 	})
-	ModConfigMenu.AddTitle(mod_name, "Settings", "General")
+	--ModConfigMenu.AddTitle(mod_name, "General","General")
 	-- SHOW HUD
-	ModConfigMenu.AddSetting(mod_name, "Settings", {
+	ModConfigMenu.AddSetting(mod_name, "General", {
 		Type = ModConfigMenu.OptionType.BOOLEAN,
 		CurrentSetting = function()
 			return coopHUD.options.onRender
@@ -36,12 +37,12 @@ if ModConfigMenu then
 		Default = coopHUD.options.onRender,
 		
 		Display = function()
-			local onOff = "Disabled"
+			local onOff = "off"
 			if coopHUD.options.onRender then
-				onOff = "Enabled"
+				onOff = "on"
 			end
 			
-			return "show coopHUD: " .. onOff
+			return "Show coopHUD: " .. onOff
 		end,
 		OnChange = function(currentBool)
 			coopHUD.options.onRender = currentBool
@@ -52,7 +53,7 @@ if ModConfigMenu then
 		end
 	})
 	-- Force small
-	ModConfigMenu.AddSetting(mod_name, "Settings", {
+	ModConfigMenu.AddSetting(mod_name, "General", {
 		Type = ModConfigMenu.OptionType.BOOLEAN,
 		CurrentSetting = function()
 			return coopHUD.options.force_small_hud
@@ -75,7 +76,7 @@ if ModConfigMenu then
 		end
 	})
 	-- PLAYERS NAME/HEAD
-	ModConfigMenu.AddSetting(mod_name, "Settings", {
+	ModConfigMenu.AddSetting(mod_name, "General", {
 		Type = ModConfigMenu.OptionType.BOOLEAN,
 		CurrentSetting = function()
 			return coopHUD.options.render_player_info
@@ -104,7 +105,7 @@ if ModConfigMenu then
 		end
 	})
 	-- Timer always on setting
-	ModConfigMenu.AddSetting(mod_name, "Settings", {
+	ModConfigMenu.AddSetting(mod_name, "General", {
 		Type = ModConfigMenu.OptionType.BOOLEAN,
 		CurrentSetting = function()
 			return coopHUD.options.timer_always_on
@@ -126,6 +127,78 @@ if ModConfigMenu then
 			return "Timer toggle. Accesible by pressing 'T' on keyboard"
 		end
 	})
+	-- __ Stats
+	-- stats.show
+	ModConfigMenu.AddSetting(mod_name, "Stats", {
+		Type = ModConfigMenu.OptionType.BOOLEAN,
+		CurrentSetting = function()
+			return coopHUD.options.stats.show
+		end,
+		Default = coopHUD.options.stats.show,
+		
+		Display = function()
+			local onOff = "Off"
+			if coopHUD.options.stats.show then
+				onOff = "On"
+			end
+			
+			return "Show stats: " .. onOff
+		end,
+		OnChange = function(currentBool)
+			coopHUD.options.stats.show = currentBool
+		end,
+		Info = function()
+			return "Shows stats like Vanilla FoundHud"
+		end
+	})
+	-- stats.hide_in_battle
+	ModConfigMenu.AddSetting(mod_name, "Stats", {
+		Type = ModConfigMenu.OptionType.BOOLEAN,
+		CurrentSetting = function()
+			return coopHUD.options.stats.hide_in_battle
+		end,
+		Default = coopHUD.options.stats.hide_in_battle,
+		
+		Display = function()
+			local onOff = "Off"
+			if coopHUD.options.stats.hide_in_battle     then
+				onOff = "On"
+			end
+			
+			return "Hide on battle: " .. onOff
+		end,
+		OnChange = function(currentBool)
+			coopHUD.options.stats.hide_in_battle = currentBool
+		end,
+		Info = function()
+			return "Hides stats while in battle"
+		end
+	})
+	-- stats.colorful
+	ModConfigMenu.AddSetting(mod_name, "Stats", {
+		Type = ModConfigMenu.OptionType.BOOLEAN,
+		CurrentSetting = function()
+			return coopHUD.options.stats.hide_in_battle
+		end,
+		Default = coopHUD.options.stats.hide_in_battle,
+		
+		Display = function()
+			local onOff = "Off"
+			if coopHUD.options.stats.hide_in_battle     then
+				onOff = "On"
+			end
+			
+			return "Colorfull: " .. onOff
+		end,
+		OnChange = function(currentBool)
+			coopHUD.options.stats.hide_in_battle = currentBool
+		end,
+		Info = function()
+			return "Colors stats according to player color"
+		end
+	})
+	-- __ Players
+	
 end
 -- Overrides External item description mod setting to better fit with HUD
 if EID then

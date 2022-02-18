@@ -17,6 +17,11 @@ coopHUD.options = {
     render_player_info = true,
     force_small_hud = false,
     timer_always_on = true,
+    stats = {
+        show = true,
+        hide_in_battle= false,
+        colorful = true,
+    }
 }
 coopHUD.GLOBALS = {
     item_anim_path = '/gfx/ui/items_coop.anm2',
@@ -31,7 +36,6 @@ coopHUD.GLOBALS = {
     hud_stats_anim_path = "gfx/ui/hudstats2.anm2",
 }
 coopHUD.players = {}
-coopHUD.TICKER = 0
 coopHUD.essau_no = 0
 coopHUD.players_config = {
     players_no = 0,
