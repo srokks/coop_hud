@@ -1158,7 +1158,7 @@ function coopHUD.renderStatChange(player,pos,mirrored)
     local f = coopHUD.HUD_table.stats.font
     local temp_pos = Vector(pos.X,pos.Y)
     if mirrored then
-        temp_pos.X = temp_pos.X - 100
+        temp_pos.X = temp_pos.X - 95
     end
     -- Move speed
     if player.stats.speed[2] ~= 0 then
@@ -1202,7 +1202,6 @@ function coopHUD.renderStatChange(player,pos,mirrored)
         drawing = true
     end
     if drawing then
-        f:DrawString(tostring(coopHUD.stat_counter),100,100,KColor(1,1,1,1),0,true)
         coopHUD.stat_counter  = coopHUD.stat_counter + 1
         if coopHUD.stat_counter  > 200 then
             player.stats.speed[2] = 0
