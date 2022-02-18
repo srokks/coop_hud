@@ -439,7 +439,7 @@ function coopHUD.updateStats(player_no)
     end
     -- Damage
     if player.stats.damage[1] ~= temp_player.Damage then -- checks if is difference
-        local dif = player.Damage - player.stats.tears_delay[1] -- stores current difference in local var
+        local dif = temp_player.Damage - player.stats.damage[1] -- stores current difference in local var
         player.stats.damage[1] = temp_player.Damage  -- changes main stat
         player.stats.damage[2] = player.stats.damage[2] + dif -- increment change stat val with difference
     end
