@@ -466,7 +466,7 @@ end
 -- HUD_table
 function coopHUD.initHudTables()
     coopHUD.HUD_table.sprites = coopHUD.getHUDSprites()
-    --coopHUD.HUD_table.stat_sprites = coopHUD.getStatSprites()
+    coopHUD.HUD_table.stats = coopHUD.getStatSprites()
     coopHUD.HUD_table.floor_info = coopHUD.getStreakSprite()
     coopHUD.HUD_table.streak = coopHUD.getStreakSprite()
     coopHUD.HUD_table.streak_sec_color = KColor(0, 0, 0, 1, 0, 0, 0)
