@@ -27,7 +27,8 @@ coopHUD.GLOBALS = {
     poop_anim_path = "gfx/ui/ui_poops.anm2",
     player_head_anim_path = "gfx/ui/coop menu.anm2",
     hud_el_anim_path = "gfx/ui/hudpickups.anm2",
-    streak_anim_path = "gfx/ui/ui_streak.anm2"
+    streak_anim_path = "gfx/ui/ui_streak.anm2",
+    hud_stats_anim_path = "gfx/ui/hudstats2.anm2",
 }
 coopHUD.players = {}
 coopHUD.TICKER = 0
