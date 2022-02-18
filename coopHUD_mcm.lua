@@ -138,4 +138,7 @@ if MinimapAPI then
 	if MinimapAPI:GetConfig('ShowLevelFlags') then
 		MinimapAPI.Config.ShowLevelFlags = false
 	end
+	if MinimapAPI:GetConfig('DisplayOnNoHUD') then
+		MinimapAPI.Config.DisplayOnNoHUD = true
+	end
 end
