@@ -28,6 +28,37 @@ function  coopHUD.test_render()
     f:Load("font/pftempestasevencondensed.fnt")
     --f:DrawString(coopHUD.test_str,100,100,KColor(1,1,1,1),0,true)
 end
-coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.test_render)
---
+-- _____
+local stat_counter = 0
+function coopHUD.renderStatChange(pos,stat)
+    local f = Font()
+    f:Load("font/luamini.fnt")
+    --stat_counter = Game():GetFrameCount()
+    -- renders stat change
+    local dif_string = string.format('%.2f',stat)
+    if stat ~= 0 then
+        --if stat_counter > 500 then stat_counter = 0 end
+        f:DrawString(tostring(stat_counter),100,100,KColor(1,1,1,1),0,true)
+        if stat > 0 then
+            dif_color = KColor(0,1,0,0.5)
+            dif_string = '+'..dif_string
+        else
+            dif_color = KColor(1,0,0,0.5)
+        end
+        if stat_counter > 500 then
+            stat_counter = 0
+            print('kaka')
+            return true
+        else
+            stat_counter = stat_counter + 1
+        end
+        f:DrawString(dif_string,pos.X+38,pos.Y,dif_color,0,true)
+        --print('dif'..tostring(stat),Game():GetFrameCount())
+        --return true
+    else
+        stat_counter = 0
+        return false
+    end
+end
+-- _____
 coopHUD.initHudTables()
