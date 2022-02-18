@@ -1078,3 +1078,150 @@ end
 coopHUD:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, coopHUD.force_update_all)
 coopHUD:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, coopHUD.force_update_all)
 -- __________
+-- _____
+---renderStatsIcons
+---Renders stats icons in given position Vector(x:int,y:int).
+---Anchors group of sprites by left top corner
+---@param pos Vector()
+---@param mirrored boolean If true renders mirrored
+function coopHUD.renderStatsIcons(pos,mirrored)
+    --TODO: mirrored
+    local temp_pos = Vector(pos.X,pos.Y)
+    -- Move speed
+    stat_sprite.speed:Render(Vector(temp_pos.X,temp_pos.Y))
+    -- Tear delay
+    temp_pos = Vector(temp_pos.X,temp_pos.Y+12)
+    stat_sprite.tears_delay:Render(Vector(temp_pos.X,temp_pos.Y))
+    -- Damage
+    temp_pos = Vector(temp_pos.X,temp_pos.Y+12)
+    stat_sprite.damage:Render(Vector(temp_pos.X,temp_pos.Y))
+    -- Range
+    temp_pos = Vector(temp_pos.X,temp_pos.Y+12)
+    stat_sprite.range:Render(Vector(temp_pos.X,temp_pos.Y))
+    -- Shoot speed
+    temp_pos = Vector(temp_pos.X,temp_pos.Y+12)
+    stat_sprite.shot_speed:Render(Vector(temp_pos.X,temp_pos.Y))
+    -- Luck
+    temp_pos = Vector(temp_pos.X,temp_pos.Y+12)
+    stat_sprite.luck:Render(Vector(temp_pos.X,temp_pos.Y))
+end
+-- _____
+---renderStats
+--- Renders only decimal stats for given player.
+---Renders also stat changes using renderStatChange
+---@param player table coopHUD.players[n].stats
+---@param pos Vector()
+---@param mirrored boolean If true renders mirrored
+---@param color KColor()
+function coopHUD.renderStats(player,pos,mirrored,color)
+    local temp_pos = Vector(pos.X,pos.Y)
+    local font_color = KColor(color.Red,color.Green,color.Blue,0.5)
+    local dif_color = KColor(1,1,1,0.5)
+    local f = Font()
+    f:Load("font/luamini.fnt")
+    -- Move speed
+    f:DrawString(string.format("%.2f",player.stats.speed[1]),temp_pos.X+16,temp_pos.Y,font_color,0,true)
+    -- Tear delay
+    temp_pos = Vector(temp_pos.X,temp_pos.Y+12)
+    f:DrawString(string.format("%.2f",player.stats.tears_delay[1]),temp_pos.X+16,temp_pos.Y,font_color,0,true)
+    -- Damage
+    temp_pos = Vector(temp_pos.X,temp_pos.Y+12)
+    f:DrawString(string.format("%.2f",player.stats.damage[1]),temp_pos.X+16,temp_pos.Y,font_color,0,true)
+    -- Range
+    temp_pos = Vector(temp_pos.X,temp_pos.Y+12)
+    f:DrawString(string.format("%.2f",player.stats.range[1]),temp_pos.X+16,temp_pos.Y,font_color,0,true)
+    -- Shoot speed
+    temp_pos = Vector(temp_pos.X,temp_pos.Y+12)
+    f:DrawString(string.format("%.2f",player.stats.shot_speed[1]),temp_pos.X+16,temp_pos.Y,font_color,0,true)
+    -- Luck
+    temp_pos = Vector(temp_pos.X,temp_pos.Y+12)
+    f:DrawString(string.format("%.2f",player.stats.luck[1]),temp_pos.X+16,temp_pos.Y,font_color,0,true)
+end
+-- _____
+coopHUD.stat_counter = 0
+---renderStatChange
+---Renders stat change
+---@param player table coopHUD.players[n].stats
+---@param pos Vector()
+function coopHUD.renderStatChange(player,pos)
+    local f = Font()
+    f:Load("font/luamini.fnt")
+    local drawing = false
+    local temp_pos = Vector(pos.X,pos.Y)
+    -- Move speed
+    if player.stats.speed[2] ~= 0 then
+        local dif = coopHUD.getStatChangeAttrib(player.stats.speed[2])
+        f:DrawString(dif.str,temp_pos.X+48,temp_pos.Y,dif.color,0,true)
+        drawing = true
+    end
+    -- Tear delay
+    temp_pos = Vector(temp_pos.X,temp_pos.Y+12)
+    if player.stats.tears_delay[2] ~= 0 then
+        local dif = coopHUD.getStatChangeAttrib(player.stats.tears_delay[2])
+        f:DrawString(dif.str,temp_pos.X+48,temp_pos.Y,dif.color,0,true)
+        drawing = true
+    end
+    -- Damage
+    temp_pos = Vector(temp_pos.X,temp_pos.Y+12)
+    if player.stats.damage[2] ~= 0 then
+        local dif = coopHUD.getStatChangeAttrib(player.stats.damage[2])
+        f:DrawString(dif.str,temp_pos.X+48,temp_pos.Y,dif.color,0,true)
+        drawing = true
+    end
+    -- Range
+    temp_pos = Vector(temp_pos.X,temp_pos.Y+12)
+    if player.stats.range[2] ~= 0 then
+        local dif = coopHUD.getStatChangeAttrib(player.stats.range[2])
+        f:DrawString(dif.str,temp_pos.X+48,temp_pos.Y,dif.color,0,true)
+        drawing = true
+    end
+    -- Shoot speed
+    temp_pos = Vector(temp_pos.X,temp_pos.Y+12)
+    if player.stats.shot_speed[2] ~= 0 then
+        local dif = coopHUD.getStatChangeAttrib(player.stats.shot_speed[2])
+        f:DrawString(dif.str,temp_pos.X+48,temp_pos.Y,dif.color,0,true)
+        drawing = true
+    end
+    -- Luck
+    temp_pos = Vector(temp_pos.X,temp_pos.Y+12)
+    if player.stats.luck[2] ~= 0 then
+        local dif = coopHUD.getStatChangeAttrib(player.stats.luck[2])
+        f:DrawString(dif.str,temp_pos.X+48,temp_pos.Y,dif.color,0,true)
+        drawing = true
+    end
+    if drawing then
+        f:DrawString(tostring(coopHUD.stat_counter),100,100,KColor(1,1,1,1),0,true)
+        coopHUD.stat_counter  = coopHUD.stat_counter + 1
+        if coopHUD.stat_counter  > 200 then
+            player.stats.speed[2] = 0
+            player.stats.tears_delay[2] = 0
+            player.stats.damage[2] = 0
+            player.stats.range[2] = 0
+            player.stats.shot_speed[2] = 0
+            player.stats.luck[2] = 0
+        end
+    else
+        coopHUD.stat_counter  = 0
+        drawing = false
+    end
+    
+end
+-- _____
+---getStatChangeAttrib
+---Returns table of change int attribs. Defines color and prefix +/-
+---@param stat string
+---@return table {str = stat_dif_string, color = stat_dif_color}
+function coopHUD.getStatChangeAttrib(stat)
+    local dif_string = ''
+    dif_string = string.format('%.2f',stat)
+    local dif_color = KColor(1,1,1,1)
+    if stat > 0 then
+        dif_color = KColor(0,1,0,0.5)
+        dif_string = '+'..dif_string
+    else
+        dif_color = KColor(1,0,0,0.5)
+    end
+    print(dif_string,dif_color.Green)
+    return {str = dif_string,color=dif_color}
+end
+-- _____
