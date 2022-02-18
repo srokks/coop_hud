@@ -24,9 +24,92 @@ function  coopHUD.test_render()
             coopHUD:dumpPLayerTables()
         end
     end
+    
+    local tem_player = Isaac.GetPlayer(0)
+    local stats = coopHUD.players[0]
+    coopHUD.renderStatsIcons(Vector(100,70),false)
+    coopHUD.renderStats(coopHUD.players[0],Vector(100,68),false,KColor(1,1,1,0))
+    --coopHUD.renderStats(coopHUD.players[0],Vector(0,74),false,KColor(0,0.5,1,0))
+    --coopHUD.renderStats(coopHUD.players[0],Vector(20,70),false,KColor(1,0,0,0))
+    --f:DrawStringScaled(stats.speed,32,75,0.6,0.6,KColor(1,1,1,0.5),0,true)
+    
+end
+coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.test_render)
+
+-- _____
+function coopHUD.renderStatsIcons(pos,mirrored)
+    local temp_pos = Vector(pos.X,pos.Y)
+    -- Move speed
+    stat_sprite.speed:Render(Vector(temp_pos.X,temp_pos.Y))
+    -- Tear delay
+    temp_pos = Vector(temp_pos.X,temp_pos.Y+12)
+    stat_sprite.tears_delay:Render(Vector(temp_pos.X,temp_pos.Y))
+    -- Damage
+    temp_pos = Vector(temp_pos.X,temp_pos.Y+12)
+    stat_sprite.damage:Render(Vector(temp_pos.X,temp_pos.Y))
+    -- Range
+    temp_pos = Vector(temp_pos.X,temp_pos.Y+12)
+    stat_sprite.range:Render(Vector(temp_pos.X,temp_pos.Y))
+    -- Shoot speed
+    temp_pos = Vector(temp_pos.X,temp_pos.Y+12)
+    stat_sprite.shot_speed:Render(Vector(temp_pos.X,temp_pos.Y))
+    -- Luck
+    temp_pos = Vector(temp_pos.X,temp_pos.Y+12)
+    stat_sprite.luck:Render(Vector(temp_pos.X,temp_pos.Y))
+end
+-- _____
+function coopHUD.renderStats(player,pos,mirrored,color)
+    local temp_pos = Vector(pos.X,pos.Y)
+    local font_color = KColor(color.Red,color.Green,color.Blue,0.5)
+    local dif_color = KColor(1,1,1,0.5)
     local f = Font()
-    f:Load("font/pftempestasevencondensed.fnt")
-    --f:DrawString(coopHUD.test_str,100,100,KColor(1,1,1,1),0,true)
+    f:Load("font/luamini.fnt")
+    -- Move speed
+    f:DrawString(string.format("%.2f",player.stats.speed[1]),temp_pos.X+16,temp_pos.Y,font_color,0,true)
+    if player.stats.speed[2] ~= 0 then
+        if coopHUD.renderStatChange(temp_pos,player.stats.speed[2]) then
+            player.stats.speed[2] = 0
+        end
+    end
+    -- Tear delay
+    temp_pos = Vector(temp_pos.X,temp_pos.Y+12)
+    f:DrawString(string.format("%.2f",player.stats.tears_delay[1]),temp_pos.X+16,temp_pos.Y,font_color,0,true)
+    if player.stats.tears_delay[2] ~= 0 then
+        if coopHUD.renderStatChange(temp_pos,player.stats.tears_delay[2]) then
+            player.stats.tears_delay[2] = 0
+        end
+    end
+    -- Damage
+    temp_pos = Vector(temp_pos.X,temp_pos.Y+12)
+    f:DrawString(string.format("%.2f",player.stats.damage[1]),temp_pos.X+16,temp_pos.Y,font_color,0,true)
+    if coopHUD.renderStatChange(temp_pos,player.stats.damage[2]) then
+        player.stats.damage[2] = 0
+    end
+    -- Range
+    temp_pos = Vector(temp_pos.X,temp_pos.Y+12)
+    f:DrawString(string.format("%.2f",player.stats.range[1]),temp_pos.X+16,temp_pos.Y,font_color,0,true)
+    if player.stats.range[2] ~= 0 then
+        if coopHUD.renderStatChange(temp_pos,player.stats.range[2]) then
+            player.stats.range[2] = 0
+        end
+    end
+    -- Shoot speed
+    temp_pos = Vector(temp_pos.X,temp_pos.Y+12)
+    f:DrawString(string.format("%.2f",player.stats.shot_speed[1]),temp_pos.X+16,temp_pos.Y,font_color,0,true)
+    if player.stats.shot_speed[2] ~= 0 then
+        if coopHUD.renderStatChange(temp_pos,player.stats.shot_speed[2]) then
+            player.stats.shot_speed[2] = 0
+        end
+    end
+    -- Luck
+    temp_pos = Vector(temp_pos.X,temp_pos.Y+12)
+    f:DrawString(string.format("%.2f",player.stats.luck[1]),temp_pos.X+16,temp_pos.Y,font_color,0,true)
+    if player.stats.luck[2] ~= 0 then
+        if coopHUD.renderStatChange(temp_pos,player.stats.luck[2]) then
+            player.stats.luck[2] = 0
+        end
+    end
+    
 end
 -- _____
 local stat_counter = 0
