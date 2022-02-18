@@ -430,30 +430,35 @@ function coopHUD.updateStats(player_no)
         local dif = temp_player.MoveSpeed - player.stats.speed[1] -- stores current difference in local var
         player.stats.speed[1] = temp_player.MoveSpeed -- changes main stat
         player.stats.speed[2] = player.stats.speed[2] + dif -- increment change stat val with difference
+        coopHUD.stat_counter = 0 -- resets counter responsible for showing stat change
     end
     -- Tear delay
     if player.stats.tears_delay[1] ~= 30 / (temp_player.MaxFireDelay + 1) then -- checks if is difference
         local dif = (30 / (temp_player.MaxFireDelay + 1)) - player.stats.tears_delay[1] -- stores current difference in local var
         player.stats.tears_delay[1] = 30 / (temp_player.MaxFireDelay + 1)  -- changes main stat
         player.stats.tears_delay[2] = player.stats.tears_delay[2] + dif -- increment change stat val with difference
+        coopHUD.stat_counter = 0 -- resets counter responsible for showing stat change
     end
     -- Damage
     if player.stats.damage[1] ~= temp_player.Damage then -- checks if is difference
         local dif = temp_player.Damage - player.stats.damage[1] -- stores current difference in local var
         player.stats.damage[1] = temp_player.Damage  -- changes main stat
         player.stats.damage[2] = player.stats.damage[2] + dif -- increment change stat val with difference
+        coopHUD.stat_counter = 0 -- resets counter responsible for showing stat change
     end
     -- Range
     if player.stats.range[1] ~= (temp_player.TearRange/40) then -- checks if is difference
         local dif = (temp_player.TearRange/40) - player.stats.range[1] -- stores current difference in local var
         player.stats.range[1] = (temp_player.TearRange/40) -- changes main stat
         player.stats.range[2] = player.stats.range[2] + dif -- increment change stat val with difference
+        coopHUD.stat_counter = 0 -- resets counter responsible for showing stat change
     end
     -- Luck
     if player.stats.luck[1] ~= temp_player.Luck then -- checks if is difference
         local dif = temp_player.Luck - player.stats.luck[1] -- stores current difference in local var
         player.stats.luck[1] = temp_player.Luck -- changes main stat
         player.stats.luck[2] = player.stats.luck[2] + dif -- increment change stat val with difference
+        coopHUD.stat_counter = 0 -- resets counter responsible for showing stat change
     end
 end
 -- _____
