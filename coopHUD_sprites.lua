@@ -312,6 +312,7 @@ function coopHUD.getStatSprites()
         range=Sprite(),
         shot_speed=Sprite(),
         luck = Sprite(),
+        font = Font()
     }
     stats.speed:Load(coopHUD.GLOBALS.hud_stats_anim_path,true)
     stats.speed:SetFrame('Idle',0)
@@ -325,6 +326,7 @@ function coopHUD.getStatSprites()
     stats.shot_speed:SetFrame('Idle',4)
     stats.luck:Load(coopHUD.GLOBALS.hud_stats_anim_path,true)
     stats.luck:SetFrame('Idle',5)
+    stats.font:Load('font/luamini.fnt')
     return stats
 end
 --___ Help functions
