@@ -1,10 +1,13 @@
 local json = require("json")
 if coopHUD:HasData() then
     local save = json.decode(coopHUD:LoadData())
-    coopHUD.options = save.options
+	if coopHUD.VERSION == save.version then
+		coopHUD.options = save.options
+	end
 end
 function coopHUD.save_options()
     local save =  {}
+	save.version = coopHUD.VERSION
     save.options = coopHUD.options
     coopHUD:SaveData(json.encode(save))
 end
