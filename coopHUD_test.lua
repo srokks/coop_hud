@@ -9,13 +9,16 @@ function coopHUD:dumpPLayerTables()
     print("Dumped player table into file data/coop_hud/"..file_name)
 end
 coopHUD.on_player_init()
+--
+local n = 0
+local stat_sprite = coopHUD.getStatSprites()
 function  coopHUD.test_render()
     if Input.IsButtonTriggered(Keyboard.KEY_I,0)  then
         -- DEBUG - print table
         print('DEBUG "i"')
-        for i,p in pairs(coopHUD.players) do
-            print('i','game index','contr')
-            print(i,p.game_index,p.controller_index)
+        print('i','stat','val')
+        for i,p in pairs(coopHUD.players[0].stats) do
+            print(i,p[1],p[2])
         end
     end
     -- Dump logic when pressed 'I' while holding 'P"
