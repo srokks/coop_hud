@@ -872,7 +872,8 @@ function coopHUD.renderStreak(sprite, first_line, second_line, pos, signal)
 end
 -- _____ Triggers STREAK when on new level
 coopHUD:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function(self)
-    coopHUD.streak_main_line = Game():GetLevel():GetName()
+    coopHUD.HUD_table.streak = coopHUD.getStreakSprite() -- resets sprites
+	coopHUD.streak_main_line = Game():GetLevel():GetName()
     coopHUD.streak_sec_line = Game():GetLevel():GetCurseName()
     if coopHUD.streak_sec_line == '' then coopHUD.streak_sec_line = nil end
 end)
