@@ -551,7 +551,7 @@ function coopHUD.renderPlayer(player_no)
                                        mirrored,nil,true)
     -- </Down line>
     -- Renders stats
-    if coopHUD.options.stats.show then
+    if coopHUD.options.stats.show and not coopHUD.signals.on_battle then
         coopHUD.renderStatsIcons(Vector(anchor_bot.X,72),mirrored)
         coopHUD.renderStats(coopHUD.players[player_no],Vector(anchor_bot.X,72),mirrored)
         coopHUD.renderStatChange(coopHUD.players[player_no],Vector(anchor_bot.X,72),mirrored)
@@ -706,14 +706,15 @@ function coopHUD.renderPlayerSmall(player_no)
         end
     end
 	-- ___ STATS RENDER
-	if player_no == 0 then
+	if player_no == 0 then -- In case of first player overloaded_hud
         if (anchor.Y + first_line_offset.Y + sec_line_offset.Y + twin_first_line_offset.Y + twin_sec_line_offset.Y) >= 92 then
-	            coopHUD.signals.overloaded_hud = true
+	            coopHUD.signals.overloaded_hud = true -- emmit signal
 	        else
-	            coopHUD.signals.overloaded_hud = false
+	            coopHUD.signals.overloaded_hud = false  -- reset signal
         end
     end
-    if coopHUD.options.stats.show and not coopHUD.signals.overloaded_hud  then
+	-- __ Renders stats checks if hud not overloaded and not in battle
+    if coopHUD.options.stats.show and not coopHUD.signals.overloaded_hud and not coopHUD.signals.on_battle  then
         -- Renders stat icons
         local stat_anchor = Vector(coopHUD.anchors[coopHUD.players_config.small[player_no].stat_anchor].X,
                                    92)
