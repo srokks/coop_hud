@@ -192,6 +192,7 @@ function coopHUD.on_input(_,ent,hook,btn)
         if Input.IsActionTriggered(ButtonAction.ACTION_DROP, player.ControllerIndex) then
             coopHUD.updateHearts(player_index)
             coopHUD.updatePlayerType(player_index)
+            coopHUD.updateActives(player_index)
             coopHUD.updatePockets(player_index)
             coopHUD.updateTrinkets(player_index)
         end
