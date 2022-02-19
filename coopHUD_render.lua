@@ -1121,13 +1121,25 @@ end
 ---@param pos Vector()
 ---@param mirrored boolean If true renders mirrored
 ---@param color KColor()
-function coopHUD.renderStats(player,pos,mirrored,color)
+function coopHUD.renderStats(player,pos,mirrored)
     local temp_pos = Vector(pos.X,pos.Y)
-    local font_color = KColor(color.Red,color.Green,color.Blue,0.5)
-    local dif_color = KColor(1,1,1,0.5)
     local f = coopHUD.HUD_table.stats.font
     if mirrored then
         temp_pos.X = temp_pos.X - 50
+    end
+    --
+    local font_color = KColor(1,1,1,0.5) -- holds font colors
+    -- Changes stats font color for player according to color setting
+    if coopHUD.options.stats.colorful then
+        font_color.Red = coopHUD.players_config.small[player.game_index].color.R
+        font_color.Green = coopHUD.players_config.small[player.game_index].color.G
+        font_color.Blue = coopHUD.players_config.small[player.game_index].color.B
+    else
+        font_color = KColor(1,1,1,0.5) -- default color
+    end
+    -- Highlights stat when player holds map button
+    if Input.IsActionPressed(ButtonAction.ACTION_MAP,player.controller_index) then
+        font_color.Alpha = 1
     end
     -- Move speed
     f:DrawString(string.format("%.2f",player.stats.speed[1]),temp_pos.X+16,temp_pos.Y,font_color,0,true)
