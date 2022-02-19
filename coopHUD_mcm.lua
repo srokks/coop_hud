@@ -178,20 +178,20 @@ if ModConfigMenu then
 	ModConfigMenu.AddSetting(mod_name, "Stats", {
 		Type = ModConfigMenu.OptionType.BOOLEAN,
 		CurrentSetting = function()
-			return coopHUD.options.stats.hide_in_battle
+			return coopHUD.options.stats.colorful
 		end,
-		Default = coopHUD.options.stats.hide_in_battle,
+		Default = coopHUD.options.stats.colorful,
 		
 		Display = function()
 			local onOff = "Off"
-			if coopHUD.options.stats.hide_in_battle     then
+			if coopHUD.options.stats.colorful     then
 				onOff = "On"
 			end
 			
 			return "Colorfull: " .. onOff
 		end,
 		OnChange = function(currentBool)
-			coopHUD.options.stats.hide_in_battle = currentBool
+			coopHUD.options.stats.colorful = currentBool
 		end,
 		Info = function()
 			return "Colors stats according to player color"
