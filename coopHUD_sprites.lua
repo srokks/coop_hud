@@ -644,5 +644,16 @@ function coopHUD.checkDeepPockets()
     end
     return deep_check
 end
+-- ______
+function coopHUD.getPlayerNumByControllerIndex(controller_index)
+    -- Function returns player number searching coopHUD.player table for matching controller index
+    local final_index = -1
+    for i,p in pairs(coopHUD.players) do
+        if p.controller_index == controller_index then
+            final_index = i
+        end
+    end
+    return final_index
+end
 -- TODO: T.FOrgotten - weird heart render
 -- TODO: Jaccob/Essau - tint non used sprites -
