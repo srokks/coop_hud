@@ -1154,9 +1154,9 @@ function coopHUD.renderStats(player,pos,mirrored)
     local font_color = KColor(1,1,1,0.5) -- holds font colors
     -- Changes stats font color for player according to color setting
     if coopHUD.options.stats.colorful then
-        font_color.Red = coopHUD.players_config.small[player.game_index].color.R
-        font_color.Green = coopHUD.players_config.small[player.game_index].color.G
-        font_color.Blue = coopHUD.players_config.small[player.game_index].color.B
+        font_color.Red = coopHUD.players_config.small[coopHUD.getPlayerNumByControllerIndex(player.controller_index)].color.R
+        font_color.Green = coopHUD.players_config.small[coopHUD.getPlayerNumByControllerIndex(player.controller_index)].color.G
+        font_color.Blue = coopHUD.players_config.small[coopHUD.getPlayerNumByControllerIndex(player.controller_index)].color.B
     else
         font_color = KColor(1,1,1,0.5) -- default color
     end
