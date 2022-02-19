@@ -547,13 +547,13 @@ function coopHUD.renderPlayer(player_no)
                                        Vector(anchor_bot.X+trinket_off.X,anchor_bot.Y),
                                        mirrored,nil,true)
     -- </Down line>
-    --
+    -- Renders stats
     if coopHUD.options.stats.show then
         coopHUD.renderStatsIcons(Vector(anchor_bot.X,72),mirrored)
         coopHUD.renderStats(coopHUD.players[player_no],Vector(anchor_bot.X,72),mirrored)
         coopHUD.renderStatChange(coopHUD.players[player_no],Vector(anchor_bot.X,72),mirrored)
     end
-    --
+    -- Renders twin
     if coopHUD.players[player_no].has_twin then
         -- SPECIAL VERSION OF BIG HUD FOR SIGNLEPLAYER JACCOB/ESSAU
         local twin_anchor_top = coopHUD.anchors[coopHUD.players_config[player_no+1].anchor_top]
@@ -640,7 +640,15 @@ function coopHUD.renderPlayerSmall(player_no)
         sec_line_offset.Y = math.max(trinket_off.Y,pocket_off.Y)
     end
     -- </Second  top line render> --
-    --
+    -- Renders stats
+    if coopHUD.options.stats.show then
+        if player_no == 0 or player_no == 1 then
+            coopHUD.renderStatsIcons(Vector(anchor.X,72),mirrored)
+        end
+        coopHUD.renderStats(coopHUD.players[player_no],Vector(anchor.X,72),mirrored)
+        coopHUD.renderStatChange(coopHUD.players[player_no],Vector(anchor.X,72),mirrored)
+    end
+    -- Renders twin
     if coopHUD.players[player_no].has_twin then
         --
         local twin_anchor = Vector(anchor.X,
