@@ -1190,6 +1190,9 @@ function coopHUD.renderStats(player,pos,mirrored)
     if Input.IsActionPressed(ButtonAction.ACTION_MAP,player.controller_index) then
         font_color.Alpha = 1
     end
+    if Input.IsActionPressed(ButtonAction.ACTION_MAP,player.controller_index) then
+        font_color.Alpha = 1
+    end
     -- Move speed
     f:DrawString(string.format("%.2f",player.stats.speed[1]),temp_pos.X+16,temp_pos.Y,font_color,0,true)
     -- Tear delay
