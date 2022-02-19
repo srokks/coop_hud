@@ -552,6 +552,14 @@ function coopHUD.renderPlayer(player_no)
         coopHUD.renderStatsIcons(Vector(anchor_bot.X,72),mirrored)
         coopHUD.renderStats(coopHUD.players[player_no],Vector(anchor_bot.X,72),mirrored)
         coopHUD.renderStatChange(coopHUD.players[player_no],Vector(anchor_bot.X,72),mirrored)
+        if coopHUD.players[player_no].has_twin then
+            if #coopHUD.players == 0 then -- just to double sure that will not mess up
+                local twin_anchor_bot = coopHUD.anchors[coopHUD.players_config[player_no+1].anchor_bot]
+                coopHUD.renderStatsIcons(Vector(twin_anchor_bot.X,72),true)
+                coopHUD.renderStats(coopHUD.players[player_no],Vector(twin_anchor_bot.X,72),true)
+                coopHUD.renderStatChange(coopHUD.players[player_no],Vector(twin_anchor_bot.X,72),true)
+            end
+        end
     end
     -- Renders twin
     if coopHUD.players[player_no].has_twin then
