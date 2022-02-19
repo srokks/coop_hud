@@ -642,11 +642,16 @@ function coopHUD.renderPlayerSmall(player_no)
     -- </Second  top line render> --
     -- Renders stats
     if coopHUD.options.stats.show then
+        -- Renders stat icons
+        local stat_anchor = coopHUD.anchors[coopHUD.players_config.small[player_no].stat_anchor]
         if player_no == 0 or player_no == 1 then
-            coopHUD.renderStatsIcons(Vector(anchor.X,72),mirrored)
+            stat_anchor.Y = 72
+            coopHUD.renderStatsIcons(stat_anchor,mirrored)
+        else
+            stat_anchor.Y = 78
         end
-        coopHUD.renderStats(coopHUD.players[player_no],Vector(anchor.X,72),mirrored)
-        coopHUD.renderStatChange(coopHUD.players[player_no],Vector(anchor.X,72),mirrored)
+        coopHUD.renderStats(coopHUD.players[player_no],stat_anchor,mirrored)
+        coopHUD.renderStatChange(coopHUD.players[player_no],stat_anchor,mirrored)
     end
     -- Renders twin
     if coopHUD.players[player_no].has_twin then

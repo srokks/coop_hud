@@ -59,27 +59,31 @@ coopHUD.players_config = {
             down_anchor = false,
             name = 'P1',
             color = Color(1,0,0,1),
+            stat_anchor = 'bot_left'
         },
         [1] = {
             anchor = 'top_right',
             mirrored = true,
             down_anchor = false,
             name = 'P2',
-            color = Color(0,1,0,1)
+            color = Color(0,1,0,1),
+            stat_anchor = 'bot_right'
         },
         [2] = {
             anchor = 'bot_left',
             mirrored = false,
             down_anchor = true,
             name = 'P3',
-            color = Color(1,0,1,1)
+            color = Color(1,0,1,1),
+            stat_anchor = 'bot_left'
         },
         [3] = {
             anchor = 'bot_right',
             mirrored = true,
             down_anchor = true,
             name = 'P4',
-            color = Color(0,0,1,1)
+            color = Color(0,0,1,1),
+            stat_anchor = 'bot_right'
         },
     }
 }
