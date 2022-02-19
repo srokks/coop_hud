@@ -652,7 +652,9 @@ function coopHUD.renderPlayerSmall(player_no)
         sec_line_offset.Y = math.max(trinket_off.Y,pocket_off.Y)
     end
     -- </Second  top line render> --
-    -- Renders twin
+    -- ___ TWIN RENDER
+	local twin_first_line_offset = Vector(0,0)
+	local twin_sec_line_offset = Vector(0,0)
     if coopHUD.players[player_no].has_twin then
         --
         local twin_anchor = Vector(0,0)
@@ -683,8 +685,6 @@ function coopHUD.renderPlayerSmall(player_no)
                                                            twin_anchor.Y),
                                                     mirrored,scale,down_anchor)
         --
-        
-        local twin_first_line_offset = Vector(0,0)
         if down_anchor then
             twin_first_line_offset.Y =  math.min(twin_active_off.Y,twin_hearts_off.Y,
                                                 (twin_exl_liv_off.Y+extra_charge_off.Y))
@@ -699,18 +699,28 @@ function coopHUD.renderPlayerSmall(player_no)
                                                  Vector(twin_anchor.X + twin_trinket_off.X,
                                                         twin_anchor.Y + twin_first_line_offset.Y),
                                                  mirrored,scale,down_anchor)
+	    if down_anchor then
+            twin_sec_line_offset.Y = math.min(twin_trinket_off.Y,twin_pocket_off.Y)
+        else
+           twin_sec_line_offset.Y = math.max(twin_trinket_off.Y,twin_pocket_off.Y)
+        end
     end
-	-- Renders stats
-    if coopHUD.options.stats.show then
+	-- ___ STATS RENDER
+	if player_no == 0 then
+        if (anchor.Y + first_line_offset.Y + sec_line_offset.Y + twin_first_line_offset.Y + twin_sec_line_offset.Y) >= 92 then
+	            coopHUD.signals.overloaded_hud = true
+	        else
+	            coopHUD.signals.overloaded_hud = false
+        end
+    end
+    if coopHUD.options.stats.show and not coopHUD.signals.overloaded_hud  then
         -- Renders stat icons
-        
         local stat_anchor = Vector(coopHUD.anchors[coopHUD.players_config.small[player_no].stat_anchor].X,
-                                   coopHUD.anchors[coopHUD.players_config.small[player_no].stat_anchor].Y)
+                                   92)
         if player_no == 0 or player_no == 1 then
-            stat_anchor.Y = 72
             coopHUD.renderStatsIcons(stat_anchor,mirrored)
         else
-            stat_anchor.Y = 78
+            stat_anchor.Y = stat_anchor.Y + 6
         end
         -- TWIN player render
         local temp_player_table = coopHUD.players[player_no] -- temp for rendering stats
@@ -718,7 +728,10 @@ function coopHUD.renderPlayerSmall(player_no)
             if #coopHUD.players <= 1 then
                 -- if only 2 players render on small hud renders essau stats under `
                 coopHUD.renderStats(coopHUD.players[player_no].twin,
-                                    Vector(stat_anchor.X, 78),
+                                    Vector(stat_anchor.X+4, stat_anchor.Y + 6),
+                                    mirrored)
+	            coopHUD.renderStatChange(coopHUD.players[player_no].twin,
+                                    Vector(stat_anchor.X+4, stat_anchor.Y + 6),
                                     mirrored)
             else
                 if Input.IsActionPressed(ButtonAction.ACTION_DROP,coopHUD.players[player_no].controller_index) then
@@ -884,6 +897,11 @@ function coopHUD.on_input(_,ent,hook,btn)
             coopHUD.updateHearts(player_index)
             coopHUD.updatePlayerType(player_index)
             coopHUD.updatePockets(player_index)
+            coopHUD.updateTrinkets(player_index)
+        end
+	    if Input.IsActionPressed(ButtonAction.ACTION_DROP, player.ControllerIndex) then
+            coopHUD.updatePockets(player_index)
+            coopHUD.updateTrinkets(player_index)
         end
         mapPressed = mapPressed or Input.IsActionPressed(ButtonAction.ACTION_MAP, player.ControllerIndex)
     end
