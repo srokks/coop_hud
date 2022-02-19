@@ -1093,7 +1093,7 @@ function coopHUD.renderStatsIcons(pos,mirrored)
     local off = Vector(12,0)
     local temp_pos = Vector(pos.X,pos.Y)
     if mirrored then
-        temp_pos.X = temp_pos.X - 12
+        temp_pos.X = temp_pos.X - 16
     end
     -- Move speed
     coopHUD.HUD_table.stats.speed:Render(Vector(temp_pos.X,temp_pos.Y))
