@@ -309,17 +309,26 @@ function coopHUD.renderPockets(player,pos,mirrored,scale,down_anchor)
         player.sprites.first_pocket.Scale = sprite_scale
         local color = Color(0.3,0.3,0.3,1) -- dims by default
         local font_color = KColor(1,1,1,1)
+	    local temp_color = coopHUD.colors[coopHUD.players_config.small[coopHUD.getPlayerNumByControllerIndex(player.controller_index)].color]
+        font_color.Red = temp_color.R
+        font_color.Green = temp_color.G
+        font_color.Blue = temp_color.B
+	    
         -- Jacob/Essau sprite dims logic
         if player.is_twin or player.has_twin then
             -- Triggers when drop button pressed
             if Input.IsActionPressed(ButtonAction.ACTION_DROP,player.controller_index) then
                 color = Color(1,1,1,1)  -- normalize sprite on button
                 color:SetColorize(0,0,0,0)
-                font_color = KColor(1,1,1,1)
+                font_color.Red = temp_color.R
+                font_color.Green = temp_color.G
+                font_color.Blue = temp_color.B
             else
                 color = Color(0.3,0.3,0.3,1) -- return to dim state
                 color:SetColorize(0,0,0,0)
-                font_color = KColor(0.3,0.3,0.3,1) -- return to dim state
+                font_color.Red = temp_color.R * 0.3
+                font_color.Green = temp_color.G * 0.3
+                font_color.Blue = temp_color.B  * 0.3-- return to dim state
             end
         end
         if player.has_twin then
@@ -492,12 +501,15 @@ function coopHUD.renderPlayerInfo(player,pos,mirrored,scale,down_anchor)
         end
         player.sprites.player_head.Scale = sprite_scale
         player.sprites.player_head:Render(Vector(pos.X+head_pivot.X,pos.Y+head_pivot.Y))
-        local f = Font()
-        f:Load("font/luaminioutlined.fnt")
-        f:DrawStringScaled(player.name,
+        local f = coopHUD.HUD_table.stats.font
+	    local font_color = KColor(1,1,1,1)
+	    local temp_color = coopHUD.colors[coopHUD.players_config.small[coopHUD.getPlayerNumByControllerIndex(player.controller_index)].color]
+        font_color.Red = temp_color.R
+        font_color.Green = temp_color.G
+        font_color.Blue = temp_color.B
+        f:DrawString(player.name,
                            pos.X+name_pivot.X,pos.Y+name_pivot.Y,
-                           sprite_scale.X,sprite_scale.Y,
-                           KColor(1,1,1,1),0,true)
+                           font_color ,0,true)
         final_offset = offset
     end
     
@@ -864,17 +876,6 @@ coopHUD:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function(self)
     coopHUD.streak_sec_line = Game():GetLevel():GetCurseName()
     if coopHUD.streak_sec_line == '' then coopHUD.streak_sec_line = nil end
 end)
--- ______
-function coopHUD.getPlayerNumByControllerIndex(controller_index)
-    -- Function returns player number searching coopHUD.player table for matching controller index
-    local final_index = -1
-    for i,p in pairs(coopHUD.players) do
-        if p.controller_index == controller_index then
-            final_index = i
-        end
-    end
-    return final_index
-end
 -- _____ RENDER
 function  coopHUD.render()
     -- DEBUG: handler to quick turn on/off hud on pressing 'H' on keyboard
@@ -973,9 +974,10 @@ function coopHUD.renderStats(player,pos,mirrored)
     local font_color = KColor(1,1,1,0.5) -- holds font colors
     -- Changes stats font color for player according to color setting
     if coopHUD.options.stats.colorful then
-        font_color.Red = coopHUD.players_config.small[coopHUD.getPlayerNumByControllerIndex(player.controller_index)].color.R
-        font_color.Green = coopHUD.players_config.small[coopHUD.getPlayerNumByControllerIndex(player.controller_index)].color.G
-        font_color.Blue = coopHUD.players_config.small[coopHUD.getPlayerNumByControllerIndex(player.controller_index)].color.B
+	    local temp_color = coopHUD.colors[coopHUD.players_config.small[coopHUD.getPlayerNumByControllerIndex(player.controller_index)].color]
+        font_color.Red = temp_color.R
+        font_color.Green = temp_color.G
+        font_color.Blue = temp_color.B
     else
         font_color = KColor(1,1,1,0.5) -- default color
     end
