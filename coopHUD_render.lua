@@ -1148,7 +1148,18 @@ function coopHUD.force_update_all()
 end
 coopHUD:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, coopHUD.force_update_all)
 coopHUD:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, coopHUD.force_update_all)
--- __________
+-- _____ On battle signal
+coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, function (self)
+	-- on battle signal
+	if coopHUD.options.stats.hide_in_battle then -- if option turned on checks signals
+		local r = Game():GetLevel():GetCurrentRoom()
+		if not r:IsClear() then -- check if room ready
+			coopHUD.signals.on_battle = true
+		end
+	else
+		coopHUD.signals.on_battle = false -- reset signal
+	end
+end )
 -- _____
 ---renderStatsIcons
 ---Renders stats icons in given position Vector(x:int,y:int).

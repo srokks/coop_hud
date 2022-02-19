@@ -11,6 +11,7 @@ coopHUD.signals = {
     on_pockets_update = nil, --nil or emit player num
     on_bethany_update = nil, --nil or emit player num
     overloaded_hud = nil,
+    on_battle = false,
 }
 coopHUD.players = {}
 coopHUD.options = {
@@ -20,7 +21,7 @@ coopHUD.options = {
     timer_always_on = true,
     stats = {
         show = true,
-        hide_in_battle= false,
+        hide_in_battle= true,
         colorful = false,
     }
 }
