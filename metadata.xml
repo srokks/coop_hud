@@ -1,71 +1,80 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <metadata>
-    <name>Coop HUD *TEST*</name>
-    <directory>coop_hud</directory>
-    <id>2731267631</id>
-    <description> [h1]Coop HUD[/h1]
+	<name>Coop HUD *TEST*</name>
+	<directory>coop_hud</directory>
+	<id>2731267631</id>
+	<description> [h1]Coop HUD[/h1]
 
-I've been tired of playing Isaac in coop with vanilla broken hud so I've created a new one.
-This mod is my try to render proper HUD for game like it should be from begging.
+		I've been tired of playing Isaac in coop with vanilla broken hud so I've created a new one.
+		This mod is my try to render proper HUD for game like it should be from begging.
 
-[h3] [b] MOD IS STILL DEVELOPED PLEASE SUBMIT ANY WEIR BEHAV [/b] [/h3]
-
-[h2] *NEW* [/h2]
-[list]
-    [*] Jacob and Essau FULL SUPPORT
-    [*] Mod sprites refreshes on demand
-[/list]
-[h2] What this mod do[/h2]
-[list]
-    [*] Renders proper HUD for single player
-    [*] Renders proper HUD for coop/multiplayer
-    [*] Shows pockets/pills/card names
-    [*] Bethany charges/ colored charge bar
-    [*] Vanilla like prompts (using cards/ pills/ active items )  
-[/list]
-[h2] Planned features [/h2]
-[*] Found HUD - render stats
-[list] 
-[list] [b] Tainted characters [/b]
-    [*] Pulsing Tainted Maggy hearts
-    [*] Poop spells for Tainted ???
-    [*] Tainted Isaac collectibles
-    [*] Tainted Cain -  Bag of Crafting
-[/list] 
-[*] Player colors
-[*] Extra HUD - render collectibles
-[/list]
-[h2] What this mod lack of[/h2]
-[list]
-    [*] Boss bars – I won’t be messing with. I suggest using [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2635267643] [Rep] Enhanced Boss Bars [/url] from  [url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge
-        My mod should override Boss bars settings in case bar covers coopHUD check options. If boss bar covers items change it padding in settings.
-    [*] Minimap – Same as boss bars – Use [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1978904635] MiniMAPI[/url] from [url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge
-        My mod should override MiniMAPI settings.
-        Options should be:
-            General -> Display on No HUD seed - On
-            Map (1) - > Show map effect icons - Off
- [h2]Issues/ not working/missing[/h2]
-[list]
-[*] Urn of soul - only show open/close sprite state - no modding API function
-[*] Jar of Wisp - manual charge detection/ resets on restart- no modding API function
-[/list]
-[h2] Mods Compatibility[/h2]
-        [list]
-            [*] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2635267643] [Rep] Enhanced Boss Bars [/url] from  [url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge
-            [*] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1978904635] MiniMAPI[/url] from [url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge
-            [*] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=836319872] [AB+|Rep] External item descriptions[/url] from [url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge
-            [*] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2376005362] Encyclopedia - An In-Game Wiki[/url] from [url=https://steamcommunity.com/id/AgentCucco/myworkshopfiles/?appid=250900] AgentCucco
-            [*]
-        [/list]
-[h2] Thanks to![/h2]
-        [list]
-        [*] [url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge - for TBoI API and his mods which helped in developing this mod
-        [*] [url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge - for TBoI API and his mods which helped in developing this mod
-        [/list]
-</description>
-    <version>0.4.2</version>
-    <visibility>Public</visibility>
-    <tag id="Lua"/>
-    <tag id="Tweaks"/>
-    <tag id="Graphics"/>
+		[h3] [b] MOD IS STILL DEVELOPED PLEASE SUBMIT ANY WEIR BEHAVIOUR ( weird positions/ console errors/ log files) in Bugs topic[/b] [/h3]
+		[h3] [b] MOD might get laggy when too much on screen. 4 normal players (exl. Jacob & Essau) works fine on my old laptop. Still working on optimalization  [/h3]
+		[h2] *NEW* [/h2]
+		[list]
+			[*] Stats - just like vanilla FoundHUD stat display:
+				[list]
+					[*] Highlight on map button
+					[*] Stats colors - can turn on/off
+					[*] Hide stats on battle - can turn on/off
+					[*] Integration with Jacob & Essau - to show Essau stats while more than 2 player press map button *
+				[/list]
+					[*] MiniMAPI -  options override logic
+		** While too much stuff on hud - all trinkets/pockets activeitems while playing J
+		[/list]
+		[h2] What this mod do[/h2]E
+			[list]
+				[*] Renders proper HUD for single player
+				[*] Renders proper HUD for coop/multiplayer up to 4 players
+				[*] Shows pockets/pills/card names
+				[*] Bethany charges/ colored charge bar
+				[*] Vanilla like prompts (using cards/ pills/ active items )
+				[*] Jacob and Essau FULL SUPPORT
+				[*] Mod sprites refreshes on demand
+			[/list]
+		[h2] Planned features [/h2]
+			[list]
+				[list] [b] Tainted characters [/b]
+				[*] Pulsing Tainted Maggy hearts
+				[*] Poop spells for Tainted ???
+				[*] Tainted Isaac collectibles
+				[*] Tainted Cain -  Bag of Crafting
+				[/list]
+				[*] Player colors
+				[*] Extra HUD - render collectibles
+			[/list]
+		[h2] What this mod lack of[/h2]
+			[list]
+				[*] Boss bars – I won’t be messing with. I suggest using [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2635267643] [Rep] Enhanced Boss Bars [/url] from  [url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge
+				My mod should override Boss bars settings in case bar covers coopHUD check options. If boss bar covers items change it padding in settings.
+				[*] Minimap – Same as boss bars – Use [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1978904635] MiniMAPI[/url] from [url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge
+				My mod should override MiniMAPI settings.
+				Options should be:
+				General -> Display on No HUD seed - On
+				Map (1) - > Show map effect icons - Off
+			[/list]
+		[h2]Issues/ not working/missing[/h2]
+			[list]
+				[*] Urn of soul - only show open/close sprite state - no modding API function
+				[*] Jar of Wisp - manual charge detection/ resets on restart- no modding API function
+			[/list]
+		[h2] Mods Compatibility[/h2]
+			[list]
+				[*] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2635267643] [Rep] Enhanced Boss Bars [/url] from  [url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge
+				[*] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1978904635] MiniMAPI[/url] from [url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge
+				[*] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=836319872] [AB+|Rep] External item descriptions[/url] from [url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge
+				[*] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2376005362] Encyclopedia - An In-Game Wiki[/url] from [url=https://steamcommunity.com/id/AgentCucco/myworkshopfiles/?appid=250900] AgentCucco
+				[*] mod callbacks
+			[/list]
+		[h2] Thanks to![/h2]
+			[list]
+				[*] [url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge - for TBoI API and his mods which helped in developing this mod
+				[*] [url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge - for TBoI API and his mods which helped in developing this mod
+			[/list]
+	</description>
+	<version>0.4.2</version>
+	<visibility>Public</visibility>
+	<tag id="Lua"/>
+	<tag id="Tweaks"/>
+	<tag id="Graphics"/>
 </metadata>
