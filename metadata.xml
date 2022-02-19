@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <metadata>
-    <name>Coop HUD *WIP*</name>
+    <name>Coop HUD *TEST*</name>
     <directory>coop_hud</directory>
     <id>2731267631</id>
     <description> [h1]Coop HUD[/h1]
@@ -37,15 +37,33 @@ This mod is my try to render proper HUD for game like it should be from begging.
 [/list]
 [h2] What this mod lack of[/h2]
 [list]
-    [*] Boss bars – I won’t be messing with. I suggest using [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2635267643] [Rep] Enhanced Boss Bars [/url] from  [url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge 
+    [*] Boss bars – I won’t be messing with. I suggest using [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2635267643] [Rep] Enhanced Boss Bars [/url] from  [url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge
+        My mod should override Boss bars settings in case bar covers coopHUD check options. If boss bar covers items change it padding in settings.
     [*] Minimap – Same as boss bars – Use [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1978904635] MiniMAPI[/url] from [url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge
+        My mod should override MiniMAPI settings.
+        Options should be:
+            General -> Display on No HUD seed - On
+            Map (1) - > Show map effect icons - Off
  [h2]Issues/ not working/missing[/h2]
 [list]
 [*] Urn of soul - only show open/close sprite state - no modding API function
 [*] Jar of Wisp - manual charge detection/ resets on restart- no modding API function
 [/list]
+[h2] Mods Compatibility[/h2]
+        [list]
+            [*] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2635267643] [Rep] Enhanced Boss Bars [/url] from  [url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge
+            [*] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1978904635] MiniMAPI[/url] from [url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge
+            [*] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=836319872] [AB+|Rep] External item descriptions[/url] from [url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge
+            [*] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2376005362] Encyclopedia - An In-Game Wiki[/url] from [url=https://steamcommunity.com/id/AgentCucco/myworkshopfiles/?appid=250900] AgentCucco
+            [*]
+        [/list]
+[h2] Thanks to![/h2]
+        [list]
+        [*] [url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge - for TBoI API and his mods which helped in developing this mod
+        [*] [url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge - for TBoI API and his mods which helped in developing this mod
+        [/list]
 </description>
-    <version>0.4</version>
+    <version>0.4.2</version>
     <visibility>Public</visibility>
     <tag id="Lua"/>
     <tag id="Tweaks"/>
