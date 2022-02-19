@@ -515,26 +515,28 @@ end
 function coopHUD.getPocketID(player,slot)
     local pocket_id = 0
     local pocket_type = 0 -- 0 - none, 1 - card, 2 - pill, 3 - item
-    if player:GetCard(slot) > 0 then
-        pocket_id = player:GetCard(slot)
-        pocket_type = 1
-    elseif player:GetPill(slot) > 0 then
-        pocket_id = player:GetPill(slot)
-        pocket_type = 2
-    else
-        if slot == 1 then
-            if coopHUD.getPocketID(player,0)[2] ~= 3 then
-                pocket_id = player:GetActiveItem(2)
-                pocket_type = 3
-            end
-        elseif slot == 2 then
-            if coopHUD.getPocketID(player,0)[2] ~= 3 and coopHUD.getPocketID(player,1)[2] ~= 3 then
-                pocket_id = player:GetActiveItem(2)
-                pocket_type = 3
-            end
+    if player then -- prevents from restart tables update error
+        if player:GetCard(slot) > 0 then
+            pocket_id = player:GetCard(slot)
+            pocket_type = 1
+        elseif player:GetPill(slot) > 0 then
+            pocket_id = player:GetPill(slot)
+            pocket_type = 2
         else
-            pocket_id = player:GetActiveItem(2)
-            pocket_type = 3
+            if slot == 1 then
+                if coopHUD.getPocketID(player,0)[2] ~= 3 then
+                    pocket_id = player:GetActiveItem(2)
+                    pocket_type = 3
+                end
+            elseif slot == 2 then
+                if coopHUD.getPocketID(player,0)[2] ~= 3 and coopHUD.getPocketID(player,1)[2] ~= 3 then
+                    pocket_id = player:GetActiveItem(2)
+                    pocket_type = 3
+                end
+            else
+                pocket_id = player:GetActiveItem(2)
+                pocket_type = 3
+            end
         end
     end
     return {pocket_id,pocket_type}
