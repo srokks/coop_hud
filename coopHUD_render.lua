@@ -1156,6 +1156,8 @@ coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, function (self)
 		local r = Game():GetLevel():GetCurrentRoom()
 		if not r:IsClear() then -- check if room ready
 			coopHUD.signals.on_battle = true
+		else
+			coopHUD.signals.on_battle = false -- reset signal
 		end
 	else
 		coopHUD.signals.on_battle = false -- reset signal
