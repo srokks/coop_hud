@@ -548,9 +548,11 @@ function coopHUD.renderPlayer(player_no)
                                        mirrored,nil,true)
     -- </Down line>
     --
-    coopHUD.renderStatsIcons(Vector(anchor_top.X,72),mirrored)
-    coopHUD.renderStats(coopHUD.players[player_no],Vector(anchor_top.X,72),mirrored,KColor(1,1,1,1))
-    coopHUD.renderStatChange(coopHUD.players[player_no],Vector(anchor_top.X,72),mirrored)
+    if coopHUD.options.stats.show then
+        coopHUD.renderStatsIcons(Vector(anchor_bot.X,72),mirrored)
+        coopHUD.renderStats(coopHUD.players[player_no],Vector(anchor_bot.X,72),mirrored)
+        coopHUD.renderStatChange(coopHUD.players[player_no],Vector(anchor_bot.X,72),mirrored)
+    end
     --
     if coopHUD.players[player_no].has_twin then
         -- SPECIAL VERSION OF BIG HUD FOR SIGNLEPLAYER JACCOB/ESSAU
