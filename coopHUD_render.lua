@@ -599,7 +599,8 @@ function coopHUD.renderPlayer(player_no)
     end
 end
 function coopHUD.renderPlayerSmall(player_no)
-    local anchor = coopHUD.anchors[coopHUD.players_config.small[player_no].anchor]
+    local anchor = Vector(coopHUD.anchors[coopHUD.players_config.small[player_no].anchor].X,
+                          coopHUD.anchors[coopHUD.players_config.small[player_no].anchor].Y)
     local mirrored = coopHUD.players_config.small[player_no].mirrored
     local scale = coopHUD.players_config.small.scale
     local down_anchor = coopHUD.players_config.small[player_no].down_anchor
@@ -651,7 +652,9 @@ function coopHUD.renderPlayerSmall(player_no)
     -- Renders stats
     if coopHUD.options.stats.show then
         -- Renders stat icons
-        local stat_anchor = coopHUD.anchors[coopHUD.players_config.small[player_no].stat_anchor]
+        
+        local stat_anchor = Vector(coopHUD.anchors[coopHUD.players_config.small[player_no].stat_anchor].X,
+                                   coopHUD.anchors[coopHUD.players_config.small[player_no].stat_anchor].Y)
         if player_no == 0 or player_no == 1 then
             stat_anchor.Y = 72
             coopHUD.renderStatsIcons(stat_anchor,mirrored)
@@ -664,8 +667,16 @@ function coopHUD.renderPlayerSmall(player_no)
     -- Renders twin
     if coopHUD.players[player_no].has_twin then
         --
-        local twin_anchor = Vector(anchor.X,
+        local twin_anchor = Vector(0,0)
+        if down_anchor then
+            twin_anchor = Vector( anchor.X,
+                                   anchor.Y + first_line_offset.Y + sec_line_offset.Y)
+            if player_no == 2 then print(anchor) end
+        else
+            twin_anchor = Vector(anchor.X,
                                    anchor.Y+first_line_offset.Y+sec_line_offset.Y)
+        end
+        
         -- <Locals inits>
         local twin_info_off = Vector(0,0)
         local twin_active_off = Vector(0,0)
