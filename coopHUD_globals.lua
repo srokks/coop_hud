@@ -10,6 +10,7 @@ coopHUD.signals = {
     on_trinket_update = nil, --nil or emit player num
     on_pockets_update = nil, --nil or emit player num
     on_bethany_update = nil, --nil or emit player num
+    overloaded_hud = nil,
 }
 coopHUD.players = {}
 coopHUD.options = {
