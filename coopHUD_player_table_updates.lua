@@ -131,7 +131,7 @@ function coopHUD.updateCollectible(player_no)
     end
 end
 function coopHUD.updatePockets(player_no)
-    local temp_player = Isaac.GetPlayer(coopHUD.players[player_no].game_index)
+    local temp_player = Isaac.GetPlayer(coopHUD.getPlayerNumByControllerIndex(coopHUD.players[player_no].controller_index))
     if coopHUD.players[player_no].first_pocket[1] ~= coopHUD.getPocketID(temp_player,0)[1] then
         coopHUD.players[player_no].first_pocket = coopHUD.getPocketID(temp_player,0)
         coopHUD.players[player_no].sprites.first_pocket = coopHUD.getPocketItemSprite(temp_player,0)
