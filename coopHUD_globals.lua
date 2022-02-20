@@ -61,7 +61,7 @@ coopHUD.players_config = {
             mirrored = false,
             down_anchor = false,
             name = 'P1',
-            color = 9,
+            color = 1,
             stat_anchor = 'bot_left',
         },
         [1] = {
@@ -97,13 +97,13 @@ coopHUD.anchors = {
     bot_right = Vector(0,0),
 }
 coopHUD.colors = {
-	{name = "Red", color = Color(1.0, 0.4, 0.4)},
-	{name = "Blue", color = Color(0.0, 0.4, 1.0)},
-	{name = "Green", color = Color(0.0, 0.95, 0.1)},
-	{name = "Yellow", color = Color(0.89, 0.8, 0.22)},
-	{name = "White", color = Color(0.9, 0.9, 0.9)},
-	{name = "Black", color = Color(0.1, 0.1, 0.1)},
-	{name = "Purple", color = Color(0.5, 0.0, 0.5)},
-	{name = "Aqua", color = Color(0.0, 0.9, 0.9)},
-	{name = "Orange", color = Color(1.0, 0.64, 0.0)},
+	{name = "Tomato", color = Color(1, 0.39, 0.28)},
+	{name = "GreenYellow", color = Color(0.68, 1, 0.18)},
+	{name = "DeepskyBlue", color = Color(0, 0.75, 1)},
+	{name = "Yellow", color = Color(1, 1, 0)},
+	{name = "RoyalBlue", color = Color(0.25, 0.41, 1)},
+	{name = "White", color = Color(1, 1, 1)},
+	{name = "Pink", color = Color(1, 0, 1)},
+	{name = "Aqua", color = Color(0, 1, 1)},
+	{name = "Orange", color = Color(1, 0.5, 0)},
 }
