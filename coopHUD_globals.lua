@@ -17,6 +17,7 @@ coopHUD.players = {}
 coopHUD.options = {
     onRender = true,
     render_player_info = true,
+    player_info_color = true,
     force_small_hud = false,
     timer_always_on = true,
     stats = {
@@ -60,7 +61,7 @@ coopHUD.players_config = {
             mirrored = false,
             down_anchor = false,
             name = 'P1',
-            color = 'red',
+            color = 9,
             stat_anchor = 'bot_left',
         },
         [1] = {
@@ -68,7 +69,7 @@ coopHUD.players_config = {
             mirrored = true,
             down_anchor = false,
             name = 'P2',
-            color = 'green',
+            color = 2,
             stat_anchor = 'bot_right'
         },
         [2] = {
@@ -76,7 +77,7 @@ coopHUD.players_config = {
             mirrored = false,
             down_anchor = true,
             name = 'P3',
-            color = 'blue',
+            color = 3,
             stat_anchor = 'bot_left'
         },
         [3] = {
@@ -84,7 +85,7 @@ coopHUD.players_config = {
             mirrored = true,
             down_anchor = true,
             name = 'P4',
-            color = 'yellow',
+            color = 4,
             stat_anchor = 'bot_right'
         },
     }
@@ -95,14 +96,14 @@ coopHUD.anchors = {
     top_right = Vector(0,0),
     bot_right = Vector(0,0),
 }
-coopHUD.colors  = {
-	red = Color(1.0, 0.4, 0.4),
-	blue  = Color(0.0, 0.4, 1.0),
-	green = Color(0.0, 0.95, 0.1),
-	yellow = Color(0.89, 0.8, 0.22),
-	--{name = "White", color = Color(0.9, 0.9, 0.9)},
-	--{name = "Black", color = Color(0.1, 0.1, 0.1)},
-	--{name = "Purple", color = Color(0.5, 0.0, 0.5)},
-	--{name = "Aqua", color = Color(0.0, 0.9, 0.9)},
-	--{name = "Orange", color = Color(1.0, 0.64, 0.0)},
+coopHUD.colors = {
+	{name = "Red", color = Color(1.0, 0.4, 0.4)},
+	{name = "Blue", color = Color(0.0, 0.4, 1.0)},
+	{name = "Green", color = Color(0.0, 0.95, 0.1)},
+	{name = "Yellow", color = Color(0.89, 0.8, 0.22)},
+	{name = "White", color = Color(0.9, 0.9, 0.9)},
+	{name = "Black", color = Color(0.1, 0.1, 0.1)},
+	{name = "Purple", color = Color(0.5, 0.0, 0.5)},
+	{name = "Aqua", color = Color(0.0, 0.9, 0.9)},
+	{name = "Orange", color = Color(1.0, 0.64, 0.0)},
 }
