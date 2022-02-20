@@ -2,6 +2,12 @@ local json = require("json")
 if coopHUD:HasData() then
     local save = json.decode(coopHUD:LoadData())
 	if coopHUD.VERSION == save.version then
+		coopHUD.players_config[0] = save.players_config['0']
+		coopHUD.players_config[1] = save.players_config['1']
+		coopHUD.players_config.small[0] = save.players_config.small['0']
+		coopHUD.players_config.small[1] = save.players_config.small['1']
+		coopHUD.players_config.small[2] = save.players_config.small['2']
+		coopHUD.players_config.small[3] = save.players_config.small['3']
 		coopHUD.options = save.options
 	end
 end
@@ -9,6 +15,7 @@ function coopHUD.save_options()
     local save =  {}
 	save.version = coopHUD.VERSION
     save.options = coopHUD.options
+    save.players_config = coopHUD.players_config
     coopHUD:SaveData(json.encode(save))
 end
 coopHUD:AddCallback(ModCallbacks.MC_PRE_GAME_EXIT,coopHUD.save_options)
@@ -243,22 +250,92 @@ if ModConfigMenu then
 	ModConfigMenu.AddTitle(mod_name, "Colors", 'Player colors')
 	for i=0,3 do
 		ModConfigMenu.AddSetting(mod_name, "Colors", {
-		Type = ModConfigMenu.OptionType.NUMBER,
-		CurrentSetting = function()
-			return coopHUD.players_config.small[i].color
-		end,
-		Minimum = 1,
-		Maximum = #coopHUD.colors,
-		Display = function()
-			return "Player "..tostring(i+1) ..": " .. coopHUD.colors[coopHUD.players_config.small[i].color].name
-		end,
-		OnChange = function(currentNum)
-			coopHUD.players_config.small[i].color = currentNum
-		end,
-		Info = "Change player color color"
-	})
+			Type = ModConfigMenu.OptionType.NUMBER,
+			CurrentSetting = function()
+				return coopHUD.players_config.small[i].color
+			end,
+			Minimum = 1,
+			Maximum = #coopHUD.colors,
+			Display = function()
+				return "Player "..tostring(i+1) ..": " .. coopHUD.colors[coopHUD.players_config.small[i].color].name
+			end,
+			OnChange = function(currentNum)
+				coopHUD.players_config.small[i].color = currentNum
+				coopHUD.save_options()
+			end,
+			Info = "Change player color color"
+		})
 	end
 	--
+	ModConfigMenu.AddTitle(mod_name, "Positions",'2 players HUD')
+	ModConfigMenu.AddSetting(mod_name, "Positions", {
+		Type = ModConfigMenu.OptionType.BOOLEAN,
+		CurrentSetting = function()
+			return coopHUD.players_config[0].anchor_top == 'top_left'
+		end,
+		Display = function()
+			local pos = "right"
+			if coopHUD.players_config[0].anchor_top == 'top_left'   then
+				pos = "left"
+			end
+			return "Player 1 anchor: "..pos
+		end,
+		OnChange = function(currentBool)
+			if currentBool then
+				coopHUD.players_config[0].anchor_top = 'top_left'
+				coopHUD.players_config[0].anchor_bot = 'bot_left'
+				coopHUD.players_config[0].mirrored = false
+				coopHUD.players_config[1].anchor_top = 'top_right'
+				coopHUD.players_config[1].anchor_bot = 'bot_right'
+				coopHUD.players_config[1].mirrored = true
+			else
+				coopHUD.players_config[0].anchor_top = 'top_right'
+				coopHUD.players_config[0].anchor_bot = 'bot_right'
+				coopHUD.players_config[0].mirrored = true
+				coopHUD.players_config[1].anchor_top = 'top_left'
+				coopHUD.players_config[1].anchor_bot = 'bot_left'
+				coopHUD.players_config[1].mirrored = false
+			end
+			coopHUD.save_options()
+		end,
+		Info = function()
+			return "Change side where renders HUD on big mode"
+		end
+	})
+	ModConfigMenu.AddSetting(mod_name, "Positions", {
+		Type = ModConfigMenu.OptionType.BOOLEAN,
+		CurrentSetting = function()
+			return coopHUD.players_config[1].anchor_top == 'top_left'
+		end,
+		Display = function()
+			local pos = "right"
+			if coopHUD.players_config[1].anchor_top == 'top_left'   then
+				pos = "left"
+			end
+			return "Player 2 anchor: "..pos
+		end,
+		OnChange = function(currentBool)
+			if currentBool then
+				coopHUD.players_config[0].anchor_top = 'top_right'
+				coopHUD.players_config[0].anchor_bot = 'bot_right'
+				coopHUD.players_config[0].mirrored = true
+				coopHUD.players_config[1].anchor_top = 'top_left'
+				coopHUD.players_config[1].anchor_bot = 'bot_left'
+				coopHUD.players_config[1].mirrored = false
+			else
+				coopHUD.players_config[0].anchor_top = 'top_left'
+				coopHUD.players_config[0].anchor_bot = 'bot_left'
+				coopHUD.players_config[0].mirrored = false
+				coopHUD.players_config[1].anchor_top = 'top_right'
+				coopHUD.players_config[1].anchor_bot = 'bot_right'
+				coopHUD.players_config[1].mirrored = true
+			end
+			coopHUD.save_options()
+		end,
+		Info = function()
+			return "Change side where renders HUD on big mode"
+		end
+	})
 end
 -- Overrides External item description mod setting to better fit with HUD
 if EID then
