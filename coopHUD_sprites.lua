@@ -304,6 +304,37 @@ function coopHUD.getStreakSprite()
     sprite:Load(coopHUD.GLOBALS.streak_anim_path,true)
     return sprite
 end
+function coopHUD.getStatSprites()
+    stats = {
+        speed = Sprite(),
+        tears_delay = Sprite(),
+        damage = Sprite(),
+        range=Sprite(),
+        shot_speed=Sprite(),
+        luck = Sprite(),
+        font = Font()
+    }
+    stats.speed:Load(coopHUD.GLOBALS.hud_stats_anim_path,true)
+    stats.speed:SetFrame('Idle',0)
+    stats.speed.Color = Color(1,1,1,0.5)
+    stats.tears_delay:Load(coopHUD.GLOBALS.hud_stats_anim_path,true)
+    stats.tears_delay:SetFrame('Idle',1)
+    stats.tears_delay.Color = Color(1,1,1,0.5)
+    stats.damage:Load(coopHUD.GLOBALS.hud_stats_anim_path,true)
+    stats.damage:SetFrame('Idle',2)
+    stats.damage.Color = Color(1,1,1,0.5)
+    stats.range:Load(coopHUD.GLOBALS.hud_stats_anim_path,true)
+    stats.range:SetFrame('Idle',3)
+    stats.range.Color = Color(1,1,1,0.5)
+    stats.shot_speed:Load(coopHUD.GLOBALS.hud_stats_anim_path,true)
+    stats.shot_speed:SetFrame('Idle',4)
+    stats.shot_speed.Color = Color(1,1,1,0.5)
+    stats.luck:Load(coopHUD.GLOBALS.hud_stats_anim_path,true)
+    stats.luck:SetFrame('Idle',5)
+    stats.luck.Color = Color(1,1,1,0.5)
+    stats.font:Load('font/luamini.fnt')
+    return stats
+end
 --___ Help functions
 -- Hearts
 function coopHUD.getHeartType(player,heart_pos)
@@ -484,26 +515,28 @@ end
 function coopHUD.getPocketID(player,slot)
     local pocket_id = 0
     local pocket_type = 0 -- 0 - none, 1 - card, 2 - pill, 3 - item
-    if player:GetCard(slot) > 0 then
-        pocket_id = player:GetCard(slot)
-        pocket_type = 1
-    elseif player:GetPill(slot) > 0 then
-        pocket_id = player:GetPill(slot)
-        pocket_type = 2
-    else
-        if slot == 1 then
-            if coopHUD.getPocketID(player,0)[2] ~= 3 then
-                pocket_id = player:GetActiveItem(2)
-                pocket_type = 3
-            end
-        elseif slot == 2 then
-            if coopHUD.getPocketID(player,0)[2] ~= 3 and coopHUD.getPocketID(player,1)[2] ~= 3 then
-                pocket_id = player:GetActiveItem(2)
-                pocket_type = 3
-            end
+    if player then -- prevents from restart tables update error
+        if player:GetCard(slot) > 0 then
+            pocket_id = player:GetCard(slot)
+            pocket_type = 1
+        elseif player:GetPill(slot) > 0 then
+            pocket_id = player:GetPill(slot)
+            pocket_type = 2
         else
-            pocket_id = player:GetActiveItem(2)
-            pocket_type = 3
+            if slot == 1 then
+                if coopHUD.getPocketID(player,0)[2] ~= 3 then
+                    pocket_id = player:GetActiveItem(2)
+                    pocket_type = 3
+                end
+            elseif slot == 2 then
+                if coopHUD.getPocketID(player,0)[2] ~= 3 and coopHUD.getPocketID(player,1)[2] ~= 3 then
+                    pocket_id = player:GetActiveItem(2)
+                    pocket_type = 3
+                end
+            else
+                pocket_id = player:GetActiveItem(2)
+                pocket_type = 3
+            end
         end
     end
     return {pocket_id,pocket_type}
@@ -610,6 +643,17 @@ function coopHUD.checkDeepPockets()
         end
     end
     return deep_check
+end
+-- ______
+function coopHUD.getPlayerNumByControllerIndex(controller_index)
+    -- Function returns player number searching coopHUD.player table for matching controller index
+    local final_index = -1
+    for i,p in pairs(coopHUD.players) do
+        if p.controller_index == controller_index then
+            final_index = i
+        end
+    end
+    return final_index
 end
 -- TODO: T.FOrgotten - weird heart render
 -- TODO: Jaccob/Essau - tint non used sprites -
