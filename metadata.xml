@@ -20,6 +20,8 @@
 					[*] Integration with Jacob & Essau - to show Essau stats while more than 2 player press map button *
 				[/list]
 					[*] MiniMAPI -  options override logic
+					[*] 2 player HUD (big) position customizable
+					[*] Player colors - fully customizable
 		** While too much stuff on hud - all trinkets/pockets activeitems while playing J
 		[/list]
 		[h2] What this mod do[/h2]E
@@ -69,7 +71,7 @@
 		[h2] Thanks to![/h2]
 			[list]
 				[*] [url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge - for TBoI API and his mods which helped in developing this mod
-				[*] [url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge - for TBoI API and his mods which helped in developing this mod
+				[*] [url=https://steamcommunity.com/id/pedroff_1/myworkshopfiles/?appid=250900] pedroff_1 for  [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2577953432] !!MC_POST_ITEM_PICKUP callback[/url]
 			[/list]
 	</description>
 	<version>0.4.2</version>
