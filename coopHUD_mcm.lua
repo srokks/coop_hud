@@ -21,13 +21,20 @@ if ModConfigMenu then
 		ModConfigMenu.MenuData[categoryToChange].Name = tostring(mod_name)
 		ModConfigMenu.MenuData[categoryToChange].Subcategories = {}
 	end
-	--
+	--/
 	ModConfigMenu.UpdateCategory(mod_name, {
 		Info = {
 			"coopHUD Settings.",
 		}
 	})
-	--ModConfigMenu.AddTitle(mod_name, "General","General")
+	--xw
+	ModConfigMenu.AddSpace(mod_name, "Info")
+	ModConfigMenu.AddText(mod_name, "Info", mod_name)
+	ModConfigMenu.AddSpace(mod_name, "Info")
+	ModConfigMenu.AddText(mod_name, "Info", "Version " .. coopHUD.VERSION)
+	ModConfigMenu.AddSpace(mod_name, "Info")
+	ModConfigMenu.AddText(mod_name, "Info", "created by Srokks")
+	ModConfigMenu.AddTitle(mod_name, "General","General")
 	-- SHOW HUD
 	ModConfigMenu.AddSetting(mod_name, "General", {
 		Type = ModConfigMenu.OptionType.BOOLEAN,
@@ -46,6 +53,7 @@ if ModConfigMenu then
 		end,
 		OnChange = function(currentBool)
 			coopHUD.options.onRender = currentBool
+			coopHUD.save_options()
 		end,
 		Info = function()
 			local TotalText = "Turn on/off coopHUD. Toggled by 'H' on keyboard"
@@ -70,6 +78,7 @@ if ModConfigMenu then
 		end,
 		OnChange = function(currentBool)
 			coopHUD.options.force_small_hud = currentBool
+			coopHUD.save_options()
 		end,
 		Info = function()
 			return 'Force small (compacted) player HUD in < 2 players'
@@ -93,6 +102,7 @@ if ModConfigMenu then
 		end,
 		OnChange = function(currentBool)
 			coopHUD.options.render_player_info = currentBool
+			coopHUD.save_options()
 		end,
 		Info = function()
 			local TotalText
@@ -122,14 +132,16 @@ if ModConfigMenu then
 		end,
 		OnChange = function(currentBool)
 			coopHUD.options.timer_always_on = currentBool
+			coopHUD.save_options()
 		end,
 		Info = function()
 			return "Timer toggle. Accesible by pressing 'T' on keyboard"
 		end
 	})
 	-- __ Stats
+	ModConfigMenu.AddTitle(mod_name,'General','Stats')
 	-- stats.show
-	ModConfigMenu.AddSetting(mod_name, "Stats", {
+	ModConfigMenu.AddSetting(mod_name, "General", {
 		Type = ModConfigMenu.OptionType.BOOLEAN,
 		CurrentSetting = function()
 			return coopHUD.options.stats.show
@@ -146,13 +158,14 @@ if ModConfigMenu then
 		end,
 		OnChange = function(currentBool)
 			coopHUD.options.stats.show = currentBool
+			coopHUD.save_options()
 		end,
 		Info = function()
 			return "Shows stats like Vanilla FoundHud"
 		end
 	})
 	-- stats.hide_in_battle
-	ModConfigMenu.AddSetting(mod_name, "Stats", {
+	ModConfigMenu.AddSetting(mod_name, "General", {
 		Type = ModConfigMenu.OptionType.BOOLEAN,
 		CurrentSetting = function()
 			return coopHUD.options.stats.hide_in_battle
@@ -169,13 +182,17 @@ if ModConfigMenu then
 		end,
 		OnChange = function(currentBool)
 			coopHUD.options.stats.hide_in_battle = currentBool
+			coopHUD.save_options()
 		end,
 		Info = function()
 			return "Hides stats while in battle"
 		end
 	})
+	
+	-- __ Players
+	ModConfigMenu.AddTitle(mod_name, "Colors", 'General')
 	-- stats.colorful
-	ModConfigMenu.AddSetting(mod_name, "Stats", {
+	ModConfigMenu.AddSetting(mod_name, "Colors", {
 		Type = ModConfigMenu.OptionType.BOOLEAN,
 		CurrentSetting = function()
 			return coopHUD.options.stats.colorful
@@ -188,17 +205,60 @@ if ModConfigMenu then
 				onOff = "On"
 			end
 			
-			return "Colorfull: " .. onOff
+			return "Colorful stats: " .. onOff
 		end,
 		OnChange = function(currentBool)
 			coopHUD.options.stats.colorful = currentBool
+			coopHUD.save_options()
 		end,
 		Info = function()
 			return "Colors stats according to player color"
 		end
 	})
-	-- __ Players
-	
+	-- stats.colorful
+	ModConfigMenu.AddSetting(mod_name, "Colors", {
+		Type = ModConfigMenu.OptionType.BOOLEAN,
+		CurrentSetting = function()
+			return coopHUD.options.player_info_color
+		end,
+		Default = coopHUD.options.player_info_color,
+		
+		Display = function()
+			local onOff = "Off"
+			if coopHUD.options.player_info_color     then
+				onOff = "On"
+			end
+			
+			return "Colorful names: " .. onOff
+		end,
+		OnChange = function(currentBool)
+			coopHUD.options.player_info_color = currentBool
+			coopHUD.save_options()
+		end,
+		Info = function()
+			return "Colors player pocket name/desc and name"
+		end
+	})
+	-- player config - players colors
+	ModConfigMenu.AddTitle(mod_name, "Colors", 'Player colors')
+	for i=0,3 do
+		ModConfigMenu.AddSetting(mod_name, "Colors", {
+		Type = ModConfigMenu.OptionType.NUMBER,
+		CurrentSetting = function()
+			return coopHUD.players_config.small[i].color
+		end,
+		Minimum = 1,
+		Maximum = #coopHUD.colors,
+		Display = function()
+			return "Player "..tostring(i+1) ..": " .. coopHUD.colors[coopHUD.players_config.small[i].color].name
+		end,
+		OnChange = function(currentNum)
+			coopHUD.players_config.small[i].color = currentNum
+		end,
+		Info = "Change player color color"
+	})
+	end
+	--
 end
 -- Overrides External item description mod setting to better fit with HUD
 if EID then
