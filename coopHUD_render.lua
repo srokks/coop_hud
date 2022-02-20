@@ -309,11 +309,12 @@ function coopHUD.renderPockets(player,pos,mirrored,scale,down_anchor)
         player.sprites.first_pocket.Scale = sprite_scale
         local color = Color(0.3,0.3,0.3,1) -- dims by default
         local font_color = KColor(1,1,1,1)
-	    local temp_color = coopHUD.colors[coopHUD.players_config.small[coopHUD.getPlayerNumByControllerIndex(player.controller_index)].color]
-        font_color.Red = temp_color.R
-        font_color.Green = temp_color.G
-        font_color.Blue = temp_color.B
-	    
+	    if coopHUD.options.player_info_color then
+		    local temp_color = coopHUD.colors[coopHUD.players_config.small[coopHUD.getPlayerNumByControllerIndex(player.controller_index)].color].color
+	        font_color.Red = temp_color.R
+	        font_color.Green = temp_color.G
+	        font_color.Blue = temp_color.B
+	    end
         -- Jacob/Essau sprite dims logic
         if player.is_twin or player.has_twin then
             -- Triggers when drop button pressed
@@ -503,10 +504,12 @@ function coopHUD.renderPlayerInfo(player,pos,mirrored,scale,down_anchor)
         player.sprites.player_head:Render(Vector(pos.X+head_pivot.X,pos.Y+head_pivot.Y))
         local f = coopHUD.HUD_table.stats.font
 	    local font_color = KColor(1,1,1,1)
-	    local temp_color = coopHUD.colors[coopHUD.players_config.small[coopHUD.getPlayerNumByControllerIndex(player.controller_index)].color]
-        font_color.Red = temp_color.R
-        font_color.Green = temp_color.G
-        font_color.Blue = temp_color.B
+	    if coopHUD.options.player_info_color then
+		    local temp_color = coopHUD.colors[coopHUD.players_config.small[coopHUD.getPlayerNumByControllerIndex(player.controller_index)].color].color
+            font_color.Red = temp_color.R
+            font_color.Green = temp_color.G
+            font_color.Blue = temp_color.B
+	    end
         f:DrawString(player.name,
                            pos.X+name_pivot.X,pos.Y+name_pivot.Y,
                            font_color ,0,true)
@@ -975,7 +978,7 @@ function coopHUD.renderStats(player,pos,mirrored)
     local font_color = KColor(1,1,1,0.5) -- holds font colors
     -- Changes stats font color for player according to color setting
     if coopHUD.options.stats.colorful then
-	    local temp_color = coopHUD.colors[coopHUD.players_config.small[coopHUD.getPlayerNumByControllerIndex(player.controller_index)].color]
+	    local temp_color = coopHUD.colors[coopHUD.players_config.small[coopHUD.getPlayerNumByControllerIndex(player.controller_index)].color].color
         font_color.Red = temp_color.R
         font_color.Green = temp_color.G
         font_color.Blue = temp_color.B
