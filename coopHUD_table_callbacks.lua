@@ -239,4 +239,58 @@ function coopHUD.on_card_use(_,effect_no,ent_player)
     coopHUD.signals.on_pockets_update = coopHUD.getPlayerNumByControllerIndex(ent_player.ControllerIndex)
 end
 coopHUD:AddCallback(ModCallbacks.MC_USE_CARD, coopHUD.on_card_use)
--- _____
+-- _____ Post item pickup
+-- Modified  Version of POST_ITEM_PICKUP from pedroff_1 - https://steamcommunity.com/sharedfiles/filedetails/?id=2577953432&searchtext=callback
+function PostItemPickup (_,player)
+    local item_queue = player.QueuedItem
+    if item_queue and item_queue.Item then
+        local list = PostItemPickupFunctions
+        if list[item_queue.Item.ID] then
+            for i,v in pairs(list[item_queue.Item.ID]) do
+                v(_,player)
+            end
+        end
+        list = PostItemPickupFunctions[-1]
+        if list then
+            for i,v in pairs(list) do
+                v(_, player, item_queue.Item.ID)
+            end
+        end
+        player:FlushQueueItem()
+        --____ Flashes triggers streak text with picked up name
+        if langAPI then
+            coopHUD.HUD_table.streak:ReplaceSpritesheet(1,"/gfx/ui/blank.png")
+            coopHUD.HUD_table.streak:LoadGraphics()
+            coopHUD.streak_main_line = langAPI.getItemName(string.sub(item_queue.Item.Name, 2))
+            coopHUD.streak_sec_line = langAPI.getItemName(string.sub(item_queue.Item.Description, 2))
+            coopHUD.HUD_table.streak_sec_color = KColor(1,1,1,1)
+            coopHUD.HUD_table.streak_sec_line_font:Load("font/pftempestasevencondensed.fnt")
+        end
+        --_____ Updates actives of player
+        local player_index = coopHUD.getPlayerNumByControllerIndex(player.ControllerIndex)
+        if item_queue.Item.Type == ItemType.ITEM_ACTIVE then
+            coopHUD.updateActives(player_index)
+        elseif item_queue.Item.Type == ItemType.ITEM_TRINKET then
+            coopHUD.updateTrinkets(player_index)
+        else
+        end
+        coopHUD.updateExtraLives(player_index) -- triggers extra lives update
+        coopHUD.updateItems() -- triggers update items when picked up item - Shops
+        coopHUD.updateHearts(player_index) -- triggers update hearts if item picked up - Devil deals
+    end
+end
+  coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, PostItemPickup)
+  local addCallbackOld = Isaac.AddCallback
+  ModCallbacks.MC_POST_ITEM_PICKUP = 271
+  PostItemPickupFunctions = PostItemPickupFunctions or {}
+function  addCallbackNew(mod,callback,func,arg1,arg2,arg3,arg4)
+    if callback == ModCallbacks.MC_POST_ITEM_PICKUP then
+        arg1 = arg1 or -1
+        PostItemPickupFunctions[arg1] = PostItemPickupFunctions[arg1] or {}
+        PostItemPickupFunctions[arg1][tostring(func)]= func
+    else
+        addCallbackOld(mod,callback,func,arg1,arg2,arg3,arg4)
+    end
+  end
+  Isaac.AddCallback = addCallbackNew
+---- End of standalone module
