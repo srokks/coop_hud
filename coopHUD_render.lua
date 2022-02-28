@@ -798,8 +798,6 @@ function coopHUD.renderChances(pos)
 end
 function coopHUD.renderItems()
     local color = KColor(1,1,1,1)
-    -- TODO: Planetarium chances render
-    -- TODO: Angel/Devil room chances
     local anchor = Vector(Isaac.GetScreenWidth()/2,Isaac.GetScreenHeight()-16) -- middle of screen
     local text = ''
     --
@@ -944,11 +942,9 @@ function  coopHUD.render()
             if #coopHUD.players<2 and not coopHUD.options.force_small_hud then
                 -- Renders Hud when  Jacob and Essau in game
                 if coopHUD.essau_no > 0 then
-                    -- TODO:
                     if #coopHUD.players == 0 then
                         -- Renders special version of big hud for singleplayer
                         coopHUD.renderPlayer(i)
-                        -- TODO: render singleplayer jacob/essau
                     else
                         -- Renders small hud when jacob/esaau present and no players>0
                         coopHUD.renderPlayerSmall(i)
@@ -975,7 +971,6 @@ coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.render)
 ---@param pos Vector()
 ---@param mirrored boolean If true renders mirrored
 function coopHUD.renderStatsIcons(pos,mirrored)
-    --TODO: mirrored
     local off = Vector(12,0)
     local temp_pos = Vector(pos.X,pos.Y)
     if mirrored then

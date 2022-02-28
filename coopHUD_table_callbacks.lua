@@ -19,6 +19,8 @@ function coopHUD.on_start(_,cont)
             coopHUD.on_player_init()
         end
     end
+	-- TODO: load angel_seen from save if game continued
+	coopHUD.angel_seen = nil -- resets angel seen state on restart
     coopHUD.initHudTables()
     coopHUD.updateItems()
 end

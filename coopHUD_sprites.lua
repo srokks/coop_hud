@@ -791,5 +791,3 @@ function coopHUD.getPlayerNumByControllerIndex(controller_index)
     end
     return final_index
 end
--- TODO: T.FOrgotten - weird heart render
--- TODO: Jaccob/Essau - tint non used sprites -
