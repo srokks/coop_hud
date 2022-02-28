@@ -763,13 +763,14 @@ end
 function coopHUD.renderChances(pos)
 	local text = ''
 	local text_len = 0
-	local font_color = KColor(1,1,1,0.5)
+	local font_color = KColor(1,1,1,1)
 	-- Render chances
 	local chances = coopHUD.calculateDeal()
-	local anchor = Vector(pos.X-4,pos.Y)
+	local anchor = Vector(pos.X,pos.Y)
 	--
 	if chances.duality then
 		-- Duality render
+		anchor.X = anchor.X - 4
 		text = string.format('%.1f',chances.devil + chances.angel)..'%'
 		text_len = coopHUD.HUD_table.sprites.item_font:GetStringWidth(text)/2
 		coopHUD.HUD_table.deal_sprites.duality:Render(Vector(anchor.X - text_len - 16,anchor.Y))
@@ -1113,7 +1114,6 @@ function coopHUD.renderStatChange(player,pos,mirrored)
         coopHUD.stat_counter  = 0
         drawing = false
     end
-    
 end
 -- _____
 ---getStatChangeAttrib
