@@ -754,7 +754,10 @@ function coopHUD.calculateDeal()
 	end
 	devil = deal * (1.0 - angel)
 	angel = deal * angel
-	return { devil * 100,angel * 100,deal * 100 }
+	return { devil = devil * 100,
+	         angel = angel * 100,
+	         planetarium = lvl:GetPlanetariumChance() * 100,
+	         duality = duality }
 end
 -- ______
 function coopHUD.getPlayerNumByControllerIndex(controller_index)
