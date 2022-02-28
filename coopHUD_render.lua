@@ -939,6 +939,7 @@ coopHUD:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function(self)
 	coopHUD.HUD_table.streak = coopHUD.getStreakSprite() -- resets sprites
 	coopHUD.streak_main_line = Game():GetLevel():GetName()
 	coopHUD.streak_sec_line = Game():GetLevel():GetCurseName()
+	coopHUD.HUD_table.streak_sec_color = KColor(0,0,0,1)
 	if coopHUD.streak_sec_line == '' then coopHUD.streak_sec_line = nil end
 end)
 -- _____ RENDER
