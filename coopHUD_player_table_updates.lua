@@ -502,14 +502,21 @@ function coopHUD.initHudTables()
 end
 function coopHUD.updateItems()
 	local player = Isaac.GetPlayer(0)
+	local temp_sprites = coopHUD.getHUDSprites()
 	if coopHUD.HUD_table.coin_no ~= player:GetNumCoins() then
 		coopHUD.HUD_table.coin_no = player:GetNumCoins()
 	end
 	if coopHUD.HUD_table.bomb_no ~= player:GetNumBombs() then
 		coopHUD.HUD_table.bomb_no = player:GetNumBombs()
 	end
+	if coopHUD.HUD_table.sprites.bomb_sprite:GetFrame() ~= temp_sprites.bomb_sprite:GetFrame() then
+		coopHUD.HUD_table.sprites.bomb_sprite = temp_sprites.bomb_sprite
+	end
 	if coopHUD.HUD_table.key_no ~= player:GetNumKeys() then
 		coopHUD.HUD_table.key_no = player:GetNumKeys()
+	end
+	if coopHUD.HUD_table.sprites.key_sprite:GetFrame() ~= temp_sprites.key_sprite:GetFrame() then
+		coopHUD.HUD_table.sprites.key_sprite = temp_sprites.key_sprite
 	end
 end
 function coopHUD.updateTables()
