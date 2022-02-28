@@ -317,6 +317,7 @@ function coopHUD.renderPockets(player,pos,mirrored,scale,down_anchor)
 	    end
         -- Jacob/Essau sprite dims logic
         if player.is_twin or player.has_twin then
+	        local temp_color = coopHUD.colors[coopHUD.players_config.small[coopHUD.getPlayerNumByControllerIndex(player.controller_index)].color].color
             -- Triggers when drop button pressed
             if Input.IsActionPressed(ButtonAction.ACTION_DROP,player.controller_index) then
                 color = Color(1,1,1,1)  -- normalize sprite on button
