@@ -335,6 +335,27 @@ function coopHUD.getStatSprites()
     stats.font:Load('font/luamini.fnt')
     return stats
 end
+function coopHUD.getDealSprites()
+	local deals_sprites = {
+		devil = Sprite(),
+		angel = Sprite(),
+		planetarium = Sprite(),
+		duality = Sprite(),
+	}
+	deals_sprites.devil:Load(coopHUD.GLOBALS.hud_stats_anim_path, true)
+	deals_sprites.devil:SetFrame('Idle', 6)
+	--deals_sprites.devil.Color = Color(1, 1, 1, 0.5)
+	deals_sprites.angel:Load(coopHUD.GLOBALS.hud_stats_anim_path, true)
+	deals_sprites.angel:SetFrame('Idle', 7)
+	--deals_sprites.angel.Color = Color(1, 1, 1, 0.5)
+	deals_sprites.planetarium:Load(coopHUD.GLOBALS.hud_stats_anim_path, true)
+	deals_sprites.planetarium:SetFrame('Idle', 8)
+	--deals_sprites.planetarium.Color = Color(1, 1, 1, 0.5)
+	deals_sprites.duality:Load(coopHUD.GLOBALS.hud_stats_anim_path, true)
+	deals_sprites.duality:SetFrame('Idle', 10)
+	--deals_sprites.duality.Color = Color(1, 1, 1, 0.5)
+	return deals_sprites
+end
 --___ Help functions
 -- Hearts
 function coopHUD.getHeartType(player,heart_pos)
@@ -687,7 +708,7 @@ function coopHUD.calculateDeal()
 			comp.virtouses[1] = true
 		end
 		if player:HasCollectible(CollectibleType.COLLECTIBLE_DUALITY) then
-			comp.duality = true
+			duality = true
 		end
 		if player:HasCollectible(CollectibleType.COLLECTIBLE_EUCHARIST) then
 			eucharist = true

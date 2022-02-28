@@ -759,6 +759,42 @@ function coopHUD.renderPlayerSmall(player_no)
         coopHUD.renderStatChange(temp_player_table,stat_anchor,mirrored) -- renders stats change
     end
 end
+function coopHUD.renderChances(pos)
+	local text = ''
+	local text_len = 0
+	local font_color = KColor(1,1,1,0.5)
+	-- Render chances
+	local chances = coopHUD.calculateDeal()
+	local anchor = Vector(pos.X-4,pos.Y)
+	--
+	if chances.duality then
+		-- Duality render
+		text = string.format('%.1f',chances.devil + chances.angel)..'%'
+		text_len = coopHUD.HUD_table.sprites.item_font:GetStringWidth(text)/2
+		coopHUD.HUD_table.deal_sprites.duality:Render(Vector(anchor.X - text_len - 16,anchor.Y))
+		coopHUD.HUD_table.stats.font:DrawString(text,anchor.X - text_len,anchor.Y,font_color,0,true)
+		--
+		coopHUD.HUD_table.deal_sprites.planetarium:Render(Vector(anchor.X + 4,anchor.Y))
+		text = string.format('%.1f',chances.planetarium)..'%'
+		coopHUD.HUD_table.stats.font:DrawString(text,anchor.X+16,anchor.Y,font_color,0,false)
+	else
+		--
+		text = string.format('%.1f',chances.angel)..'%'
+		text_len = coopHUD.HUD_table.sprites.item_font:GetStringWidth(text)
+		coopHUD.HUD_table.deal_sprites.angel:Render(Vector(anchor.X - 14,anchor.Y))
+		coopHUD.HUD_table.stats.font:DrawString(text,anchor.X,anchor.Y,font_color,0,false)
+		--
+		coopHUD.HUD_table.deal_sprites.planetarium:Render(Vector(anchor.X + (text_len/2 ),anchor.Y))
+		text = string.format('%.1f',chances.planetarium)..'%'
+		coopHUD.HUD_table.stats.font:DrawString(text,anchor.X+text_len,anchor.Y,font_color,0,false)
+		--
+		text = string.format('%.1f',chances.devil)..'%'
+		text_len = coopHUD.HUD_table.sprites.item_font:GetStringWidth(text)
+		coopHUD.HUD_table.deal_sprites.devil:Render(Vector(anchor.X - 14 - text_len - 4,anchor.Y))
+		coopHUD.HUD_table.stats.font:DrawString(text,anchor.X-14,anchor.Y,font_color,2,false)
+	end
+	--
+end
 function coopHUD.renderItems()
     local color = KColor(1,1,1,1)
     -- TODO: Planetarium chances render
@@ -784,6 +820,9 @@ function coopHUD.renderItems()
     coopHUD.HUD_table.sprites.key_sprite:Render(pos)
     text = string.format("%.2i", coopHUD.HUD_table.key_no)
     coopHUD.HUD_table.sprites.item_font:DrawString(text,pos.X+16,pos.Y,color,0,false)
+	-- Render chances
+	coopHUD.renderChances(Vector(anchor.X,anchor.Y-12))
+	--
     ------ TIMER RENDER
     -- Code from TBoI Api by wofsauge
     local curTime = Game():GetFrameCount()
