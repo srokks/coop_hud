@@ -299,7 +299,12 @@ function coopHUD.getHUDSprites()
 	bomb_sprite:Load(coopHUD.GLOBALS.hud_el_anim_path, true)
 	bomb_sprite:SetFrame('Idle', 2)
 	if player and player:HasGoldenBomb() then bomb_sprite:SetFrame('Idle', 6) end
-	if player and player:GetNumGigaBombs() > 0 then bomb_sprite:SetFrame('Idle', 14) end
+	if player and player:GetNumGigaBombs() > 0 then
+		bomb_sprite:SetFrame('Idle', 14)
+		if player and player:HasGoldenBomb() then
+			-- TODO: giga golden bomb
+		end
+	end
 	-- Key sprite
 	local key_sprite = Sprite()
 	key_sprite:Load(coopHUD.GLOBALS.hud_el_anim_path, true)
