@@ -644,6 +644,118 @@ function coopHUD.checkDeepPockets()
     end
     return deep_check
 end
+function coopHUD.calculateDeal()
+	local lvl = Game():GetLevel()
+	local room = lvl:GetCurrentRoom()
+	local deal = 0.0
+	local angel = 0.0
+	local devil = 0.0
+	local banned_stages = { [1] = true,[9] = true,[10] = true,[11] = true,[12] = true,[12] = true }
+	if angel_seen == nil then angel_seen = false end
+	-- door chance
+	if banned_stages[Game():GetLevel():GetStage()] == nil and
+			Game():GetLevel():GetCurseName() ~= "Curse of the Labyrinth!" or Game().Difficulty > 1 then
+		deal = room:GetDevilRoomChance()
+		if deal > 1 then
+			deal = 1.0
+		end
+	end
+	-- angel components
+	local comp = {
+		rosary_bead = { false,0.5 },
+		key_piece_1 = { false,0.75 },
+		key_piece_2 = { false,0.75 },
+		virtouses = { false,0.75 },
+		bum_killed = { false,0.75 },
+		bum_left = { false,0.9 },
+		dead_bum_left = { false,1.1 },
+		donation = { false,0.5 },
+	}
+	-- check collectibles
+	local duality = false
+	local eucharist = false
+	local act_of_contr = false
+	for i = 0, Game():GetNumPlayers() - 1 do
+		local player = Isaac.GetPlayer(i)
+		if player:HasCollectible(CollectibleType.COLLECTIBLE_KEY_PIECE_1) then
+			comp.key_piece_1[1] = true
+		end
+		if player:HasCollectible(CollectibleType.COLLECTIBLE_KEY_PIECE_2) then
+			comp.key_piece_2[1] = true
+		end
+		if player:HasCollectible(CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES) then
+			comp.virtouses[1] = true
+		end
+		if player:HasCollectible(CollectibleType.COLLECTIBLE_DUALITY) then
+			comp.duality = true
+		end
+		if player:HasCollectible(CollectibleType.COLLECTIBLE_EUCHARIST) then
+			eucharist = true
+		end
+		if player:HasCollectible(CollectibleType.COLLECTIBLE_ACT_OF_CONTRITION) then
+			act_of_contr = true
+		end
+		if player:HasTrinket(TrinketType.TRINKET_ROSARY_BEAD) then
+			comp.rosary_bead[1] = true
+		end
+	end
+	-- check state flags - bum kills/donations
+	if lvl:GetStateFlag(1) then
+		-- check if devil bum killed
+		comp.bum_killed[1] = true
+	end
+	if lvl:GetStateFlag(3) then
+		-- check if  bum donated until left
+		comp.bum_left[1] = true
+	end
+	if lvl:GetStateFlag(4) then
+		-- check if  bum donated until left
+		comp.dead_bum_left[1] = true
+	end
+	if Game():GetDonationModAngel() >= 10 then
+		-- check if donated more than 10 coins on level
+		comp.donation[1] = true
+	end
+	-- Check after boss battle angel door spawned
+	if room:GetType(RoomType.ROOM_BOSS) and room:IsClear() then
+		for i = 0, 7, 1 do
+			local door = room:GetDoor(i)
+			if door ~= nil then
+				if door.TargetRoomType == 15 then
+					coopHUD.angel_seen = true
+				end
+			end
+		end
+	end
+	-- Calculate ange deals
+	if Game():GetStateFlag(5) or comp.virtouses[1] and -- check if player seen devil deal or
+			--lvl:GetAngelRoomChance() ~= 0) and --have I feel blessed
+			(Game():GetDevilRoomDeals() == 0 or -- check if player has done devil deal
+					act_of_contr or comp.virtouses[1] or lvl:GetAngelRoomChance() ~= 0) then
+		-- if have virtouses or act_of_contr ignore devil deals deals
+		if eucharist then
+			-- if have eucharist
+			angel = 1
+		elseif Game():GetStateFlag(6) or coopHUD.angel_seen then
+			-- if not enter devil deal and seen angel
+			angel = 1 - 0.5
+			for n, k in pairs(comp) do
+				-- calculate components of angel deal from table of components
+				if k[1] then
+					angel = angel * k[2]
+				end
+			end
+			angel = angel * (1.0 - lvl:GetAngelRoomChance()) -- checks you feel blessed component
+			angel = 1 - angel
+		else
+			-- seen devil but not angel and not entered devil
+			angel = 1
+		end
+	end
+	devil = deal * (1.0 - angel)
+	angel = deal * angel
+	return { devil * 100,angel * 100,deal * 100 }
+end
 -- ______
 function coopHUD.getPlayerNumByControllerIndex(controller_index)
     -- Function returns player number searching coopHUD.player table for matching controller index
