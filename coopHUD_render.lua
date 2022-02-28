@@ -763,28 +763,27 @@ function coopHUD.renderItems()
     local color = KColor(1,1,1,1)
     -- TODO: Planetarium chances render
     -- TODO: Angel/Devil room chances
-    local anchor = Vector(Isaac.GetScreenWidth()/2-64,Isaac.GetScreenHeight()-16) -- middle of screen
+    local anchor = Vector(Isaac.GetScreenWidth()/2,Isaac.GetScreenHeight()-16) -- middle of screen
     local text = ''
     --
-    local pos = Vector(anchor.X+4,anchor.Y)
-    coopHUD.HUD_table.sprites.coin_sprite:Render(pos)
-    --coopHUD.HUD_table.sprites.coin_sprite:Render(Vector(pos.X+8,pos.Y))
     text = string.format("%.2i", coopHUD.HUD_table.coin_no)
-    if coopHUD.checkDeepPockets() then
-        text = string.format("%.3i", coopHUD.HUD_table.coin_no) end
-    local test = coopHUD.HUD_table.sprites.item_font:GetStringWidth(text)
-    pos.X = pos.X+4+test
-    coopHUD.HUD_table.sprites.item_font:DrawString(text,pos.X,pos.Y,color,0,false)
+	if coopHUD.checkDeepPockets() then
+		text = string.format("%.3i", coopHUD.HUD_table.coin_no) end
+	local text_len = coopHUD.HUD_table.sprites.item_font:GetStringWidth(text)
+	local pos = Vector(anchor.X-14-14-text_len,anchor.Y)
+	coopHUD.HUD_table.sprites.coin_sprite:Render(pos)
+	--pos.X = pos.X+4+test
+    coopHUD.HUD_table.sprites.item_font:DrawString(text,anchor.X-14-text_len,pos.Y,color,0,false)
     ------
-    pos = Vector(pos.X + 4 + test,pos.Y)
+    pos = Vector(anchor.X-14,anchor.Y)
     coopHUD.HUD_table.sprites.bomb_sprite:Render(pos)
     text = string.format("%.2i", coopHUD.HUD_table.bomb_no)
-    coopHUD.HUD_table.sprites.item_font:DrawString(text,pos.X+16,pos.Y,color,0,true)
+    coopHUD.HUD_table.sprites.item_font:DrawString(text,pos.X+16,pos.Y,color,0,false)
     --------
-    pos = Vector(pos.X + 16 + test,pos.Y)
+    pos = Vector(anchor.X + coopHUD.HUD_table.sprites.item_font:GetStringWidth(text) ,anchor.Y)
     coopHUD.HUD_table.sprites.key_sprite:Render(pos)
     text = string.format("%.2i", coopHUD.HUD_table.key_no)
-    coopHUD.HUD_table.sprites.item_font:DrawString(text,pos.X+16,pos.Y,color,0,true)
+    coopHUD.HUD_table.sprites.item_font:DrawString(text,pos.X+16,pos.Y,color,0,false)
     ------ TIMER RENDER
     -- Code from TBoI Api by wofsauge
     local curTime = Game():GetFrameCount()
