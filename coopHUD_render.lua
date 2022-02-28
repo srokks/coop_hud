@@ -782,32 +782,31 @@ function coopHUD.renderChances(pos)
 	local text_len = 0
 	local font_color = KColor(1, 1, 1, 1)
 	-- Render chances
-	local chances = coopHUD.calculateDeal()
 	local anchor = Vector(pos.X, pos.Y)
 	--
-	if chances.duality then
+	if coopHUD.HUD_table.chances.duality then
 		-- Duality render
 		anchor.X = anchor.X - 4
-		text = string.format('%.1f', chances.devil + chances.angel) .. '%'
+		text = string.format('%.1f', coopHUD.HUD_table.chances.devil + coopHUD.HUD_table.chances.angel) .. '%'
 		text_len = coopHUD.HUD_table.sprites.item_font:GetStringWidth(text) / 2
 		coopHUD.HUD_table.deal_sprites.duality:Render(Vector(anchor.X - text_len - 16, anchor.Y))
 		coopHUD.HUD_table.stats.font:DrawString(text, anchor.X - text_len, anchor.Y, font_color, 0, true)
 		--
 		coopHUD.HUD_table.deal_sprites.planetarium:Render(Vector(anchor.X + 4, anchor.Y))
-		text = string.format('%.1f', chances.planetarium) .. '%'
-		coopHUD.HUD_table.stats.font:DrawString(text, anchor.X + 16, anchor.Y, font_color, 0, false)
+		text = string.format('%.1f', coopHUD.HUD_table.chances.planetarium) .. '%'
+		coopHUD.HUD_table.stats.font:DrawString(text, anchor.X + 18, anchor.Y, font_color, 0, false)
 	else
 		--
-		text = string.format('%.1f', chances.angel) .. '%'
+		text = string.format('%.1f', coopHUD.HUD_table.chances.angel) .. '%'
 		text_len = coopHUD.HUD_table.sprites.item_font:GetStringWidth(text)
 		coopHUD.HUD_table.deal_sprites.angel:Render(Vector(anchor.X - 14, anchor.Y))
 		coopHUD.HUD_table.stats.font:DrawString(text, anchor.X, anchor.Y, font_color, 0, false)
 		--
-		coopHUD.HUD_table.deal_sprites.planetarium:Render(Vector(anchor.X + (text_len / 2), anchor.Y))
-		text = string.format('%.1f', chances.planetarium) .. '%'
-		coopHUD.HUD_table.stats.font:DrawString(text, anchor.X + text_len, anchor.Y, font_color, 0, false)
+		coopHUD.HUD_table.deal_sprites.planetarium:Render(Vector(anchor.X + (text_len/2)+4, anchor.Y))
+		text = string.format('%.1f', coopHUD.HUD_table.chances.planetarium) .. '%'
+		coopHUD.HUD_table.stats.font:DrawString(text, anchor.X + text_len + 4, anchor.Y, font_color, 0, false)
 		--
-		text = string.format('%.1f', chances.devil) .. '%'
+		text = string.format('%.1f', coopHUD.HUD_table.chances.devil) .. '%'
 		text_len = coopHUD.HUD_table.sprites.item_font:GetStringWidth(text)
 		coopHUD.HUD_table.deal_sprites.devil:Render(Vector(anchor.X - 14 - text_len - 4, anchor.Y))
 		coopHUD.HUD_table.stats.font:DrawString(text, anchor.X - 14, anchor.Y, font_color, 2, false)

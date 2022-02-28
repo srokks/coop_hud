@@ -499,6 +499,7 @@ function coopHUD.initHudTables()
 	coopHUD.HUD_table.coin_no = 0
 	coopHUD.HUD_table.bomb_no = 0
 	coopHUD.HUD_table.key_no = 0
+	coopHUD.HUD_table.chances = coopHUD.calculateDeal()
 end
 function coopHUD.updateItems()
 	local player = Isaac.GetPlayer(0)
@@ -519,6 +520,21 @@ function coopHUD.updateItems()
 		coopHUD.HUD_table.sprites.key_sprite = temp_sprites.key_sprite
 	end
 end
+function coopHUD.updateChances()
+	local temp_deals = coopHUD.calculateDeal()
+	if coopHUD.HUD_table.chances.devil ~= temp_deals.devil then
+		coopHUD.HUD_table.chances.devil = temp_deals.devil
+	end
+	if coopHUD.HUD_table.chances.angel ~= temp_deals.angel then
+		coopHUD.HUD_table.chances.angel = temp_deals.angel
+	end
+	if coopHUD.HUD_table.chances.planetarium ~= temp_deals.planetarium then
+		coopHUD.HUD_table.chances.planetarium = temp_deals.planetarium
+	end
+	if coopHUD.HUD_table.chances.duality ~= temp_deals.duality then
+		coopHUD.HUD_table.chances.duality = temp_deals.duality
+	end
+end
 function coopHUD.updateTables()
 	coopHUD.updateAnchors()
 	-- charges update constantly due to items such as spinning wheel
@@ -530,6 +546,7 @@ function coopHUD.updateTables()
 	if ((Isaac.GetFrameCount() / 30) % 60) % 4 == 0 then
 		-- updates players every 4 seconds
 		coopHUD.updateControllerIndex()
+		coopHUD.updateChances()
 		for i, _ in pairs(coopHUD.players) do
 			--coopHUD.signals.on_active_update = i
 		end
