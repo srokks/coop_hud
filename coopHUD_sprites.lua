@@ -592,13 +592,17 @@ function coopHUD.getMainPocketDesc(player)
 		if player:GetPill(0) < 1 and player:GetCard(0) < 1 then
 			if player:GetActiveItem(2) > 0 then
 				name = Isaac.GetItemConfig():GetCollectible(player:GetActiveItem(2)).Name
+				desc = Isaac.GetItemConfig():GetCollectible(player:GetActiveItem(2)).Description
 			elseif player:GetActiveItem(3) > 0 then
 				name = Isaac.GetItemConfig():GetCollectible(player:GetActiveItem(3)).Name
+				desc = Isaac.GetItemConfig():GetCollectible(player:GetActiveItem(3)).Description
 			else
 				return false
 			end
 			name = string.sub(name, 2) --  get rid of # on front of
 			name = langAPI.getItemName(name)
+			desc = string.sub(desc, 2) --  get rid of # on front of
+			desc = langAPI.getItemName(desc)
 		end
 		if player:GetCard(0) > 0 then
 			name = Isaac.GetItemConfig():GetCard(player:GetCard(0)).Name
