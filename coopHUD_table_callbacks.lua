@@ -146,7 +146,6 @@ coopHUD:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, coopHUD.force_update_all)
 -- _____ On battle signal
 coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, function(self)
 	-- on battle signal
-	if coopHUD.options.stats.hide_in_battle then
 		-- if option turned on checks signals
 		local r = Game():GetLevel():GetCurrentRoom()
 		if not r:IsClear() then
@@ -155,9 +154,6 @@ coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, function(self)
 		else
 			coopHUD.signals.on_battle = false -- reset signal
 		end
-	else
-		coopHUD.signals.on_battle = false -- reset signal
-	end
 end)
 -- _____
 -- _____ INPUTS

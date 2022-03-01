@@ -578,17 +578,19 @@ function coopHUD.renderPlayer(player_no)
 	                                   mirrored, nil, true)
 	-- </Down line>
 	-- Renders stats
-	if coopHUD.options.stats.show and not coopHUD.signals.on_battle then
-		coopHUD.renderStatsIcons(Vector(anchor_bot.X, 72), mirrored)
-		coopHUD.renderStats(coopHUD.players[player_no], Vector(anchor_bot.X, 72), mirrored)
-		coopHUD.renderStatChange(coopHUD.players[player_no], Vector(anchor_bot.X, 72), mirrored)
-		if coopHUD.players[player_no].has_twin then
-			if #coopHUD.players == 0 then
-				-- just to double sure that will not mess up
-				local twin_anchor_bot = coopHUD.anchors[coopHUD.players_config[player_no + 1].anchor_bot]
-				coopHUD.renderStatsIcons(Vector(twin_anchor_bot.X, 72), true)
-				coopHUD.renderStats(coopHUD.players[player_no], Vector(twin_anchor_bot.X, 72), true)
-				coopHUD.renderStatChange(coopHUD.players[player_no], Vector(twin_anchor_bot.X, 72), true)
+	if coopHUD.options.stats.show  then
+		if not (coopHUD.options.stats.hide_in_battle and coopHUD.signals.on_battle) then
+			coopHUD.renderStatsIcons(Vector(anchor_bot.X, 72), mirrored)
+			coopHUD.renderStats(coopHUD.players[player_no], Vector(anchor_bot.X, 72), mirrored)
+			coopHUD.renderStatChange(coopHUD.players[player_no], Vector(anchor_bot.X, 72), mirrored)
+			if coopHUD.players[player_no].has_twin then
+				if #coopHUD.players == 0 then
+					-- just to double sure that will not mess up
+					local twin_anchor_bot = coopHUD.anchors[coopHUD.players_config[player_no + 1].anchor_bot]
+					coopHUD.renderStatsIcons(Vector(twin_anchor_bot.X, 72), true)
+					coopHUD.renderStats(coopHUD.players[player_no], Vector(twin_anchor_bot.X, 72), true)
+					coopHUD.renderStatChange(coopHUD.players[player_no], Vector(twin_anchor_bot.X, 72), true)
+				end
 			end
 		end
 	end
@@ -889,8 +891,14 @@ function coopHUD.renderItems()
 	coopHUD.HUD_table.sprites.key_sprite:Render(pos)
 	text = string.format("%.2i", coopHUD.HUD_table.key_no)
 	coopHUD.HUD_table.sprites.item_font:DrawString(text, pos.X + 16, pos.Y, color, 0, false)
-	-- Render chances
-	coopHUD.renderChances(Vector(anchor.X, anchor.Y - 12))
+	-- CHANCES RENDER
+	if coopHUD.options.deals.show  then
+		print(coopHUD.options.deals.hide_in_battle, coopHUD.signals.on_battle)
+		if not (coopHUD.options.deals.hide_in_battle and coopHUD.signals.on_battle) then
+			coopHUD.renderChances(Vector(anchor.X, anchor.Y - 12))
+		end
+
+	end
 	--
 	------ TIMER RENDER
 	-- Code from TBoI Api by wofsauge
