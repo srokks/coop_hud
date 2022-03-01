@@ -155,7 +155,7 @@ function coopHUD.updatePockets(player_no)
 		coopHUD.players[player_no].third_pocket = coopHUD.getPocketID(temp_player, 2)
 		coopHUD.players[player_no].sprites.third_pocket = coopHUD.getPocketItemSprite(temp_player, 2)
 	end
-	if coopHUD.players[player_no].first_pocket_charge ~= temp_player:GetActiveCharge(2) or forceUpdateActives then
+	if coopHUD.players[player_no].first_pocket_charge ~= nil then
 		coopHUD.players[player_no].first_pocket_charge = temp_player:GetActiveCharge(2)
 		coopHUD.players[player_no].sprites.first_pocket_charge = coopHUD.getChargeSprites(temp_player, 2)
 		coopHUD.players[player_no].first_pocket = coopHUD.getPocketID(temp_player, 0)
@@ -368,6 +368,9 @@ function coopHUD.updateBethanyCharge(player_no)
 			coopHUD.players[player_no].bethany_charge = temp_player:GetBloodCharge()
 			coopHUD.players[player_no].first_active_charge = coopHUD.getChargeSprites(temp_player, 0)
 		end
+		-- Updates active/pocket if updated
+		coopHUD.signals.on_pockets_update = player_no
+		coopHUD.signals.on_active_update = player_no
 	end
 	if coopHUD.players[player_no].type == 18 then
 		local temp_player = Isaac.GetPlayer(player_no)

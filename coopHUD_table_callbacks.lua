@@ -73,7 +73,6 @@ function coopHUD.on_activate(_, type, RNG, EntityPlayer, UseFlags, used_slot, Cu
 	coopHUD.signals.on_active_update = player_index
 	coopHUD.signals.on_pockets_update = player_index
 	coopHUD.signals.on_heart_update = player_index
-	print(type)
 end
 coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM, coopHUD.on_activate)
 -- __________ On item pickup
