@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <metadata>
-	<name>Coop HUD *PROD*</name>
+	<name>Coop HUD *WIP*</name>
 	<directory>coop_hud</directory>
 	<id>2731267631</id>
 	<description>  [h1]Coop HUD[/h1]
@@ -14,17 +14,11 @@
 		laptop. Still working on optimalization [/b] [/h3]
 		[h2] *NEW* [/h2]
 		[list]
-			[*] Stats - just like vanilla FoundHUD stat display:
-				[list]
-					[*] Highlight on map button
-					[*] Stats colors - can turn on/off
-					[*] Hide stats on battle - can turn on/off
-					[*] Integration with Jacob / Essau - to show Essau stats while more than 2 player press map button *
-				[/list]
-					[*] MiniMAPI -  options override logic
-					[*] 2 player HUD (big) position customizable
-					[*] Player colors - fully customizable
-		** While too much stuff on hud - all trinkets/pockets activeitems while playing J
+			[*] Angel/Devil/Planetarium chances
+			[*] Centered items 
+			[*] Fixed prompts colors
+			[*] Fixed Golden bomb/key and Giga bomb integration
+			[*] Fixed pocket item desc generation
 		[/list]
 		[h2] What this mod do[/h2]
 			[list]
@@ -35,6 +29,14 @@
 				[*] Vanilla like prompts (using cards/ pills/ active items )
 				[*] Jacob and Essau FULL SUPPORT
 				[*] Mod sprites refreshes on demand
+				[[*] Stats - just like vanilla FoundHUD stat display:
+				[list]
+					[*] Highlight on map button
+					[*] Stats colors - can turn on/off
+					[*] Hide stats on battle - can turn on/off
+					[*] Integration with Jacob / Essau - to show Essau stats while more than 2 player press map button *
+				[/list]
+		** While too much stuff on hud - all trinkets/pockets activeitems while playing Jacob and Essau
 			[/list]
 		[h2] Planned features [/h2]
 			[list]
@@ -59,6 +61,8 @@
 			[/list]
 		[h2]Issues/ not working/missing[/h2]
 			[list]
+				[*] Green incompatible (for now)
+				[*] Modded characters support (for now)
 				[*] Urn of soul - only show open/close sprite state - no modding API function
 				[*] Jar of Wisp - manual charge detection/ resets on restart- no modding API function
 			[/list]
@@ -78,7 +82,7 @@ For right now you must set EID position manually
 			[/list]
 	
 	</description>
-	<version>0.4.5</version>
+	<version>0.5</version>
 	<visibility>Public</visibility>
 	<tag id="Lua"/>
 	<tag id="Tweaks"/>
