@@ -523,15 +523,19 @@ end
 function coopHUD.updateChances()
 	local temp_deals = coopHUD.calculateDeal()
 	if coopHUD.HUD_table.chances.devil[1] ~= temp_deals.devil[1] then
+		local dif = temp_deals.devil[1] - coopHUD.HUD_table.chances.devil[1]
 		coopHUD.HUD_table.chances.devil[1] = temp_deals.devil[1]
+		coopHUD.HUD_table.chances.devil[2] = dif
 	end
 	if coopHUD.HUD_table.chances.angel[1] ~= temp_deals.angel[1] then
-		local dif = coopHUD.HUD_table.chances.angel[1] - temp_deals.angel[1]
+		local dif = temp_deals.angel[1] - coopHUD.HUD_table.chances.angel[1]
 		coopHUD.HUD_table.chances.angel[1] = temp_deals.angel[1]
 		coopHUD.HUD_table.chances.angel[2] = dif
 	end
 	if coopHUD.HUD_table.chances.planetarium[1] ~= temp_deals.planetarium[1] then
+		local dif = temp_deals.planetarium[1] - coopHUD.HUD_table.chances.planetarium[1]
 		coopHUD.HUD_table.chances.planetarium[1] = temp_deals.planetarium[1]
+		coopHUD.HUD_table.chances.planetarium[2] = dif
 	end
 	if coopHUD.HUD_table.chances.duality ~= temp_deals.duality then
 		coopHUD.HUD_table.chances.duality = temp_deals.duality
@@ -544,11 +548,11 @@ function coopHUD.updateTables()
 		coopHUD.updateCharge(i)
 		coopHUD.updateStats(i)
 	end
+	coopHUD.updateChances()
 	--
 	if ((Isaac.GetFrameCount() / 30) % 60) % 4 == 0 then
 		-- updates players every 4 seconds
 		coopHUD.updateControllerIndex()
-		coopHUD.updateChances()
 		for i, _ in pairs(coopHUD.players) do
 			--coopHUD.signals.on_active_update = i
 		end
