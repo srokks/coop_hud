@@ -258,6 +258,12 @@ end
 function coopHUD.updateCharge(player_no)
 	local temp_player = Isaac.GetPlayer(coopHUD.players[player_no].game_index)
 	coopHUD.players[player_no].sprites.first_active_charge = coopHUD.getChargeSprites(temp_player, 0)
+	if coopHUD.players[player_no].sprites.first_pocket_charge ~= nil then
+		coopHUD.players[player_no].first_pocket_charge = temp_player:GetActiveCharge(2)
+		coopHUD.players[player_no].sprites.first_pocket_charge = coopHUD.getChargeSprites(temp_player, 2)
+		coopHUD.players[player_no].first_pocket = coopHUD.getPocketID(temp_player, 0)
+		coopHUD.players[player_no].sprites.first_pocket = coopHUD.getPocketItemSprite(temp_player, 0)
+	end
 end
 function coopHUD.updateTrinkets(player_no)
 	local temp_player = Isaac.GetPlayer(coopHUD.players[player_no].game_index)
