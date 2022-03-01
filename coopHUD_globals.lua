@@ -104,10 +104,10 @@ coopHUD.colors = {
 	{ name = "Tomato",color = Color(1, 0.39, 0.28) },
 	{ name = "GreenYellow",color = Color(0.68, 1, 0.18) },
 	{ name = "DeepSkyBlue",color = Color(0, 0.75, 1) },
+	{ name = "Pink",color = Color(1, 0, 1) },
 	{ name = "Yellow",color = Color(1, 1, 0) },
 	{ name = "RoyalBlue",color = Color(0.25, 0.41, 1) },
 	{ name = "White",color = Color(1, 1, 1) },
-	{ name = "Pink",color = Color(1, 0, 1) },
 	{ name = "Aqua",color = Color(0, 1, 1) },
 	{ name = "Orange",color = Color(1, 0.5, 0) },
 }
