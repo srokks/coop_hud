@@ -789,25 +789,35 @@ function coopHUD.renderChances(pos)
 	--
 	if coopHUD.HUD_table.chances.duality then
 		-- Duality render
+		if not coopHUD.options.deals.show_planetarium then
+			anchor.X = anchor.X + 16
+		end
 		anchor.X = anchor.X - 4
 		text = string.format('%.1f', coopHUD.HUD_table.chances.devil[1] + coopHUD.HUD_table.chances.angel[1]) .. '%'
 		text_len = coopHUD.HUD_table.sprites.item_font:GetStringWidth(text) / 2
 		coopHUD.HUD_table.deal_sprites.duality:Render(Vector(anchor.X - text_len - 16, anchor.Y))
 		coopHUD.HUD_table.stats.font:DrawString(text, anchor.X - text_len, anchor.Y, font_color, 0, true)
 		--
-		coopHUD.HUD_table.deal_sprites.planetarium:Render(Vector(anchor.X + 4, anchor.Y))
-		text = string.format('%.1f', coopHUD.HUD_table.chances.planetarium[1]) .. '%'
-		coopHUD.HUD_table.stats.font:DrawString(text, anchor.X + 18, anchor.Y, font_color, 0, false)
+		if coopHUD.options.deals.show_planetarium then
+			coopHUD.HUD_table.deal_sprites.planetarium:Render(Vector(anchor.X + 4, anchor.Y))
+			text = string.format('%.1f', coopHUD.HUD_table.chances.planetarium[1]) .. '%'
+			coopHUD.HUD_table.stats.font:DrawString(text, anchor.X + 18, anchor.Y, font_color, 0, false)
+		end
 	else
+		if not coopHUD.options.deals.show_planetarium then
+			anchor.X = anchor.X + 14
+		end
 		-- Angel
 		text = string.format('%.1f', coopHUD.HUD_table.chances.angel[1]) .. '%'
 		text_len = coopHUD.HUD_table.sprites.item_font:GetStringWidth(text)
 		coopHUD.HUD_table.deal_sprites.angel:Render(Vector(anchor.X - 16, anchor.Y))
 		coopHUD.HUD_table.stats.font:DrawString(text, anchor.X - 4, anchor.Y, font_color, 0, false)
 		-- Planetarium
-		coopHUD.HUD_table.deal_sprites.planetarium:Render(Vector(anchor.X + (text_len/2), anchor.Y))
-		text = string.format('%.1f', coopHUD.HUD_table.chances.planetarium[1]) .. '%'
-		coopHUD.HUD_table.stats.font:DrawString(text, anchor.X + text_len , anchor.Y, font_color, 0, false)
+		if coopHUD.options.deals.show_planetarium then
+			coopHUD.HUD_table.deal_sprites.planetarium:Render(Vector(anchor.X + (text_len/2), anchor.Y))
+			text = string.format('%.1f', coopHUD.HUD_table.chances.planetarium[1]) .. '%'
+			coopHUD.HUD_table.stats.font:DrawString(text, anchor.X + text_len , anchor.Y, font_color, 0, false)
+		end
 		-- Devil
 		text = string.format('%.1f', coopHUD.HUD_table.chances.devil[1]) .. '%'
 		text_len = coopHUD.HUD_table.sprites.item_font:GetStringWidth(text)
@@ -829,28 +839,32 @@ function coopHUD.renderChancesDiff(pos)
 			coopHUD.HUD_table.stats.font:DrawString(dif.str, anchor.X - dif_len/2 + 8 , anchor.Y, dif.color, 1, true)
 			chances_draw = true
 		end
-		if coopHUD.HUD_table.chances.planetarium[2] ~= 0 then
-			local dif = coopHUD.getStatChangeAttrib(coopHUD.HUD_table.chances.planetarium[2])
-			local dif_len = coopHUD.HUD_table.sprites.item_font:GetStringWidth(dif.str)
-			coopHUD.HUD_table.stats.font:DrawString(dif.str, anchor.X + dif_len - 8 , anchor.Y, dif.color, 1, true)
-			chances_draw = true
+		if coopHUD.options.deals.show_planetarium then
+			if coopHUD.HUD_table.chances.planetarium[2] ~= 0 then
+				local dif = coopHUD.getStatChangeAttrib(coopHUD.HUD_table.chances.planetarium[2])
+				local dif_len = coopHUD.HUD_table.sprites.item_font:GetStringWidth(dif.str)
+				coopHUD.HUD_table.stats.font:DrawString(dif.str, anchor.X + dif_len - 8 , anchor.Y, dif.color, 1, true)
+				chances_draw = true
+			end
 		end
 	else
 		if coopHUD.HUD_table.chances.angel[2] ~= 0 then
 			local dif = coopHUD.getStatChangeAttrib(coopHUD.HUD_table.chances.angel[2],'%.1f')
-			coopHUD.HUD_table.stats.font:DrawString(dif.str, anchor.X , anchor.Y, dif.color, 1, true)
+			coopHUD.HUD_table.stats.font:DrawString(dif.str, anchor.X + 4 , anchor.Y, dif.color, 1, true)
 			chances_draw = true
 		end
-		if coopHUD.HUD_table.chances.planetarium[2] ~= 0 then
-			local dif = coopHUD.getStatChangeAttrib(coopHUD.HUD_table.chances.planetarium[2],'%.1f')
-			local dif_len = coopHUD.HUD_table.sprites.item_font:GetStringWidth(coopHUD.HUD_table.chances.angel[1])
-			coopHUD.HUD_table.stats.font:DrawString(dif.str, anchor.X + dif_len + 16, anchor.Y, dif.color, 1, true)
-			chances_draw = true
+		if coopHUD.options.deals.show_planetarium then
+			if coopHUD.HUD_table.chances.planetarium[2] ~= 0 then
+				local dif = coopHUD.getStatChangeAttrib(coopHUD.HUD_table.chances.planetarium[2],'%.1f')
+				local dif_len = coopHUD.HUD_table.sprites.item_font:GetStringWidth(coopHUD.HUD_table.chances.angel[1])
+				coopHUD.HUD_table.stats.font:DrawString(dif.str, anchor.X + dif_len /2 - 8, anchor.Y, dif.color, 1, true)
+				chances_draw = true
+			end
 		end
 		if coopHUD.HUD_table.chances.devil[2] ~= 0 then
 			local dif = coopHUD.getStatChangeAttrib(coopHUD.HUD_table.chances.devil[2],'%.1f')
 			local dif_len = coopHUD.HUD_table.sprites.item_font:GetStringWidth(coopHUD.HUD_table.chances.devil[1])
-			coopHUD.HUD_table.stats.font:DrawString(dif.str, anchor.X - dif_len  - 8, anchor.Y, dif.color, 1, true)
+			coopHUD.HUD_table.stats.font:DrawString(dif.str, anchor.X - dif_len/2 + 16  , anchor.Y, dif.color, 1, true)
 			chances_draw = true
 		end
 	end
@@ -879,7 +893,6 @@ function coopHUD.renderItems()
 	local text_len = coopHUD.HUD_table.sprites.item_font:GetStringWidth(text)
 	local pos = Vector(anchor.X - 14 - 14 - text_len, anchor.Y)
 	coopHUD.HUD_table.sprites.coin_sprite:Render(pos)
-	--pos.X = pos.X+4+test
 	coopHUD.HUD_table.sprites.item_font:DrawString(text, anchor.X - 14 - text_len, pos.Y, color, 0, false)
 	------
 	pos = Vector(anchor.X - 14, anchor.Y)
@@ -893,7 +906,6 @@ function coopHUD.renderItems()
 	coopHUD.HUD_table.sprites.item_font:DrawString(text, pos.X + 16, pos.Y, color, 0, false)
 	-- CHANCES RENDER
 	if coopHUD.options.deals.show  then
-		print(coopHUD.options.deals.hide_in_battle, coopHUD.signals.on_battle)
 		if not (coopHUD.options.deals.hide_in_battle and coopHUD.signals.on_battle) then
 			coopHUD.renderChances(Vector(anchor.X, anchor.Y - 12))
 		end
