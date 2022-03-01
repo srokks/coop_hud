@@ -1,6 +1,6 @@
 local json = require("json")
 if coopHUD:HasData() then
-    local save = json.decode(coopHUD:LoadData())
+	local save = json.decode(coopHUD:LoadData())
 	if coopHUD.VERSION == save.version then
 		coopHUD.players_config[0] = save.players_config['0']
 		coopHUD.players_config[1] = save.players_config['1']
@@ -12,22 +12,23 @@ if coopHUD:HasData() then
 	end
 end
 function coopHUD.save_options()
-    local save =  {}
+	local save = {}
 	save.version = coopHUD.VERSION
-    save.options = coopHUD.options
-    save.players_config = coopHUD.players_config
-    coopHUD:SaveData(json.encode(save))
+	save.options = coopHUD.options
+	save.players_config = coopHUD.players_config
+	save.run = {angel_seen=coopHUD.angel_seen}
+	coopHUD:SaveData(json.encode(save))
 end
-coopHUD:AddCallback(ModCallbacks.MC_PRE_GAME_EXIT,coopHUD.save_options)
+coopHUD:AddCallback(ModCallbacks.MC_PRE_GAME_EXIT, coopHUD.save_options)
 if ModConfigMenu then
 	local mod_name = "Coop HUD"
 	--= Used to reset the config, remove on retail.
-	local categoryToChange = ModConfigMenu.GetCategoryIDByName(mod_name)
-	if categoryToChange then
-		ModConfigMenu.MenuData[categoryToChange] = {}
-		ModConfigMenu.MenuData[categoryToChange].Name = tostring(mod_name)
-		ModConfigMenu.MenuData[categoryToChange].Subcategories = {}
-	end
+	--local categoryToChange = ModConfigMenu.GetCategoryIDByName(mod_name)
+	--if categoryToChange then
+	--	ModConfigMenu.MenuData[categoryToChange] = {}
+	--	ModConfigMenu.MenuData[categoryToChange].Name = tostring(mod_name)
+	--	ModConfigMenu.MenuData[categoryToChange].Subcategories = {}
+	--end
 	--/
 	ModConfigMenu.UpdateCategory(mod_name, {
 		Info = {
@@ -41,7 +42,7 @@ if ModConfigMenu then
 	ModConfigMenu.AddText(mod_name, "Info", "Version " .. coopHUD.VERSION)
 	ModConfigMenu.AddSpace(mod_name, "Info")
 	ModConfigMenu.AddText(mod_name, "Info", "created by Srokks")
-	ModConfigMenu.AddTitle(mod_name, "General","General")
+	ModConfigMenu.AddTitle(mod_name, "General", "General")
 	-- SHOW HUD
 	ModConfigMenu.AddSetting(mod_name, "General", {
 		Type = ModConfigMenu.OptionType.BOOLEAN,
@@ -49,13 +50,13 @@ if ModConfigMenu then
 			return coopHUD.options.onRender
 		end,
 		Default = coopHUD.options.onRender,
-		
+
 		Display = function()
 			local onOff = "off"
 			if coopHUD.options.onRender then
 				onOff = "on"
 			end
-			
+
 			return "Show coopHUD: " .. onOff
 		end,
 		OnChange = function(currentBool)
@@ -74,13 +75,13 @@ if ModConfigMenu then
 			return coopHUD.options.force_small_hud
 		end,
 		Default = coopHUD.options.force_small_hud,
-		
+
 		Display = function()
 			local onOff = "Off"
 			if coopHUD.options.force_small_hud then
 				onOff = "On"
 			end
-			
+
 			return "Force small hud: " .. onOff
 		end,
 		OnChange = function(currentBool)
@@ -98,13 +99,13 @@ if ModConfigMenu then
 			return coopHUD.options.render_player_info
 		end,
 		Default = coopHUD.options.force_small_hud,
-		
+
 		Display = function()
 			local onOff = "Off"
 			if coopHUD.options.render_player_info then
 				onOff = "On"
 			end
-			
+
 			return "Render HUD player indicators: " .. onOff
 		end,
 		OnChange = function(currentBool)
@@ -128,13 +129,13 @@ if ModConfigMenu then
 			return coopHUD.options.timer_always_on
 		end,
 		Default = coopHUD.options.timer_always_on,
-		
+
 		Display = function()
 			local onOff = "Off"
 			if coopHUD.options.timer_always_on then
 				onOff = "On"
 			end
-			
+
 			return "Timer always on: " .. onOff
 		end,
 		OnChange = function(currentBool)
@@ -146,21 +147,21 @@ if ModConfigMenu then
 		end
 	})
 	-- __ Stats
-	ModConfigMenu.AddTitle(mod_name,'General','Stats')
+	ModConfigMenu.AddTitle(mod_name, 'Stats', 'General')
 	-- stats.show
-	ModConfigMenu.AddSetting(mod_name, "General", {
+	ModConfigMenu.AddSetting(mod_name, "Stats", {
 		Type = ModConfigMenu.OptionType.BOOLEAN,
 		CurrentSetting = function()
 			return coopHUD.options.stats.show
 		end,
 		Default = coopHUD.options.stats.show,
-		
+
 		Display = function()
 			local onOff = "Off"
 			if coopHUD.options.stats.show then
 				onOff = "On"
 			end
-			
+
 			return "Show stats: " .. onOff
 		end,
 		OnChange = function(currentBool)
@@ -172,19 +173,19 @@ if ModConfigMenu then
 		end
 	})
 	-- stats.hide_in_battle
-	ModConfigMenu.AddSetting(mod_name, "General", {
+	ModConfigMenu.AddSetting(mod_name, "Stats", {
 		Type = ModConfigMenu.OptionType.BOOLEAN,
 		CurrentSetting = function()
 			return coopHUD.options.stats.hide_in_battle
 		end,
 		Default = coopHUD.options.stats.hide_in_battle,
-		
+
 		Display = function()
 			local onOff = "Off"
-			if coopHUD.options.stats.hide_in_battle     then
+			if coopHUD.options.stats.hide_in_battle then
 				onOff = "On"
 			end
-			
+
 			return "Hide on battle: " .. onOff
 		end,
 		OnChange = function(currentBool)
@@ -195,7 +196,76 @@ if ModConfigMenu then
 			return "Hides stats while in battle"
 		end
 	})
-	
+	-- Deals
+	ModConfigMenu.AddTitle(mod_name, 'Stats', 'Deals')
+	-- show deals
+	ModConfigMenu.AddSetting(mod_name, "Stats", {
+		Type = ModConfigMenu.OptionType.BOOLEAN,
+		CurrentSetting = function()
+			return coopHUD.options.deals.show
+		end,
+		Default = coopHUD.options.deals.show,
+
+		Display = function()
+			local onOff = "Off"
+			if coopHUD.options.deals.show then
+				onOff = "On"
+			end
+
+			return "Show deals chance: " .. onOff
+		end,
+		OnChange = function(currentBool)
+			coopHUD.options.deals.show = currentBool
+			coopHUD.save_options()
+		end,
+		Info = function()
+			return "Shows deal chances"
+		end
+	})
+	-- show planetarium
+	ModConfigMenu.AddSetting(mod_name, "Stats", {
+		Type = ModConfigMenu.OptionType.BOOLEAN,
+		CurrentSetting = function()
+			return coopHUD.options.deals.show_planetarium
+		end,
+		Default = coopHUD.options.deals.show_planetarium,
+		Display = function()
+			local onOff = "Off"
+			if coopHUD.options.deals.show_planetarium then
+				onOff = "On"
+			end
+			return "Show planetarium chance: " .. onOff
+		end,
+		OnChange = function(currentBool)
+			coopHUD.options.deals.show_planetarium = currentBool
+			coopHUD.save_options()
+		end,
+		Info = function()
+			return "Show planetarium chances"
+		end
+	})
+	-- hide deals in battle
+	ModConfigMenu.AddSetting(mod_name, "Stats", {
+		Type = ModConfigMenu.OptionType.BOOLEAN,
+		CurrentSetting = function()
+			return coopHUD.options.deals.hide_in_battle
+		end,
+		Default = coopHUD.options.deals.hide_in_battle,
+		Display = function()
+			local onOff = "Off"
+			if coopHUD.options.deals.hide_in_battle then
+				onOff = "On"
+			end
+			return "Hide chance in battle: " .. onOff
+		end,
+		OnChange = function(currentBool)
+			coopHUD.options.deals.hide_in_battle = currentBool
+			coopHUD.save_options()
+		end,
+		Info = function()
+			return "Hide chances while in battle"
+		end
+	})
 	-- __ Players
 	ModConfigMenu.AddTitle(mod_name, "Colors", 'General')
 	-- stats.colorful
@@ -205,13 +275,13 @@ if ModConfigMenu then
 			return coopHUD.options.stats.colorful
 		end,
 		Default = coopHUD.options.stats.colorful,
-		
+
 		Display = function()
 			local onOff = "Off"
-			if coopHUD.options.stats.colorful     then
+			if coopHUD.options.stats.colorful then
 				onOff = "On"
 			end
-			
+
 			return "Colorful stats: " .. onOff
 		end,
 		OnChange = function(currentBool)
@@ -229,13 +299,13 @@ if ModConfigMenu then
 			return coopHUD.options.player_info_color
 		end,
 		Default = coopHUD.options.player_info_color,
-		
+
 		Display = function()
 			local onOff = "Off"
-			if coopHUD.options.player_info_color     then
+			if coopHUD.options.player_info_color then
 				onOff = "On"
 			end
-			
+
 			return "Colorful names: " .. onOff
 		end,
 		OnChange = function(currentBool)
@@ -248,7 +318,7 @@ if ModConfigMenu then
 	})
 	-- player config - players colors
 	ModConfigMenu.AddTitle(mod_name, "Colors", 'Player colors')
-	for i=0,3 do
+	for i = 0, 3 do
 		ModConfigMenu.AddSetting(mod_name, "Colors", {
 			Type = ModConfigMenu.OptionType.NUMBER,
 			CurrentSetting = function()
@@ -257,7 +327,7 @@ if ModConfigMenu then
 			Minimum = 1,
 			Maximum = #coopHUD.colors,
 			Display = function()
-				return "Player "..tostring(i+1) ..": " .. coopHUD.colors[coopHUD.players_config.small[i].color].name
+				return "Player " .. tostring(i + 1) .. ": " .. coopHUD.colors[coopHUD.players_config.small[i].color].name
 			end,
 			OnChange = function(currentNum)
 				coopHUD.players_config.small[i].color = currentNum
@@ -267,7 +337,7 @@ if ModConfigMenu then
 		})
 	end
 	--
-	ModConfigMenu.AddTitle(mod_name, "Positions",'2 players HUD')
+	ModConfigMenu.AddTitle(mod_name, "Positions", '2 players HUD')
 	ModConfigMenu.AddSetting(mod_name, "Positions", {
 		Type = ModConfigMenu.OptionType.BOOLEAN,
 		CurrentSetting = function()
@@ -275,10 +345,10 @@ if ModConfigMenu then
 		end,
 		Display = function()
 			local pos = "right"
-			if coopHUD.players_config[0].anchor_top == 'top_left'   then
+			if coopHUD.players_config[0].anchor_top == 'top_left' then
 				pos = "left"
 			end
-			return "Player 1 anchor: "..pos
+			return "Player 1 anchor: " .. pos
 		end,
 		OnChange = function(currentBool)
 			if currentBool then
@@ -309,10 +379,10 @@ if ModConfigMenu then
 		end,
 		Display = function()
 			local pos = "right"
-			if coopHUD.players_config[1].anchor_top == 'top_left'   then
+			if coopHUD.players_config[1].anchor_top == 'top_left' then
 				pos = "left"
 			end
-			return "Player 2 anchor: "..pos
+			return "Player 2 anchor: " .. pos
 		end,
 		OnChange = function(currentBool)
 			if currentBool then
@@ -343,11 +413,11 @@ if EID then
 end
 -- Overrides Enhanced Boss Bars  mod setting to better fit with HUD
 if HPBars and HPBars.UserConfig then
-	if HPBars.UserConfig.ScreenPadding < 24 then  HPBars.UserConfig.ScreenPadding = 24 end
+	if HPBars.UserConfig.ScreenPadding < 24 then HPBars.UserConfig.ScreenPadding = 24 end
 end
 -- Overrides MinimapAPI  mod setting to show on coopHUD
 if MinimapAPI then
-	if not MinimapAPI.Config.DisplayOnNoHUD  then  MinimapAPI.Config.DisplayOnNoHUD = true end
+	if not MinimapAPI.Config.DisplayOnNoHUD then MinimapAPI.Config.DisplayOnNoHUD = true end
 	if MinimapAPI:GetConfig('ShowLevelFlags') then
 		MinimapAPI.Config.ShowLevelFlags = false
 	end
