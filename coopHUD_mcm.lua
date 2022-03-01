@@ -16,6 +16,7 @@ function coopHUD.save_options()
 	save.version = coopHUD.VERSION
 	save.options = coopHUD.options
 	save.players_config = coopHUD.players_config
+	save.run = {angel_seen=coopHUD.angel_seen}
 	coopHUD:SaveData(json.encode(save))
 end
 coopHUD:AddCallback(ModCallbacks.MC_PRE_GAME_EXIT, coopHUD.save_options)

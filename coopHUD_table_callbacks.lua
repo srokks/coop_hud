@@ -10,6 +10,14 @@ function coopHUD.on_start(_, cont)
 			coopHUD.signals.is_joining = true
 			coopHUD.on_player_init()
 		end
+		--
+		--
+		if coopHUD:HasData() then
+			local save = json.decode(coopHUD:LoadData())
+			if coopHUD.VERSION == save.version then
+				coopHUD.angel_seen = save.run.angel_seen
+			end
+end
 	else
 		-- Logic when started new game/ restart thought dbg console
 
@@ -169,8 +177,8 @@ function coopHUD.on_input(_, ent, hook, btn)
 	-- _____ Joining new players logic
 	for i = 0, 8, 1 do
 		if Input.IsActionTriggered(ButtonAction.ACTION_JOINMULTIPLAYER, i) and not coopHUD.signals.is_joining and
-				coopHUD.players[coopHUD.getPlayerNumByControllerIndex(i)] == nil and
-				Game():IsGreedMode() == false and Game():GetRoom():IsFirstVisit() == true and
+				coopHUD.players[coopHUD.getPlayerNumByControllerIndex(i)] == nil
+				and Game():GetRoom():IsFirstVisit() == true and
 				Game():GetLevel():GetAbsoluteStage() == LevelStage.STAGE1_1 and
 				Game():GetLevel():GetCurrentRoomIndex() == Game():GetLevel():GetStartingRoomIndex()
 				and not string.match(Game():GetLevel():GetName(), "Downpour")
