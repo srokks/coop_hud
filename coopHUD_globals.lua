@@ -17,17 +17,17 @@ coopHUD.players = {}
 coopHUD.options = {
 	onRender = true,
 	render_player_info = true,
-	player_info_color = true,
+	player_info_color = false,
 	force_small_hud = false,
-	timer_always_on = true,
+	timer_always_on = false,
 	stats = {
 		show = true,
 		hide_in_battle = true,
-		colorful = false,
+		colorful = true,
 	},
 	deals = {
 		show = true,
-		hide_in_battle = false,
+		hide_in_battle = true,
 		show_planetarium = true
 	}
 }
