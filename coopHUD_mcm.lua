@@ -146,9 +146,9 @@ if ModConfigMenu then
 		end
 	})
 	-- __ Stats
-	ModConfigMenu.AddTitle(mod_name, 'General', 'Stats')
+	ModConfigMenu.AddTitle(mod_name, 'Stats', 'General')
 	-- stats.show
-	ModConfigMenu.AddSetting(mod_name, "General", {
+	ModConfigMenu.AddSetting(mod_name, "Stats", {
 		Type = ModConfigMenu.OptionType.BOOLEAN,
 		CurrentSetting = function()
 			return coopHUD.options.stats.show
@@ -172,7 +172,7 @@ if ModConfigMenu then
 		end
 	})
 	-- stats.hide_in_battle
-	ModConfigMenu.AddSetting(mod_name, "General", {
+	ModConfigMenu.AddSetting(mod_name, "Stats", {
 		Type = ModConfigMenu.OptionType.BOOLEAN,
 		CurrentSetting = function()
 			return coopHUD.options.stats.hide_in_battle
@@ -195,7 +195,76 @@ if ModConfigMenu then
 			return "Hides stats while in battle"
 		end
 	})
+	-- Deals
+	ModConfigMenu.AddTitle(mod_name, 'Stats', 'Deals')
+	-- show deals
+	ModConfigMenu.AddSetting(mod_name, "Stats", {
+		Type = ModConfigMenu.OptionType.BOOLEAN,
+		CurrentSetting = function()
+			return coopHUD.options.deals.show
+		end,
+		Default = coopHUD.options.deals.show,
 
+		Display = function()
+			local onOff = "Off"
+			if coopHUD.options.deals.show then
+				onOff = "On"
+			end
+
+			return "Show deals chance: " .. onOff
+		end,
+		OnChange = function(currentBool)
+			coopHUD.options.deals.show = currentBool
+			coopHUD.save_options()
+		end,
+		Info = function()
+			return "Shows deal chances"
+		end
+	})
+	-- show planetarium
+	ModConfigMenu.AddSetting(mod_name, "Stats", {
+		Type = ModConfigMenu.OptionType.BOOLEAN,
+		CurrentSetting = function()
+			return coopHUD.options.deals.show_planetarium
+		end,
+		Default = coopHUD.options.deals.show_planetarium,
+		Display = function()
+			local onOff = "Off"
+			if coopHUD.options.deals.show_planetarium then
+				onOff = "On"
+			end
+			return "Show planetarium chance: " .. onOff
+		end,
+		OnChange = function(currentBool)
+			coopHUD.options.deals.show_planetarium = currentBool
+			coopHUD.save_options()
+		end,
+		Info = function()
+			return "Show planetarium chances"
+		end
+	})
+	-- hide deals in battle
+	ModConfigMenu.AddSetting(mod_name, "Stats", {
+		Type = ModConfigMenu.OptionType.BOOLEAN,
+		CurrentSetting = function()
+			return coopHUD.options.deals.hide_in_battle
+		end,
+		Default = coopHUD.options.deals.hide_in_battle,
+		Display = function()
+			local onOff = "Off"
+			if coopHUD.options.deals.hide_in_battle then
+				onOff = "On"
+			end
+			return "Hide chance in battle: " .. onOff
+		end,
+		OnChange = function(currentBool)
+			coopHUD.options.deals.hide_in_battle = currentBool
+			coopHUD.save_options()
+		end,
+		Info = function()
+			return "Hide chances while in battle"
+		end
+	})
 	-- __ Players
 	ModConfigMenu.AddTitle(mod_name, "Colors", 'General')
 	-- stats.colorful

@@ -1,4 +1,4 @@
-coopHUD.VERSION = '0.4.6-PROD' --DEBUG: test name for in game recognition
+coopHUD.VERSION = '0.4.7-PROD' --DEBUG: test name for in game recognition
 coopHUD.showExtraInfo = false
 coopHUD.HUD_table = {}
 coopHUD.signals = {
@@ -24,6 +24,11 @@ coopHUD.options = {
 		show = true,
 		hide_in_battle = true,
 		colorful = false,
+	},
+	deals = {
+		show = true,
+		hide_in_battle = false,
+		show_planetarium = true
 	}
 }
 coopHUD.GLOBALS = {
