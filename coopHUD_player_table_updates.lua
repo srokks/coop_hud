@@ -522,14 +522,16 @@ function coopHUD.updateItems()
 end
 function coopHUD.updateChances()
 	local temp_deals = coopHUD.calculateDeal()
-	if coopHUD.HUD_table.chances.devil ~= temp_deals.devil then
-		coopHUD.HUD_table.chances.devil = temp_deals.devil
+	if coopHUD.HUD_table.chances.devil[1] ~= temp_deals.devil[1] then
+		coopHUD.HUD_table.chances.devil[1] = temp_deals.devil[1]
 	end
-	if coopHUD.HUD_table.chances.angel ~= temp_deals.angel then
-		coopHUD.HUD_table.chances.angel = temp_deals.angel
+	if coopHUD.HUD_table.chances.angel[1] ~= temp_deals.angel[1] then
+		local dif = coopHUD.HUD_table.chances.angel[1] - temp_deals.angel[1]
+		coopHUD.HUD_table.chances.angel[1] = temp_deals.angel[1]
+		coopHUD.HUD_table.chances.angel[2] = dif
 	end
-	if coopHUD.HUD_table.chances.planetarium ~= temp_deals.planetarium then
-		coopHUD.HUD_table.chances.planetarium = temp_deals.planetarium
+	if coopHUD.HUD_table.chances.planetarium[1] ~= temp_deals.planetarium[1] then
+		coopHUD.HUD_table.chances.planetarium[1] = temp_deals.planetarium[1]
 	end
 	if coopHUD.HUD_table.chances.duality ~= temp_deals.duality then
 		coopHUD.HUD_table.chances.duality = temp_deals.duality

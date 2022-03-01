@@ -293,7 +293,6 @@ function coopHUD.getHUDSprites()
 	coin_sprite:Load(coopHUD.GLOBALS.hud_el_anim_path, true)
 	coin_sprite:SetFrame('Idle', 0)
 	-- Bomb sprite
-	-- TODO: GigaBomb integration
 	-- TODO: T.??? PoopSpell integration
 	local bomb_sprite = Sprite()
 	bomb_sprite:Load(coopHUD.GLOBALS.hud_el_anim_path, true)
@@ -802,9 +801,9 @@ function coopHUD.calculateDeal()
 	end
 	devil = deal * (1.0 - angel)
 	angel = deal * angel
-	return { devil = devil * 100,
-	         angel = angel * 100,
-	         planetarium = lvl:GetPlanetariumChance() * 100,
+	return { devil = { devil * 100,6.6},
+	         angel = { angel * 100,7.7 },
+	         planetarium = { lvl:GetPlanetariumChance() * 100,12.12 },
 	         duality = duality }
 end
 -- ______
