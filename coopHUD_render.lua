@@ -588,8 +588,8 @@ function coopHUD.renderPlayer(player_no)
 					-- just to double sure that will not mess up
 					local twin_anchor_bot = coopHUD.anchors[coopHUD.players_config[player_no + 1].anchor_bot]
 					coopHUD.renderStatsIcons(Vector(twin_anchor_bot.X, 72), true)
-					coopHUD.renderStats(coopHUD.players[player_no], Vector(twin_anchor_bot.X, 72), true)
-					coopHUD.renderStatChange(coopHUD.players[player_no], Vector(twin_anchor_bot.X, 72), true)
+					coopHUD.renderStats(coopHUD.players[player_no].twin, Vector(twin_anchor_bot.X, 72), true)
+					coopHUD.renderStatChange(coopHUD.players[player_no].twin, Vector(twin_anchor_bot.X, 72), true)
 				end
 			end
 		end
