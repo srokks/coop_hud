@@ -801,9 +801,9 @@ function coopHUD.calculateDeal()
 	end
 	devil = deal * (1.0 - angel)
 	angel = deal * angel
-	return { devil = { devil * 100,6.6},
-	         angel = { angel * 100,7.7 },
-	         planetarium = { lvl:GetPlanetariumChance() * 100,12.12 },
+	return { devil = { devil * 100,0},
+	         angel = { angel * 100,0 },
+	         planetarium = { lvl:GetPlanetariumChance() * 100,0 },
 	         duality = duality }
 end
 -- ______

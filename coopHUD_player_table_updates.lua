@@ -493,13 +493,13 @@ function coopHUD.initHudTables()
 	coopHUD.HUD_table.sprites = coopHUD.getHUDSprites()
 	coopHUD.HUD_table.stats = coopHUD.getStatSprites()
 	coopHUD.HUD_table.deal_sprites = coopHUD.getDealSprites()
+	coopHUD.HUD_table.chances = coopHUD.calculateDeal()
 	coopHUD.HUD_table.floor_info = coopHUD.getStreakSprite()
 	coopHUD.HUD_table.streak = coopHUD.getStreakSprite()
 	coopHUD.HUD_table.streak_sec_color = KColor(0, 0, 0, 1, 0, 0, 0)
 	coopHUD.HUD_table.coin_no = 0
 	coopHUD.HUD_table.bomb_no = 0
 	coopHUD.HUD_table.key_no = 0
-	coopHUD.HUD_table.chances = coopHUD.calculateDeal()
 end
 function coopHUD.updateItems()
 	local player = Isaac.GetPlayer(0)

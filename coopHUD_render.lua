@@ -821,18 +821,37 @@ function coopHUD.renderChancesDiff(pos)
 	local anchor = Vector(pos.X,pos.Y)
 	local temp_chances = coopHUD.calculateDeal()
 	if coopHUD.HUD_table.chances.duality then
+		if coopHUD.HUD_table.chances.angel[2] ~= 0 then
+			local dif = coopHUD.getStatChangeAttrib(coopHUD.HUD_table.chances.angel[1] + coopHUD.HUD_table.chances.devil[1])
+			local dif_len = coopHUD.HUD_table.sprites.item_font:GetStringWidth(dif.str)
+			coopHUD.HUD_table.stats.font:DrawString(dif.str, anchor.X - dif_len/2 + 8 , anchor.Y, dif.color, 1, true)
+			chances_draw = true
+		end
+		if coopHUD.HUD_table.chances.planetarium[2] ~= 0 then
+			local dif = coopHUD.getStatChangeAttrib(coopHUD.HUD_table.chances.planetarium[2])
+			local dif_len = coopHUD.HUD_table.sprites.item_font:GetStringWidth(dif.str)
+			coopHUD.HUD_table.stats.font:DrawString(dif.str, anchor.X + dif_len - 4, anchor.Y, dif.color, 1, true)
+			chances_draw = true
+		end
 	else
 		if coopHUD.HUD_table.chances.angel[2] ~= 0 then
 			local dif = coopHUD.getStatChangeAttrib(coopHUD.HUD_table.chances.angel[2])
-			coopHUD.HUD_table.stats.font:DrawString(dif.str, anchor.X, anchor.Y, dif.color, 0, true)
+			coopHUD.HUD_table.stats.font:DrawString(dif.str, anchor.X + 8, anchor.Y, dif.color, 1, true)
+			chances_draw = true
 		end
 		if coopHUD.HUD_table.chances.planetarium[2] ~= 0 then
+			local dif = coopHUD.getStatChangeAttrib(coopHUD.HUD_table.chances.planetarium[2])
+			local dif_len = coopHUD.HUD_table.sprites.item_font:GetStringWidth(dif.str)
+			coopHUD.HUD_table.stats.font:DrawString(dif.str, anchor.X + dif_len + 8, anchor.Y, dif.color, 1, true)
+			chances_draw = true
+		end
+		if coopHUD.HUD_table.chances.devil[2] ~= 0 then
 			local dif = coopHUD.getStatChangeAttrib(coopHUD.HUD_table.chances.devil[2])
-			local dif_len = coopHUD.HUD_table.sprites.item_font:GetStringWidth(text)
-			coopHUD.HUD_table.stats.font:DrawString(dif.str, anchor.X + dif_len + 16, anchor.Y, dif.color, 0, true)
+			local dif_len = coopHUD.HUD_table.sprites.item_font:GetStringWidth(dif.str)
+			coopHUD.HUD_table.stats.font:DrawString(dif.str, anchor.X - dif_len + 4, anchor.Y, dif.color, 1, true)
+			chances_draw = true
 		end
 	end
-
 	if chances_draw then
 		coopHUD.chances_counter = coopHUD.chances_counter + 1
 		if coopHUD.chances_counter > 200 then
