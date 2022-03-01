@@ -775,7 +775,7 @@ function coopHUD.calculateDeal()
 		end
 	end
 	-- Calculate ange deals
-	if Game():GetStateFlag(5) or comp.virtouses[1] and -- check if player seen devil deal or
+	if Game():GetStateFlag(5) or comp.virtouses[1] or eucharist and -- check if player seen devil deal or
 			--lvl:GetAngelRoomChance() ~= 0) and --have I feel blessed
 			(Game():GetDevilRoomDeals() == 0 or -- check if player has done devil deal
 					act_of_contr or comp.virtouses[1] or lvl:GetAngelRoomChance() ~= 0) then
