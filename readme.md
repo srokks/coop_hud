@@ -31,7 +31,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/srokks/coop_HUD">
-    <img src="thumbnails/coop%20HUD_ico.png" alt="Logo" width="400" height="400">
+    <img src="thumbnails/00_coop HUD_ico.png" alt="Logo" width="400" height="400">
   </a>
 
 <h3 align="center">coop HUD</h3>
@@ -119,13 +119,13 @@
 [//]: # ([![Product Name Screen Shot][product-screenshot]]&#40;https://example.com&#41;)
 
 [//]: # (Here's a blank template to get started: To avoid retyping too much info. Do a search and replace with your text editor for the following: `srokks`, `coop_HUD`, `twitter_handle`, `linkedin_username`, `email`, `email_client`, `coop HUD`, `project_description`)
-THIS IS MOSTLY SKELETON FOR FUTURE UPDATES only BASIC functionality</br>
-THIS MOD IS WORKING IN PROGRESS PLEASE SUBMIT ANY ISSUE  </br>
-I've been tired of playing Isaac in coop with vanilla broken hud, so I've created a new one.
-</br>This mod is my try to render proper HUD for game.
-</br>It renders only HUD, so I'm suggesting using [MiniMAPI](https://steamcommunity.com/sharedfiles/filedetails/?id=1978904635) (for map) 
-and [Enhanced Boss Bars](https://steamcommunity.com/sharedfiles/filedetails/?id=2635267643)
-</br>For right now this mod does not show stats!
+I've been tired of playing Isaac in coop with vanilla broken hud so I've created a new one.
+This mod is my try to render proper HUD for game like it should be from begging.
+
+MOD IS STILL DEVELOPED PLEASE SUBMIT ANY WEIR BEHAVIOUR ( weird positions/ console errors/ log files)
+in Bugs topic
+MOD might get laggy when too much on screen. 4 normal players (exl. Jacob / Essau) works fine on my old
+laptop. Still working on optimalization
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -188,17 +188,17 @@ You can install  mod from  [Steam workshop](https://steamcommunity.com/sharedfil
 
 
 
-[//]: # (<!-- USAGE EXAMPLES -->)
+<!-- Screen -->
+## Screens
 
-[//]: # (## Usage)
-
-[//]: # ()
 [//]: # (Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.)
+<img src="thumbnails/01_2p coop.png" alt="Logo" width="600" height="400">
+<img src="thumbnails/02_2p vanilla.png" alt="Logo" width="600" height="400"> </br>
+<img src="thumbnails/05_4p_coop.png" alt="Logo" width="600" height="400"> </br>
+<img src="thumbnails/06_4p_vanilla.png" alt="Logo" width="600" height="400"> </br>
 
-[//]: # ()
-[//]: # ([//]: # &#40;_For more examples, please refer to the [Documentation]&#40;https://example.com&#41;_&#41;)
-[//]: # ()
-[//]: # (<p align="right">&#40;<a href="#top">back to top</a>&#41;</p>)
+[//]: # (_For more examples, please refer to the [Documentation]&#40;https://example.com&#41;_)
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 [//]: # ()
 [//]: # ()
