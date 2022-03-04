@@ -563,6 +563,7 @@ function coopHUD.updateTables()
 	end
 	coopHUD.updateChances()
 	--
+	if coopHUD.signals.is_joining then coopHUD.updateControllerIndex() end
 	if ((Isaac.GetFrameCount() / 30) % 60) % 4 == 0 then
 		-- updates players every 4 seconds
 		coopHUD.updateControllerIndex()

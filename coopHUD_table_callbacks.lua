@@ -35,27 +35,25 @@ end
 coopHUD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, coopHUD.on_start)
 -- __________ On player init
 function coopHUD.on_player_init()
-	if coopHUD.signals.is_joining then
-		coopHUD.essau_no = 0
-		for i = 0, Game():GetNumPlayers() - 1, 1 do
-			local temp_player_table = coopHUD.initPlayer(i)
-			if temp_player_table then
-				coopHUD.players[i - coopHUD.essau_no] = temp_player_table
-				if coopHUD.players[i - coopHUD.essau_no].has_twin then
-					local temp_twin = Isaac.GetPlayer(i):GetOtherTwin()
-					coopHUD.players[i - coopHUD.essau_no].twin = coopHUD.initPlayer(i, temp_twin) -- inits
-					coopHUD.players[i - coopHUD.essau_no].twin.is_twin = true -- inits
-					coopHUD.essau_no = coopHUD.essau_no + 1
-				end
+	coopHUD.essau_no = 0
+	for i = 0, Game():GetNumPlayers() - 1, 1 do
+		local temp_player_table = coopHUD.initPlayer(i)
+		if temp_player_table then
+			coopHUD.players[i - coopHUD.essau_no] = temp_player_table
+			if coopHUD.players[i - coopHUD.essau_no].has_twin then
+				local temp_twin = Isaac.GetPlayer(i):GetOtherTwin()
+				coopHUD.players[i - coopHUD.essau_no].twin = coopHUD.initPlayer(i, temp_twin) -- inits
+				coopHUD.players[i - coopHUD.essau_no].twin.is_twin = true -- inits
+				coopHUD.essau_no = coopHUD.essau_no + 1
 			end
 		end
 	end
 	--
-	coopHUD.updateControllerIndex()
-	coopHUD.signals.is_joining = false
 	coopHUD.options.onRender = true
+	coopHUD.signals.is_joining = false
+	coopHUD.updateControllerIndex()
 end
-coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, coopHUD.on_player_init, 0)
+coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, coopHUD.on_player_init)
 -- __________ On active item/pocket activate
 function coopHUD.on_activate(_, type, RNG, EntityPlayer, UseFlags, used_slot, CustomVarData)
 	local player_index = coopHUD.getPlayerNumByControllerIndex(EntityPlayer.ControllerIndex)
@@ -180,9 +178,7 @@ function coopHUD.on_input(_, ent, hook, btn)
 				coopHUD.players[coopHUD.getPlayerNumByControllerIndex(i)] == nil
 				and Game():GetRoom():IsFirstVisit() == true and
 				Game():GetLevel():GetAbsoluteStage() == LevelStage.STAGE1_1 and
-				Game():GetLevel():GetCurrentRoomIndex() == Game():GetLevel():GetStartingRoomIndex()
-				and not string.match(Game():GetLevel():GetName(), "Downpour")
-				and not string.match(Game():GetLevel():GetName(), "Dross") then
+				Game():GetLevel():GetCurrentRoomIndex() == Game():GetLevel():GetStartingRoomIndex() then
 			coopHUD.options.onRender = false
 			coopHUD.signals.is_joining = true
 		end
