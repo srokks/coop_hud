@@ -274,7 +274,7 @@ function coopHUD.getPlayerHeadSprite(player_type)
 		sprite:LoadGraphics()
 		return sprite
 	else
-		return false
+		return nil
 	end
 end
 function coopHUD.getHUDSprites()
