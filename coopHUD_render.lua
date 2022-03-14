@@ -1061,6 +1061,21 @@ function coopHUD.render()
 				coopHUD.renderPlayerSmall(i)
 			end
 		end
+		-- PLAYER COLORS
+		if #coopHUD.players > 0 then
+			for i = 0, Game():GetNumPlayers() - 1 do
+				local player = Isaac.GetPlayer(i)
+				local player_index = coopHUD.getPlayerNumByControllerIndex(player.ControllerIndex)
+				local col = Color(1,1,1,1)
+				if coopHUD.options.colorful_players then
+					col.R = coopHUD.colors[coopHUD.players_config.small[player_index].color].color.R
+					col.G = coopHUD.colors[coopHUD.players_config.small[player_index].color].color.G
+					col.B = coopHUD.colors[coopHUD.players_config.small[player_index].color].color.B
+				end
+				Isaac.GetPlayer(i):SetColor(col, 2, 100, false, false)
+			end
+		end
+		--
 	elseif paused and coopHUD.options.onRender then
 		-- Prevents from rendering anything on pause
 		Game():GetHUD():SetVisible(false)

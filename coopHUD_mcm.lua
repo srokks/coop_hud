@@ -292,7 +292,7 @@ if ModConfigMenu then
 			return "Colors stats according to player color"
 		end
 	})
-	-- stats.colorful
+	-- stats.colorful_stats
 	ModConfigMenu.AddSetting(mod_name, "Colors", {
 		Type = ModConfigMenu.OptionType.BOOLEAN,
 		CurrentSetting = function()
@@ -314,6 +314,30 @@ if ModConfigMenu then
 		end,
 		Info = function()
 			return "Colors player pocket name/desc and name"
+		end
+	})
+	-- colorful players
+	ModConfigMenu.AddSetting(mod_name, "Colors", {
+		Type = ModConfigMenu.OptionType.BOOLEAN,
+		CurrentSetting = function()
+			return coopHUD.options.colorful_players
+		end,
+		Default = coopHUD.options.colorful_players,
+
+		Display = function()
+			local onOff = "Off"
+			if coopHUD.options.colorful_players then
+				onOff = "On"
+			end
+
+			return "Colorful players: " .. onOff
+		end,
+		OnChange = function(currentBool)
+			coopHUD.options.colorful_players = currentBool
+			coopHUD.save_options()
+		end,
+		Info = function()
+			return "Colors players sprites"
 		end
 	})
 	-- player config - players colors

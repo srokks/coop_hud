@@ -20,6 +20,7 @@ coopHUD.options = {
 	player_info_color = false,
 	force_small_hud = false,
 	timer_always_on = false,
+	colorful_players = true,
 	stats = {
 		show = true,
 		hide_in_battle = true,
