@@ -3,29 +3,24 @@ function coopHUD.on_start(_, cont)
 	coopHUD.players = {}
 	if cont then
 		-- Logic when game is continued
-		--[[coopHUD.essau_no = 0 -- resets Essau counter before player init
-		if coopHUD.players[0] == nil then coopHUD.on_player_init() end]]
 		coopHUD.essau_no = 0 -- resets Essau counter before player init
 		if coopHUD.players[0] == nil then
 			coopHUD.signals.is_joining = true
 			coopHUD.on_player_init()
 		end
-		--
 		--
 		if coopHUD:HasData() then
 			local save = json.decode(coopHUD:LoadData())
 			if coopHUD.VERSION == save.version then
 				coopHUD.angel_seen = save.run.angel_seen
 			end
-end
-	else
-		-- Logic when started new game/ restart thought dbg console
-
-		coopHUD.essau_no = 0 -- resets Essau counter before player init
-		if coopHUD.players[0] == nil then
-			coopHUD.signals.is_joining = true
-			coopHUD.on_player_init()
 		end
+	else
+		coopHUD.players = {}
+		-- Logic when started new game/ restart thought dbg console
+		coopHUD.essau_no = 0 -- resets Essau counter before player init
+		coopHUD.signals.is_joining = false
+		--end
 	end
 	-- TODO: load angel_seen from save if game continued
 	coopHUD.angel_seen = nil -- resets angel seen state on restart
@@ -34,26 +29,28 @@ end
 end
 coopHUD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, coopHUD.on_start)
 -- __________ On player init
-function coopHUD.on_player_init()
-	coopHUD.essau_no = 0
-	for i = 0, Game():GetNumPlayers() - 1, 1 do
-		local temp_player_table = coopHUD.initPlayer(i)
-		if temp_player_table then
-			coopHUD.players[i - coopHUD.essau_no] = temp_player_table
-			if coopHUD.players[i - coopHUD.essau_no].has_twin then
-				local temp_twin = Isaac.GetPlayer(i):GetOtherTwin()
-				coopHUD.players[i - coopHUD.essau_no].twin = coopHUD.initPlayer(i, temp_twin) -- inits
-				coopHUD.players[i - coopHUD.essau_no].twin.is_twin = true -- inits
-				coopHUD.essau_no = coopHUD.essau_no + 1
+function coopHUD.on_player_init(_,ent)
+	-- ___ inits coopHUD.tables if table nil or if more players
+	if coopHUD.players[0] == nil or ( (#coopHUD.players  + coopHUD.essau_no ) ~= Game():GetNumPlayers() - 1)  then
+		coopHUD.essau_no = 0
+		for i = 0, Game():GetNumPlayers() - 1, 1 do
+			local temp_player_table = coopHUD.initPlayer(i)
+			if temp_player_table then
+				coopHUD.players[i - coopHUD.essau_no] = temp_player_table
+				if coopHUD.players[i - coopHUD.essau_no].has_twin then
+					local temp_twin = Isaac.GetPlayer(i):GetOtherTwin()
+					coopHUD.players[i - coopHUD.essau_no].twin = coopHUD.initPlayer(i, temp_twin) -- inits
+					coopHUD.players[i - coopHUD.essau_no].twin.is_twin = true -- inits
+					coopHUD.essau_no = coopHUD.essau_no + 1
+				end
 			end
 		end
+		coopHUD.signals.is_joining = false
+		coopHUD.options.onRender = true
 	end
-	--
-	coopHUD.options.onRender = true
-	coopHUD.signals.is_joining = false
-	coopHUD.updateControllerIndex()
 end
-coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, coopHUD.on_player_init)
+coopHUD:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, coopHUD.on_player_init)
+
 -- __________ On active item/pocket activate
 function coopHUD.on_activate(_, type, RNG, EntityPlayer, UseFlags, used_slot, CustomVarData)
 	local player_index = coopHUD.getPlayerNumByControllerIndex(EntityPlayer.ControllerIndex)
@@ -151,14 +148,14 @@ coopHUD:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, coopHUD.force_update_all)
 -- _____ On battle signal
 coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, function(self)
 	-- on battle signal
-		-- if option turned on checks signals
-		local r = Game():GetLevel():GetCurrentRoom()
-		if not r:IsClear() then
-			-- check if room ready
-			coopHUD.signals.on_battle = true
-		else
-			coopHUD.signals.on_battle = false -- reset signal
-		end
+	-- if option turned on checks signals
+	local r = Game():GetLevel():GetCurrentRoom()
+	if not r:IsClear() then
+		-- check if room ready
+		coopHUD.signals.on_battle = true
+	else
+		coopHUD.signals.on_battle = false -- reset signal
+	end
 end)
 -- _____
 -- _____ INPUTS
@@ -181,6 +178,7 @@ function coopHUD.on_input(_, ent, hook, btn)
 				Game():GetLevel():GetCurrentRoomIndex() == Game():GetLevel():GetStartingRoomIndex() then
 			coopHUD.options.onRender = false
 			coopHUD.signals.is_joining = true
+			coopHUD.on_player_init()
 		end
 		if Input.IsActionTriggered(ButtonAction.ACTION_MENUBACK, i) and coopHUD.signals.is_joining then
 			coopHUD.signals.is_joining = false
