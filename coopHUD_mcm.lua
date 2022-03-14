@@ -410,6 +410,8 @@ end
 -- Overrides External item description mod setting to better fit with HUD
 if EID then
 	if EID.UserConfig.YPosition < 80 then EID.UserConfig.YPosition = 80 end
+	if EID.UserConfig.TextboxWidth < 150 then EID.UserConfig.TextboxWidth = 150 end
+	if EID.UserConfig.LineHeight > 9 then EID.UserConfig.LineHeight = 9 end
 end
 -- Overrides Enhanced Boss Bars  mod setting to better fit with HUD
 if HPBars and HPBars.UserConfig then
