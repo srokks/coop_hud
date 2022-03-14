@@ -415,7 +415,7 @@ if EID then
 end
 -- Overrides Enhanced Boss Bars  mod setting to better fit with HUD
 if HPBars and HPBars.UserConfig then
-	if HPBars.UserConfig.ScreenPadding < 24 then HPBars.UserConfig.ScreenPadding = 24 end
+	if HPBars.UserConfig.ScreenPadding <= 33 then HPBars.UserConfig.ScreenPadding = 33 end
 end
 -- Overrides MinimapAPI  mod setting to show on coopHUD
 if MinimapAPI then
