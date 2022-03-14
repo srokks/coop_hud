@@ -37,6 +37,7 @@ function coopHUD.initPlayer(player_no, ent_player)
 		-- Sub player
 		has_sub = false,-- Determines if player has sub as Forgotten/Soul
 		has_twin = false,-- Determines if player has twin as Jacob/Essau
+		is_ghost  = false,-- Determines if player is old style coop ghost
 		sub_heart_types = {},
 		twin = {},
 		-- Stats
@@ -62,7 +63,7 @@ function coopHUD.initPlayer(player_no, ent_player)
 		has_guppy = false,
 		---
 		sprites = {
-			player_head = coopHUD.getPlayerHeadSprite(temp_player:GetPlayerType()),
+			player_head = coopHUD.getPlayerHeadSprite(temp_player),
 			first_active = coopHUD.getActiveItemSprite(temp_player, 0),
 			first_active_charge = coopHUD.getChargeSprites(temp_player, 0),
 			first_active_bethany_charge = nil,
@@ -114,6 +115,10 @@ function coopHUD.initPlayer(player_no, ent_player)
 	if player_table.type == 20 and not ent_player then
 		-- In player is Essau skip it. Essau table is determined inside Jacob player as twin
 		player_table = nil
+	end
+	if temp_player.Variant == 1 then
+		player_table.extra_lives = 0
+		player_table.is_ghost = true
 	end
 	return player_table
 end

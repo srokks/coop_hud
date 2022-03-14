@@ -2,7 +2,7 @@
 function coopHUD.getActiveItemSprite(player, slot)
 	local overlay = ''
 	local active_item = player:GetActiveItem(slot)
-	if active_item == 0 then return false end
+	if active_item == 0 or player.Variant == 1 then return false end
 	local this_sprite = Sprite() -- replaced
 	this_sprite:Load(coopHUD.GLOBALS.item_anim_path, true)
 	local item_sprite = Isaac.GetItemConfig():GetCollectible(active_item).GfxFileName
@@ -132,7 +132,7 @@ function coopHUD.getChargeSprites(player, slot)
 		overlay = Sprite(),
 	}
 	local active_item = player:GetActiveItem(slot)
-	if active_item == 0 then return false end
+	if active_item == 0 or player.Variant == 1 then return false end
 	local item_charge = Isaac.GetItemConfig():GetCollectible(active_item).MaxCharges
 	if item_charge == 0 then return false end
 	-- Normal and battery charge
@@ -170,7 +170,7 @@ function coopHUD.getChargeSprites(player, slot)
 end
 function coopHUD.getTrinketSprite(player, trinket_pos)
 	local trinket_id = player:GetTrinket(trinket_pos)
-	if trinket_id == 0 then return false end
+	if trinket_id == 0 or player.Variant == 1 then return false end
 	local sprite = Sprite()
 	sprite:Load(coopHUD.GLOBALS.item_anim_path, true)
 	local item_sprite = Isaac.GetItemConfig():GetTrinket(trinket_id).GfxFileName
@@ -264,7 +264,9 @@ function coopHUD.getPoopSpriteTable(player)
 	end
 	return poop_table
 end
-function coopHUD.getPlayerHeadSprite(player_type)
+function coopHUD.getPlayerHeadSprite(player)
+	local player_type = player:GetPlayerType()
+	if player.Variant == 1 then return nil end -- prevents when old coop ghost
 	if player_type == 40 then player_type = 36 end
 	if 0 <= player_type and player_type <= 37 then
 		local sprite = Sprite()

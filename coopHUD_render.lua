@@ -578,11 +578,13 @@ function coopHUD.renderPlayer(player_no)
 	                                   mirrored, nil, true)
 	-- </Down line>
 	-- Renders stats
-	if coopHUD.options.stats.show  then
+	if coopHUD.options.stats.show then
 		if not (coopHUD.options.stats.hide_in_battle and coopHUD.signals.on_battle) then
-			coopHUD.renderStatsIcons(Vector(anchor_bot.X, 72), mirrored)
-			coopHUD.renderStats(coopHUD.players[player_no], Vector(anchor_bot.X, 72), mirrored)
-			coopHUD.renderStatChange(coopHUD.players[player_no], Vector(anchor_bot.X, 72), mirrored)
+			if not coopHUD.players[player_no].is_ghost then -- prevents from rendering if player is old style coop ghost
+				coopHUD.renderStatsIcons(Vector(anchor_bot.X, 72), mirrored)
+				coopHUD.renderStats(coopHUD.players[player_no], Vector(anchor_bot.X, 72), mirrored)
+				coopHUD.renderStatChange(coopHUD.players[player_no], Vector(anchor_bot.X, 72), mirrored)
+			end
 			if coopHUD.players[player_no].has_twin then
 				if #coopHUD.players == 0 then
 					-- just to double sure that will not mess up
@@ -814,9 +816,9 @@ function coopHUD.renderChances(pos)
 		coopHUD.HUD_table.stats.font:DrawString(text, anchor.X - 4, anchor.Y, font_color, 0, false)
 		-- Planetarium
 		if coopHUD.options.deals.show_planetarium then
-			coopHUD.HUD_table.deal_sprites.planetarium:Render(Vector(anchor.X + (text_len/2), anchor.Y))
+			coopHUD.HUD_table.deal_sprites.planetarium:Render(Vector(anchor.X + (text_len / 2), anchor.Y))
 			text = string.format('%.1f', coopHUD.HUD_table.chances.planetarium[1]) .. '%'
-			coopHUD.HUD_table.stats.font:DrawString(text, anchor.X + text_len , anchor.Y, font_color, 0, false)
+			coopHUD.HUD_table.stats.font:DrawString(text, anchor.X + text_len, anchor.Y, font_color, 0, false)
 		end
 		-- Devil
 		text = string.format('%.1f', coopHUD.HUD_table.chances.devil[1]) .. '%'
@@ -825,46 +827,49 @@ function coopHUD.renderChances(pos)
 		coopHUD.HUD_table.stats.font:DrawString(text, anchor.X - 14, anchor.Y, font_color, 2, false)
 	end
 	--
-	coopHUD.renderChancesDiff(Vector(anchor.X,anchor.Y-8))
+	coopHUD.renderChancesDiff(Vector(anchor.X, anchor.Y - 8))
 end
 --
 coopHUD.chances_counter = 0
 local chances_draw = false
 function coopHUD.renderChancesDiff(pos)
-	local dif_anchor = Vector(pos.X,pos.Y)
+	local dif_anchor = Vector(pos.X, pos.Y)
 	if coopHUD.HUD_table.chances.duality then
 		if coopHUD.HUD_table.chances.angel[2] ~= 0 then
 			local dif = coopHUD.getStatChangeAttrib(coopHUD.HUD_table.chances.angel[1] + coopHUD.HUD_table.chances.devil[1])
 			local dif_len = coopHUD.HUD_table.sprites.item_font:GetStringWidth(dif.str)
-			coopHUD.HUD_table.stats.font:DrawString(dif.str, dif_anchor.X - dif_len/2 + 8 , dif_anchor.Y, dif.color, 1, true)
+			coopHUD.HUD_table.stats.font:DrawString(dif.str, dif_anchor.X - dif_len / 2 + 8, dif_anchor.Y, dif.color, 1,
+			                                        true)
 			chances_draw = true
 		end
 		if coopHUD.options.deals.show_planetarium then
 			if coopHUD.HUD_table.chances.planetarium[2] ~= 0 then
 				local dif = coopHUD.getStatChangeAttrib(coopHUD.HUD_table.chances.planetarium[2])
 				local dif_len = coopHUD.HUD_table.sprites.item_font:GetStringWidth(dif.str)
-				coopHUD.HUD_table.stats.font:DrawString(dif.str, dif_anchor.X + dif_len - 8 , dif_anchor.Y, dif.color, 1, true)
+				coopHUD.HUD_table.stats.font:DrawString(dif.str, dif_anchor.X + dif_len - 8, dif_anchor.Y, dif.color, 1,
+				                                        true)
 				chances_draw = true
 			end
 		end
 	else
 		if coopHUD.HUD_table.chances.angel[2] ~= 0 then
-			local dif = coopHUD.getStatChangeAttrib(coopHUD.HUD_table.chances.angel[2],'%.1f')
-			coopHUD.HUD_table.stats.font:DrawString(dif.str, dif_anchor.X + 4 , dif_anchor.Y, dif.color, 1, true)
+			local dif = coopHUD.getStatChangeAttrib(coopHUD.HUD_table.chances.angel[2], '%.1f')
+			coopHUD.HUD_table.stats.font:DrawString(dif.str, dif_anchor.X + 4, dif_anchor.Y, dif.color, 1, true)
 			chances_draw = true
 		end
 		if coopHUD.options.deals.show_planetarium then
 			if coopHUD.HUD_table.chances.planetarium[2] ~= 0 then
-				local dif = coopHUD.getStatChangeAttrib(coopHUD.HUD_table.chances.planetarium[2],'%.1f')
+				local dif = coopHUD.getStatChangeAttrib(coopHUD.HUD_table.chances.planetarium[2], '%.1f')
 				local dif_len = coopHUD.HUD_table.sprites.item_font:GetStringWidth(coopHUD.HUD_table.chances.angel[1])
-				coopHUD.HUD_table.stats.font:DrawString(dif.str, dif_anchor.X + dif_len + 16, dif_anchor.Y, dif.color, 1, true)
+				coopHUD.HUD_table.stats.font:DrawString(dif.str, dif_anchor.X + dif_len + 16, dif_anchor.Y, dif.color,
+				                                        1, true)
 				chances_draw = true
 			end
 		end
 		if coopHUD.HUD_table.chances.devil[2] ~= 0 then
-			local dif = coopHUD.getStatChangeAttrib(coopHUD.HUD_table.chances.devil[2],'%.1f')
+			local dif = coopHUD.getStatChangeAttrib(coopHUD.HUD_table.chances.devil[2], '%.1f')
 			local dif_len = coopHUD.HUD_table.sprites.item_font:GetStringWidth(coopHUD.HUD_table.chances.devil[1])
-			coopHUD.HUD_table.stats.font:DrawString(dif.str, dif_anchor.X - dif_len   , dif_anchor.Y, dif.color, 1, true)
+			coopHUD.HUD_table.stats.font:DrawString(dif.str, dif_anchor.X - dif_len, dif_anchor.Y, dif.color, 1, true)
 			chances_draw = true
 		end
 	end
@@ -905,7 +910,7 @@ function coopHUD.renderItems()
 	text = string.format("%.2i", coopHUD.HUD_table.key_no)
 	coopHUD.HUD_table.sprites.item_font:DrawString(text, pos.X + 16, pos.Y, color, 0, false)
 	-- CHANCES RENDER
-	if coopHUD.options.deals.show  then
+	if coopHUD.options.deals.show then
 		if not (coopHUD.options.deals.hide_in_battle and coopHUD.signals.on_battle) then
 			coopHUD.renderChances(Vector(anchor.X, anchor.Y - 12))
 		end
@@ -1011,7 +1016,7 @@ coopHUD:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function(self)
 	coopHUD.HUD_table.streak = coopHUD.getStreakSprite() -- resets sprites
 	coopHUD.streak_main_line = Game():GetLevel():GetName()
 	coopHUD.streak_sec_line = Game():GetLevel():GetCurseName()
-	coopHUD.HUD_table.streak_sec_color = KColor(0,0,0,1)
+	coopHUD.HUD_table.streak_sec_color = KColor(0, 0, 0, 1)
 	if coopHUD.streak_sec_line == '' then coopHUD.streak_sec_line = nil end
 end)
 -- _____ RENDER
@@ -1219,9 +1224,9 @@ end
 ---Returns table of change int attribs. Defines color and prefix +/-
 ---@param stat string
 ---@return table {str = stat_dif_string, color = stat_dif_color}
-function coopHUD.getStatChangeAttrib(stat,format)
+function coopHUD.getStatChangeAttrib(stat, format)
 	local str_format = '%.2f'
-	if  format then
+	if format then
 		str_format = format
 	end
 	local dif_string = ''
