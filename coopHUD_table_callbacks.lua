@@ -2,6 +2,7 @@
 function coopHUD.on_start(_, cont)
 	coopHUD.players = {}
 	if cont then
+		local json = require("json")
 		-- Logic when game is continued
 		coopHUD.essau_no = 0 -- resets Essau counter before player init
 		if coopHUD.players[0] == nil then
@@ -21,9 +22,8 @@ function coopHUD.on_start(_, cont)
 		coopHUD.essau_no = 0 -- resets Essau counter before player init
 		coopHUD.signals.is_joining = false
 		--end
+		coopHUD.angel_seen = false -- resets angel seen state on restart
 	end
-	-- TODO: load angel_seen from save if game continued
-	coopHUD.angel_seen = nil -- resets angel seen state on restart
 	coopHUD.initHudTables()
 	coopHUD.updateItems()
 end

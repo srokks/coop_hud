@@ -46,6 +46,7 @@ coopHUD.GLOBALS = {
 }
 coopHUD.players = {}
 coopHUD.essau_no = 0
+coopHUD.angel_seen = false
 coopHUD.players_config = {
 	[0] = {
 		anchor_top = 'top_left',
