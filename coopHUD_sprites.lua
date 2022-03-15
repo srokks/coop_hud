@@ -672,14 +672,16 @@ function coopHUD.getMinimapOffset()
 		end
 		if MinimapAPI:GetConfig("Disable") or MinimapAPI.Disable then minimap_offset = Vector(screen_size.X - 4, 2) end
 		local r = MinimapAPI:GetCurrentRoom()
-		if MinimapAPI:GetConfig("HideInCombat") == 2 then
-			if not r:IsClear() and r:GetType() == RoomType.ROOM_BOSS then
-				minimap_offset = Vector(screen_size.X - 0, 2)
-			end
-		elseif MinimapAPI:GetConfig("HideInCombat") == 3 then
-			if r ~= nil then
-				if not r:IsClear() then
+		if r ~= nil then
+			if MinimapAPI:GetConfig("HideInCombat") == 2 then
+				if not r:IsClear() and r:GetType() == RoomType.ROOM_BOSS then
 					minimap_offset = Vector(screen_size.X - 0, 2)
+				end
+			elseif MinimapAPI:GetConfig("HideInCombat") == 3 then
+				if r ~= nil then
+					if not r:IsClear() then
+						minimap_offset = Vector(screen_size.X - 0, 2)
+					end
 				end
 			end
 		end
