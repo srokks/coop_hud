@@ -9,75 +9,75 @@ function coopHUD.initPlayer(player_no, ent_player)
 	local player_table = {}
 	player_table = {
 		--- INFO
-		type = temp_player:GetPlayerType(),
-		controller_index = temp_player.ControllerIndex,
-		game_index = player_no,
+		type                 = temp_player:GetPlayerType(),
+		controller_index     = temp_player.ControllerIndex,
+		game_index           = player_no,
 		-- ITEMS
 		-- Actives
-		first_active = temp_player:GetActiveItem(0),
-		first_active_charge = temp_player:GetActiveCharge(0),
-		second_active = temp_player:GetActiveItem(1),
+		first_active         = temp_player:GetActiveItem(0),
+		first_active_charge  = temp_player:GetActiveCharge(0),
+		second_active        = temp_player:GetActiveItem(1),
 		second_active_charge = temp_player:GetActiveCharge(1),
 		-- Trinkets
-		first_trinket = temp_player:GetTrinket(0),
-		second_trinket = temp_player:GetTrinket(1),
+		first_trinket        = temp_player:GetTrinket(0),
+		second_trinket       = temp_player:GetTrinket(1),
 		-- Pockets
-		first_pocket = coopHUD.getPocketID(temp_player, 0),
-		first_pocket_charge = temp_player:GetActiveCharge(2),
-		second_pocket = coopHUD.getPocketID(temp_player, 1),
-		third_pocket = coopHUD.getPocketID(temp_player, 2),
-		pocket_desc = coopHUD.getMainPocketDesc(temp_player),
+		first_pocket         = coopHUD.getPocketID(temp_player, 0),
+		first_pocket_charge  = temp_player:GetActiveCharge(2),
+		second_pocket        = coopHUD.getPocketID(temp_player, 1),
+		third_pocket         = coopHUD.getPocketID(temp_player, 2),
+		pocket_desc          = coopHUD.getMainPocketDesc(temp_player),
 		-- Collectibles
-		collectibles = {},
+		collectibles         = {},
 		-- Hearts
-		heart_types = coopHUD.getHeartTypeTable(temp_player),
-		total_hearts = math.ceil((temp_player:GetEffectiveMaxHearts() + temp_player:GetSoulHearts()) / 2),
-		max_health_cap = 12,
-		extra_lives = temp_player:GetExtraLives(),
+		heart_types          = coopHUD.getHeartTypeTable(temp_player),
+		total_hearts         = math.ceil((temp_player:GetEffectiveMaxHearts() + temp_player:GetSoulHearts()) / 2),
+		max_health_cap       = 12,
+		extra_lives          = temp_player:GetExtraLives(),
 		-- Sub player
-		has_sub = false,-- Determines if player has sub as Forgotten/Soul
-		has_twin = false,-- Determines if player has twin as Jacob/Essau
-		is_ghost  = false,-- Determines if player is old style coop ghost
-		sub_heart_types = {},
-		twin = {},
+		has_sub              = false, -- Determines if player has sub as Forgotten/Soul
+		has_twin             = false, -- Determines if player has twin as Jacob/Essau
+		is_ghost             = temp_player:IsCoopGhost(), -- Determines if player is old style coop ghost
+		sub_heart_types      = {},
+		twin                 = {},
 		-- Stats
 		-- holds player stats [1] - stat; [2] change
-		stats = {
-			speed = { temp_player.MoveSpeed,0 },
-			tears_delay = { 30 / (temp_player.MaxFireDelay + 1),0 },
-			damage = { temp_player.Damage,0 },
-			range = { (temp_player.TearRange / 40),0 },
-			shot_speed = { temp_player.ShotSpeed,0 },
-			luck = { temp_player.Luck,0 },
+		stats                = {
+			speed       = { temp_player.MoveSpeed, 0 },
+			tears_delay = { 30 / (temp_player.MaxFireDelay + 1), 0 },
+			damage      = { temp_player.Damage, 0 },
+			range       = { (temp_player.TearRange / 40), 0 },
+			shot_speed  = { temp_player.ShotSpeed, 0 },
+			luck        = { temp_player.Luck, 0 },
 		},
 		-- Charges
-		bethany_charge = nil,-- inits charge for Bethany
-		wisp_jar_use = 0,-- holds info about used jar of wisp
+		bethany_charge       = nil, -- inits charge for Bethany
+		wisp_jar_use         = 0, -- holds info about used jar of wisp
 		--- T ??? - specifics
-		poop_mana = 0,-- current mana (int)
-		max_poop_mana = 0,-- max cap of mana that player holds (int)
-		poops = nil,-- table of
-		hold_spell = nil,-- current spell stashed in hold (int)
+		poop_mana            = 0, -- current mana (int)
+		max_poop_mana        = 0, -- max cap of mana that player holds (int)
+		poops                = nil, -- table of
+		hold_spell           = nil, -- current spell stashed in hold (int)
 		---
-		has_birthright = false,
-		has_guppy = false,
+		has_birthright       = false,
+		has_guppy            = false,
 		---
-		sprites = {
-			player_head = coopHUD.getPlayerHeadSprite(temp_player),
-			first_active = coopHUD.getActiveItemSprite(temp_player, 0),
-			first_active_charge = coopHUD.getChargeSprites(temp_player, 0),
+		sprites              = {
+			player_head                 = coopHUD.getPlayerHeadSprite(temp_player),
+			first_active                = coopHUD.getActiveItemSprite(temp_player, 0),
+			first_active_charge         = coopHUD.getChargeSprites(temp_player, 0),
 			first_active_bethany_charge = nil,
-			second_active = coopHUD.getActiveItemSprite(temp_player, 1),
-			second_active_charge = coopHUD.getChargeSprites(temp_player, 1),
-			first_trinket = coopHUD.getTrinketSprite(temp_player, 0),
-			second_trinket = coopHUD.getTrinketSprite(temp_player, 1),
-			first_pocket = coopHUD.getPocketItemSprite(temp_player, 0),
-			first_pocket_charge = coopHUD.getChargeSprites(temp_player, 2),
-			second_pocket = coopHUD.getPocketItemSprite(temp_player, 1),
-			third_pocket = coopHUD.getPocketItemSprite(temp_player, 2),
-			hearts = coopHUD.getHeartSpriteTable(temp_player),
-			sub_hearts = nil,
-			poops = nil,
+			second_active               = coopHUD.getActiveItemSprite(temp_player, 1),
+			second_active_charge        = coopHUD.getChargeSprites(temp_player, 1),
+			first_trinket               = coopHUD.getTrinketSprite(temp_player, 0),
+			second_trinket              = coopHUD.getTrinketSprite(temp_player, 1),
+			first_pocket                = coopHUD.getPocketItemSprite(temp_player, 0),
+			first_pocket_charge         = coopHUD.getChargeSprites(temp_player, 2),
+			second_pocket               = coopHUD.getPocketItemSprite(temp_player, 1),
+			third_pocket                = coopHUD.getPocketItemSprite(temp_player, 2),
+			hearts                      = coopHUD.getHeartSpriteTable(temp_player),
+			sub_hearts                  = nil,
+			poops                       = nil,
 		},
 	}
 	-- ___ Bethany/T.Bethany check
@@ -263,7 +263,7 @@ end
 function coopHUD.updateCharge(player_no)
 	local temp_player = Isaac.GetPlayer(coopHUD.players[player_no].game_index)
 	coopHUD.players[player_no].sprites.first_active_charge = coopHUD.getChargeSprites(temp_player, 0)
-	if coopHUD.players[player_no].sprites.first_pocket_charge ~= nil then
+	if coopHUD.players[player_no].sprites.first_pocket_charge ~= nil and coopHUD.players[player_no].sprites.first_pocket_charge then
 		coopHUD.players[player_no].first_pocket_charge = temp_player:GetActiveCharge(2)
 		coopHUD.players[player_no].sprites.first_pocket_charge = coopHUD.getChargeSprites(temp_player, 2)
 		coopHUD.players[player_no].first_pocket = coopHUD.getPocketID(temp_player, 0)
@@ -355,9 +355,6 @@ function coopHUD.updateHearts(player_no)
 		end
 	end
 	--
-	if coopHUD.players[player_no].is_ghost ~= temp_player.GetPlayer(coopHUD.players[player_no].game_index):IsCoopGhost() then
-		coopHUD.players[player_no].is_ghost = temp_player.GetPlayer(coopHUD.players[player_no].game_index):IsCoopGhost()
-	end
 end
 function coopHUD.updateExtraLives(player_no)
 	local temp_player = Isaac.GetPlayer(coopHUD.players[player_no].game_index)
@@ -540,7 +537,7 @@ function coopHUD.updateItems()
 			coopHUD.HUD_table.key_no = player:GetNumKeys()
 		end
 		if coopHUD.HUD_table.sprites.key_sprite:GetFrame() ~= temp_sprites.key_sprite:GetFrame() then
-	end
+		end
 		coopHUD.HUD_table.sprites.key_sprite = temp_sprites.key_sprite
 	end
 end
