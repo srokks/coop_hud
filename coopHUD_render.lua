@@ -420,61 +420,82 @@ function coopHUD.renderTrinkets(player, pos, mirrored, scale, down_anchor)
 	end
 	return off
 end
-function coopHUD.renderBethanyCharge(player, pos, mirrored, scale, down_anchor)
+function coopHUD.renderExtraCharge(player, pos, mirrored, scale, down_anchor)
 	local final_offset = Vector(0, 0)
-	if player.bethany_charge ~= nil then
+	if player.bethany_charge ~= nil or player.poop_mana ~= nil then
 		local spr_pivot = Vector(0, 0)
 		local text_pivot = Vector(0, 0)
 		local f = Font()
-		local bethany_charge = string.format('x%d', player.bethany_charge)
+		local charge = ''
+		if player.bethany_charge ~= nil then
+			charge = player.bethany_charge
+		end
+		if player.poop_mana ~= nil then
+			charge = player.poop_mana
+		end
+		charge = string.format('x%d', charge)
 		-- Scale set
 		local sprite_scale = scale
 		if sprite_scale == nil then sprite_scale = Vector(1, 1) end
 		--
 		if mirrored then
-			spr_pivot.X = -8
-			text_pivot.X = -12 + string.len(bethany_charge) * -6
+			spr_pivot.X = -16
+			text_pivot.X = -12 + string.len(charge) * -6
 		else
-			spr_pivot.X = 4
+			spr_pivot.X = 0
 			text_pivot.X = 10
 		end
 		if down_anchor then
-			spr_pivot.Y = -4
+			spr_pivot.Y = -11
 			text_pivot.Y = -14
 			final_offset.Y = -8
 		else
-			spr_pivot.Y = 8
+			spr_pivot.Y = 2
 			text_pivot.Y = -2
 			final_offset.Y = 8
 		end
-		local beth_sprite = Sprite()
+		local sprite = Sprite()
+		sprite:Load(coopHUD.GLOBALS.hud_el_anim_path, true)
 		if player.type == PlayerType.PLAYER_BETHANY then
 			-- Sets sprite frame according to player type
-			beth_sprite = coopHUD.getHeartSprite('BlueHeartFull', 'None')
-		else
-			beth_sprite = coopHUD.getHeartSprite('RedHeartFull', 'None')
+			sprite:SetFrame('Idle', 12)
+		elseif player.type == PlayerType.PLAYER_BETHANY_B then
+			sprite:SetFrame('Idle', 15)
+		elseif player.type == PlayerType.PLAYER_BLUEBABY_B then
+			sprite:SetFrame('Idle', 16)
 		end
-		beth_sprite.Scale = Vector(0.7, 0.7)
-		beth_sprite:Render(Vector(pos.X + spr_pivot.X, pos.Y + spr_pivot.Y))
+		sprite.Scale = Vector(0.7, 0.7)
+		sprite:Render(Vector(pos.X + spr_pivot.X, pos.Y + spr_pivot.Y))
 		f:Load("font/luaminioutlined.fnt")
-		f:DrawString(bethany_charge, pos.X + text_pivot.X, pos.Y + text_pivot.Y, KColor(1, 1, 1, 1), 0, true)
+		f:DrawString(charge, pos.X + text_pivot.X, pos.Y + text_pivot.Y, KColor(1, 1, 1, 1), 0, true)
 	end
 	return final_offset
 end
 function coopHUD.renderBagOfCrafting(player, pos, mirrored)
 end
-function coopHUD.renderPoopSpells(player, pos, mirrored)
+function coopHUD.renderPoopSpells(player, pos, mirrored,scale,down_anchor)
 	local main_offset = Vector(0, 0)
 	local pos_multi = 0
 	local first_off = Vector(0, 0)
+	local offset = Vector(0, 0)
 	if mirrored then
 		pos_multi = -10
-		main_offset = Vector(-16, 16)
-		first_off = Vector(-16, 16)
+		main_offset.X = -16
+		first_off.X = -10
 	else
 		pos_multi = 10
-		main_offset = Vector(16, 16)
-		first_off = Vector(16, 16)
+		main_offset.X = 16
+		first_off.X = 12
+	end
+
+	if down_anchor then
+		main_offset.Y = -16
+		first_off.Y = -16
+		offset.Y = -24
+	else
+		main_offset.Y = 16
+		first_off.Y = 16
+		offset.Y = 24
 	end
 	if player.sprites.poops ~= nil then
 		for i = 0, PoopSpellType.SPELL_QUEUE_SIZE - 1, 1 do
@@ -483,7 +504,7 @@ function coopHUD.renderPoopSpells(player, pos, mirrored)
 			player.sprites.poops[i]:Render(temp_pos)
 		end
 	end
-
+	return offset
 end
 function coopHUD.renderPlayerInfo(player, pos, mirrored, scale, down_anchor)
 	local final_offset = Vector(0, 0)
@@ -545,9 +566,9 @@ function coopHUD.renderPlayer(player_no)
 	local pocket_off = Vector(0, 0)
 	local trinket_off = Vector(0, 0)
 	local extra_charge_off = Vector(0, 0)
+	local poop_spells_off = Vector(0, 0)
 	-- <First  top line render> --
 	if not coopHUD.players[player_no].is_ghost then
-
 		info_off = coopHUD.renderPlayerInfo(coopHUD.players[player_no],
 		                                    anchor_top, mirrored, Vector(0.9, 0.9), false)
 		active_off = coopHUD.renderActive(coopHUD.players[player_no],
@@ -562,10 +583,14 @@ function coopHUD.renderPlayer(player_no)
 		                                       mirrored, nil, false)
 		-- </First  top line render> --
 		-- <Second  top line render> --
-		extra_charge_off = coopHUD.renderBethanyCharge(coopHUD.players[player_no],
-		                                               Vector(anchor_top.X, anchor_top.Y +
-				                                               math.max(active_off.Y, hearts_off.Y, info_off.Y)),
-		                                               mirrored, nil, false)
+		extra_charge_off = coopHUD.renderExtraCharge(coopHUD.players[player_no],
+		                                             Vector(anchor_top.X + info_off.X + active_off.X + hearts_off.X,
+		                                                    anchor_top.Y + exl_liv_off.Y),
+		                                             mirrored, nil, false)
+		poop_spells_off = coopHUD.renderPoopSpells(coopHUD.players[player_no],
+		                                           Vector(anchor_top.X, anchor_top.Y +
+				                                           math.max(active_off.Y, hearts_off.Y, info_off.Y)),
+		                                           mirrored, nil, false)
 		--coopHUD.renderPoopSpells(coopHUD.players[player_no],
 		--                         Vector(anchor_top.X, anchor_top.Y + math.max(active_off.Y,hearts_off.Y)),
 		--                         mirrored)
@@ -582,7 +607,8 @@ function coopHUD.renderPlayer(player_no)
 		-- Renders stats
 		if coopHUD.options.stats.show then
 			if not (coopHUD.options.stats.hide_in_battle and coopHUD.signals.on_battle) then
-				if not coopHUD.players[player_no].is_ghost then -- prevents from rendering if player is old style coop ghost
+				if not coopHUD.players[player_no].is_ghost then
+					-- prevents from rendering if player is old style coop ghost
 					coopHUD.renderStatsIcons(Vector(anchor_bot.X, 72), mirrored)
 					coopHUD.renderStats(coopHUD.players[player_no], Vector(anchor_bot.X, 72), mirrored)
 					coopHUD.renderStatChange(coopHUD.players[player_no], Vector(anchor_bot.X, 72), mirrored)
@@ -653,6 +679,7 @@ function coopHUD.renderPlayerSmall(player_no)
 	local pocket_off = Vector(0, 0)
 	local trinket_off = Vector(0, 0)
 	local extra_charge_off = Vector(0, 0)
+	local poop_spell_off = Vector(0, 0)
 	-- <First  top line render> --
 	if not coopHUD.players[player_no].is_ghost then
 		info_off = coopHUD.renderPlayerInfo(coopHUD.players[player_no],
@@ -666,10 +693,10 @@ function coopHUD.renderPlayerSmall(player_no)
 		exl_liv_off = coopHUD.renderExtraLives(coopHUD.players[player_no],
 		                                       Vector(anchor.X + info_off.X + active_off.X + hearts_off.X, anchor.Y),
 		                                       mirrored, scale, down_anchor)
-		extra_charge_off = coopHUD.renderBethanyCharge(coopHUD.players[player_no],
-		                                               Vector(anchor.X + info_off.X + active_off.X + hearts_off.X,
-		                                                      anchor.Y + exl_liv_off.Y),
-		                                               mirrored, scale, down_anchor)
+		extra_charge_off = coopHUD.renderExtraCharge(coopHUD.players[player_no],
+		                                             Vector(anchor.X + info_off.X + active_off.X + hearts_off.X,
+		                                                    anchor.Y + exl_liv_off.Y),
+		                                             mirrored, scale, down_anchor)
 		-- <Second  top line render> --
 		local first_line_offset = Vector(0, 0)
 		if down_anchor then
@@ -677,11 +704,14 @@ function coopHUD.renderPlayerSmall(player_no)
 		else
 			first_line_offset.Y = math.max(info_off.Y, active_off.Y, hearts_off.Y, exl_liv_off.Y + extra_charge_off.Y)
 		end
+		poop_spell_off = coopHUD.renderPoopSpells(coopHUD.players[player_no],
+		                                          Vector(anchor.X, anchor.Y + first_line_offset.Y),
+		                                          mirrored, scale, down_anchor)
 		trinket_off = coopHUD.renderTrinkets(coopHUD.players[player_no],
 		                                     Vector(anchor.X, anchor.Y + first_line_offset.Y),
 		                                     mirrored, scale, down_anchor)
 		pocket_off = coopHUD.renderPockets(coopHUD.players[player_no],
-		                                   Vector(anchor.X + trinket_off.X, anchor.Y + first_line_offset.Y),
+		                                   Vector(anchor.X + trinket_off.X, anchor.Y + first_line_offset.Y+ poop_spell_off.Y),
 		                                   mirrored, scale, down_anchor)
 		local sec_line_offset = Vector(0, 0)
 		if down_anchor then
@@ -1071,7 +1101,7 @@ function coopHUD.render()
 			for i = 0, Game():GetNumPlayers() - 1 do
 				local player = Isaac.GetPlayer(i)
 				local player_index = coopHUD.getPlayerNumByControllerIndex(player.ControllerIndex)
-				local col = Color(1,1,1,1)
+				local col = Color(1, 1, 1, 1)
 				local f = coopHUD.HUD_table.sprites.item_font
 				if coopHUD.options.colorful_players then
 					col.R = coopHUD.colors[coopHUD.players_config.small[player_index].color].color.R
@@ -1081,13 +1111,13 @@ function coopHUD.render()
 				player:SetColor(col, 2, 100, false, false)
 				if coopHUD.options.show_player_names then
 					local position = Isaac.WorldToRenderPosition(player.Position)
-					local f_color = KColor(1,1,1,1)
+					local f_color = KColor(1, 1, 1, 1)
 					if coopHUD.options.color_player_names then
 						f_color.Red = col.R
 						f_color.Green = col.G
 						f_color.Blue = col.B
 					end
-					f:DrawString(coopHUD.players_config.small[player_index].name, position.X - 5, position.Y,f_color)
+					f:DrawString(coopHUD.players_config.small[player_index].name, position.X - 5, position.Y, f_color)
 				end
 			end
 		end
@@ -1269,6 +1299,6 @@ function coopHUD.getStatChangeAttrib(stat, format)
 	else
 		dif_color = KColor(1, 0, 0, 0.7)
 	end
-	return { str = dif_string,color = dif_color }
+	return { str = dif_string, color = dif_color }
 end
 -- _____

@@ -54,8 +54,8 @@ function coopHUD.initPlayer(player_no, ent_player)
 		bethany_charge       = nil, -- inits charge for Bethany
 		wisp_jar_use         = 0, -- holds info about used jar of wisp
 		--- T ??? - specifics
-		poop_mana            = 0, -- current mana (int)
-		max_poop_mana        = 0, -- max cap of mana that player holds (int)
+		poop_mana            = nil, -- current mana (int)
+		max_poop_mana        = nil, -- max cap of mana that player holds (int)
 		poops                = nil, -- table of
 		hold_spell           = nil, -- current spell stashed in hold (int)
 		---
@@ -393,7 +393,6 @@ function coopHUD.updateBethanyCharge(player_no)
 	end
 end
 function coopHUD.updatePoopMana(player_no)
-	local force_update = false
 	if coopHUD.players[player_no].type == PlayerType.PLAYER_XXX_B then
 		local player = Isaac.GetPlayer(player_no)
 		if coopHUD.players[player_no].poop_mana ~= player:GetPoopMana() then
@@ -606,6 +605,10 @@ function coopHUD.updateTables()
 	if coopHUD.signals.on_bethany_update then
 		coopHUD.updateBethanyCharge(coopHUD.signals.on_bethany_update)
 		coopHUD.signals.on_bethany_update = nil
+	end
+	if coopHUD.signals.on_poop_update then
+		coopHUD.updatePoopMana(coopHUD.signals.on_poop_update)
+		coopHUD.signals.on_poop_update = nil
 	end
 end
 coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.updateTables)
