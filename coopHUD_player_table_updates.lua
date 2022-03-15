@@ -206,8 +206,8 @@ function coopHUD.updatePockets(player_no)
 	end
 end
 function coopHUD.updateActives(player_no)
-	local temp_player = Isaac.GetPlayer(coopHUD.players[player_no].game_index)
 	if coopHUD.players[player_no] ~= nil then
+		local temp_player = Isaac.GetPlayer(coopHUD.players[player_no].game_index)
 		if coopHUD.players[player_no].first_active == 685 and coopHUD.jar_of_wisp_charge == nil then
 			coopHUD.jar_of_wisp_charge = 0  -- sets default val if item is picked first time
 		end
@@ -354,6 +354,10 @@ function coopHUD.updateHearts(player_no)
 			end
 		end
 	end
+	--
+	if coopHUD.players[player_no].is_ghost ~= temp_player.GetPlayer(coopHUD.players[player_no].game_index):IsCoopGhost() then
+		coopHUD.players[player_no].is_ghost = temp_player.GetPlayer(coopHUD.players[player_no].game_index):IsCoopGhost()
+	end
 end
 function coopHUD.updateExtraLives(player_no)
 	local temp_player = Isaac.GetPlayer(coopHUD.players[player_no].game_index)
@@ -498,6 +502,10 @@ function coopHUD.updateStats(player_no)
 		player.stats.luck[1] = temp_player.Luck -- changes main stat
 		player.stats.luck[2] = player.stats.luck[2] + dif -- increment change stat val with difference
 		coopHUD.stat_counter = 0 -- resets counter responsible for showing stat change
+	end
+	--
+	if coopHUD.players[player_no].is_ghost ~= temp_player:IsCoopGhost() then
+		coopHUD.players[player_no].is_ghost = temp_player:IsCoopGhost()
 	end
 end
 -- _____
