@@ -546,92 +546,95 @@ function coopHUD.renderPlayer(player_no)
 	local trinket_off = Vector(0, 0)
 	local extra_charge_off = Vector(0, 0)
 	-- <First  top line render> --
-	info_off = coopHUD.renderPlayerInfo(coopHUD.players[player_no],
-	                                    anchor_top, mirrored, Vector(0.9, 0.9), false)
-	active_off = coopHUD.renderActive(coopHUD.players[player_no],
-	                                  Vector(anchor_top.X + info_off.X, anchor_top.Y),
-	                                  mirrored, nil, false)
-	hearts_off = coopHUD.renderHearts(coopHUD.players[player_no],
-	                                  Vector(anchor_top.X + info_off.X + active_off.X, anchor_top.Y),
-	                                  mirrored, nil, false)
-	exl_liv_off = coopHUD.renderExtraLives(coopHUD.players[player_no],
-	                                       Vector(anchor_top.X + info_off.X + active_off.X + hearts_off.X,
-	                                              anchor_top.Y),
-	                                       mirrored, nil, false)
-	-- </First  top line render> --
-	-- <Second  top line render> --
-	extra_charge_off = coopHUD.renderBethanyCharge(coopHUD.players[player_no],
-	                                               Vector(anchor_top.X, anchor_top.Y +
-			                                               math.max(active_off.Y, hearts_off.Y, info_off.Y)),
-	                                               mirrored, nil, false)
-	--coopHUD.renderPoopSpells(coopHUD.players[player_no],
-	--                         Vector(anchor_top.X, anchor_top.Y + math.max(active_off.Y,hearts_off.Y)),
-	--                         mirrored)
-	--coopHUD.renderPoopSpells(coopHUD.players[player_no],Vector(pos.X,pos.Y + math.max(active_off.Y,hearts_off.Y)),mirrored)
-	-- </Second  top line render> --
-	-- <Down  line>
-	trinket_off = coopHUD.renderTrinkets(coopHUD.players[player_no],
-	                                     anchor_bot,
-	                                     mirrored, nil, true)
-	pocket_off = coopHUD.renderPockets(coopHUD.players[player_no],
-	                                   Vector(anchor_bot.X + trinket_off.X, anchor_bot.Y),
-	                                   mirrored, nil, true)
-	-- </Down line>
-	-- Renders stats
-	if coopHUD.options.stats.show then
-		if not (coopHUD.options.stats.hide_in_battle and coopHUD.signals.on_battle) then
-			if not coopHUD.players[player_no].is_ghost then -- prevents from rendering if player is old style coop ghost
-				coopHUD.renderStatsIcons(Vector(anchor_bot.X, 72), mirrored)
-				coopHUD.renderStats(coopHUD.players[player_no], Vector(anchor_bot.X, 72), mirrored)
-				coopHUD.renderStatChange(coopHUD.players[player_no], Vector(anchor_bot.X, 72), mirrored)
-			end
-			if coopHUD.players[player_no].has_twin then
-				if #coopHUD.players == 0 then
-					-- just to double sure that will not mess up
-					local twin_anchor_bot = coopHUD.anchors[coopHUD.players_config[player_no + 1].anchor_bot]
-					coopHUD.renderStatsIcons(Vector(twin_anchor_bot.X, 72), true)
-					coopHUD.renderStats(coopHUD.players[player_no].twin, Vector(twin_anchor_bot.X, 72), true)
-					coopHUD.renderStatChange(coopHUD.players[player_no].twin, Vector(twin_anchor_bot.X, 72), true)
+	if not coopHUD.players[player_no].is_ghost then
+
+		info_off = coopHUD.renderPlayerInfo(coopHUD.players[player_no],
+		                                    anchor_top, mirrored, Vector(0.9, 0.9), false)
+		active_off = coopHUD.renderActive(coopHUD.players[player_no],
+		                                  Vector(anchor_top.X + info_off.X, anchor_top.Y),
+		                                  mirrored, nil, false)
+		hearts_off = coopHUD.renderHearts(coopHUD.players[player_no],
+		                                  Vector(anchor_top.X + info_off.X + active_off.X, anchor_top.Y),
+		                                  mirrored, nil, false)
+		exl_liv_off = coopHUD.renderExtraLives(coopHUD.players[player_no],
+		                                       Vector(anchor_top.X + info_off.X + active_off.X + hearts_off.X,
+		                                              anchor_top.Y),
+		                                       mirrored, nil, false)
+		-- </First  top line render> --
+		-- <Second  top line render> --
+		extra_charge_off = coopHUD.renderBethanyCharge(coopHUD.players[player_no],
+		                                               Vector(anchor_top.X, anchor_top.Y +
+				                                               math.max(active_off.Y, hearts_off.Y, info_off.Y)),
+		                                               mirrored, nil, false)
+		--coopHUD.renderPoopSpells(coopHUD.players[player_no],
+		--                         Vector(anchor_top.X, anchor_top.Y + math.max(active_off.Y,hearts_off.Y)),
+		--                         mirrored)
+		--coopHUD.renderPoopSpells(coopHUD.players[player_no],Vector(pos.X,pos.Y + math.max(active_off.Y,hearts_off.Y)),mirrored)
+		-- </Second  top line render> --
+		-- <Down  line>
+		trinket_off = coopHUD.renderTrinkets(coopHUD.players[player_no],
+		                                     anchor_bot,
+		                                     mirrored, nil, true)
+		pocket_off = coopHUD.renderPockets(coopHUD.players[player_no],
+		                                   Vector(anchor_bot.X + trinket_off.X, anchor_bot.Y),
+		                                   mirrored, nil, true)
+		-- </Down line>
+		-- Renders stats
+		if coopHUD.options.stats.show then
+			if not (coopHUD.options.stats.hide_in_battle and coopHUD.signals.on_battle) then
+				if not coopHUD.players[player_no].is_ghost then -- prevents from rendering if player is old style coop ghost
+					coopHUD.renderStatsIcons(Vector(anchor_bot.X, 72), mirrored)
+					coopHUD.renderStats(coopHUD.players[player_no], Vector(anchor_bot.X, 72), mirrored)
+					coopHUD.renderStatChange(coopHUD.players[player_no], Vector(anchor_bot.X, 72), mirrored)
+				end
+				if coopHUD.players[player_no].has_twin then
+					if #coopHUD.players == 0 then
+						-- just to double sure that will not mess up
+						local twin_anchor_bot = coopHUD.anchors[coopHUD.players_config[player_no + 1].anchor_bot]
+						coopHUD.renderStatsIcons(Vector(twin_anchor_bot.X, 72), true)
+						coopHUD.renderStats(coopHUD.players[player_no].twin, Vector(twin_anchor_bot.X, 72), true)
+						coopHUD.renderStatChange(coopHUD.players[player_no].twin, Vector(twin_anchor_bot.X, 72), true)
+					end
 				end
 			end
 		end
-	end
-	-- Renders twin
-	if coopHUD.players[player_no].has_twin then
-		-- SPECIAL VERSION OF BIG HUD FOR SIGNLEPLAYER JACCOB/ESSAU
-		local twin_anchor_top = coopHUD.anchors[coopHUD.players_config[player_no + 1].anchor_top]
-		local twin_anchor_bot = coopHUD.anchors[coopHUD.players_config[player_no + 1].anchor_bot]
-		local twin_mirrored = true
-		-- <Locals inits>
-		local twin_info_off = Vector(0, 0)
-		local twin_active_off = Vector(0, 0)
-		local twin_hearts_off = Vector(0, 0)
-		local twin_exl_liv_off = Vector(0, 0)
-		local twin_pocket_off = Vector(0, 0)
-		local twin_trinket_off = Vector(0, 0)
-		local twin_extra_charge_off = Vector(0, 0)
-		-- <First  top twin line render> --
-		-- No essau head sprite
-		--[[        twin_info_off = coopHUD.renderPlayerInfo(coopHUD.players[player_no].twin,
-														 twin_anchor_top, mirrored, Vector(0.9,0.9), false)]]
-		twin_active_off = coopHUD.renderActive(coopHUD.players[player_no].twin,
-		                                       Vector(twin_anchor_top.X + twin_info_off.X, twin_anchor_top.Y),
-		                                       twin_mirrored, nil, false)
-		twin_hearts_off = coopHUD.renderHearts(coopHUD.players[player_no].twin,
-		                                       Vector(twin_anchor_top.X + twin_info_off.X + twin_active_off.X,
-		                                              twin_anchor_top.Y),
-		                                       twin_mirrored, nil, false)
-		twin_exl_liv_off = coopHUD.renderExtraLives(coopHUD.players[player_no].twin,
-		                                            Vector(twin_anchor_top.X + twin_info_off.X + twin_active_off.X + twin_hearts_off.X,
-		                                                   twin_anchor_top.Y),
-		                                            twin_mirrored, nil, false)
-		-- <First  top twin line render> --
-		twin_trinket_off = coopHUD.renderTrinkets(coopHUD.players[player_no].twin,
-		                                          twin_anchor_bot,
-		                                          twin_mirrored, nil, true)
-		twin_pocket_off = coopHUD.renderPockets(coopHUD.players[player_no].twin,
-		                                        Vector(twin_anchor_bot.X + twin_trinket_off.X, twin_anchor_bot.Y),
-		                                        twin_mirrored, nil, true)
+		-- Renders twin
+		if coopHUD.players[player_no].has_twin then
+			-- SPECIAL VERSION OF BIG HUD FOR SIGNLEPLAYER JACCOB/ESSAU
+			local twin_anchor_top = coopHUD.anchors[coopHUD.players_config[player_no + 1].anchor_top]
+			local twin_anchor_bot = coopHUD.anchors[coopHUD.players_config[player_no + 1].anchor_bot]
+			local twin_mirrored = true
+			-- <Locals inits>
+			local twin_info_off = Vector(0, 0)
+			local twin_active_off = Vector(0, 0)
+			local twin_hearts_off = Vector(0, 0)
+			local twin_exl_liv_off = Vector(0, 0)
+			local twin_pocket_off = Vector(0, 0)
+			local twin_trinket_off = Vector(0, 0)
+			local twin_extra_charge_off = Vector(0, 0)
+			-- <First  top twin line render> --
+			-- No essau head sprite
+			--[[        twin_info_off = coopHUD.renderPlayerInfo(coopHUD.players[player_no].twin,
+															 twin_anchor_top, mirrored, Vector(0.9,0.9), false)]]
+			twin_active_off = coopHUD.renderActive(coopHUD.players[player_no].twin,
+			                                       Vector(twin_anchor_top.X + twin_info_off.X, twin_anchor_top.Y),
+			                                       twin_mirrored, nil, false)
+			twin_hearts_off = coopHUD.renderHearts(coopHUD.players[player_no].twin,
+			                                       Vector(twin_anchor_top.X + twin_info_off.X + twin_active_off.X,
+			                                              twin_anchor_top.Y),
+			                                       twin_mirrored, nil, false)
+			twin_exl_liv_off = coopHUD.renderExtraLives(coopHUD.players[player_no].twin,
+			                                            Vector(twin_anchor_top.X + twin_info_off.X + twin_active_off.X + twin_hearts_off.X,
+			                                                   twin_anchor_top.Y),
+			                                            twin_mirrored, nil, false)
+			-- <First  top twin line render> --
+			twin_trinket_off = coopHUD.renderTrinkets(coopHUD.players[player_no].twin,
+			                                          twin_anchor_bot,
+			                                          twin_mirrored, nil, true)
+			twin_pocket_off = coopHUD.renderPockets(coopHUD.players[player_no].twin,
+			                                        Vector(twin_anchor_bot.X + twin_trinket_off.X, twin_anchor_bot.Y),
+			                                        twin_mirrored, nil, true)
+		end
 	end
 end
 function coopHUD.renderPlayerSmall(player_no)
@@ -651,134 +654,136 @@ function coopHUD.renderPlayerSmall(player_no)
 	local trinket_off = Vector(0, 0)
 	local extra_charge_off = Vector(0, 0)
 	-- <First  top line render> --
-	info_off = coopHUD.renderPlayerInfo(coopHUD.players[player_no],
-	                                    anchor, mirrored, Vector(0.7, 0.7), down_anchor)
-	active_off = coopHUD.renderActive(coopHUD.players[player_no],
-	                                  Vector(anchor.X + info_off.X, anchor.Y),
-	                                  mirrored, scale, down_anchor)
-	hearts_off = coopHUD.renderHearts(coopHUD.players[player_no],
-	                                  Vector(anchor.X + info_off.X + active_off.X, anchor.Y),
-	                                  mirrored, scale, down_anchor)
-	exl_liv_off = coopHUD.renderExtraLives(coopHUD.players[player_no],
-	                                       Vector(anchor.X + info_off.X + active_off.X + hearts_off.X, anchor.Y),
-	                                       mirrored, scale, down_anchor)
-	extra_charge_off = coopHUD.renderBethanyCharge(coopHUD.players[player_no],
-	                                               Vector(anchor.X + info_off.X + active_off.X + hearts_off.X,
-	                                                      anchor.Y + exl_liv_off.Y),
-	                                               mirrored, scale, down_anchor)
-	-- <Second  top line render> --
-	local first_line_offset = Vector(0, 0)
-	if down_anchor then
-		first_line_offset.Y = math.min(info_off.Y, active_off.Y, hearts_off.Y, (exl_liv_off.Y + extra_charge_off.Y))
-	else
-		first_line_offset.Y = math.max(info_off.Y, active_off.Y, hearts_off.Y, exl_liv_off.Y + extra_charge_off.Y)
-	end
-	trinket_off = coopHUD.renderTrinkets(coopHUD.players[player_no],
-	                                     Vector(anchor.X, anchor.Y + first_line_offset.Y),
-	                                     mirrored, scale, down_anchor)
-	pocket_off = coopHUD.renderPockets(coopHUD.players[player_no],
-	                                   Vector(anchor.X + trinket_off.X, anchor.Y + first_line_offset.Y),
-	                                   mirrored, scale, down_anchor)
-	local sec_line_offset = Vector(0, 0)
-	if down_anchor then
-		sec_line_offset.Y = math.min(trinket_off.Y, pocket_off.Y)
-	else
-		sec_line_offset.Y = math.max(trinket_off.Y, pocket_off.Y)
-	end
-	-- </Second  top line render> --
-	-- ___ TWIN RENDER
-	local twin_first_line_offset = Vector(0, 0)
-	local twin_sec_line_offset = Vector(0, 0)
-	if coopHUD.players[player_no].has_twin then
-		--
-		local twin_anchor = Vector(0, 0)
-		if down_anchor then
-			twin_anchor = Vector(anchor.X,
-			                     anchor.Y + first_line_offset.Y + sec_line_offset.Y)
-		else
-			twin_anchor = Vector(anchor.X,
-			                     anchor.Y + first_line_offset.Y + sec_line_offset.Y)
-		end
-		-- <Locals inits>
-		local twin_info_off = Vector(0, 0)
-		local twin_active_off = Vector(0, 0)
-		local twin_hearts_off = Vector(0, 0)
-		local twin_exl_liv_off = Vector(0, 0)
-		local twin_pocket_off = Vector(0, 0)
-		local twin_trinket_off = Vector(0, 0)
-		local twin_extra_charge_off = Vector(0, 0)
-		--
-		twin_active_off = coopHUD.renderActive(coopHUD.players[player_no].twin,
-		                                       Vector(twin_anchor.X, twin_anchor.Y),
+	if not coopHUD.players[player_no].is_ghost then
+		info_off = coopHUD.renderPlayerInfo(coopHUD.players[player_no],
+		                                    anchor, mirrored, Vector(0.7, 0.7), down_anchor)
+		active_off = coopHUD.renderActive(coopHUD.players[player_no],
+		                                  Vector(anchor.X + info_off.X, anchor.Y),
+		                                  mirrored, scale, down_anchor)
+		hearts_off = coopHUD.renderHearts(coopHUD.players[player_no],
+		                                  Vector(anchor.X + info_off.X + active_off.X, anchor.Y),
+		                                  mirrored, scale, down_anchor)
+		exl_liv_off = coopHUD.renderExtraLives(coopHUD.players[player_no],
+		                                       Vector(anchor.X + info_off.X + active_off.X + hearts_off.X, anchor.Y),
 		                                       mirrored, scale, down_anchor)
-		twin_hearts_off = coopHUD.renderHearts(coopHUD.players[player_no].twin,
-		                                       Vector(twin_anchor.X + twin_info_off.X + twin_active_off.X,
-		                                              twin_anchor.Y),
-		                                       mirrored, scale, down_anchor)
-		twin_exl_liv_off = coopHUD.renderExtraLives(coopHUD.players[player_no].twin,
-		                                            Vector(twin_anchor.X + twin_info_off.X + twin_active_off.X + twin_hearts_off.X,
-		                                                   twin_anchor.Y),
-		                                            mirrored, scale, down_anchor)
-		--
+		extra_charge_off = coopHUD.renderBethanyCharge(coopHUD.players[player_no],
+		                                               Vector(anchor.X + info_off.X + active_off.X + hearts_off.X,
+		                                                      anchor.Y + exl_liv_off.Y),
+		                                               mirrored, scale, down_anchor)
+		-- <Second  top line render> --
+		local first_line_offset = Vector(0, 0)
 		if down_anchor then
-			twin_first_line_offset.Y = math.min(twin_active_off.Y, twin_hearts_off.Y,
-			                                    (twin_exl_liv_off.Y + extra_charge_off.Y))
+			first_line_offset.Y = math.min(info_off.Y, active_off.Y, hearts_off.Y, (exl_liv_off.Y + extra_charge_off.Y))
 		else
-			twin_first_line_offset.Y = anchor.Y + math.max(twin_active_off.Y, twin_hearts_off.Y,
-			                                               (twin_exl_liv_off.Y + twin_extra_charge_off.Y))
+			first_line_offset.Y = math.max(info_off.Y, active_off.Y, hearts_off.Y, exl_liv_off.Y + extra_charge_off.Y)
 		end
-		twin_trinket_off = coopHUD.renderTrinkets(coopHUD.players[player_no].twin,
-		                                          Vector(twin_anchor.X, twin_anchor.Y + twin_first_line_offset.Y),
-		                                          mirrored, scale, down_anchor)
-		twin_pocket_off = coopHUD.renderPockets(coopHUD.players[player_no].twin,
-		                                        Vector(twin_anchor.X + twin_trinket_off.X,
-		                                               twin_anchor.Y + twin_first_line_offset.Y),
-		                                        mirrored, scale, down_anchor)
+		trinket_off = coopHUD.renderTrinkets(coopHUD.players[player_no],
+		                                     Vector(anchor.X, anchor.Y + first_line_offset.Y),
+		                                     mirrored, scale, down_anchor)
+		pocket_off = coopHUD.renderPockets(coopHUD.players[player_no],
+		                                   Vector(anchor.X + trinket_off.X, anchor.Y + first_line_offset.Y),
+		                                   mirrored, scale, down_anchor)
+		local sec_line_offset = Vector(0, 0)
 		if down_anchor then
-			twin_sec_line_offset.Y = math.min(twin_trinket_off.Y, twin_pocket_off.Y)
+			sec_line_offset.Y = math.min(trinket_off.Y, pocket_off.Y)
 		else
-			twin_sec_line_offset.Y = math.max(twin_trinket_off.Y, twin_pocket_off.Y)
+			sec_line_offset.Y = math.max(trinket_off.Y, pocket_off.Y)
 		end
-	end
-	-- ___ STATS RENDER
-	if player_no == 0 then
-		-- In case of first player overloaded_hud
-		if (anchor.Y + first_line_offset.Y + sec_line_offset.Y + twin_first_line_offset.Y + twin_sec_line_offset.Y) >= 92 then
-			coopHUD.signals.overloaded_hud = true -- emmit signal
-		else
-			coopHUD.signals.overloaded_hud = false  -- reset signal
-		end
-	end
-	-- __ Renders stats checks if hud not overloaded and not in battle
-	if coopHUD.options.stats.show and not coopHUD.signals.overloaded_hud and not coopHUD.signals.on_battle then
-		-- Renders stat icons
-		local stat_anchor = Vector(coopHUD.anchors[coopHUD.players_config.small[player_no].stat_anchor].X,
-		                           92)
-		if player_no == 0 or player_no == 1 then
-			coopHUD.renderStatsIcons(stat_anchor, mirrored)
-		else
-			stat_anchor.Y = stat_anchor.Y + 6
-		end
-		-- TWIN player render
-		local temp_player_table = coopHUD.players[player_no] -- temp for rendering stats
+		-- </Second  top line render> --
+		-- ___ TWIN RENDER
+		local twin_first_line_offset = Vector(0, 0)
+		local twin_sec_line_offset = Vector(0, 0)
 		if coopHUD.players[player_no].has_twin then
 			--
-			if #coopHUD.players <= 1 then
-				-- if only 2 players render on small hud renders essau stats under `
-				coopHUD.renderStats(coopHUD.players[player_no].twin,
-				                    Vector(stat_anchor.X + 4, stat_anchor.Y + 6),
-				                    mirrored)
-				coopHUD.renderStatChange(coopHUD.players[player_no].twin,
-				                         Vector(stat_anchor.X + 4, stat_anchor.Y + 6),
-				                         mirrored)
+			local twin_anchor = Vector(0, 0)
+			if down_anchor then
+				twin_anchor = Vector(anchor.X,
+				                     anchor.Y + first_line_offset.Y + sec_line_offset.Y)
 			else
-				if Input.IsActionPressed(ButtonAction.ACTION_DROP, coopHUD.players[player_no].controller_index) then
-					temp_player_table = coopHUD.players[player_no].twin -- passes twin stats to temp table
-				end
+				twin_anchor = Vector(anchor.X,
+				                     anchor.Y + first_line_offset.Y + sec_line_offset.Y)
+			end
+			-- <Locals inits>
+			local twin_info_off = Vector(0, 0)
+			local twin_active_off = Vector(0, 0)
+			local twin_hearts_off = Vector(0, 0)
+			local twin_exl_liv_off = Vector(0, 0)
+			local twin_pocket_off = Vector(0, 0)
+			local twin_trinket_off = Vector(0, 0)
+			local twin_extra_charge_off = Vector(0, 0)
+			--
+			twin_active_off = coopHUD.renderActive(coopHUD.players[player_no].twin,
+			                                       Vector(twin_anchor.X, twin_anchor.Y),
+			                                       mirrored, scale, down_anchor)
+			twin_hearts_off = coopHUD.renderHearts(coopHUD.players[player_no].twin,
+			                                       Vector(twin_anchor.X + twin_info_off.X + twin_active_off.X,
+			                                              twin_anchor.Y),
+			                                       mirrored, scale, down_anchor)
+			twin_exl_liv_off = coopHUD.renderExtraLives(coopHUD.players[player_no].twin,
+			                                            Vector(twin_anchor.X + twin_info_off.X + twin_active_off.X + twin_hearts_off.X,
+			                                                   twin_anchor.Y),
+			                                            mirrored, scale, down_anchor)
+			--
+			if down_anchor then
+				twin_first_line_offset.Y = math.min(twin_active_off.Y, twin_hearts_off.Y,
+				                                    (twin_exl_liv_off.Y + extra_charge_off.Y))
+			else
+				twin_first_line_offset.Y = anchor.Y + math.max(twin_active_off.Y, twin_hearts_off.Y,
+				                                               (twin_exl_liv_off.Y + twin_extra_charge_off.Y))
+			end
+			twin_trinket_off = coopHUD.renderTrinkets(coopHUD.players[player_no].twin,
+			                                          Vector(twin_anchor.X, twin_anchor.Y + twin_first_line_offset.Y),
+			                                          mirrored, scale, down_anchor)
+			twin_pocket_off = coopHUD.renderPockets(coopHUD.players[player_no].twin,
+			                                        Vector(twin_anchor.X + twin_trinket_off.X,
+			                                               twin_anchor.Y + twin_first_line_offset.Y),
+			                                        mirrored, scale, down_anchor)
+			if down_anchor then
+				twin_sec_line_offset.Y = math.min(twin_trinket_off.Y, twin_pocket_off.Y)
+			else
+				twin_sec_line_offset.Y = math.max(twin_trinket_off.Y, twin_pocket_off.Y)
 			end
 		end
-		coopHUD.renderStats(temp_player_table, stat_anchor, mirrored) -- renders stats
-		coopHUD.renderStatChange(temp_player_table, stat_anchor, mirrored) -- renders stats change
+		-- ___ STATS RENDER
+		if player_no == 0 then
+			-- In case of first player overloaded_hud
+			if (anchor.Y + first_line_offset.Y + sec_line_offset.Y + twin_first_line_offset.Y + twin_sec_line_offset.Y) >= 92 then
+				coopHUD.signals.overloaded_hud = true -- emmit signal
+			else
+				coopHUD.signals.overloaded_hud = false  -- reset signal
+			end
+		end
+		-- __ Renders stats checks if hud not overloaded and not in battle
+		if coopHUD.options.stats.show and not coopHUD.signals.overloaded_hud and not coopHUD.signals.on_battle then
+			-- Renders stat icons
+			local stat_anchor = Vector(coopHUD.anchors[coopHUD.players_config.small[player_no].stat_anchor].X,
+			                           92)
+			if player_no == 0 or player_no == 1 then
+				coopHUD.renderStatsIcons(stat_anchor, mirrored)
+			else
+				stat_anchor.Y = stat_anchor.Y + 6
+			end
+			-- TWIN player render
+			local temp_player_table = coopHUD.players[player_no] -- temp for rendering stats
+			if coopHUD.players[player_no].has_twin then
+				--
+				if #coopHUD.players <= 1 then
+					-- if only 2 players render on small hud renders essau stats under `
+					coopHUD.renderStats(coopHUD.players[player_no].twin,
+					                    Vector(stat_anchor.X + 4, stat_anchor.Y + 6),
+					                    mirrored)
+					coopHUD.renderStatChange(coopHUD.players[player_no].twin,
+					                         Vector(stat_anchor.X + 4, stat_anchor.Y + 6),
+					                         mirrored)
+				else
+					if Input.IsActionPressed(ButtonAction.ACTION_DROP, coopHUD.players[player_no].controller_index) then
+						temp_player_table = coopHUD.players[player_no].twin -- passes twin stats to temp table
+					end
+				end
+			end
+			coopHUD.renderStats(temp_player_table, stat_anchor, mirrored) -- renders stats
+			coopHUD.renderStatChange(temp_player_table, stat_anchor, mirrored) -- renders stats change
+		end
 	end
 end
 --
