@@ -1072,12 +1072,23 @@ function coopHUD.render()
 				local player = Isaac.GetPlayer(i)
 				local player_index = coopHUD.getPlayerNumByControllerIndex(player.ControllerIndex)
 				local col = Color(1,1,1,1)
+				local f = coopHUD.HUD_table.sprites.item_font
 				if coopHUD.options.colorful_players then
 					col.R = coopHUD.colors[coopHUD.players_config.small[player_index].color].color.R
 					col.G = coopHUD.colors[coopHUD.players_config.small[player_index].color].color.G
 					col.B = coopHUD.colors[coopHUD.players_config.small[player_index].color].color.B
 				end
-				Isaac.GetPlayer(i):SetColor(col, 2, 100, false, false)
+				player:SetColor(col, 2, 100, false, false)
+				if coopHUD.options.show_player_names then
+					local position = Isaac.WorldToRenderPosition(player.Position)
+					local f_color = KColor(1,1,1,1)
+					if coopHUD.options.color_player_names then
+						f_color.Red = col.R
+						f_color.Green = col.G
+						f_color.Blue = col.B
+					end
+					f:DrawString(coopHUD.players_config.small[player_index].name, position.X - 5, position.Y,f_color)
+				end
 			end
 		end
 		--

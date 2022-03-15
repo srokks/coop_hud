@@ -149,6 +149,30 @@ if ModConfigMenu then
 			return "Timer toggle. Accesible by pressing 'T' on keyboard"
 		end
 	})
+	-- Show player name
+	ModConfigMenu.AddSetting(mod_name, "General", {
+		Type = ModConfigMenu.OptionType.BOOLEAN,
+		CurrentSetting = function()
+			return coopHUD.options.show_player_names
+		end,
+		Default = coopHUD.options.show_player_names,
+
+		Display = function()
+			local onOff = "Off"
+			if coopHUD.options.show_player_names then
+				onOff = "On"
+			end
+
+			return "Show player name: " .. onOff
+		end,
+		OnChange = function(currentBool)
+			coopHUD.options.show_player_names = currentBool
+			coopHUD.save_options()
+		end,
+		Info = function()
+			return "Show  name under player"
+		end
+	})
 	-- __ Stats
 	ModConfigMenu.AddTitle(mod_name, 'Stats', 'General')
 	-- stats.show
@@ -341,6 +365,30 @@ if ModConfigMenu then
 		end,
 		Info = function()
 			return "Colors players sprites"
+		end
+	})
+	-- colorful names
+	ModConfigMenu.AddSetting(mod_name, "Colors", {
+		Type = ModConfigMenu.OptionType.BOOLEAN,
+		CurrentSetting = function()
+			return coopHUD.options.color_player_names
+		end,
+		Default = coopHUD.options.color_player_names,
+
+		Display = function()
+			local onOff = "Off"
+			if coopHUD.options.color_player_names then
+				onOff = "On"
+			end
+
+			return "Colorful players names: " .. onOff
+		end,
+		OnChange = function(currentBool)
+			coopHUD.options.color_player_names = currentBool
+			coopHUD.save_options()
+		end,
+		Info = function()
+			return "Colors players names"
 		end
 	})
 	-- player config - players colors

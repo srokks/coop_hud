@@ -1,4 +1,4 @@
-coopHUD.VERSION = '0.5.2-PROD' --DEBUG: test name for in game recognition
+coopHUD.VERSION = '0.5.4-PROD' --DEBUG: test name for in game recognition
 coopHUD.showExtraInfo = false
 coopHUD.HUD_table = {}
 coopHUD.signals = {
@@ -21,6 +21,8 @@ coopHUD.options = {
 	force_small_hud = false,
 	timer_always_on = false,
 	colorful_players = true,
+	show_player_names = true,
+	color_player_names = true,
 	stats = {
 		show = true,
 		hide_in_battle = true,
