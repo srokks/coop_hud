@@ -11,14 +11,14 @@
 		[h3] [b] MOD IS STILL DEVELOPED PLEASE SUBMIT ANY WEIR BEHAVIOUR ( weird positions/ console errors/ log files)
 		in Bugs topic[/b] [/h3]
 		[h3] [b] MOD might get laggy when too much on screen. 4 normal players (exl. Jacob / Essau) works fine on my old
-		laptop. Still working on optimalization [/b] [/h3]
+		laptop. Still working on optimization [/b] [/h3]
 		[h2] *NEW* [/h2]
+		[h3] v.0.5.2 [/h3]
 		[list]
-			[*] Angel/Devil/Planetarium chances
-			[*] Centered items 
-			[*] Fixed prompts colors
-			[*] Fixed Golden bomb/key and Giga bomb integration
-			[*] Fixed pocket item desc generation
+			[*] Colorful players and player names
+			[*] Fixed joining logic
+			[*] Fixed coop ghost integration
+			[*] Small fixes
 		[/list]
 		[h2] What this mod do[/h2]
 			[list]
@@ -34,6 +34,7 @@
 					[*] Highlight on map button
 					[*] Stats colors - can turn on/off
 					[*] Hide stats on battle - can turn on/off
+					[*] Angel/Devil/Planetarium chances
 					[*] Integration with Jacob / Essau - to show Essau stats while more than 2 player press map button *
 				[/list]
 		** While too much stuff on hud - all trinkets/pockets activeitems while playing Jacob and Essau
@@ -73,16 +74,16 @@
 				[*] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=836319872] [AB+|Rep] External item descriptions[/url] from [url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge[/url]
 For right now you must set EID position manually
 				[*] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2376005362] Encyclopedia - An In-Game Wiki[/url] from [url=https://steamcommunity.com/id/AgentCucco/myworkshopfiles/?appid=250900] AgentCucco[/url]
-				
+
 			[/list]
 		[h2] Thanks to![/h2]
 			[list]
 				[*] [url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge[/url] - for TBoI API and his mods which helped in developing this mod
 				[*] [url=https://steamcommunity.com/id/pedroff_1/myworkshopfiles/?appid=250900] pedroff_1[/url] for  [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2577953432] !!MC_POST_ITEM_PICKUP callback[/url]
 			[/list]
-	
+
 	</description>
-	<version>0.5</version>
+	<version>0.5.2</version>
 	<visibility>Public</visibility>
 	<tag id="Lua"/>
 	<tag id="Tweaks"/>
