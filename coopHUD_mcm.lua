@@ -1,6 +1,7 @@
 local json = require("json")
 if coopHUD:HasData() then
 	local save = json.decode(coopHUD:LoadData())
+	-- TODO: current hold load if in game
 	if coopHUD.VERSION == save.version then
 		coopHUD.players_config[0] = save.players_config['0']
 		coopHUD.players_config[1] = save.players_config['1']

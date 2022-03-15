@@ -55,14 +55,15 @@ coopHUD:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, coopHUD.on_player_init)
 function coopHUD.on_activate(_, type, RNG, EntityPlayer, UseFlags, used_slot, CustomVarData)
 	local player_index = coopHUD.getPlayerNumByControllerIndex(EntityPlayer.ControllerIndex)
 	-- Hold on use change sprite
-	if type == CollectibleType.COLLECTIBLE_HOLD and coopHUD.players[player_index].poop_mana > 0 then
+	if type == CollectibleType.COLLECTIBLE_HOLD and coopHUD.players[player_index].poop_mana >= 0 then
 		if coopHUD.players[player_index].hold_spell == nil then
-			coopHUD.players[player_index].hold_spell = EntityPlayer:GetPoopSpell(0)
+			coopHUD.players[player_index].hold_spell = coopHUD.players[player_index].poops[0]
+			if coopHUD.players[player_index].poop_mana == 0 then coopHUD.players[player_index].hold_spell = nil end
 			coopHUD.updatePockets(player_index)
 		else
 			coopHUD.players[player_index].hold_spell = nil
 		end
-		coopHUD.updatePoopMana(player_index)
+		coopHUD.signals.on_poop_update = player_index
 	end
 	-- Check if used Smelter
 	if type == CollectibleType.COLLECTIBLE_SMELTER then
@@ -100,6 +101,8 @@ function coopHUD.on_item_pickup(_, ent_player, ent_collider, Low)
 				coopHUD.signals.on_pockets_update = player_index -- triggers pocket update by signal
 			elseif ent_collider.Variant == PickupVariant.PICKUP_PILL then
 				coopHUD.signals.on_pockets_update = player_index -- triggers pocket update by signal
+			elseif ent_collider.Variant == PickupVariant.PICKUP_POOP then
+				coopHUD.signals.on_poop_update = player_index
 			end
 		end
 		if ent_collider.Type == EntityType.ENTITY_SLOT then
@@ -203,6 +206,9 @@ function coopHUD.on_input(_, ent, hook, btn)
 		if Input.IsActionPressed(ButtonAction.ACTION_DROP, player.ControllerIndex) then
 			coopHUD.updatePockets(player_index)
 			coopHUD.updateTrinkets(player_index)
+		end
+		if Input.IsActionTriggered(ButtonAction.ACTION_BOMB, player.ControllerIndex) then
+			coopHUD.updateItems()
 		end
 		mapPressed = mapPressed or Input.IsActionPressed(ButtonAction.ACTION_MAP, player.ControllerIndex)
 	end
