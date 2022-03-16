@@ -1072,13 +1072,10 @@ function coopHUD.renderCollectibles(player_no)
 		item_off.X = 18
 		my_stuff_offset = Vector(172 + 60, 26)
 	end
+	pos.Y = 20
 	--
-	if coopHUD.HUD_table.sprites.my_stuff_sprite:GetAnimation() ~= 'Appear' then
-		coopHUD.HUD_table.sprites.my_stuff_sprite:SetFrame('Appear', 0)
-		coopHUD.HUD_table.sprites.my_stuff_sprite:Play('Appear', true)
-	end
-	coopHUD.HUD_table.sprites.my_stuff_sprite:Update()
-	coopHUD.HUD_table.sprites.my_stuff_sprite.Color = Color(1, 0.39, 0.28)
+	coopHUD.HUD_table.sprites.my_stuff_sprite:SetFrame('Idle', 0)
+	coopHUD.HUD_table.sprites.my_stuff_sprite.Color = color
 	coopHUD.HUD_table.sprites.my_stuff_sprite:RenderLayer(3,
 	                                                      Vector(pos.X + my_stuff_offset.X, pos.Y + my_stuff_offset.Y))
 	-- RENDERS ITEMS
