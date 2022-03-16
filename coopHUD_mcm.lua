@@ -405,6 +405,30 @@ if ModConfigMenu then
 			return "Colors players names"
 		end
 	})
+	-- colorful stuff page
+	ModConfigMenu.AddSetting(mod_name, "Colors", {
+		Type = ModConfigMenu.OptionType.BOOLEAN,
+		CurrentSetting = function()
+			return coopHUD.options.colorful_stuff_page
+		end,
+		Default = coopHUD.options.colorful_stuff_page,
+
+		Display = function()
+			local onOff = "Off"
+			if coopHUD.options.colorful_stuff_page then
+				onOff = "On"
+			end
+
+			return "Colorful stuff page: " .. onOff
+		end,
+		OnChange = function(currentBool)
+			coopHUD.options.colorful_stuff_page = currentBool
+			coopHUD.save_options()
+		end,
+		Info = function()
+			return "Colors stuff page"
+		end
+	})
 	-- player config - players colors
 	ModConfigMenu.AddTitle(mod_name, "Colors", 'Player colors')
 	for i = 0, 3 do

@@ -22,6 +22,7 @@ coopHUD.options = {
 	force_small_hud = false,
 	timer_always_on = false,
 	colorful_players = true,
+	colorful_stuff_page = true,
 	show_player_names = true,
 	color_player_names = true,
 	stats = {
