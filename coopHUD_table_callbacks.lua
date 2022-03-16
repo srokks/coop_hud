@@ -218,16 +218,20 @@ function coopHUD.on_input(_, ent, hook, btn)
 		if Input.IsActionTriggered(ButtonAction.ACTION_BOMB, player.ControllerIndex) then
 			coopHUD.updateItems()
 		end
-		mapPressed = mapPressed or Input.IsActionPressed(ButtonAction.ACTION_MAP, player.ControllerIndex)
-	end
-	if mapPressed then
-		btn_held = btn_held + 1
-		if btn_held > 1200 then
-			coopHUD.signals.map = true
+		if Input.IsActionPressed(ButtonAction.ACTION_MAP, player.ControllerIndex) then
+			mapPressed = player_index
 		end
-	else
-		coopHUD.signals.map = false
-		btn_held = 0
+	end
+	if not coopHUD.signals.on_battle then
+		if mapPressed then
+			btn_held = btn_held + 1
+			if btn_held > 1200 then
+				coopHUD.signals.map = mapPressed
+			end
+		else
+			coopHUD.signals.map = false
+			btn_held = 0
+		end
 	end
 end
 coopHUD:AddCallback(ModCallbacks.MC_INPUT_ACTION, coopHUD.on_input)

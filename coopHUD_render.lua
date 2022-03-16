@@ -975,6 +975,7 @@ function coopHUD.renderItems()
 			coopHUD.HUD_table.streak_sec_color = KColor(0, 0, 0, 1, 0, 0, 0)
 			coopHUD.HUD_table.floor_info:Play("Text", true)
 		end
+		coopHUD.renderCollectibles(coopHUD.signals.map)
 	end
 	-- Renders prompt on map button pressed
 	coopHUD.renderStreak(coopHUD.HUD_table.floor_info, level_name, curse_name,
