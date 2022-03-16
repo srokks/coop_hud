@@ -6,7 +6,6 @@ function coopHUD.on_start(_, cont)
 		-- Logic when game is continued
 		coopHUD.essau_no = 0 -- resets Essau counter before player init
 		if coopHUD.players[0] == nil then
-			coopHUD.signals.is_joining = true
 			coopHUD.on_player_init()
 		end
 		--
@@ -14,6 +13,16 @@ function coopHUD.on_start(_, cont)
 			local save = json.decode(coopHUD:LoadData())
 			if coopHUD.VERSION == save.version then
 				coopHUD.angel_seen = save.run.angel_seen
+				-- Loads player data from save
+				for player_no,player_save in pairs(save.run.players) do
+					-- load collectibles
+					for _,item_id in pairs(player_save.collectibles) do
+						local item = Isaac.GetItemConfig():GetCollectible(item_id)
+						coopHUD.add_collectible(tonumber(player_no),item)
+					end
+					--
+				end
+				--
 			end
 		end
 	else
