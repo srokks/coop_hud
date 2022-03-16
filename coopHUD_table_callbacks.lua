@@ -282,6 +282,7 @@ function PostItemPickup (_, player)
 		elseif item_queue.Item.Type == ItemType.ITEM_TRINKET then
 			coopHUD.updateTrinkets(player_index)
 		else
+			coopHUD.add_collectible(player_index,item_queue.Item)
 		end
 		coopHUD.updateExtraLives(player_index) -- triggers extra lives update
 		coopHUD.updateItems() -- triggers update items when picked up item - Shops
