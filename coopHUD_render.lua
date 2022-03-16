@@ -1055,14 +1055,20 @@ coopHUD:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function(self)
 	if coopHUD.streak_sec_line == '' then coopHUD.streak_sec_line = nil end
 end)
 -- _____ RENDER PLAYER STUFF
-function coopHUD.renderCollectibles(player_no, pos, mirrored)
+function coopHUD.renderCollectibles(player_no)
+	local pos = Vector(0,0)
+	local mirrored = coopHUD.players_config.small[player_no].mirrored
 	local collectibles = coopHUD.players[player_no].collectibles
+	local color = coopHUD.colors[coopHUD.players_config.small[player_no].color].color
 	local my_stuff_offset = Vector(0, 0)
 	local item_off = Vector(0, 32)
 	if mirrored then
+		pos = coopHUD.anchors.top_right
 		item_off.X = -104
 		my_stuff_offset = Vector(110, 26)
 	else
+		pos = coopHUD.anchors.top_left
+		pos.X = 64
 		item_off.X = 18
 		my_stuff_offset = Vector(172 + 60, 26)
 	end
