@@ -324,6 +324,17 @@ function coopHUD.getHUDSprites()
 	         ['key_sprite']           = key_sprite,
 	         ['my_stuff_sprite']      = my_stuff_sprite }
 end
+function coopHUD.getItemSprite(item_id)
+	local sprite = Sprite()
+	local item_sprite = Isaac.GetItemConfig():GetCollectible(item_id).GfxFileName
+	sprite:Load(coopHUD.GLOBALS.item_anim_path, false)
+	sprite:ReplaceSpritesheet(0, item_sprite)
+	sprite:ReplaceSpritesheet(1, item_sprite)
+	sprite:ReplaceSpritesheet(2, item_sprite)
+	sprite:LoadGraphics()
+	sprite:SetFrame('Idle', 0)
+	return sprite
+end
 function coopHUD.getStreakSprite()
 	sprite = Sprite()
 	sprite:Load(coopHUD.GLOBALS.streak_anim_path, true)
