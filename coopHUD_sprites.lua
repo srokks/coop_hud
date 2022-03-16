@@ -311,12 +311,18 @@ function coopHUD.getHUDSprites()
 	key_sprite:Load(coopHUD.GLOBALS.hud_el_anim_path, true)
 	key_sprite:SetFrame('Idle', 1)
 	if player and player:HasGoldenKey() then key_sprite:SetFrame('Idle', 3) end
-	return { ['item_font'] = item_font,
-	         ['timer_font'] = timer_font,
+	-- my_stuff_sprite
+	local my_stuff_sprite = Sprite()
+	my_stuff_sprite:Load(coopHUD.GLOBALS.pause_screen_anim_path,true)
+	my_stuff_sprite:SetFrame('Idle',0)
+	--
+	return { ['item_font']            = item_font,
+	         ['timer_font']           = timer_font,
 	         ['streak_sec_line_font'] = streak_sec_line_font,
-	         ['coin_sprite'] = coin_sprite,
-	         ['bomb_sprite'] = bomb_sprite,
-	         ['key_sprite'] = key_sprite }
+	         ['coin_sprite']          = coin_sprite,
+	         ['bomb_sprite']          = bomb_sprite,
+	         ['key_sprite']           = key_sprite,
+	         ['my_stuff_sprite']      = my_stuff_sprite }
 end
 function coopHUD.getStreakSprite()
 	sprite = Sprite()
