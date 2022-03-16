@@ -1064,19 +1064,23 @@ function coopHUD.renderCollectibles(player_no)
 	local my_stuff_offset = Vector(0, 0)
 	local item_off = Vector(0, 32)
 	if mirrored then
-		pos = coopHUD.anchors.top_right
+		pos = Vector(coopHUD.anchors.top_right.X,coopHUD.anchors.top_right.Y)
 		item_off.X = -104
 		my_stuff_offset = Vector(110, 26)
 	else
-		pos = coopHUD.anchors.top_left
-		pos.X = 64
+		pos = Vector(coopHUD.anchors.top_left.X,coopHUD.anchors.top_left.Y)
+		pos.X = 48
 		item_off.X = 18
 		my_stuff_offset = Vector(172 + 60, 26)
 	end
-	pos.Y = 20
+	pos.Y = 64
 	--
 	coopHUD.HUD_table.sprites.my_stuff_sprite:SetFrame('Idle', 0)
-	coopHUD.HUD_table.sprites.my_stuff_sprite.Color = color
+	if coopHUD.options.colorful_stuff_page then
+		coopHUD.HUD_table.sprites.my_stuff_sprite.Color = color
+	else
+		coopHUD.HUD_table.sprites.my_stuff_sprite.Color = Color(1,1,1,1)
+	end
 	coopHUD.HUD_table.sprites.my_stuff_sprite:RenderLayer(3,
 	                                                      Vector(pos.X + my_stuff_offset.X, pos.Y + my_stuff_offset.Y))
 	-- RENDERS ITEMS
