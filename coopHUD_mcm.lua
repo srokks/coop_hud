@@ -374,6 +374,7 @@ if ModConfigMenu then
 			return "Colorful players: " .. onOff
 		end,
 		OnChange = function(currentBool)
+			if not currentBool then coopHUD.options.color_player_names = false end
 			coopHUD.options.colorful_players = currentBool
 			coopHUD.save_options()
 		end,
