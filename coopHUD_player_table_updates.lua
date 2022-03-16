@@ -504,6 +504,9 @@ function coopHUD.updateStats(player_no)
 		coopHUD.players[player_no].is_ghost = temp_player:IsCoopGhost()
 	end
 end
+function coopHUD.add_collectible(player_index, item)
+	table.insert(coopHUD.players[player_index].collectibles, { id = item.ID, sprite = coopHUD.getItemSprite(item.ID) })
+end
 -- _____
 
 -- HUD_table
