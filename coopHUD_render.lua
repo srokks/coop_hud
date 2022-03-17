@@ -352,6 +352,9 @@ function coopHUD.renderPockets(player, pos, mirrored, scale, down_anchor)
 			--
 		end
 		player.sprites.first_pocket:Render(temp_pos)
+		if player.first_pocket[1] == CollectibleType.COLLECTIBLE_BAG_OF_CRAFTING then
+			coopHUD.renderBagOfCrafting(player,Vector(temp_pos.X+24,temp_pos.Y-16),mirrored)
+		end
 		-- Description
 		if player.pocket_desc then
 			local text = player.pocket_desc.name
@@ -480,6 +483,7 @@ function coopHUD.renderBagOfCrafting(player, pos, mirrored)
 		else
 			temp_pos = Vector(pos.X+4,pos.Y+4)
 		end
+		-- render bag items
 		local col = 0
 		local row = 0
 		for i=1,8 do
@@ -494,6 +498,10 @@ function coopHUD.renderBagOfCrafting(player, pos, mirrored)
 			end
 			sprite:Render(Vector(temp_pos.X + 10 * (col-1),temp_pos.Y + 10 * row))
 		end
+		-- render result box
+		local result_sprite = coopHUD.getCraftingItemSprite(0)
+		result_sprite:SetFrame('Result',0)
+		result_sprite:Render(Vector(pos.X+64,pos.Y+10))
 	end
 end
 function coopHUD.renderPoopSpells(player, pos, mirrored,scale,down_anchor)
