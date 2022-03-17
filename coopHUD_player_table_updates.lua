@@ -630,6 +630,7 @@ function coopHUD.updateTables()
 	end
 	if coopHUD.signals.on_drop_triggered then
 		coopHUD.shiftBag(coopHUD.signals.on_drop_triggered)
+		coopHUD.updatePockets(coopHUD.signals.on_drop_triggered)
 		coopHUD.signals.on_drop_triggered = nil
 	end
 end
