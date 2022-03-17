@@ -13,6 +13,7 @@ coopHUD.signals = {
 	on_poop_update = nil,--nil or emit player num
 	overloaded_hud = nil,
 	on_battle = false,
+	on_drop_triggered = nil,--nil or emit player num
 }
 coopHUD.players = {}
 coopHUD.options = {

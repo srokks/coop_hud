@@ -618,5 +618,9 @@ function coopHUD.updateTables()
 		coopHUD.updatePoopMana(coopHUD.signals.on_poop_update)
 		coopHUD.signals.on_poop_update = nil
 	end
+	if coopHUD.signals.on_drop_triggered then
+		coopHUD.shiftBag(coopHUD.signals.on_drop_triggered)
+		coopHUD.signals.on_drop_triggered = nil
+	end
 end
 coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.updateTables)
