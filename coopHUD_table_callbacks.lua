@@ -205,15 +205,7 @@ function coopHUD.on_input(_, ent, hook, btn)
 		local player = Isaac.GetPlayer(i)
 		local player_index = coopHUD.getPlayerNumByControllerIndex(player.ControllerIndex)
 		if Input.IsActionTriggered(ButtonAction.ACTION_DROP, player.ControllerIndex) then
-			coopHUD.updateHearts(player_index)
-			coopHUD.updatePlayerType(player_index)
-			coopHUD.updateActives(player_index)
-			coopHUD.updatePockets(player_index)
-			coopHUD.updateTrinkets(player_index)
-		end
-		if Input.IsActionPressed(ButtonAction.ACTION_DROP, player.ControllerIndex) then
-			coopHUD.updatePockets(player_index)
-			coopHUD.updateTrinkets(player_index)
+			coopHUD.signals.on_drop_triggered = player_index
 		end
 		if Input.IsActionTriggered(ButtonAction.ACTION_BOMB, player.ControllerIndex) then
 			coopHUD.updateItems()
