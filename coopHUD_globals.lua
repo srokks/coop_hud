@@ -49,6 +49,7 @@ coopHUD.GLOBALS = {
 	streak_anim_path = "gfx/ui/ui_streak.anm2",
 	hud_stats_anim_path = "gfx/ui/hudstats2.anm2",
 	pause_screen_anim_path = "gfx/ui/pausescreen.anm2",
+	crating_anim_path = "gfx/ui/ui_crafting.anm2",
 }
 coopHUD.players = {}
 coopHUD.essau_no = 0
