@@ -480,13 +480,15 @@ function coopHUD.renderBagOfCrafting(player, pos, mirrored)
 		else
 			temp_pos = Vector(pos.X+4,pos.Y+4)
 		end
+		local col = 0
+		local row = 0
 		for i=1,#bag do
-			--print(bag[i].type,bag[i].sub_type)
-			local sprite = Sprite()
-			sprite:Load(coopHUD.GLOBALS.crating_anim_path,true)
-			sprite:SetFrame('Idle',bag[i].id)
-			sprite:LoadGraphics()
-			sprite:Render(Vector(temp_pos.X + 10 * (i-1),temp_pos.Y))
+			col = col + 1
+			if i > 4 then
+				row = 1
+			end
+			if i == 5 then col = 1 end
+			bag[i].sprite:Render(Vector(temp_pos.X + 10 * (col-1),temp_pos.Y + 10 * row))
 		end
 	end
 end
