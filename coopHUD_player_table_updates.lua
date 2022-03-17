@@ -29,6 +29,7 @@ function coopHUD.initPlayer(player_no, ent_player)
 		pocket_desc          = coopHUD.getMainPocketDesc(temp_player),
 		-- Collectibles
 		collectibles         = {},
+		bag_of_crafting      = nil,
 		-- Hearts
 		heart_types          = coopHUD.getHeartTypeTable(temp_player),
 		total_hearts         = math.ceil((temp_player:GetEffectiveMaxHearts() + temp_player:GetSoulHearts()) / 2),
@@ -101,6 +102,10 @@ function coopHUD.initPlayer(player_no, ent_player)
 		player_table.sprites.poops = coopHUD.getPoopSpriteTable(temp_player)
 		player_table.poop_mana = temp_player:GetPoopMana()
 		player_table.max_poop_mana = 9
+	end
+	-- ___ T. Cain check
+	if player_table.type == PlayerType.PLAYER_CAIN_B then
+		player_table.bag_of_crafting = {}
 	end
 	-- ___ Jacob check
 	local essau_no = coopHUD.essau_no
