@@ -335,6 +335,12 @@ function coopHUD.getItemSprite(item_id)
 	sprite:SetFrame('Idle', 0)
 	return sprite
 end
+function coopHUD.getCraftingItemSprite(item_id)
+	local sprite = Sprite()
+	sprite:Load(coopHUD.GLOBALS.crating_anim_path, true)
+	sprite:SetFrame('Idle', item_id)
+	return sprite
+end
 function coopHUD.getStreakSprite()
 	sprite = Sprite()
 	sprite:Load(coopHUD.GLOBALS.streak_anim_path, true)

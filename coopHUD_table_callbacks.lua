@@ -430,7 +430,8 @@ coopHUD:AddCallback(ModCallbacks.MC_POST_ENTITY_REMOVE, function(_, bag)
 					end
 					coopHUD.players[player_index].bag_of_crafting = new_bag
 				end
-				table.insert(coopHUD.players[player_index].bag_of_crafting,{value = pickupValues[item_id],id=item_id})
+				table.insert(coopHUD.players[player_index].bag_of_crafting,
+				             { value = pickupValues[item_id], id = item_id, sprite = coopHUD.getCraftingItemSprite(item_id) })
 			end
 		end
 	end
