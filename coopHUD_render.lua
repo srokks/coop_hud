@@ -472,6 +472,23 @@ function coopHUD.renderExtraCharge(player, pos, mirrored, scale, down_anchor)
 	return final_offset
 end
 function coopHUD.renderBagOfCrafting(player, pos, mirrored)
+	local bag = player.bag_of_crafting
+	if bag ~= nil then
+		local temp_pos = Vector(0,0)
+		if mirrored then
+
+		else
+			temp_pos = Vector(pos.X+4,pos.Y+4)
+		end
+		for i=1,#bag do
+			--print(bag[i].type,bag[i].sub_type)
+			local sprite = Sprite()
+			sprite:Load(coopHUD.GLOBALS.crating_anim_path,true)
+			sprite:SetFrame('Idle',bag[i].id)
+			sprite:LoadGraphics()
+			sprite:Render(Vector(temp_pos.X + 10 * (i-1),temp_pos.Y))
+		end
+	end
 end
 function coopHUD.renderPoopSpells(player, pos, mirrored,scale,down_anchor)
 	local main_offset = Vector(0, 0)
