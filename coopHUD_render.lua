@@ -482,13 +482,17 @@ function coopHUD.renderBagOfCrafting(player, pos, mirrored)
 		end
 		local col = 0
 		local row = 0
-		for i=1,#bag do
+		for i=1,8 do
 			col = col + 1
 			if i > 4 then
 				row = 1
 			end
 			if i == 5 then col = 1 end
-			bag[i].sprite:Render(Vector(temp_pos.X + 10 * (col-1),temp_pos.Y + 10 * row))
+			local sprite = coopHUD.getCraftingItemSprite(0) -- set to empty item sprite
+			if bag[i] ~= nil then
+				sprite = bag[i].sprite -- replace with proper sprite
+			end
+			sprite:Render(Vector(temp_pos.X + 10 * (col-1),temp_pos.Y + 10 * row))
 		end
 	end
 end
