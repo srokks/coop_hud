@@ -14,11 +14,11 @@ function coopHUD.on_start(_, cont)
 			if coopHUD.VERSION == save.version then
 				coopHUD.angel_seen = save.run.angel_seen
 				-- Loads player data from save
-				for player_no,player_save in pairs(save.run.players) do
+				for player_no, player_save in pairs(save.run.players) do
 					-- load collectibles
-					for _,item_id in pairs(player_save.collectibles) do
+					for _, item_id in pairs(player_save.collectibles) do
 						local item = Isaac.GetItemConfig():GetCollectible(item_id)
-						coopHUD.add_collectible(tonumber(player_no),item)
+						coopHUD.add_collectible(tonumber(player_no), item)
 					end
 					--
 				end
@@ -38,9 +38,9 @@ function coopHUD.on_start(_, cont)
 end
 coopHUD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, coopHUD.on_start)
 -- __________ On player init
-function coopHUD.on_player_init(_,ent)
+function coopHUD.on_player_init(_, ent)
 	-- ___ inits coopHUD.tables if table nil or if more players
-	if coopHUD.players[0] == nil or ( (#coopHUD.players  + coopHUD.essau_no ) ~= Game():GetNumPlayers() - 1)  then
+	if coopHUD.players[0] == nil or ((#coopHUD.players + coopHUD.essau_no) ~= Game():GetNumPlayers() - 1) then
 		coopHUD.essau_no = 0
 		for i = 0, Game():GetNumPlayers() - 1, 1 do
 			local temp_player_table = coopHUD.initPlayer(i)
@@ -287,7 +287,7 @@ function PostItemPickup (_, player)
 		elseif item_queue.Item.Type == ItemType.ITEM_TRINKET then
 			coopHUD.updateTrinkets(player_index)
 		else
-			coopHUD.add_collectible(player_index,item_queue.Item)
+			coopHUD.add_collectible(player_index, item_queue.Item)
 		end
 		coopHUD.updateExtraLives(player_index) -- triggers extra lives update
 		coopHUD.updateItems() -- triggers update items when picked up item - Shops
@@ -319,7 +319,7 @@ coopHUD:AddCallback(ModCallbacks.MC_POST_KNIFE_INIT, function(_, entity)
 		return
 	end
 	pickupsOnInit = {}
-	for _,e in ipairs (Isaac.FindByType(EntityType.ENTITY_PICKUP, -1, -1, false, false)) do
+	for _, e in ipairs(Isaac.FindByType(EntityType.ENTITY_PICKUP, -1, -1, false, false)) do
 		if e:GetSprite():GetAnimation() ~= "Collect" then
 			table.insert(pickupsOnInit, e)
 		end
@@ -368,44 +368,44 @@ local pickupValues = {
 	0x00000001,
 }
 local pickupIDLookup = {
-	["10.1"] = {1}, -- Red heart
-	["10.2"] = {1}, -- half heart
-	["10.3"] = {2}, -- soul heart
-	["10.4"] = {4}, -- eternal heart
-	["10.5"] = {1, 1}, -- double heart
-	["10.6"] = {3}, -- black heart
-	["10.7"] = {5}, -- gold heart
-	["10.8"] = {2}, -- half soul heart
-	["10.9"] = {1}, -- scared red heart
-	["10.10"] = {2, 1}, -- blended heart
-	["10.11"] = {6}, -- Bone heart
-	["10.12"] = {7}, -- Rotten heart
-	["20.1"] = {8}, -- Penny
-	["20.2"] = {9}, -- Nickel
-	["20.3"] = {10}, -- Dime
-	["20.4"] = {8, 8}, -- Double penny
-	["20.5"] = {11}, -- Lucky Penny
-	["20.6"] = {9}, -- Sticky Nickel
-	["20.7"] = {26}, -- Golden Penny
-	["30.1"] = {12}, -- Key
-	["30.2"] = {13}, -- golden Key
-	["30.3"] = {12,12}, -- Key Ring
-	["30.4"] = {14}, -- charged Key
-	["40.1"] = {15}, -- bomb
-	["40.2"] = {15,15}, -- double bomb
-	["40.4"] = {16}, -- golden bomb
-	["40.7"] = {17}, -- giga bomb
-	["42.0"] = {29}, -- poop nugget
-	["42.1"] = {29}, -- big poop nugget
-	["70.14"] = {27}, -- golden pill
-	["70.2062"] = {27}, -- golden horse pill
-	["90.1"] = {19}, -- Lil Battery
-	["90.2"] = {18}, -- Micro Battery
-	["90.3"] = {20}, -- Mega Battery
-	["90.4"] = {28}, -- Golden Battery
-	["300.49"] = {24}, -- Dice shard
-	["300.50"] = {21}, -- Emergency Contact
-	["300.78"] = {25}, -- Cracked key
+	["10.1"]    = { 1 }, -- Red heart
+	["10.2"]    = { 1 }, -- half heart
+	["10.3"]    = { 2 }, -- soul heart
+	["10.4"]    = { 4 }, -- eternal heart
+	["10.5"]    = { 1, 1 }, -- double heart
+	["10.6"]    = { 3 }, -- black heart
+	["10.7"]    = { 5 }, -- gold heart
+	["10.8"]    = { 2 }, -- half soul heart
+	["10.9"]    = { 1 }, -- scared red heart
+	["10.10"]   = { 2, 1 }, -- blended heart
+	["10.11"]   = { 6 }, -- Bone heart
+	["10.12"]   = { 7 }, -- Rotten heart
+	["20.1"]    = { 8 }, -- Penny
+	["20.2"]    = { 9 }, -- Nickel
+	["20.3"]    = { 10 }, -- Dime
+	["20.4"]    = { 8, 8 }, -- Double penny
+	["20.5"]    = { 11 }, -- Lucky Penny
+	["20.6"]    = { 9 }, -- Sticky Nickel
+	["20.7"]    = { 26 }, -- Golden Penny
+	["30.1"]    = { 12 }, -- Key
+	["30.2"]    = { 13 }, -- golden Key
+	["30.3"]    = { 12, 12 }, -- Key Ring
+	["30.4"]    = { 14 }, -- charged Key
+	["40.1"]    = { 15 }, -- bomb
+	["40.2"]    = { 15, 15 }, -- double bomb
+	["40.4"]    = { 16 }, -- golden bomb
+	["40.7"]    = { 17 }, -- giga bomb
+	["42.0"]    = { 29 }, -- poop nugget
+	["42.1"]    = { 29 }, -- big poop nugget
+	["70.14"]   = { 27 }, -- golden pill
+	["70.2062"] = { 27 }, -- golden horse pill
+	["90.1"]    = { 19 }, -- Lil Battery
+	["90.2"]    = { 18 }, -- Micro Battery
+	["90.3"]    = { 20 }, -- Mega Battery
+	["90.4"]    = { 28 }, -- Golden Battery
+	["300.49"]  = { 24 }, -- Dice shard
+	["300.50"]  = { 21 }, -- Emergency Contact
+	["300.78"]  = { 25 }, -- Cracked key
 }
 -- __ When bag of crafting entity destroyed add to parent.player.bag of crafting inventory new item
 coopHUD:AddCallback(ModCallbacks.MC_POST_ENTITY_REMOVE, function(_, bag)
@@ -413,19 +413,20 @@ coopHUD:AddCallback(ModCallbacks.MC_POST_ENTITY_REMOVE, function(_, bag)
 		return
 	end
 
-	table.sort(pickupsOnInit, function (a,b)
+	table.sort(pickupsOnInit, function(a, b)
 		return
 		a:GetSprite():GetFrame() > b:GetSprite():GetFrame() or
 				(a:GetSprite():GetFrame() == b:GetSprite():GetFrame() and a.Index < b.Index)
 	end)
-	for _,e in ipairs (pickupsOnInit) do
+	for _, e in ipairs(pickupsOnInit) do
 		if e:GetSprite():GetAnimation() == "Collect" then
 			local player_index = coopHUD.getPlayerNumByControllerIndex(bag:GetLastParent():ToPlayer().ControllerIndex)
 			local player_bag = coopHUD.players[player_index].bag_of_crafting
-			for _,item_id in pairs(pickupIDLookup[e.Variant..'.'..e.SubType]) do
-				if #player_bag >= 8 then -- if bag is full
+			for _, item_id in pairs(pickupIDLookup[e.Variant .. '.' .. e.SubType]) do
+				if #player_bag >= 8 then
+					-- if bag is full
 					local new_bag = {}
-					for i=2,#player_bag do
+					for i = 2, #player_bag do
 						table.insert(new_bag, player_bag[i])
 					end
 					coopHUD.players[player_index].bag_of_crafting = new_bag
