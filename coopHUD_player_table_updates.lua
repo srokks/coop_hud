@@ -512,9 +512,19 @@ end
 function coopHUD.add_collectible(player_index, item)
 	table.insert(coopHUD.players[player_index].collectibles, { id = item.ID, sprite = coopHUD.getItemSprite(item.ID) })
 end
--- _____
-
--- HUD_table
+-- ___ Shift Bag of crafting
+function coopHUD.shiftBag(player_index)
+	if coopHUD.players[player_index].bag_of_crafting ~= nil then
+		local new_bag = {}
+		for i=2,#coopHUD.players[player_index].bag_of_crafting do
+			table.insert(new_bag, coopHUD.players[player_index].bag_of_crafting[i])
+		end
+		table.insert(new_bag, coopHUD.players[player_index].bag_of_crafting[1])
+		coopHUD.players[player_index].bag_of_crafting = new_bag
+	end
+end
+-- ___
+-- ___ HUD_table
 function coopHUD.initHudTables()
 	coopHUD.HUD_table.sprites = coopHUD.getHUDSprites()
 	coopHUD.HUD_table.stats = coopHUD.getStatSprites()
