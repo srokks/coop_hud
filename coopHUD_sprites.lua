@@ -313,8 +313,8 @@ function coopHUD.getHUDSprites()
 	if player and player:HasGoldenKey() then key_sprite:SetFrame('Idle', 3) end
 	-- my_stuff_sprite
 	local my_stuff_sprite = Sprite()
-	my_stuff_sprite:Load(coopHUD.GLOBALS.pause_screen_anim_path,true)
-	my_stuff_sprite:SetFrame('Idle',0)
+	my_stuff_sprite:Load(coopHUD.GLOBALS.pause_screen_anim_path, true)
+	my_stuff_sprite:SetFrame('Idle', 0)
 	--
 	return { ['item_font']            = item_font,
 	         ['timer_font']           = timer_font,
