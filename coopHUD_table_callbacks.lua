@@ -330,87 +330,6 @@ coopHUD:AddCallback(ModCallbacks.MC_POST_KNIFE_INIT, function(_, entity)
 	end
 end, 4)
 --
-local pickupValues = {
-	0x00000000, -- 0 None
-	-- Hearts
-	0x00000001, -- 1 Red Heart
-	0x00000004, -- 2 Soul Heart
-	0x00000005, -- 3 Black Heart
-	0x00000005, -- 4 Eternal Heart
-	0x00000005, -- 5 Gold Heart
-	0x00000005, -- 6 Bone Heart
-	0x00000001, -- 7 Rotten Heart
-	-- Pennies
-	0x00000001, -- 8 Penny
-	0x00000003, -- 9 Nickel
-	0x00000005, -- 10 Dime
-	0x00000008, -- 11 Lucky Penny
-	-- Keys
-	0x00000002, -- 12 Key
-	0x00000007, -- 13 Golden Key
-	0x00000005, -- 14 Charged Key
-	-- Bombs
-	0x00000002, -- 15 Bomb
-	0x00000007, -- 16 Golden Bomb
-	0x0000000a, -- 17 Giga Bomb
-	-- Batteries
-	0x00000002, -- 18 Micro Battery
-	0x00000004, -- 19 Lil' Battery
-	0x00000008, -- 20 Mega Battery
-	-- Usables
-	0x00000002, -- 21 Card
-	0x00000002, -- 22 Pill
-	0x00000004, -- 23 Rune
-	0x00000004, -- 24 Dice Shard
-	0x00000002, -- 25 Cracked Key
-	-- Added in Update
-	0x00000007, -- 26 Golden Penny
-	0x00000007, -- 27 Golden Pill
-	0x00000007, -- 28 Golden Battery
-	0x00000000, -- 29 Tainted ??? Poop
-
-	0x00000001,
-}
-local pickupIDLookup = {
-	["10.1"]    = { 1 }, -- Red heart
-	["10.2"]    = { 1 }, -- half heart
-	["10.3"]    = { 2 }, -- soul heart
-	["10.4"]    = { 4 }, -- eternal heart
-	["10.5"]    = { 1, 1 }, -- double heart
-	["10.6"]    = { 3 }, -- black heart
-	["10.7"]    = { 5 }, -- gold heart
-	["10.8"]    = { 2 }, -- half soul heart
-	["10.9"]    = { 1 }, -- scared red heart
-	["10.10"]   = { 2, 1 }, -- blended heart
-	["10.11"]   = { 6 }, -- Bone heart
-	["10.12"]   = { 7 }, -- Rotten heart
-	["20.1"]    = { 8 }, -- Penny
-	["20.2"]    = { 9 }, -- Nickel
-	["20.3"]    = { 10 }, -- Dime
-	["20.4"]    = { 8, 8 }, -- Double penny
-	["20.5"]    = { 11 }, -- Lucky Penny
-	["20.6"]    = { 9 }, -- Sticky Nickel
-	["20.7"]    = { 26 }, -- Golden Penny
-	["30.1"]    = { 12 }, -- Key
-	["30.2"]    = { 13 }, -- golden Key
-	["30.3"]    = { 12, 12 }, -- Key Ring
-	["30.4"]    = { 14 }, -- charged Key
-	["40.1"]    = { 15 }, -- bomb
-	["40.2"]    = { 15, 15 }, -- double bomb
-	["40.4"]    = { 16 }, -- golden bomb
-	["40.7"]    = { 17 }, -- giga bomb
-	["42.0"]    = { 29 }, -- poop nugget
-	["42.1"]    = { 29 }, -- big poop nugget
-	["70.14"]   = { 27 }, -- golden pill
-	["70.2062"] = { 27 }, -- golden horse pill
-	["90.1"]    = { 19 }, -- Lil Battery
-	["90.2"]    = { 18 }, -- Micro Battery
-	["90.3"]    = { 20 }, -- Mega Battery
-	["90.4"]    = { 28 }, -- Golden Battery
-	["300.49"]  = { 24 }, -- Dice shard
-	["300.50"]  = { 21 }, -- Emergency Contact
-	["300.78"]  = { 25 }, -- Cracked key
-}
 -- __ When bag of crafting entity destroyed add to parent.player.bag of crafting inventory new item
 coopHUD:AddCallback(ModCallbacks.MC_POST_ENTITY_REMOVE, function(_, bag)
 	if bag.Variant ~= 4 or bag.SubType ~= 4 then
@@ -426,7 +345,8 @@ coopHUD:AddCallback(ModCallbacks.MC_POST_ENTITY_REMOVE, function(_, bag)
 		if e:GetSprite():GetAnimation() == "Collect" then
 			local player_index = coopHUD.getPlayerNumByControllerIndex(bag:GetLastParent():ToPlayer().ControllerIndex)
 			local player_bag = coopHUD.players[player_index].bag_of_crafting
-			for _, item_id in pairs(pickupIDLookup[e.Variant .. '.' .. e.SubType]) do
+			local item_info = coopHUD.getCraftingItemId(e)
+			for _, item_id in pairs(item_info) do
 				if #player_bag >= 8 then
 					-- if bag is full
 					local new_bag = {}
@@ -436,7 +356,12 @@ coopHUD:AddCallback(ModCallbacks.MC_POST_ENTITY_REMOVE, function(_, bag)
 					coopHUD.players[player_index].bag_of_crafting = new_bag
 				end
 				table.insert(coopHUD.players[player_index].bag_of_crafting,
-				             { value = pickupValues[item_id], id = item_id, sprite = coopHUD.getCraftingItemSprite(item_id) })
+				             { value = coopHUD.getItemValue(item_id), id = item_id, sprite = coopHUD.getCraftingItemSprite(item_id) })
+				-- set crafting result
+				craftingResult, backupResult = coopHUD.calculateBag(coopHUD.players[0]) -------------- CraftingResult: The Item ID itself
+				local result = craftingResult
+				if craftingResult ~= backupResult then result = backupResult end
+				coopHUD.players[player_index].crafting_result = result
 			end
 		end
 	end

@@ -30,6 +30,7 @@ function coopHUD.initPlayer(player_no, ent_player)
 		-- Collectibles
 		collectibles         = {},
 		bag_of_crafting      = nil,
+		crafting_result      = nil,
 		-- Hearts
 		heart_types          = coopHUD.getHeartTypeTable(temp_player),
 		total_hearts         = math.ceil((temp_player:GetEffectiveMaxHearts() + temp_player:GetSoulHearts()) / 2),
@@ -516,7 +517,7 @@ end
 function coopHUD.shiftBag(player_index)
 	if coopHUD.players[player_index].bag_of_crafting ~= nil then
 		local new_bag = {}
-		for i=2,#coopHUD.players[player_index].bag_of_crafting do
+		for i = 2, #coopHUD.players[player_index].bag_of_crafting do
 			table.insert(new_bag, coopHUD.players[player_index].bag_of_crafting[i])
 		end
 		table.insert(new_bag, coopHUD.players[player_index].bag_of_crafting[1])
