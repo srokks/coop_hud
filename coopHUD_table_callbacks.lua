@@ -22,8 +22,7 @@ function coopHUD.on_start(_, cont)
 					end
 					-- load bag of crafting
 					for _,item_id in pairs(player_save.bag_of_crafting) do
-						--TODO: crafting bag item value
-						table.insert(coopHUD.players[tonumber(player_no)].bag_of_crafting, { value = 0, id = item_id, sprite = coopHUD.getCraftingItemSprite(item_id) })
+						table.insert(coopHUD.players[tonumber(player_no)].bag_of_crafting, { value = coopHUD.getItemValue(item_id), id = item_id, sprite = coopHUD.getCraftingItemSprite(item_id) })
 					end
 				end
 				--
