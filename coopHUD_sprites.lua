@@ -838,6 +838,58 @@ function coopHUD.calculateDeal()
 	         duality     = duality }
 end
 -- Bag of crafting
+coopHUD.itemUnlockStates = {}
+function coopHUD:isCollectibleUnlocked(CollectibleID, itemPoolOfItem)
+	local itemPool = Game():GetItemPool()
+	if maxCollectibleID == nil then maxCollectibleID = coopHUD.XMLMaxItemID end
+	for i = 1, maxCollectibleID do
+		if ItemConfig.Config.IsValidCollectible(i) and i ~= CollectibleID then
+			itemPool:AddRoomBlacklist(i)
+		end
+	end
+	local isUnlocked = false
+	for i = 0, 1 do
+		-- some samples to make sure
+		local collID = itemPool:GetCollectible(itemPoolOfItem, false, 1)
+		if collID == CollectibleID then
+			isUnlocked = true
+			break
+		end
+	end
+	itemPool:ResetRoomBlacklist()
+	return isUnlocked
+end
+function coopHUD:isCollectibleUnlockedAnyPool(collectibleID)
+	--THIS FUNCTION IS FOR REPENTANCE ONLY due to using Repentance XML data; currently used by the Achievement Check, Spindown Dice, and Bag of Crafting
+	if not REPENTANCE then return true end
+	local item = Isaac.GetItemConfig():GetCollectible(collectibleID)
+	if item == nil then return false end
+	if coopHUD.itemUnlockStates[collectibleID] == nil then
+		--whitelist all quest items and items with no associated achievement
+		if item.AchievementID == -1 or (item.Tags and item.Tags & ItemConfig.TAG_QUEST == ItemConfig.TAG_QUEST) then
+			coopHUD.itemUnlockStates[collectibleID] = true
+			return true
+		end
+		--blacklist all hidden items
+		if item.Hidden then
+			coopHUD.itemUnlockStates[collectibleID] = false
+			return false
+		end
+		--iterate through the pools this item can be in
+		for k, itemPoolID in ipairs(coopHUD.XMLItemIsInPools[collectibleID]) do
+			if (itemPoolID < ItemPoolType.NUM_ITEMPOOLS and coopHUD:isCollectibleUnlocked(collectibleID,
+			                                                                                   itemPoolID)) then
+				MPSDMSpecial.itemUnlockStates[collectibleID] = true
+				return true
+			end
+		end
+		--note: some items will still be missed by this, if they've been taken out of their pools (especially when in Greed Mode)
+		MPSDMSpecial.itemUnlockStates[collectibleID] = false
+		return false
+	else
+		return coopHUD.itemUnlockStates[collectibleID]
+	end
+end
 function coopHUD.getCraftingItemId(item_entity)
 	local pickupIDLookup = {
 		["10.1"]    = { 1 }, -- Red heart
