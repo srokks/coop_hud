@@ -107,6 +107,7 @@ function coopHUD.initPlayer(player_no, ent_player)
 	-- ___ T. Cain check
 	if player_table.type == PlayerType.PLAYER_CAIN_B then
 		player_table.bag_of_crafting = {}
+		player_table.crafting_result = 0
 	end
 	-- ___ Jacob check
 	local essau_no = coopHUD.essau_no
