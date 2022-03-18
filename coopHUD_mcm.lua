@@ -32,7 +32,7 @@ function coopHUD.save_options()
 		end
 		-- save player bag of crafting
 		local bag_of_crafting = {}
-		if coopHUD.players[i].collectibles ~= nil then
+		if coopHUD.players[i].bag_of_crafting ~= nil then
 			for j=1,#coopHUD.players[i].bag_of_crafting do
 				table.insert(bag_of_crafting,coopHUD.players[i].bag_of_crafting[j].id)
 			end
