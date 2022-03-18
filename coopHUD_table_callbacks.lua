@@ -175,7 +175,7 @@ end)
 -- _____
 -- _____ INPUTS
 local btn_held = 0
-function coopHUD.on_input(_, ent, hook, btn)
+function coopHUD.on_input()
 	-- Handler for turning timer on of on key
 	if Input.IsButtonTriggered(Keyboard.KEY_T, 0) then
 		if coopHUD.options.timer_always_on then
@@ -230,7 +230,7 @@ function coopHUD.on_input(_, ent, hook, btn)
 		end
 	end
 end
-coopHUD:AddCallback(ModCallbacks.MC_INPUT_ACTION, coopHUD.on_input)
+coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.on_input)
 -- _____ On pill use
 function coopHUD.on_pill_use(_, effect_no, ent_player)
 	-- Triggers streak text on pill use
