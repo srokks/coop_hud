@@ -879,12 +879,12 @@ function coopHUD:isCollectibleUnlockedAnyPool(collectibleID)
 		for k, itemPoolID in ipairs(coopHUD.XMLItemIsInPools[collectibleID]) do
 			if (itemPoolID < ItemPoolType.NUM_ITEMPOOLS and coopHUD:isCollectibleUnlocked(collectibleID,
 			                                                                                   itemPoolID)) then
-				MPSDMSpecial.itemUnlockStates[collectibleID] = true
+				coopHUD.itemUnlockStates[collectibleID] = true
 				return true
 			end
 		end
 		--note: some items will still be missed by this, if they've been taken out of their pools (especially when in Greed Mode)
-		MPSDMSpecial.itemUnlockStates[collectibleID] = false
+		coopHUD.itemUnlockStates[collectibleID] = false
 		return false
 	else
 		return coopHUD.itemUnlockStates[collectibleID]
@@ -1275,10 +1275,10 @@ function coopHUD.calculateBag(player)
 				qualityMin = 0
 				qualityMax = 2
 			end
-			local pool = EID.XMLItemPools[poolWeight.idx + 1]
+			local pool = coopHUD.XMLItemPools[poolWeight.idx + 1]
 
 			for _, item in ipairs(pool) do
-				local quality = EID.XMLItemQualities[item[1]]
+				local quality = coopHUD.XMLItemQualities[item[1]]
 				if quality >= qualityMin and quality <= qualityMax  then
 					local w = item[2] * poolWeight.weight
 					itemWeights[item[1]] = itemWeights[item[1]] + w
@@ -1306,7 +1306,7 @@ function coopHUD.calculateBag(player)
 					return firstOption, k
 				else
 					--Don't do the 2nd pass if this item is definitely unlocked
-					if EID:isCollectibleUnlockedAnyPool(k) then
+					if coopHUD:isCollectibleUnlockedAnyPool(k) then
 						calculatedRecipes[componentsAsString] = k
 						lockedRecipes[componentsAsString] = k
 						return k, k
