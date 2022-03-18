@@ -29,6 +29,7 @@ function coopHUD.initPlayer(player_no, ent_player)
 		pocket_desc          = coopHUD.getMainPocketDesc(temp_player),
 		-- Collectibles
 		collectibles         = {},
+		bag_of_crafting      = nil,
 		-- Hearts
 		heart_types          = coopHUD.getHeartTypeTable(temp_player),
 		total_hearts         = math.ceil((temp_player:GetEffectiveMaxHearts() + temp_player:GetSoulHearts()) / 2),
@@ -101,6 +102,10 @@ function coopHUD.initPlayer(player_no, ent_player)
 		player_table.sprites.poops = coopHUD.getPoopSpriteTable(temp_player)
 		player_table.poop_mana = temp_player:GetPoopMana()
 		player_table.max_poop_mana = 9
+	end
+	-- ___ T. Cain check
+	if player_table.type == PlayerType.PLAYER_CAIN_B then
+		player_table.bag_of_crafting = {}
 	end
 	-- ___ Jacob check
 	local essau_no = coopHUD.essau_no
@@ -504,9 +509,22 @@ function coopHUD.updateStats(player_no)
 		coopHUD.players[player_no].is_ghost = temp_player:IsCoopGhost()
 	end
 end
--- _____
-
--- HUD_table
+function coopHUD.add_collectible(player_index, item)
+	table.insert(coopHUD.players[player_index].collectibles, { id = item.ID, sprite = coopHUD.getItemSprite(item.ID) })
+end
+-- ___ Shift Bag of crafting
+function coopHUD.shiftBag(player_index)
+	if coopHUD.players[player_index].bag_of_crafting ~= nil then
+		local new_bag = {}
+		for i=2,#coopHUD.players[player_index].bag_of_crafting do
+			table.insert(new_bag, coopHUD.players[player_index].bag_of_crafting[i])
+		end
+		table.insert(new_bag, coopHUD.players[player_index].bag_of_crafting[1])
+		coopHUD.players[player_index].bag_of_crafting = new_bag
+	end
+end
+-- ___
+-- ___ HUD_table
 function coopHUD.initHudTables()
 	coopHUD.HUD_table.sprites = coopHUD.getHUDSprites()
 	coopHUD.HUD_table.stats = coopHUD.getStatSprites()
@@ -609,6 +627,10 @@ function coopHUD.updateTables()
 	if coopHUD.signals.on_poop_update then
 		coopHUD.updatePoopMana(coopHUD.signals.on_poop_update)
 		coopHUD.signals.on_poop_update = nil
+	end
+	if coopHUD.signals.on_drop_triggered then
+		coopHUD.shiftBag(coopHUD.signals.on_drop_triggered)
+		coopHUD.signals.on_drop_triggered = nil
 	end
 end
 coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.updateTables)

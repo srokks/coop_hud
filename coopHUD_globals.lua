@@ -13,6 +13,7 @@ coopHUD.signals = {
 	on_poop_update = nil,--nil or emit player num
 	overloaded_hud = nil,
 	on_battle = false,
+	on_drop_triggered = nil,--nil or emit player num
 }
 coopHUD.players = {}
 coopHUD.options = {
@@ -22,6 +23,7 @@ coopHUD.options = {
 	force_small_hud = false,
 	timer_always_on = false,
 	colorful_players = true,
+	colorful_stuff_page = true,
 	show_player_names = true,
 	color_player_names = true,
 	stats = {
@@ -46,6 +48,7 @@ coopHUD.GLOBALS = {
 	hud_el_anim_path = "gfx/ui/hudpickups.anm2",
 	streak_anim_path = "gfx/ui/ui_streak.anm2",
 	hud_stats_anim_path = "gfx/ui/hudstats2.anm2",
+	pause_screen_anim_path = "gfx/ui/pausescreen.anm2",
 }
 coopHUD.players = {}
 coopHUD.essau_no = 0

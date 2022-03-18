@@ -472,6 +472,23 @@ function coopHUD.renderExtraCharge(player, pos, mirrored, scale, down_anchor)
 	return final_offset
 end
 function coopHUD.renderBagOfCrafting(player, pos, mirrored)
+	local bag = player.bag_of_crafting
+	if bag ~= nil then
+		local temp_pos = Vector(0,0)
+		if mirrored then
+
+		else
+			temp_pos = Vector(pos.X+4,pos.Y+4)
+		end
+		for i=1,#bag do
+			--print(bag[i].type,bag[i].sub_type)
+			local sprite = Sprite()
+			sprite:Load(coopHUD.GLOBALS.crating_anim_path,true)
+			sprite:SetFrame('Idle',bag[i].id)
+			sprite:LoadGraphics()
+			sprite:Render(Vector(temp_pos.X + 10 * (i-1),temp_pos.Y))
+		end
+	end
 end
 function coopHUD.renderPoopSpells(player, pos, mirrored,scale,down_anchor)
 	local main_offset = Vector(0, 0)
@@ -975,6 +992,7 @@ function coopHUD.renderItems()
 			coopHUD.HUD_table.streak_sec_color = KColor(0, 0, 0, 1, 0, 0, 0)
 			coopHUD.HUD_table.floor_info:Play("Text", true)
 		end
+		coopHUD.renderCollectibles(coopHUD.signals.map)
 	end
 	-- Renders prompt on map button pressed
 	coopHUD.renderStreak(coopHUD.HUD_table.floor_info, level_name, curse_name,
@@ -1054,6 +1072,46 @@ coopHUD:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function(self)
 	coopHUD.HUD_table.streak_sec_color = KColor(0, 0, 0, 1)
 	if coopHUD.streak_sec_line == '' then coopHUD.streak_sec_line = nil end
 end)
+-- _____ RENDER PLAYER STUFF
+function coopHUD.renderCollectibles(player_no)
+	local pos = Vector(0,0)
+	local mirrored = coopHUD.players_config.small[player_no].mirrored
+	local collectibles = coopHUD.players[player_no].collectibles
+	local color = coopHUD.colors[coopHUD.players_config.small[player_no].color].color
+	local my_stuff_offset = Vector(0, 0)
+	local item_off = Vector(0, 32)
+	if mirrored then
+		pos = Vector(coopHUD.anchors.top_right.X,coopHUD.anchors.top_right.Y)
+		item_off.X = -104
+		my_stuff_offset = Vector(110, 26)
+	else
+		pos = Vector(coopHUD.anchors.top_left.X,coopHUD.anchors.top_left.Y)
+		pos.X = 48
+		item_off.X = 18
+		my_stuff_offset = Vector(172 + 60, 26)
+	end
+	pos.Y = 64
+	--
+	coopHUD.HUD_table.sprites.my_stuff_sprite:SetFrame('Idle', 0)
+	if coopHUD.options.colorful_stuff_page then
+		coopHUD.HUD_table.sprites.my_stuff_sprite.Color = color
+	else
+		coopHUD.HUD_table.sprites.my_stuff_sprite.Color = Color(1,1,1,1)
+	end
+	coopHUD.HUD_table.sprites.my_stuff_sprite:RenderLayer(3,
+	                                                      Vector(pos.X + my_stuff_offset.X, pos.Y + my_stuff_offset.Y))
+	-- RENDERS ITEMS
+	local row = 0
+	local col = 0
+	local temp_pos = Vector(pos.X + item_off.X, pos.Y + item_off.Y)
+	for i = #collectibles, 1, -1 do
+		row = math.floor((#collectibles - i) / 10)
+		collectibles[i].sprite.Scale = Vector(0.45, 0.45)
+		collectibles[i].sprite:Render(Vector(temp_pos.X + col * 11, temp_pos.Y + 11 * row))
+		col = col + 1
+		if col == 10 then col = 0 end -- reset column
+	end
+end
 -- _____ RENDER
 function coopHUD.render()
 	-- DEBUG: handler to quick turn on/off hud on pressing 'H' on keyboard

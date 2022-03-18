@@ -6,7 +6,6 @@ function coopHUD.on_start(_, cont)
 		-- Logic when game is continued
 		coopHUD.essau_no = 0 -- resets Essau counter before player init
 		if coopHUD.players[0] == nil then
-			coopHUD.signals.is_joining = true
 			coopHUD.on_player_init()
 		end
 		--
@@ -14,6 +13,16 @@ function coopHUD.on_start(_, cont)
 			local save = json.decode(coopHUD:LoadData())
 			if coopHUD.VERSION == save.version then
 				coopHUD.angel_seen = save.run.angel_seen
+				-- Loads player data from save
+				for player_no,player_save in pairs(save.run.players) do
+					-- load collectibles
+					for _,item_id in pairs(player_save.collectibles) do
+						local item = Isaac.GetItemConfig():GetCollectible(item_id)
+						coopHUD.add_collectible(tonumber(player_no),item)
+					end
+					--
+				end
+				--
 			end
 		end
 	else
@@ -58,7 +67,6 @@ function coopHUD.on_activate(_, type, RNG, EntityPlayer, UseFlags, used_slot, Cu
 	if type == CollectibleType.COLLECTIBLE_HOLD and coopHUD.players[player_index].poop_mana >= 0 then
 		if coopHUD.players[player_index].hold_spell == nil then
 			coopHUD.players[player_index].hold_spell = coopHUD.players[player_index].poops[0]
-			if coopHUD.players[player_index].poop_mana == 0 then coopHUD.players[player_index].hold_spell = nil end
 			coopHUD.updatePockets(player_index)
 		else
 			coopHUD.players[player_index].hold_spell = nil
@@ -197,29 +205,25 @@ function coopHUD.on_input(_, ent, hook, btn)
 		local player = Isaac.GetPlayer(i)
 		local player_index = coopHUD.getPlayerNumByControllerIndex(player.ControllerIndex)
 		if Input.IsActionTriggered(ButtonAction.ACTION_DROP, player.ControllerIndex) then
-			coopHUD.updateHearts(player_index)
-			coopHUD.updatePlayerType(player_index)
-			coopHUD.updateActives(player_index)
-			coopHUD.updatePockets(player_index)
-			coopHUD.updateTrinkets(player_index)
-		end
-		if Input.IsActionPressed(ButtonAction.ACTION_DROP, player.ControllerIndex) then
-			coopHUD.updatePockets(player_index)
-			coopHUD.updateTrinkets(player_index)
+			coopHUD.signals.on_drop_triggered = player_index
 		end
 		if Input.IsActionTriggered(ButtonAction.ACTION_BOMB, player.ControllerIndex) then
 			coopHUD.updateItems()
 		end
-		mapPressed = mapPressed or Input.IsActionPressed(ButtonAction.ACTION_MAP, player.ControllerIndex)
-	end
-	if mapPressed then
-		btn_held = btn_held + 1
-		if btn_held > 1200 then
-			coopHUD.signals.map = true
+		if Input.IsActionPressed(ButtonAction.ACTION_MAP, player.ControllerIndex) then
+			mapPressed = player_index
 		end
-	else
-		coopHUD.signals.map = false
-		btn_held = 0
+	end
+	if not coopHUD.signals.on_battle then
+		if mapPressed then
+			btn_held = btn_held + 1
+			if btn_held > 1200 then
+				coopHUD.signals.map = mapPressed
+			end
+		else
+			coopHUD.signals.map = false
+			btn_held = 0
+		end
 	end
 end
 coopHUD:AddCallback(ModCallbacks.MC_INPUT_ACTION, coopHUD.on_input)
@@ -283,6 +287,7 @@ function PostItemPickup (_, player)
 		elseif item_queue.Item.Type == ItemType.ITEM_TRINKET then
 			coopHUD.updateTrinkets(player_index)
 		else
+			coopHUD.add_collectible(player_index,item_queue.Item)
 		end
 		coopHUD.updateExtraLives(player_index) -- triggers extra lives update
 		coopHUD.updateItems() -- triggers update items when picked up item - Shops
@@ -304,3 +309,130 @@ function addCallbackNew(mod, callback, func, arg1, arg2, arg3, arg4)
 end
 Isaac.AddCallback = addCallbackNew
 ---- End of standalone module
+-- _____ BAG OF CRAFTING callbacks
+-- Bag of crafting
+-- _____ Modified EID Wolsauge bag of crafting functions
+local pickupsOnInit = {} -- holds all items in rooms whick can be collected by bag of crafting
+-- __ collects all items in room when
+coopHUD:AddCallback(ModCallbacks.MC_POST_KNIFE_INIT, function(_, entity)
+	if entity.Variant ~= 4 then
+		return
+	end
+	pickupsOnInit = {}
+	for _,e in ipairs (Isaac.FindByType(EntityType.ENTITY_PICKUP, -1, -1, false, false)) do
+		if e:GetSprite():GetAnimation() ~= "Collect" then
+			table.insert(pickupsOnInit, e)
+		end
+	end
+end, 4)
+--
+local pickupValues = {
+	0x00000000, -- 0 None
+	-- Hearts
+	0x00000001, -- 1 Red Heart
+	0x00000004, -- 2 Soul Heart
+	0x00000005, -- 3 Black Heart
+	0x00000005, -- 4 Eternal Heart
+	0x00000005, -- 5 Gold Heart
+	0x00000005, -- 6 Bone Heart
+	0x00000001, -- 7 Rotten Heart
+	-- Pennies
+	0x00000001, -- 8 Penny
+	0x00000003, -- 9 Nickel
+	0x00000005, -- 10 Dime
+	0x00000008, -- 11 Lucky Penny
+	-- Keys
+	0x00000002, -- 12 Key
+	0x00000007, -- 13 Golden Key
+	0x00000005, -- 14 Charged Key
+	-- Bombs
+	0x00000002, -- 15 Bomb
+	0x00000007, -- 16 Golden Bomb
+	0x0000000a, -- 17 Giga Bomb
+	-- Batteries
+	0x00000002, -- 18 Micro Battery
+	0x00000004, -- 19 Lil' Battery
+	0x00000008, -- 20 Mega Battery
+	-- Usables
+	0x00000002, -- 21 Card
+	0x00000002, -- 22 Pill
+	0x00000004, -- 23 Rune
+	0x00000004, -- 24 Dice Shard
+	0x00000002, -- 25 Cracked Key
+	-- Added in Update
+	0x00000007, -- 26 Golden Penny
+	0x00000007, -- 27 Golden Pill
+	0x00000007, -- 28 Golden Battery
+	0x00000000, -- 29 Tainted ??? Poop
+
+	0x00000001,
+}
+local pickupIDLookup = {
+	["10.1"] = {1}, -- Red heart
+	["10.2"] = {1}, -- half heart
+	["10.3"] = {2}, -- soul heart
+	["10.4"] = {4}, -- eternal heart
+	["10.5"] = {1, 1}, -- double heart
+	["10.6"] = {3}, -- black heart
+	["10.7"] = {5}, -- gold heart
+	["10.8"] = {2}, -- half soul heart
+	["10.9"] = {1}, -- scared red heart
+	["10.10"] = {2, 1}, -- blended heart
+	["10.11"] = {6}, -- Bone heart
+	["10.12"] = {7}, -- Rotten heart
+	["20.1"] = {8}, -- Penny
+	["20.2"] = {9}, -- Nickel
+	["20.3"] = {10}, -- Dime
+	["20.4"] = {8, 8}, -- Double penny
+	["20.5"] = {11}, -- Lucky Penny
+	["20.6"] = {9}, -- Sticky Nickel
+	["20.7"] = {26}, -- Golden Penny
+	["30.1"] = {12}, -- Key
+	["30.2"] = {13}, -- golden Key
+	["30.3"] = {12,12}, -- Key Ring
+	["30.4"] = {14}, -- charged Key
+	["40.1"] = {15}, -- bomb
+	["40.2"] = {15,15}, -- double bomb
+	["40.4"] = {16}, -- golden bomb
+	["40.7"] = {17}, -- giga bomb
+	["42.0"] = {29}, -- poop nugget
+	["42.1"] = {29}, -- big poop nugget
+	["70.14"] = {27}, -- golden pill
+	["70.2062"] = {27}, -- golden horse pill
+	["90.1"] = {19}, -- Lil Battery
+	["90.2"] = {18}, -- Micro Battery
+	["90.3"] = {20}, -- Mega Battery
+	["90.4"] = {28}, -- Golden Battery
+	["300.49"] = {24}, -- Dice shard
+	["300.50"] = {21}, -- Emergency Contact
+	["300.78"] = {25}, -- Cracked key
+}
+-- __ When bag of crafting entity destroyed add to parent.player.bag of crafting inventory new item
+coopHUD:AddCallback(ModCallbacks.MC_POST_ENTITY_REMOVE, function(_, bag)
+	if bag.Variant ~= 4 or bag.SubType ~= 4 then
+		return
+	end
+
+	table.sort(pickupsOnInit, function (a,b)
+		return
+		a:GetSprite():GetFrame() > b:GetSprite():GetFrame() or
+				(a:GetSprite():GetFrame() == b:GetSprite():GetFrame() and a.Index < b.Index)
+	end)
+	for _,e in ipairs (pickupsOnInit) do
+		if e:GetSprite():GetAnimation() == "Collect" then
+			local player_index = coopHUD.getPlayerNumByControllerIndex(bag:GetLastParent():ToPlayer().ControllerIndex)
+			local player_bag = coopHUD.players[player_index].bag_of_crafting
+			for _,item_id in pairs(pickupIDLookup[e.Variant..'.'..e.SubType]) do
+				if #player_bag >= 8 then -- if bag is full
+					local new_bag = {}
+					for i=2,#player_bag do
+						table.insert(new_bag, player_bag[i])
+					end
+					coopHUD.players[player_index].bag_of_crafting = new_bag
+				end
+				table.insert(coopHUD.players[player_index].bag_of_crafting,{value = pickupValues[item_id],id=item_id})
+			end
+		end
+	end
+end, EntityType.ENTITY_KNIFE)
+-- _____

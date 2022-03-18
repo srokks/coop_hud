@@ -17,10 +17,23 @@ function coopHUD.save_options()
 	save.version = coopHUD.VERSION
 	save.options = coopHUD.options
 	save.players_config = coopHUD.players_config
+	--
 	save.run = {
 		['essau_no'] = coopHUD.essau_no,
 		['angel_seen'] = coopHUD.angel_seen,
 	}
+	--
+	local players = {}
+	for i=0,#coopHUD.players do
+		-- saves player collectibles
+		local collectibles = {}
+		for j=1,#coopHUD.players[i].collectibles do
+			table.insert(collectibles,coopHUD.players[i].collectibles[j].id)
+		end
+		players[i] = { collectibles  = collectibles}
+		--
+	end
+	save.run.players = players
 	coopHUD:SaveData(json.encode(save))
 end
 coopHUD:AddCallback(ModCallbacks.MC_PRE_GAME_EXIT, coopHUD.save_options)
@@ -361,6 +374,7 @@ if ModConfigMenu then
 			return "Colorful players: " .. onOff
 		end,
 		OnChange = function(currentBool)
+			if not currentBool then coopHUD.options.color_player_names = false end
 			coopHUD.options.colorful_players = currentBool
 			coopHUD.save_options()
 		end,
@@ -390,6 +404,30 @@ if ModConfigMenu then
 		end,
 		Info = function()
 			return "Colors players names"
+		end
+	})
+	-- colorful stuff page
+	ModConfigMenu.AddSetting(mod_name, "Colors", {
+		Type = ModConfigMenu.OptionType.BOOLEAN,
+		CurrentSetting = function()
+			return coopHUD.options.colorful_stuff_page
+		end,
+		Default = coopHUD.options.colorful_stuff_page,
+
+		Display = function()
+			local onOff = "Off"
+			if coopHUD.options.colorful_stuff_page then
+				onOff = "On"
+			end
+
+			return "Colorful stuff page: " .. onOff
+		end,
+		OnChange = function(currentBool)
+			coopHUD.options.colorful_stuff_page = currentBool
+			coopHUD.save_options()
+		end,
+		Info = function()
+			return "Colors stuff page"
 		end
 	})
 	-- player config - players colors

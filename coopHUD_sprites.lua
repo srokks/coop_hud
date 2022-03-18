@@ -128,8 +128,8 @@ function coopHUD.getChargeSprites(player, slot)
 	-- Gets charge of item from  player, slot
 	local sprites = {
 		beth_charge = Sprite(),
-		charge = Sprite(),
-		overlay = Sprite(),
+		charge      = Sprite(),
+		overlay     = Sprite(),
 	}
 	local active_item = player:GetActiveItem(slot)
 	if active_item == 0 or player.Variant == 1 then return false end
@@ -311,12 +311,29 @@ function coopHUD.getHUDSprites()
 	key_sprite:Load(coopHUD.GLOBALS.hud_el_anim_path, true)
 	key_sprite:SetFrame('Idle', 1)
 	if player and player:HasGoldenKey() then key_sprite:SetFrame('Idle', 3) end
-	return { ['item_font'] = item_font,
-	         ['timer_font'] = timer_font,
+	-- my_stuff_sprite
+	local my_stuff_sprite = Sprite()
+	my_stuff_sprite:Load(coopHUD.GLOBALS.pause_screen_anim_path,true)
+	my_stuff_sprite:SetFrame('Idle',0)
+	--
+	return { ['item_font']            = item_font,
+	         ['timer_font']           = timer_font,
 	         ['streak_sec_line_font'] = streak_sec_line_font,
-	         ['coin_sprite'] = coin_sprite,
-	         ['bomb_sprite'] = bomb_sprite,
-	         ['key_sprite'] = key_sprite }
+	         ['coin_sprite']          = coin_sprite,
+	         ['bomb_sprite']          = bomb_sprite,
+	         ['key_sprite']           = key_sprite,
+	         ['my_stuff_sprite']      = my_stuff_sprite }
+end
+function coopHUD.getItemSprite(item_id)
+	local sprite = Sprite()
+	local item_sprite = Isaac.GetItemConfig():GetCollectible(item_id).GfxFileName
+	sprite:Load(coopHUD.GLOBALS.item_anim_path, false)
+	sprite:ReplaceSpritesheet(0, item_sprite)
+	sprite:ReplaceSpritesheet(1, item_sprite)
+	sprite:ReplaceSpritesheet(2, item_sprite)
+	sprite:LoadGraphics()
+	sprite:SetFrame('Idle', 0)
+	return sprite
 end
 function coopHUD.getStreakSprite()
 	sprite = Sprite()
@@ -325,13 +342,13 @@ function coopHUD.getStreakSprite()
 end
 function coopHUD.getStatSprites()
 	stats = {
-		speed = Sprite(),
+		speed       = Sprite(),
 		tears_delay = Sprite(),
-		damage = Sprite(),
-		range = Sprite(),
-		shot_speed = Sprite(),
-		luck = Sprite(),
-		font = Font()
+		damage      = Sprite(),
+		range       = Sprite(),
+		shot_speed  = Sprite(),
+		luck        = Sprite(),
+		font        = Font()
 	}
 	stats.speed:Load(coopHUD.GLOBALS.hud_stats_anim_path, true)
 	stats.speed:SetFrame('Idle', 0)
@@ -356,10 +373,10 @@ function coopHUD.getStatSprites()
 end
 function coopHUD.getDealSprites()
 	local deals_sprites = {
-		devil = Sprite(),
-		angel = Sprite(),
+		devil       = Sprite(),
+		angel       = Sprite(),
 		planetarium = Sprite(),
-		duality = Sprite(),
+		duality     = Sprite(),
 	}
 	deals_sprites.devil:Load(coopHUD.GLOBALS.hud_stats_anim_path, true)
 	deals_sprites.devil:SetFrame('Idle', 6)
@@ -551,7 +568,7 @@ function coopHUD.getHeartTypeTable(player)
 		heart_type, overlay = coopHUD.getHeartType(player, counter)
 		heart_types[counter] = {
 			heart_type = heart_type,
-			overlay = overlay,
+			overlay    = overlay,
 		}
 	end
 	return heart_types
@@ -585,7 +602,7 @@ function coopHUD.getPocketID(player, slot)
 			end
 		end
 	end
-	return { pocket_id,pocket_type }
+	return { pocket_id, pocket_type }
 end
 function coopHUD.getMainPocketDesc(player)
 	local name = 'Error'
@@ -631,7 +648,7 @@ function coopHUD.getMainPocketDesc(player)
 		name = 'Error! - langAPI not installed'
 		desc = 'Install langAPI for compatibility'
 	end
-	return { ['name'] = name,['desc'] = desc }
+	return { ['name'] = name, ['desc'] = desc }
 end
 function coopHUD.getPoopSpellTable(player_no)
 	local poop_table = {}
@@ -705,7 +722,7 @@ function coopHUD.calculateDeal()
 	local deal = 0.0
 	local angel = 0.0
 	local devil = 0.0
-	local banned_stages = { [1] = true,[9] = true,[10] = true,[11] = true,[12] = true,[12] = true }
+	local banned_stages = { [1] = true, [9] = true, [10] = true, [11] = true, [12] = true, [12] = true }
 	if angel_seen == nil then angel_seen = false end
 	-- door chance
 	if banned_stages[Game():GetLevel():GetStage()] == nil and
@@ -717,14 +734,14 @@ function coopHUD.calculateDeal()
 	end
 	-- angel components
 	local comp = {
-		rosary_bead = { false,0.5 },
-		key_piece_1 = { false,0.75 },
-		key_piece_2 = { false,0.75 },
-		virtouses = { false,0.75 },
-		bum_killed = { false,0.75 },
-		bum_left = { false,0.9 },
-		dead_bum_left = { false,1.1 },
-		donation = { false,0.5 },
+		rosary_bead   = { false, 0.5 },
+		key_piece_1   = { false, 0.75 },
+		key_piece_2   = { false, 0.75 },
+		virtouses     = { false, 0.75 },
+		bum_killed    = { false, 0.75 },
+		bum_left      = { false, 0.9 },
+		dead_bum_left = { false, 1.1 },
+		donation      = { false, 0.5 },
 	}
 	-- check collectibles
 	local duality = false
@@ -809,10 +826,10 @@ function coopHUD.calculateDeal()
 	end
 	devil = deal * (1.0 - angel)
 	angel = deal * angel
-	return { devil = { devil * 100,0},
-	         angel = { angel * 100,0 },
-	         planetarium = { lvl:GetPlanetariumChance() * 100,0 },
-	         duality = duality }
+	return { devil       = { devil * 100, 0 },
+	         angel       = { angel * 100, 0 },
+	         planetarium = { lvl:GetPlanetariumChance() * 100, 0 },
+	         duality     = duality }
 end
 -- ______
 function coopHUD.getPlayerNumByControllerIndex(controller_index)
