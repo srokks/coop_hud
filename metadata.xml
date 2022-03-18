@@ -13,11 +13,25 @@
 		[h3] [b] MOD might get laggy when too much on screen. 4 normal players (exl. Jacob / Essau) works fine on my old
 		laptop. Still working on optimization [/b] [/h3]
 		[h2] *NEW* [/h2]
-		[h3] v.0.5.2 [/h3]
+		[h3] v.0.5.5 [/h3]
 		[list]
-			[*] Colorful players and player names
+			[ ] Tainted Isaac collectibles
+			[ ] Tainted Maggy - pulsing hearts
+			[ ] Tainted ??? - shows poop spell for up to 4 players
+			[*] Bag of crafting integration:
+			[list]
+				[ ] Shows crafting inventory for Tainted Cain for up to 4 players
+				[ ] Inventory is loaded when continue game
+				[ ] Show bag of crafting proper sprite for normal players
+			[/list]
+			[*] EXTRA HUD - show collectibles on MAP key
+			[list]
+				[*] Every player can lookup his collectibles
+                [*] Color stuff page according to player number
+                [ ] Show gulped trinkets
+                [ ] Reload collectibles in options menu
+			[/list]
 			[*] Fixed joining logic
-			[*] Fixed coop ghost integration
 			[*] Small fixes
 		[/list]
 		[h2] What this mod do[/h2]
@@ -41,14 +55,7 @@
 			[/list]
 		[h2] Planned features [/h2]
 			[list]
-				[list] [b] Tainted characters [/b]
-				[*] Pulsing Tainted Maggy hearts
-				[*] Poop spells for Tainted ???
-				[*] Tainted Isaac collectibles
-				[*] Tainted Cain -  Bag of Crafting
-				[/list]
-				[*] Player colors
-				[*] Extra HUD - render collectibles
+
 			[/list]
 		[h2] What this mod lack of[/h2]
 			[list]
