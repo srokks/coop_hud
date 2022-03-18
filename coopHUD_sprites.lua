@@ -897,7 +897,7 @@ function coopHUD.getCraftingItemId(item_entity)
 		id = { 22 }
 	end
 
-	return { id = id }
+	return id
 end
 function coopHUD.getItemValue(item_id)
 	local pickupValues = {
