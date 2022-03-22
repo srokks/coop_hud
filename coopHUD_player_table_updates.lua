@@ -103,6 +103,7 @@ function coopHUD.initPlayer(player_no, ent_player)
 		player_table.sprites.poops = coopHUD.getPoopSpriteTable(temp_player)
 		player_table.poop_mana = temp_player:GetPoopMana()
 		player_table.max_poop_mana = 9
+		hold_spell = 0
 	end
 	-- ___ T. Cain check
 	if player_table.type == PlayerType.PLAYER_CAIN_B then
