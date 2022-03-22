@@ -317,6 +317,18 @@ Isaac.AddCallback = addCallbackNew
 -- _____ Modified EID Wolsauge bag of crafting functions
 local pickupsOnInit = {} -- holds all items in rooms whick can be collected by bag of crafting
 -- __ collects all items in room when
+coopHUD:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, function(_, pickup,collider,_)
+	if collider.Type == EntityType.ENTITY_PLAYER or collider.Type == EntityType.ENTITY_FAMILIAR or
+		collider.Type == EntityType.ENTITY_BUMBINO or collider.Type == EntityType.ENTITY_ULTRA_GREED then
+		local pickupsOnInitCorrected = {}
+		for _,e in ipairs(pickupsOnInit) do
+			if GetPtrHash(pickup) ~= GetPtrHash(e) then
+				table.insert(pickupsOnInitCorrected,e)
+			end
+		end
+		pickupsOnInit = pickupsOnInitCorrected
+	end
+end)
 coopHUD:AddCallback(ModCallbacks.MC_POST_KNIFE_INIT, function(_, entity)
 	if entity.Variant ~= 4 then
 		return
