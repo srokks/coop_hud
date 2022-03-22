@@ -325,15 +325,20 @@ function coopHUD.getHUDSprites()
 	         ['my_stuff_sprite']      = my_stuff_sprite }
 end
 function coopHUD.getItemSprite(item_id)
-	local sprite = Sprite()
-	local item_sprite = Isaac.GetItemConfig():GetCollectible(item_id).GfxFileName
-	sprite:Load(coopHUD.GLOBALS.item_anim_path, false)
-	sprite:ReplaceSpritesheet(0, item_sprite)
-	sprite:ReplaceSpritesheet(1, item_sprite)
-	sprite:ReplaceSpritesheet(2, item_sprite)
-	sprite:LoadGraphics()
-	sprite:SetFrame('Idle', 0)
-	return sprite
+	local sprite = nil
+	if item_id ~= nil then
+		if item_id > 0 then
+			sprite = Sprite()
+			local item_sprite = Isaac.GetItemConfig():GetCollectible(item_id).GfxFileName
+			sprite:Load(coopHUD.GLOBALS.item_anim_path, false)
+			sprite:ReplaceSpritesheet(0, item_sprite)
+			sprite:ReplaceSpritesheet(1, item_sprite)
+			sprite:ReplaceSpritesheet(2, item_sprite)
+			sprite:LoadGraphics()
+			sprite:SetFrame('Idle', 0)
+		end
+	end
+		return sprite
 end
 function coopHUD.getCraftingItemSprite(item_id)
 	local sprite = Sprite()
@@ -890,7 +895,7 @@ function coopHUD:isCollectibleUnlockedAnyPool(collectibleID)
 		return coopHUD.itemUnlockStates[collectibleID]
 	end
 end
-function coopHUD.getCraftingItemId(item_entity)
+function coopHUD.getCraftingItemId(Variant, SubType)
 	local pickupIDLookup = {
 		["10.1"]    = { 1 }, -- Red heart
 		["10.2"]    = { 1 }, -- half heart
@@ -931,25 +936,25 @@ function coopHUD.getCraftingItemId(item_entity)
 		["300.50"]  = { 21 }, -- Emergency Contact
 		["300.78"]  = { 25 }, -- Cracked key
 	}
-	local Variant = item_entity.Variant
-	local SubType = item_entity.SubType
-	local id = {}
-	if pickupIDLookup["" .. Variant .. "." .. SubType] ~= nil then
-		id = pickupIDLookup["" .. Variant .. "." .. SubType]
+	local entry = pickupIDLookup[Variant.."."..SubType]
+	if entry ~= nil then
+		return entry
 	elseif Variant == 300 then
-		if SubType > 80 or (SubType >= 32 and SubType <= 41) or SubType == 55 then
-			-- runes
-			id = { 23 }
-		else
-			-- cards
-			id = { 21 }
+		if SubType == 0 then -- player:GetCard() returned 0
+			return nil
+		elseif SubType > 80 or (SubType >= 32 and SubType <= 41) or SubType == 55 then -- runes
+			return {23}
+		else -- cards
+			return {21}
 		end
-	elseif Variant == 70 then
-		-- pills
-		id = { 22 }
+	elseif Variant == 70 then -- pills
+		if SubType == 0 then -- player:GetPill() returned 0
+			return nil
+		else
+			return {22}
+		end
 	end
-
-	return id
+	return nil
 end
 function coopHUD.getItemValue(item_id)
 	local pickupValues = {
