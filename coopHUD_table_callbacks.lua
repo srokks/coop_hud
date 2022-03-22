@@ -67,7 +67,7 @@ coopHUD:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, coopHUD.on_player_init)
 function coopHUD.on_activate(_, type, RNG, EntityPlayer, UseFlags, used_slot, CustomVarData)
 	local player_index = coopHUD.getPlayerNumByControllerIndex(EntityPlayer.ControllerIndex)
 	-- Hold on use change sprite
-	if type == CollectibleType.COLLECTIBLE_HOLD and coopHUD.players[player_index].poop_mana >= 0 then
+	if type == CollectibleType.COLLECTIBLE_HOLD and coopHUD.players[player_index].poop_mana > 0 or coopHUD.players[player_index].hold_spell ~= nil then
 		if coopHUD.players[player_index].hold_spell == nil then
 			coopHUD.players[player_index].hold_spell = coopHUD.players[player_index].poops[0]
 			coopHUD.updatePockets(player_index)
@@ -212,6 +212,7 @@ function coopHUD.on_input()
 		end
 		if Input.IsActionTriggered(ButtonAction.ACTION_BOMB, player.ControllerIndex) then
 			coopHUD.updateItems()
+			coopHUD.signals.on_poop_update = player_index
 		end
 		if Input.IsActionPressed(ButtonAction.ACTION_MAP, player.ControllerIndex) then
 			mapPressed = player_index
