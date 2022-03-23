@@ -400,23 +400,26 @@ function coopHUD.updateBethanyCharge(player_no)
 		end
 	end
 end
-function coopHUD.updatePoopMana(player_no)
-	if coopHUD.players[player_no].type == PlayerType.PLAYER_XXX_B then
-		local player = Isaac.GetPlayer(player_no)
-		if coopHUD.players[player_no].poop_mana ~= player:GetPoopMana() then
-			force_update = true
-			coopHUD.players[player_no].poop_mana = player:GetPoopMana()
-		end
-		if coopHUD.players[player_no].max_poop_mana ~= 9 or
-				coopHUD.players[player_no].max_poop_mana ~= 9 then
-			coopHUD.players[player_no].max_poop_mana = 9
-			if coopHUD.players[player_no].has_birthright then
-				coopHUD.players[player_no].max_poop_mana = 29
+function coopHUD.updatePoopMana()
+	--FIXME: Due to game logic players share poop mana ammount
+	for player_no,player in pairs(coopHUD.players) do
+		if coopHUD.players[player_no].type == PlayerType.PLAYER_XXX_B then
+			local player = Isaac.GetPlayer(player_no)
+			if coopHUD.players[player_no].poop_mana ~= player:GetPoopMana() then
+				force_update = true
+				coopHUD.players[player_no].poop_mana = player:GetPoopMana()
 			end
-		end
-		if coopHUD.players[player_no].poops[0] ~= player:GetPoopSpell(0) or force_update then
-			coopHUD.players[player_no].poops = coopHUD.getPoopSpellTable(player_no)
-			coopHUD.players[player_no].sprites.poops = coopHUD.getPoopSpriteTable(player)
+			if coopHUD.players[player_no].max_poop_mana ~= 9 or
+					coopHUD.players[player_no].max_poop_mana ~= 9 then
+				coopHUD.players[player_no].max_poop_mana = 9
+				if coopHUD.players[player_no].has_birthright then
+					coopHUD.players[player_no].max_poop_mana = 29
+				end
+			end
+			if coopHUD.players[player_no].poops[0] ~= player:GetPoopSpell(0) or force_update then
+				coopHUD.players[player_no].poops = coopHUD.getPoopSpellTable(player_no)
+				coopHUD.players[player_no].sprites.poops = coopHUD.getPoopSpriteTable(player)
+			end
 		end
 	end
 end
@@ -630,7 +633,7 @@ function coopHUD.updateTables()
 		coopHUD.signals.on_bethany_update = nil
 	end
 	if coopHUD.signals.on_poop_update then
-		coopHUD.updatePoopMana(coopHUD.signals.on_poop_update)
+		coopHUD.updatePoopMana()
 		coopHUD.signals.on_poop_update = nil
 	end
 	if coopHUD.signals.on_drop_triggered then
