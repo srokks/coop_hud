@@ -1062,6 +1062,7 @@ function coopHUD.renderCollectibles(player_no)
 	local pos = Vector(0,0)
 	local mirrored = coopHUD.players_config.small[player_no].mirrored
 	local collectibles = coopHUD.players[player_no].collectibles
+	local gulped_trinkets = coopHUD.players[player_no].gulped_trinkets
 	local color = coopHUD.colors[coopHUD.players_config.small[player_no].color].color
 	local my_stuff_offset = Vector(0, 0)
 	local item_off = Vector(0, 32)
@@ -1093,6 +1094,13 @@ function coopHUD.renderCollectibles(player_no)
 		row = math.floor((#collectibles - i) / 10)
 		collectibles[i].sprite.Scale = Vector(0.5, 0.5)
 		collectibles[i].sprite:Render(Vector(temp_pos.X + col * 11, temp_pos.Y + 11 * row))
+		col = col + 1
+		if col == 10 then col = 0 end -- reset column
+	end
+	for i= #gulped_trinkets,1,-1 do
+		row = math.floor((#collectibles+#gulped_trinkets - i) / 10)
+		gulped_trinkets[i].sprite.Scale = Vector(0.5, 0.5)
+		gulped_trinkets[i].sprite:Render(Vector(temp_pos.X + col * 11, temp_pos.Y + 11 * row))
 		col = col + 1
 		if col == 10 then col = 0 end -- reset column
 	end
