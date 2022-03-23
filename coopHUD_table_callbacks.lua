@@ -26,7 +26,6 @@ function coopHUD.on_start(_, cont)
 					end
 					-- load hold spell current load
 					if player_save.hold_spell ~= nil then
-						print(player_no,player_save.hold_spell)
 						coopHUD.players[tonumber(player_no)].hold_spell = player_save.hold_spell
 					end
 					coopHUD.signals.on_pockets_update = tonumber(player_no)
@@ -319,69 +318,3 @@ function addCallbackNew(mod, callback, func, arg1, arg2, arg3, arg4)
 end
 Isaac.AddCallback = addCallbackNew
 ---- End of standalone module
--- _____ BAG OF CRAFTING callbacks
--- Bag of crafting
--- _____ Modified EID Wolsauge bag of crafting functions
-local pickupsOnInit = {} -- holds all items in rooms whick can be collected by bag of crafting
--- __ collects all items in room when
-coopHUD:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, function(_, pickup,collider,_)
-	if collider.Type == EntityType.ENTITY_PLAYER or collider.Type == EntityType.ENTITY_FAMILIAR or
-		collider.Type == EntityType.ENTITY_BUMBINO or collider.Type == EntityType.ENTITY_ULTRA_GREED then
-		local pickupsOnInitCorrected = {}
-		for _,e in ipairs(pickupsOnInit) do
-			if GetPtrHash(pickup) ~= GetPtrHash(e) then
-				table.insert(pickupsOnInitCorrected,e)
-			end
-		end
-		pickupsOnInit = pickupsOnInitCorrected
-	end
-end)
-coopHUD:AddCallback(ModCallbacks.MC_POST_KNIFE_INIT, function(_, entity)
-	if entity.Variant ~= 4 then
-		return
-	end
-	pickupsOnInit = {}
-	for _, e in ipairs(Isaac.FindByType(EntityType.ENTITY_PICKUP, -1, -1, false, false)) do
-		if e:GetSprite():GetAnimation() ~= "Collect" then
-			table.insert(pickupsOnInit, e)
-		end
-	end
-end, 4)
---
--- __ When bag of crafting entity destroyed add to parent.player.bag of crafting inventory new item
-coopHUD:AddCallback(ModCallbacks.MC_POST_ENTITY_REMOVE, function(_, bag)
-	if bag.Variant ~= 4 or bag.SubType ~= 4 then
-		return
-	end
-
-	table.sort(pickupsOnInit, function(a, b)
-		return
-		a:GetSprite():GetFrame() > b:GetSprite():GetFrame() or
-				(a:GetSprite():GetFrame() == b:GetSprite():GetFrame() and a.Index < b.Index)
-	end)
-	for _, e in ipairs(pickupsOnInit) do
-		if e:GetSprite():GetAnimation() == "Collect" then
-			local player_index = coopHUD.getPlayerNumByControllerIndex(bag:GetLastParent():ToPlayer().ControllerIndex)
-			local player_bag = coopHUD.players[player_index].bag_of_crafting
-			local item_info = coopHUD.getCraftingItemId(e)
-			for _, item_id in pairs(item_info) do
-				if #player_bag >= 8 then
-					-- if bag is full
-					local new_bag = {}
-					for i = 2, #player_bag do
-						table.insert(new_bag, player_bag[i])
-					end
-					coopHUD.players[player_index].bag_of_crafting = new_bag
-				end
-				table.insert(coopHUD.players[player_index].bag_of_crafting,
-				             { value = coopHUD.getItemValue(item_id), id = item_id, sprite = coopHUD.getCraftingItemSprite(item_id) })
-				-- set crafting result
-				craftingResult, backupResult = coopHUD.calculateBag(coopHUD.players[0]) -------------- CraftingResult: The Item ID itself
-				local result = craftingResult
-				if craftingResult ~= backupResult then result = backupResult end
-				coopHUD.players[player_index].crafting_result = result
-			end
-		end
-	end
-end, EntityType.ENTITY_KNIFE)
--- _____

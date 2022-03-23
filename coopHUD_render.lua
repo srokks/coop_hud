@@ -353,7 +353,8 @@ function coopHUD.renderPockets(player, pos, mirrored, scale, down_anchor)
 		end
 		player.sprites.first_pocket:Render(temp_pos)
 		if player.first_pocket[1] == CollectibleType.COLLECTIBLE_BAG_OF_CRAFTING then
-			coopHUD.renderBagOfCrafting(player,Vector(temp_pos.X+24,temp_pos.Y-16),mirrored)
+			-- TODO: Bag of crafting: render
+			--coopHUD.renderBagOfCrafting(player,Vector(temp_pos.X+24,temp_pos.Y-16),mirrored)
 		end
 		-- Description
 		if player.pocket_desc then
@@ -474,36 +475,6 @@ function coopHUD.renderExtraCharge(player, pos, mirrored, scale, down_anchor)
 	end
 	return final_offset
 end
-function coopHUD.renderBagOfCrafting(player, pos, mirrored)
-	local bag = player.bag_of_crafting
-	if bag ~= nil then
-		local temp_pos = Vector(0,0)
-		if mirrored then
-
-		else
-			temp_pos = Vector(pos.X+4,pos.Y+4)
-		end
-		-- render bag items
-		local col = 0
-		local row = 0
-		for i=1,8 do
-			col = col + 1
-			if i > 4 then
-				row = 1
-			end
-			if i == 5 then col = 1 end
-			local sprite = coopHUD.getCraftingItemSprite(0) -- set to empty item sprite
-			if bag[i] ~= nil then
-				sprite = bag[i].sprite -- replace with proper sprite
-			end
-			sprite:Render(Vector(temp_pos.X + 10 * (col-1),temp_pos.Y + 10 * row))
-		end
-		-- render result box
-		local result_sprite = coopHUD.getCraftingItemSprite(0)
-		result_sprite:SetFrame('Result',0)
-		result_sprite:Render(Vector(pos.X+64,pos.Y+10))
-	end
-end
 function coopHUD.renderPoopSpells(player, pos, mirrored,scale,down_anchor)
 	local main_offset = Vector(0, 0)
 	local pos_multi = 0
@@ -600,7 +571,7 @@ function coopHUD.renderPlayer(player_no)
 	local poop_spells_off = Vector(0, 0)
 	-- <First  top line render> --
 	if not coopHUD.players[player_no].is_ghost then
-		info_off = coopHUD.renderPlayerInfo(coopHUD.players[player_no],
+		info_off =  coopHUD.renderPlayerInfo(coopHUD.players[player_no],
 		                                    anchor_top, mirrored, Vector(0.9, 0.9), false)
 		active_off = coopHUD.renderActive(coopHUD.players[player_no],
 		                                  Vector(anchor_top.X + info_off.X, anchor_top.Y),
