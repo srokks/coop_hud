@@ -20,9 +20,16 @@ function coopHUD.on_start(_, cont)
 						local item = Isaac.GetItemConfig():GetCollectible(item_id)
 						coopHUD.add_collectible(tonumber(player_no), item)
 					end
+					-- load gulped_trinket
+					for _, trinket_id in pairs(player_save.gulped_trinkets) do
+						local temp_trinket = Isaac.GetItemConfig():GetTrinket(trinket_id)
+						table.insert(coopHUD.players[tonumber(player_no)].gulped_trinkets,
+						             { id = temp_trinket.ID, sprite = coopHUD.getTrinketSpriteByID(temp_trinket.ID) })
+					end
 					-- load bag of crafting
-					for _,item_id in pairs(player_save.bag_of_crafting) do
-						table.insert(coopHUD.players[tonumber(player_no)].bag_of_crafting, { value = coopHUD.getItemValue(item_id), id = item_id, sprite = coopHUD.getCraftingItemSprite(item_id) })
+					for _, item_id in pairs(player_save.bag_of_crafting) do
+						table.insert(coopHUD.players[tonumber(player_no)].bag_of_crafting,
+						             { value = coopHUD.getItemValue(item_id), id = item_id, sprite = coopHUD.getCraftingItemSprite(item_id) })
 					end
 					-- load hold spell current load
 					if player_save.hold_spell ~= nil then
