@@ -83,6 +83,7 @@ function coopHUD.on_activate(_, type, RNG, EntityPlayer, UseFlags, used_slot, Cu
 	end
 	-- Check if used Smelter or trinket been smelted (bu Gulp Pill or Marbles)
 	if type == CollectibleType.COLLECTIBLE_SMELTER then
+		coopHUD.gulp_trinket(player_index)
 		coopHUD.signals.on_trinket_update = player_index -- update trinkets on smelt
 	end
 	if coopHUD.players[player_index].type == PlayerType.PLAYER_BETHANY or

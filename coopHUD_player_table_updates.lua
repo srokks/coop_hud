@@ -29,6 +29,7 @@ function coopHUD.initPlayer(player_no, ent_player)
 		pocket_desc          = coopHUD.getMainPocketDesc(temp_player),
 		-- Collectibles
 		collectibles         = {},
+		gulped_trinkets      = {},
 		bag_of_crafting      = nil,
 		crafting_result      = nil,
 		-- Hearts
@@ -402,7 +403,7 @@ function coopHUD.updateBethanyCharge(player_no)
 end
 function coopHUD.updatePoopMana()
 	--FIXME: Due to game logic players share poop mana ammount
-	for player_no,player in pairs(coopHUD.players) do
+	for player_no, player in pairs(coopHUD.players) do
 		if coopHUD.players[player_no].type == PlayerType.PLAYER_XXX_B then
 			local player = Isaac.GetPlayer(player_no)
 			if coopHUD.players[player_no].poop_mana ~= player:GetPoopMana() then
@@ -517,6 +518,17 @@ function coopHUD.updateStats(player_no)
 end
 function coopHUD.add_collectible(player_index, item)
 	table.insert(coopHUD.players[player_index].collectibles, { id = item.ID, sprite = coopHUD.getItemSprite(item.ID) })
+end
+function coopHUD.gulp_trinket(player_index)
+	local player = coopHUD.players[player_index]
+	if player.first_trinket ~= 0 then
+		local temp_trinket = Isaac:GetItemConfig():GetTrinket(player.first_trinket)
+		table.insert(player.gulped_trinkets, { id = temp_trinket.ID, sprite = coopHUD.getTrinketSpriteByID(temp_trinket.ID) })
+	end
+	if player.second_trinket ~= 0 then
+		local temp_trinket = Isaac:GetItemConfig():GetTrinket(player.second_trinket)
+		table.insert(player.gulped_trinkets, { id = temp_trinket.ID, sprite = coopHUD.getTrinketSpriteByID(temp_trinket.ID) })
+	end
 end
 -- ___ Shift Bag of crafting
 function coopHUD.shiftBag(player_index)
