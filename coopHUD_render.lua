@@ -1072,7 +1072,7 @@ function coopHUD.renderCollectibles(player_no)
 	else
 		pos = Vector(coopHUD.anchors.top_left.X,coopHUD.anchors.top_left.Y)
 		pos.X = 48
-		item_off.X = 18
+		item_off.X = 16
 		my_stuff_offset = Vector(172 + 60, 26)
 	end
 	pos.Y = 64
@@ -1091,7 +1091,7 @@ function coopHUD.renderCollectibles(player_no)
 	local temp_pos = Vector(pos.X + item_off.X, pos.Y + item_off.Y)
 	for i = #collectibles, 1, -1 do
 		row = math.floor((#collectibles - i) / 10)
-		collectibles[i].sprite.Scale = Vector(0.45, 0.45)
+		collectibles[i].sprite.Scale = Vector(0.5, 0.5)
 		collectibles[i].sprite:Render(Vector(temp_pos.X + col * 11, temp_pos.Y + 11 * row))
 		col = col + 1
 		if col == 10 then col = 0 end -- reset column
