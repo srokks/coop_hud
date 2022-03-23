@@ -17,8 +17,8 @@
 		[list]
 			[ ] Tainted Isaac collectibles
 			[ ] Tainted Maggy - pulsing hearts
-			[ ] Tainted ??? - shows poop spell for up to 4 players
-			[*] Bag of crafting integration:
+			[*] Tainted ??? - shows poop spell for up to 4 players but mana is share throught all Tainted ??? Players
+			[ ] Bag of crafting integration:
 			[list]
 				[ ] Shows crafting inventory for Tainted Cain for up to 4 players
 				[ ] Inventory is loaded when continue game
@@ -69,8 +69,8 @@
 			[/list]
 		[h2]Issues/ not working/missing[/h2]
 			[list]
-				[*] Green incompatible (for now)
 				[*] Modded characters support (for now)
+				[*] Tainted ??? - for coop players poop mana is the
 				[*] Urn of soul - only show open/close sprite state - no modding API function
 				[*] Jar of Wisp - manual charge detection/ resets on restart- no modding API function
 			[/list]
