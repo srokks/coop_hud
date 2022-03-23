@@ -226,7 +226,7 @@ function coopHUD.on_input()
 	if not coopHUD.signals.on_battle then
 		if mapPressed then
 			btn_held = btn_held + 1
-			if btn_held > 1200 then
+			if btn_held > 25 then
 				coopHUD.signals.map = mapPressed
 			end
 		else
