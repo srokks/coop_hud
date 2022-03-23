@@ -24,6 +24,12 @@ function coopHUD.on_start(_, cont)
 					for _,item_id in pairs(player_save.bag_of_crafting) do
 						table.insert(coopHUD.players[tonumber(player_no)].bag_of_crafting, { value = coopHUD.getItemValue(item_id), id = item_id, sprite = coopHUD.getCraftingItemSprite(item_id) })
 					end
+					-- load hold spell current load
+					if player_save.hold_spell ~= nil then
+						print(player_no,player_save.hold_spell)
+						coopHUD.players[tonumber(player_no)].hold_spell = player_save.hold_spell
+					end
+					coopHUD.signals.on_pockets_update = tonumber(player_no)
 				end
 				--
 			end
