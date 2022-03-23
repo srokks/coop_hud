@@ -180,6 +180,16 @@ function coopHUD.getTrinketSprite(player, trinket_pos)
 	sprite:SetFrame("Idle", 0)
 	return sprite
 end
+function coopHUD.getTrinketSpriteByID(trinket_id)
+	local sprite = Sprite()
+	sprite:Load(coopHUD.GLOBALS.item_anim_path, true)
+	local item_sprite = Isaac.GetItemConfig():GetTrinket(trinket_id).GfxFileName
+	sprite:ReplaceSpritesheet(0, item_sprite) -- item layer
+	sprite:ReplaceSpritesheet(2, item_sprite) -- shadow layer
+	sprite:LoadGraphics()
+	sprite:SetFrame("Idle", 0)
+	return sprite
+end
 function coopHUD.getPocketItemSprite(player, slot)
 	-- cards/runes/
 	local pocket_sprite = Sprite()
