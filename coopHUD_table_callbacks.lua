@@ -81,7 +81,7 @@ function coopHUD.on_activate(_, type, RNG, EntityPlayer, UseFlags, used_slot, Cu
 		end
 		coopHUD.signals.on_poop_update = player_index
 	end
-	-- Check if used Smelter
+	-- Check if used Smelter or trinket been smelted (bu Gulp Pill or Marbles)
 	if type == CollectibleType.COLLECTIBLE_SMELTER then
 		coopHUD.signals.on_trinket_update = player_index -- update trinkets on smelt
 	end
@@ -133,10 +133,6 @@ function coopHUD.on_damage(_, entity)
 	local ent_player = entity:ToPlayer() -- parse entity to player entity
 	local player_index = coopHUD.getPlayerNumByControllerIndex(ent_player.ControllerIndex) -- gets player index
 	coopHUD.signals.on_heart_update = player_index -- triggers heart update for player
-	if ent_player:HasCollectible(CollectibleType.COLLECTIBLE_MARBLES) then
-		-- in case of marbles (can gulp trinket)
-		coopHUD.signals.on_trinket_update = player_index -- update trinkets
-	end
 end
 coopHUD:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, coopHUD.on_damage, EntityType.ENTITY_PLAYER)
 -- __________ On room clear
@@ -249,10 +245,6 @@ function coopHUD.on_pill_use(_, effect_no, ent_player)
 	local player_index = coopHUD.getPlayerNumByControllerIndex(ent_player.ControllerIndex)
 	-- Triggers pocket update signal
 	coopHUD.signals.on_pockets_update = player_index
-	-- Updates trinkets if Gulp used
-	if effect_no == PillEffect.PILLEFFECT_GULP then
-		coopHUD.signals.on_trinket_update = player_index
-	end
 	coopHUD.signals.on_heart_update = player_index
 end
 coopHUD:AddCallback(ModCallbacks.MC_USE_PILL, coopHUD.on_pill_use)
