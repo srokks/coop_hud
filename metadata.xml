@@ -26,9 +26,9 @@
 			[/list]
 			[*] EXTRA HUD - show collectibles on MAP key
 			[list]
-				[*] Every player can lookup his collectibles
-                [*] Color stuff page according to player number
-                [ ] Show gulped trinkets
+				[*] Every player can lookup his collectibles (by holding Map button)
+                [*] Color stuff page according to player number (can turn off in options)
+                [*] Show gulped trinkets
                 [ ] Reload collectibles in options menu
 			[/list]
 			[*] Fixed joining logic
