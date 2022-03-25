@@ -95,7 +95,17 @@ function coopHUD.on_activate(_, type, RNG, EntityPlayer, UseFlags, used_slot, Cu
 	end
 	if type == CollectibleType.COLLECTIBLE_D4 then
 		print('do a barrel roll')
-
+		-- Refresh collectibles - order them in alphabetical order
+		--TODO: test it
+		coopHUD.players[player_index].collectibles = {}
+		for i = 1, Isaac.GetItemConfig():GetCollectibles().Size - 1 do
+			if Isaac.GetPlayer(coopHUD.players[player_index].game_index):HasCollectible(i) then
+				local item = Isaac.GetItemConfig():GetCollectible(i)
+				if item.Type ~= ItemType.ITEM_ACTIVE then
+					coopHUD.add_collectible(player_index, item)
+				end
+			end
+		end
 		--coopHUD.signals.on_trinket_update = player_index -- update trinkets on smelt
 	end
 	if coopHUD.players[player_index].type == PlayerType.PLAYER_BETHANY or
