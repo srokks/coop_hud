@@ -142,6 +142,10 @@ function coopHUD.Item:render(pos, mirrored, scale, down_anchor)
 		self.sprite.Scale = sprite_scale
 		self.sprite:Render(temp_pos)
 	end
+	if self.slot >= 0 and self.slot ~= ActiveSlot.SLOT_SECONDARY then
+		self:renderChargeBar(Vector(pos.X+offset.X,pos.Y), mirrored, scale, down_anchor)
+	end
+
 	return offset
 end
 --
