@@ -18,6 +18,50 @@ function coopHUD.Item.new(player, slot, item_id)
 	self.charge = self.entPlayer:GetActiveCharge(slot)
 	return self
 end
+function coopHUD.Item.getChargeSprites(self)
+	-- Gets charge of item from  player, slot
+	local sprites = {
+		beth_charge = Sprite(),
+		charge      = Sprite(),
+		overlay     = Sprite(),
+	}
+	if self.id == 0 or self.id == nil or self.slot < 0 then return nil end
+	local max_charges = Isaac.GetItemConfig():GetCollectible(self.id).MaxCharges
+	if max_charges == 0 then return false end
+	-- Normal and battery charge
+	local charges = self.entPlayer:GetActiveCharge(self.slot) + self.entPlayer:GetBatteryCharge(self.slot)
+	local step = math.floor((charges / (max_charges * 2)) * 46)
+	print(step)
+	sprites.charge:Load(coopHUD.GLOBALS.charge_anim_path, true)
+	sprites.charge:SetFrame('ChargeBar', step)
+	-- Overlay sprite
+	sprites.overlay:Load(coopHUD.GLOBALS.charge_anim_path, true)
+	if (max_charges > 1 and max_charges < 5) or max_charges == 6 or max_charges == 12 then
+		sprites.overlay:SetFrame("BarOverlay" .. max_charges, 0)
+	else
+		sprites.overlay:SetFrame("BarOverlay1", 0)
+	end
+	-- Bethany charge
+	local player_type = self.entPlayer:GetPlayerType()
+	if player_type == PlayerType.PLAYER_BETHANY or player_type == PlayerType.PLAYER_BETHANY_B then
+		local beth_charge
+		local color = Color(1, 1, 1, 1, 0, 0, 0)
+		if player_type == PlayerType.PLAYER_BETHANY then
+			beth_charge = player:GetEffectiveSoulCharge()
+			color:SetColorize(0.8, 0.9, 1.8, 1)
+		elseif player_type == PlayerType.PLAYER_BETHANY_B then
+			beth_charge = player:GetEffectiveBloodCharge()
+			color:SetColorize(1, 0.2, 0.2, 1)
+		end
+		sprites.beth_charge:Load(coopHUD.GLOBALS.charge_anim_path, true)
+		sprites.beth_charge.Color = color
+		step = step + math.floor((beth_charge / (item_charge * 2)) * 46) + 1
+		sprites.beth_charge:SetFrame('ChargeBar', step)
+	else
+		sprites.beth_charge = false
+	end
+	return sprites
+end
 function coopHUD.Item:getSprite()
 	if self.id == 0 or self.entPlayer.Variant == 1 then return nil end
 	-- locals initial
