@@ -57,8 +57,11 @@ function coopHUD.Player.new(player_no)
 	self.hold_spell = nil -- current spell stashed in hold (int)
 	return self
 end
-function coopHUD.Player.update()
-
+function coopHUD.Player.update(self)
+	if self.signals.on_active_update then
+		self.active_item:update()
+		self.signals.on_active_update = nil
+	end
 end
 function coopHUD.Player.on_activate(_, type, RNG, EntityPlayer, UseFlags, used_slot, CustomVarData)
 	if EntityPlayer ~= nil then
