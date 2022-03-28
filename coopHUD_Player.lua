@@ -60,6 +60,12 @@ end
 function coopHUD.Player.update()
 
 end
+function coopHUD.Player.on_activate(_, type, RNG, EntityPlayer, UseFlags, used_slot, CustomVarData)
+	if EntityPlayer ~= nil then
+		local player_index = coopHUD.getPlayerNumByControllerIndex(EntityPlayer.ControllerIndex)
+		coopHUD.players[player_index].signals.on_active_update = true
+	end
+end
 function coopHUD.Player:on_drop_triggered()
 	self.active_item:update()
 	self.schoolbag_item:update()
