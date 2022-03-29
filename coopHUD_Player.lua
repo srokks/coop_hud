@@ -11,6 +11,7 @@ function coopHUD.Player.new(player_no)
 	self.entPlayer = Isaac.GetPlayer(player_no)
 	self.controller_index = self.entPlayer.ControllerIndex
 	self.game_index = player_no
+	self.name = 'P' .. tostring(player_no + 1)
 	-- Active items
 	self.active_item = coopHUD.Item(self.entPlayer, ActiveSlot.SLOT_PRIMARY)
 	self.schoolbag_item = coopHUD.Item(self.entPlayer, ActiveSlot.SLOT_SECONDARY)
@@ -55,25 +56,38 @@ function coopHUD.Player.new(player_no)
 	self.max_poop_mana = nil -- max cap of mana that player holds (int)
 	self.poops = nil -- table of
 	self.hold_spell = nil -- current spell stashed in hold (int)
+	--
+	self.signals = {
+		on_active_update = false,
+		on_drop_activate = false,
+	}
+	--
 	return self
 end
-function coopHUD.Player.update(self)
+function coopHUD.Player:on_active_update()
+	if self.signals.on_active_update then
+		self.signals.on_active_update = false
+	else
+		self.signals.on_active_update = true
+	end
+end
+function coopHUD.Player:update()
+	if self.signals.on_drop_activate then
+		self.signals.on_active_update = true
+		self.signals.on_drop_activate = nil
+	end
+	 --print(self.signals.on_active_update)
 	if self.signals.on_active_update then
 		self.active_item:update()
-		self.signals.on_active_update = nil
+		self.schoolbag_item:update()
+		self:on_active_update()
+	end
+	if self.signals.on_trinket_update then
+		self.first_trinket:update()
+		self.second_trinket:update()
+		self.signals.on_trinket_update = nil
 	end
 end
-function coopHUD.Player.on_activate(_, type, RNG, EntityPlayer, UseFlags, used_slot, CustomVarData)
-	if EntityPlayer ~= nil then
-		local player_index = coopHUD.getPlayerNumByControllerIndex(EntityPlayer.ControllerIndex)
-		coopHUD.players[player_index].signals.on_active_update = true
-	end
-end
-function coopHUD.Player:on_drop_triggered()
-	self.active_item:update()
-	self.schoolbag_item:update()
-end
-
 function coopHUD.Player:render()
 	--
 	local anchor = Vector(coopHUD.anchors[coopHUD.players_config.small[self.game_index].anchor].X,
@@ -104,5 +118,5 @@ function coopHUD.Player:render()
 	trinket_off = self.first_trinket:render(Vector(anchor.X, anchor.Y + first_line_offset.Y), mirrored, scale,
 	                                        down_anchor)
 	self.second_trinket:render(Vector(anchor.X, anchor.Y + first_line_offset.Y + trinket_off.Y), mirrored, scale,
-	                                        down_anchor)
+	                           down_anchor)
 end
