@@ -16,8 +16,8 @@ function coopHUD.Player.new(player_no)
 	self.active_item = coopHUD.Item(self.entPlayer, ActiveSlot.SLOT_PRIMARY)
 	self.schoolbag_item = coopHUD.Item(self.entPlayer, ActiveSlot.SLOT_SECONDARY)
 	-- Trinkets
-	self.first_trinket = coopHUD.Trinket(self.entPlayer,0)
-	self.second_trinket = coopHUD.Trinket(self.entPlayer,1)
+	self.first_trinket = coopHUD.Trinket(self.entPlayer, 0)
+	self.second_trinket = coopHUD.Trinket(self.entPlayer, 1)
 	-- Pockets
 	self.first_pocket = coopHUD.Pocket(self, 0)
 	self.second_pocket = coopHUD.Pocket(self, 1)
@@ -60,27 +60,37 @@ function coopHUD.Player.new(player_no)
 	self.signals = {
 		on_active_update = false,
 		on_drop_activate = false,
+		on_pocket_update = false,
 	}
 	--
+	self.pocket_font = Font()
+	self.pocket_font:Load("font/pftempestasevencondensed.fnt")
 	return self
 end
-function coopHUD.Player:on_active_update()
-	if self.signals.on_active_update then
-		self.signals.on_active_update = false
+function coopHUD.Player:on_signal(signal)
+	if self.signals[signal] then
+		self.signals[signal] = false
 	else
-		self.signals.on_active_update = true
+		self.signals[signal] = true
 	end
 end
 function coopHUD.Player:update()
 	if self.signals.on_drop_activate then
 		self.signals.on_active_update = true
+		self.signals.on_pocket_update = true
 		self.signals.on_drop_activate = nil
 	end
-	 --print(self.signals.on_active_update)
 	if self.signals.on_active_update then
 		self.active_item:update()
 		self.schoolbag_item:update()
 		self:on_active_update()
+	end
+	if self.signals.on_pocket_update then
+
+		self.first_pocket:update()
+		self.second_pocket:update()
+		self.third_pocket:update()
+		self:on_signal('on_pocket_update')
 	end
 	if self.signals.on_trinket_update then
 		self.first_trinket:update()
@@ -101,6 +111,7 @@ function coopHUD.Player:render()
 	local hearts_off = Vector(0, 0)
 	local exl_liv_off = Vector(0, 0)
 	local pocket_off = Vector(0, 0)
+	local second_pocket_off = Vector(0, 0)
 	local trinket_off = Vector(0, 0)
 	local extra_charge_off = Vector(0, 0)
 	local poop_spell_off = Vector(0, 0)
@@ -110,8 +121,10 @@ function coopHUD.Player:render()
 	--
 	-- <Second  top line render> --
 	local first_line_offset = Vector(0, 0)
+	local pocket_desc_off = Vector(0,0)
 	if down_anchor then
 		first_line_offset.Y = math.min(info_off.Y, active_off.Y, hearts_off.Y, (exl_liv_off.Y + extra_charge_off.Y))
+		pocket_desc_off.Y = -8
 	else
 		first_line_offset.Y = math.max(info_off.Y, active_off.Y, hearts_off.Y, exl_liv_off.Y + extra_charge_off.Y)
 	end
@@ -119,4 +132,15 @@ function coopHUD.Player:render()
 	                                        down_anchor)
 	self.second_trinket:render(Vector(anchor.X, anchor.Y + first_line_offset.Y + trinket_off.Y), mirrored, scale,
 	                           down_anchor)
+	--
+	pocket_off = self.first_pocket:render(Vector(anchor.X + trinket_off.X, anchor.Y + first_line_offset.Y), mirrored,
+	                                      scale,
+	                                      down_anchor)
+	second_pocket_off = self.second_pocket:render(Vector(anchor.X + trinket_off.X + pocket_off.X, anchor.Y + first_line_offset.Y +pocket_desc_off.Y), mirrored,
+	                          Vector(0.5 * scale.X, 0.5 * scale.Y),
+	                          down_anchor)
+
+	self.third_pocket:render(Vector(anchor.X + trinket_off.X + pocket_off.X + second_pocket_off.X, anchor.Y + first_line_offset.Y), mirrored,
+	                          Vector(0.5 * scale.X, 0.5 * scale.Y),
+	                          down_anchor)
 end
