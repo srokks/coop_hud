@@ -140,8 +140,8 @@ function coopHUD.Item:renderChargeBar(pos, mirrored, scale, down_anchor)
 	end
 	--
 	if down_anchor then
-		temp_pos.Y = temp_pos.Y - (20 * sprite_scale.Y)
-		offset.Y = -32 * sprite_scale.Y
+		temp_pos.Y = temp_pos.Y - (16 * sprite_scale.Y)
+		offset.Y = -32  * sprite_scale.Y
 	else
 		temp_pos.Y = temp_pos.Y + (16 * sprite_scale.Y)
 		offset.Y = 32 * sprite_scale.Y
