@@ -16,8 +16,8 @@ function coopHUD.Player.new(player_no)
 	self.active_item = coopHUD.Item(self.entPlayer, ActiveSlot.SLOT_PRIMARY)
 	self.schoolbag_item = coopHUD.Item(self.entPlayer, ActiveSlot.SLOT_SECONDARY)
 	-- Trinkets
-	self.first_trinket = coopHUD.Trinket(self.entPlayer:GetTrinket(0))
-	self.second_trinket = coopHUD.Trinket(self.entPlayer:GetTrinket(1))
+	self.first_trinket = coopHUD.Trinket(self.entPlayer,0)
+	self.second_trinket = coopHUD.Trinket(self.entPlayer,1)
 	-- Pockets
 	self.first_pocket = coopHUD.Pocket(self, 0)
 	self.second_pocket = coopHUD.Pocket(self, 1)
