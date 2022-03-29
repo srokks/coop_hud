@@ -336,7 +336,7 @@ function coopHUD.Pocket:getName()
 		name = string.sub(name, 2) --  get rid of # on front of
 		name = langAPI.getPocketName(name)
 		--
-		desc = Isaac.GetItemConfig():GetCard(player:GetCard(0)).Description
+		desc = Isaac.GetItemConfig():GetCard(self.id).Description
 		desc = string.sub(desc, 2) --  get rid of # on front of
 		desc = langAPI.getPocketName(desc)
 	elseif self.type == 2 then
@@ -368,25 +368,37 @@ function coopHUD.Pocket:render(pos, mirrored, scale, down_anchor)
 	--
 	if sprite_scale == nil then sprite_scale = Vector(1, 1) end -- sets def sprite_scale
 	--
-	if mirrored then
-		temp_pos.X = temp_pos.X - (16 * sprite_scale.X)
-		offset.X = -24
-	else
-		temp_pos.X = temp_pos.X + (16 * sprite_scale.X)
-		offset.X = 24
-	end
-	--
-	if down_anchor then
-		temp_pos.Y = temp_pos.Y - (16 * sprite_scale.Y)
-		offset.Y = -32
-	else
-		temp_pos.Y = temp_pos.Y + (16 * sprite_scale.Y)
-		offset.Y = 24
-	end
-	--
 	if self.sprite then
+		if mirrored then
+			temp_pos.X = temp_pos.X - (16 * sprite_scale.X)
+			offset.X = -24
+		else
+			temp_pos.X = temp_pos.X + (16 * sprite_scale.X)
+			offset.X = 24
+		end
+		--
+		if down_anchor then
+			temp_pos.Y = temp_pos.Y - (16 * sprite_scale.Y)
+			offset.Y = -32
+		else
+			temp_pos.Y = temp_pos.Y + (16 * sprite_scale.Y)
+			offset.Y = 24
+		end
+		--
 		self.sprite.Scale = sprite_scale
 		self.sprite:Render(temp_pos)
+	elseif self.item then
+		offset = self.item:render(pos, mirrored, scale, down_anchor)
+	end
+	if self.name or self.desc and self.slot == 0 then
+		local text = self.name
+		if Input.IsActionPressed(ButtonAction.ACTION_MAP, self.parent.controller_index) then
+			text = self.desc
+		end
+		local f = Font()
+		local font_color = KColor(1, 1, 1, 1)
+		f:Load("font/pftempestasevencondensed.fnt")
+		f:DrawStringScaled(text, temp_pos.X, temp_pos.Y, sprite_scale.X, sprite_scale.Y, font_color, 0, true)
 	end
 	return offset
 end
