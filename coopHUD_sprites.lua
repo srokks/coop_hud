@@ -279,8 +279,8 @@ function coopHUD.Pocket.new(parent, slot)
 	self.slot = slot
 	self.type,self.id  = self:getPocket() -- holds pocket type -- 0 - none, 1 - card, 2 - pill, 3 - item
 	self.sprite = self:getSprite()
-	self.name = nil
-	self.desc = nil
+	self.item = self:getItem()
+	self.name, self.desc = self:getName()
 	return self
 end
 function coopHUD.Pocket:getPocket()
@@ -319,14 +319,48 @@ function coopHUD.Pocket:getSprite()
 		if self.id > 2048 then self.id = self.id - 2048 end -- check if its horse pill and change id to normal
 		sprite:Load(coopHUD.GLOBALS.pill_anim_path, true)
 		sprite:SetFrame("Pills", self.id) --sets frame to pills with correct id
-	elseif self.type == 3 then -- Pocket item
-		sprite = coopHUD.getActiveItemSprite(self.parent.entPlayer, 2)
 	else
 		sprite = nil
 	end
 	return sprite
 end
+function coopHUD.Pocket:getItem()
+	if self.type ~= 3 then return nil end
+	return coopHUD.Item(self.parent.entPlayer, 2)
+end
+function coopHUD.Pocket:getName()
+	local name = nil
+	local desc = nil
+	if self.type == 1 then
+		name = Isaac.GetItemConfig():GetCard(self.id).Name
+		name = string.sub(name, 2) --  get rid of # on front of
+		name = langAPI.getPocketName(name)
+		--
+		desc = Isaac.GetItemConfig():GetCard(player:GetCard(0)).Description
+		desc = string.sub(desc, 2) --  get rid of # on front of
+		desc = langAPI.getPocketName(desc)
+	elseif self.type == 2 then
+		name = "???" .. " "
+		desc = "???" .. " "
+		local item_pool = Game():GetItemPool()
+		if item_pool:IsPillIdentified(self.id) then
+			local pill_effect = item_pool:GetPillEffect(self.id, self.parent.entPlayer)
+			name = Isaac.GetItemConfig():GetPillEffect(pill_effect).Name
+			name = string.sub(name, 2) --  get rid of # on front of
+			name = langAPI.getPocketName(name)
+			desc = name
+		end
 
+	elseif self.type == 3 then
+		name = Isaac.GetItemConfig():GetCollectible(self.id).Name
+		desc = Isaac.GetItemConfig():GetCollectible(self.id).Description
+		name = string.sub(name, 2) --  get rid of # on front of
+		name = langAPI.getItemName(name)
+		desc = string.sub(desc, 2) --  get rid of # on front of
+		desc = langAPI.getItemName(desc)
+	end
+	return name, desc
+end
 function coopHUD.Pocket:render(pos, mirrored, scale, down_anchor)
 	local temp_pos = Vector(pos.X, pos.Y)
 	local sprite_scale = scale
