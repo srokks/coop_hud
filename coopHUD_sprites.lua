@@ -10,12 +10,13 @@ function coopHUD.Item.new(player, slot, item_id)
 	self.entPlayer = player
 	self.slot = slot
 	if slot >= 0 then
-		self.id = self.entPlayer:GetActiveItem(slot)
+		self.id = self.entPlayer:GetActiveItem(self.slot)
 	else
 		self.id = item_id
 	end
 	self.sprite = self:getSprite()
-	self.charge = self.entPlayer:GetActiveCharge(slot)
+	self.charge = self.entPlayer:GetActiveCharge(self.slot)
+	self.charge_sprites = self.getChargeSprites(self)
 	return self
 end
 function coopHUD.Item.getChargeSprites(self)
@@ -31,7 +32,6 @@ function coopHUD.Item.getChargeSprites(self)
 	-- Normal and battery charge
 	local charges = self.entPlayer:GetActiveCharge(self.slot) + self.entPlayer:GetBatteryCharge(self.slot)
 	local step = math.floor((charges / (max_charges * 2)) * 46)
-	print(step)
 	sprites.charge:Load(coopHUD.GLOBALS.charge_anim_path, true)
 	sprites.charge:SetFrame('ChargeBar', step)
 	-- Overlay sprite
@@ -92,7 +92,7 @@ function coopHUD.Item:getSprite()
 		if max_charges == 0 then
 			-- checks id item has any charges
 			frame_num = 0 -- set frame to unloaded
-		elseif self.entPlayer:NeedsCharge(slot) == false or self.entPlayer:GetActiveCharge(self.slot) >= max_charges then
+		elseif self.entPlayer:NeedsCharge(self.slot) == false or self.entPlayer:GetActiveCharge(self.slot) >= max_charges then
 			-- checks if item dont needs charges or item is overloaded
 			frame_num = 1 -- set frame to loaded
 		else
@@ -110,6 +110,7 @@ function coopHUD.Item:getSprite()
 end
 function coopHUD.Item:update()
 	if self.id ~= self.entPlayer:GetActiveItem(self.slot) then
+
 		self.id = self.entPlayer:GetActiveItem(self.slot)
 		self:updateSprite()
 	end
@@ -197,7 +198,7 @@ function coopHUD.Item:render(pos, mirrored, scale, down_anchor)
 		self.sprite:Render(temp_pos)
 	end
 	if self.slot >= 0 and self.slot ~= ActiveSlot.SLOT_SECONDARY then
-		self:renderChargeBar(Vector(pos.X+offset.X,pos.Y), mirrored, scale, down_anchor)
+		self:renderChargeBar(Vector(pos.X + offset.X, pos.Y), mirrored, scale, down_anchor)
 	end
 
 	return offset
@@ -285,7 +286,6 @@ function coopHUD.Pocket.new(parent, slot)
 end
 function coopHUD.Pocket:getType()
 	--local self = setmetatable({}, coopHUD.Pocket)
-	print(self.slot)
 	if self.parent.entPlayer:GetCard(self.slot) > 0 then
 		self.id = self.parent.entPlayer:GetCard(self.slot)
 		self.type = 1
@@ -294,7 +294,7 @@ function coopHUD.Pocket:getType()
 		self.type = 2
 	else
 		if self.slot == 1 then
-			if  self.parent.first_pocket.type ~= 3 then
+			if self.parent.first_pocket.type ~= 3 then
 				self.id = self.parent.entPlayer:GetActiveItem(2)
 				self.type = 3
 			end
