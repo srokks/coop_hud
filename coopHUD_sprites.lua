@@ -277,25 +277,25 @@ function coopHUD.Pocket.new(parent, slot)
 	local self = setmetatable({}, coopHUD.Pocket)
 	self.parent = parent
 	self.slot = slot
-	self.type = self:getType() -- holds pocket type -- 0 - none, 1 - card, 2 - pill, 3 - item
-	self.id = nil
-	self.sprite = nil
+	self.type,self.id  = self:getPocket() -- holds pocket type -- 0 - none, 1 - card, 2 - pill, 3 - item
+	self.sprite = self:getSprite()
 	self.name = nil
 	self.desc = nil
 	return self
 end
-function coopHUD.Pocket:getType()
-	--local self = setmetatable({}, coopHUD.Pocket)
+function coopHUD.Pocket:getPocket()
+	local pocket_type = 0
+	local pocket_id = 0
 	if self.parent.entPlayer:GetCard(self.slot) > 0 then
-		self.id = self.parent.entPlayer:GetCard(self.slot)
-		self.type = 1
+		pocket_id = self.parent.entPlayer:GetCard(self.slot)
+		pocket_type= 1
 	elseif self.parent.entPlayer:GetPill(self.slot) > 0 then
-		self.id = self.parent.entPlayer:GetPill(self.slot)
-		self.type = 2
+		pocket_id = self.parent.entPlayer:GetPill(self.slot)
+		pocket_type = 2
 	else
 		if self.slot == 1 then
 			if self.parent.first_pocket.type ~= 3 then
-				self.id = self.parent.entPlayer:GetActiveItem(2)
+				pocket_id = self.parent.entPlayer:GetActiveItem(2)
 				self.type = 3
 			end
 		elseif self.slot == 2 then
@@ -304,10 +304,11 @@ function coopHUD.Pocket:getType()
 				self.type = 3
 			end
 		else
-			self.id = self.parent.entPlayer:GetActiveItem(2)
-			self.type = 3
+			pocket_id = self.parent.entPlayer:GetActiveItem(2)
+			pocket_type = 3
 		end
 	end
+	return pocket_type,pocket_id
 end
 --
 function coopHUD.getMinimapOffset()
