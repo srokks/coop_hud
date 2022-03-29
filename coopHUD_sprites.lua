@@ -310,6 +310,52 @@ function coopHUD.Pocket:getPocket()
 	end
 	return pocket_type,pocket_id
 end
+function coopHUD.Pocket:getSprite()
+	local sprite = Sprite()
+	if self.type == 1 then -- Card
+		sprite:Load(coopHUD.GLOBALS.card_anim_path, true)
+		sprite:SetFrame("CardFronts", self.id) -- sets card frame
+	elseif self.type == 2 then -- Pill
+		if self.id > 2048 then self.id = self.id - 2048 end -- check if its horse pill and change id to normal
+		sprite:Load(coopHUD.GLOBALS.pill_anim_path, true)
+		sprite:SetFrame("Pills", self.id) --sets frame to pills with correct id
+	elseif self.type == 3 then -- Pocket item
+		sprite = coopHUD.getActiveItemSprite(self.parent.entPlayer, 2)
+	else
+		sprite = nil
+	end
+	return sprite
+end
+
+function coopHUD.Pocket:render(pos, mirrored, scale, down_anchor)
+	local temp_pos = Vector(pos.X, pos.Y)
+	local sprite_scale = scale
+	local offset = Vector(0, 0)
+	--
+	if sprite_scale == nil then sprite_scale = Vector(1, 1) end -- sets def sprite_scale
+	--
+	if mirrored then
+		temp_pos.X = temp_pos.X - (16 * sprite_scale.X)
+		offset.X = -24
+	else
+		temp_pos.X = temp_pos.X + (16 * sprite_scale.X)
+		offset.X = 24
+	end
+	--
+	if down_anchor then
+		temp_pos.Y = temp_pos.Y - (16 * sprite_scale.Y)
+		offset.Y = -32
+	else
+		temp_pos.Y = temp_pos.Y + (16 * sprite_scale.Y)
+		offset.Y = 24
+	end
+	--
+	if self.sprite then
+		self.sprite.Scale = sprite_scale
+		self.sprite:Render(temp_pos)
+	end
+	return offset
+end
 --
 function coopHUD.getMinimapOffset()
 	local minimap_offset = Vector(Isaac.GetScreenWidth(), 0)
