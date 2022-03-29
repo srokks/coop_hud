@@ -119,6 +119,7 @@ function coopHUD.Player:render()
 	--
 	self.schoolbag_item:render(anchor, mirrored, scale, down_anchor)
 	active_off = self.active_item:render(anchor, mirrored, scale, down_anchor)
+	hearts_off = self.hearts:render(Vector(anchor.X + active_off.X, anchor.Y), mirrored, scale, down_anchor)
 	--
 	-- <Second  top line render> --
 	local first_line_offset = Vector(0, 0)
