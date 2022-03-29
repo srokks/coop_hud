@@ -50,12 +50,12 @@ function coopHUD.Item.getChargeSprites(self)
 			beth_charge = player:GetEffectiveSoulCharge()
 			color:SetColorize(0.8, 0.9, 1.8, 1)
 		elseif player_type == PlayerType.PLAYER_BETHANY_B then
-			beth_charge = player:GetEffectiveBloodCharge()
+			beth_charge = self.entPlayer:GetEffectiveBloodCharge()
 			color:SetColorize(1, 0.2, 0.2, 1)
 		end
 		sprites.beth_charge:Load(coopHUD.GLOBALS.charge_anim_path, true)
 		sprites.beth_charge.Color = color
-		step = step + math.floor((beth_charge / (item_charge * 2)) * 46) + 1
+		step = step + math.floor((beth_charge / (max_charges * 2)) * 46) + 1
 		sprites.beth_charge:SetFrame('ChargeBar', step)
 	else
 		sprites.beth_charge = false
