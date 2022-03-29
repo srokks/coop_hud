@@ -622,16 +622,16 @@ function coopHUD.Heart:getSprite()
 	end
 end
 function coopHUD.Heart:render(pos, scale)
-	local temp_pos = Vector(pos.X + 8, pos.Y + 8)
 	local offset = Vector(0, 0)
 	local sprite_scale = scale
 	if sprite_scale == nil then sprite_scale = Vector(1, 1) end
+	local temp_pos = Vector(pos.X + (8 * sprite_scale.X), pos.Y + (8 * sprite_scale.Y))
 	--
 	if self.sprite then
 		self.sprite.Scale = sprite_scale
 		self.sprite:Render(temp_pos)
-		offset.X = 12 * math.ceil((self.pos) % 6)
-		offset.Y = 12 * math.floor(self.pos/6)
+		offset.X = 12 * math.ceil((self.pos + 1) % 6) * sprite_scale.X
+		offset.Y = 10 * math.floor((self.pos + 1) / 6) * sprite_scale.Y
 	end
 	return offset
 end
@@ -653,20 +653,37 @@ function coopHUD.HeartTable.new(parent)
 end
 function coopHUD.HeartTable:render(pos, mirrored, scale, down_anchor)
 	local temp_off = Vector(0, 0)
+	local init_pos = Vector(pos.X, pos.Y)
 	--
+	local hearts_span
+	if self.parent.total_hearts >= 6 then
+		-- Determines how many columns will be
+		hearts_span = 6
+	else
+		hearts_span = self.parent.total_hearts % 6
+	end
+	local rows = math.ceil(self.parent.total_hearts / 6)
+	local cols = 6
+	if self.parent.total_hearts < 6 then
+		cols = math.ceil(self.parent.total_hearts % 6)
+	end
+	if mirrored then
+		init_pos.X = pos.X - (12 * scale.X) * hearts_span
+		cols = -6
+	end
+	if down_anchor then
+		init_pos.Y = pos.Y + (-16 * scale.Y) * math.ceil(self.parent.total_hearts / 6)
+		rows = rows * -1.5
+	end
+	-- RENDER
 	for i = 0, self.parent.max_health_cap do
 		if self[i] then
-			local temp_pos = Vector(pos.X + temp_off.X, pos.Y + temp_off.Y)
+			local temp_pos = Vector(init_pos.X + temp_off.X, init_pos.Y + temp_off.Y)
 			temp_off = self[i]:render(temp_pos, scale)
 		end
 	end
-	local rows = math.ceil(self.parent.total_hearts/6)
-	local cols = 6
-	if self.parent.total_hearts < 6 then
-		cols = math.ceil(self.parent.total_hearts%6)
-	end
-
-	return Vector(12 * cols,12 * rows)
+	--
+	return Vector(12 * scale.X * cols, 12 * scale.Y* rows)
 end
 --
 function coopHUD.getMinimapOffset()
