@@ -111,8 +111,62 @@ end
 function coopHUD.Item:update()
 	if self.id ~= self.entPlayer:GetActiveItem(self.slot) then
 		self.id = self.entPlayer:GetActiveItem(self.slot)
-		self.sprite = self:getSprite()
+		self:updateSprite()
 	end
+	if self.charge ~= self.entPlayer:GetActiveCharge(self.slot) then
+
+		self.charge = self.entPlayer:GetActiveCharge(self.slot)
+		self.charge_sprites = self.getChargeSprites(self)
+		self:updateSprite()
+	end
+end
+function coopHUD.Item:updateSprite()
+	self.sprite = self:getSprite()
+end
+function coopHUD.Item:renderChargeBar(pos, mirrored, scale, down_anchor)
+	local temp_pos = Vector(pos.X, pos.Y)
+	local offset = Vector(0, 0)
+	--
+	local sprite_scale = scale
+	if sprite_scale == nil then sprite_scale = Vector(1, 1) end
+	--
+	if mirrored then
+		temp_pos.X = temp_pos.X - (4 * sprite_scale.X)
+		offset.X = -12 * sprite_scale.X
+	else
+		temp_pos.X = temp_pos.X + (4 * sprite_scale.X)
+		offset.X = 12 * sprite_scale.X
+	end
+	--
+	if down_anchor then
+		temp_pos.Y = temp_pos.Y - (20 * sprite_scale.Y)
+		offset.Y = -32 * sprite_scale.Y
+	else
+		temp_pos.Y = temp_pos.Y + (16 * sprite_scale.Y)
+		offset.Y = 32 * sprite_scale.Y
+	end
+	--
+	if self.charge_sprites then
+		if self.charge_sprites.charge then
+			self.charge_sprites.charge.Scale = sprite_scale
+			self.charge_sprites.charge:RenderLayer(0, temp_pos)  -- renders background
+		end
+		if self.charge_sprites.beth_charge then
+			self.charge_sprites.beth_charge.Scale = sprite_scale
+			self.charge_sprites.beth_charge:RenderLayer(1, temp_pos) -- renders bethany charge
+		end
+		if self.charge_sprites.charge then
+			self.charge_sprites.charge.Scale = sprite_scale
+			self.charge_sprites.charge:RenderLayer(1, temp_pos)
+			self.charge_sprites.charge:RenderLayer(2, temp_pos)
+		end
+		if self.charge_sprites.overlay then
+			self.charge_sprites.overlay.Scale = sprite_scale
+			self.charge_sprites.overlay:Render(temp_pos)
+		end
+
+	end
+	return offset
 end
 function coopHUD.Item:render(pos, mirrored, scale, down_anchor)
 	local temp_pos = Vector(pos.X, pos.Y)
@@ -156,14 +210,16 @@ setmetatable(coopHUD.Trinket, {
 		return cls.new(...)
 	end,
 })
-function coopHUD.Trinket.new(trinket_id)
+function coopHUD.Trinket.new(player, slot, trinket_id)
 	local self = setmetatable({}, coopHUD.Trinket)
-	self.id = trinket_id
+	self.entPlayer = player
+	self.slot = slot
+	self.id = player:GetTrinket(self.slot)
 	self.sprite = self:getSprite()
 	return self
 end
 function coopHUD.Trinket:getSprite()
-	if self.id == 0 then return nil end
+	if self.id == 0 or self.id == nil then return nil end
 	local sprite = Sprite()
 	sprite:Load(coopHUD.GLOBALS.item_anim_path, true)
 	local item_sprite = Isaac.GetItemConfig():GetTrinket(self.id).GfxFileName
@@ -174,7 +230,10 @@ function coopHUD.Trinket:getSprite()
 	return sprite
 end
 function coopHUD.Trinket:update()
-
+	if self.id ~= self.entPlayer:GetTrinket(self.slot) then
+		self.id = self.entPlayer:GetTrinket(self.slot)
+		self.sprite = self:getSprite()
+	end
 end
 function coopHUD.Trinket:render(pos, mirrored, scale, down_anchor)
 	local temp_pos = Vector(pos.X, pos.Y)
