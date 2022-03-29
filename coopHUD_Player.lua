@@ -29,6 +29,7 @@ function coopHUD.Player.new(player_no)
 	self.max_health_cap = 12
 	self.total_hearts = math.ceil((self.entPlayer:GetEffectiveMaxHearts() + self.entPlayer:GetSoulHearts()) / 2)
 	self.extra_lives = self.entPlayer:GetExtraLives()
+	self.hearts = coopHUD.HeartTable(self)
 	-- SUB PLAYER
 	has_sub = false -- Determines if player has sub as Forgotten/Soul
 	has_twin = false -- Determines if player has twin as Jacob/Essau
