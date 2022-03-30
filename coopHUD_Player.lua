@@ -66,6 +66,7 @@ function coopHUD.Player.new(player_no)
 	--
 	self.pocket_font = Font()
 	self.pocket_font:Load("font/pftempestasevencondensed.fnt")
+	self.font_color = KColor(1, 1, 1, 1)
 	return self
 end
 function coopHUD.Player:on_signal(signal)
@@ -120,7 +121,8 @@ function coopHUD.Player:render()
 	self.schoolbag_item:render(anchor, mirrored, scale, down_anchor)
 	active_off = self.active_item:render(anchor, mirrored, scale, down_anchor)
 	hearts_off = self.hearts:render(Vector(anchor.X + active_off.X, anchor.Y), mirrored, scale, down_anchor)
-	--
+	self:renderExtras(Vector(anchor.X + active_off.X + hearts_off.X, anchor.Y), mirrored, scale, down_anchor)
+	--self.active_item:render(Vector(anchor.X + active_off.X + hearts_off.X, anchor.Y), mirrored, scale, down_anchor)
 	-- <Second  top line render> --
 	local first_line_offset = Vector(0, 0)
 	local pocket_desc_off = Vector(0,0)
@@ -145,4 +147,31 @@ function coopHUD.Player:render()
 	self.third_pocket:render(Vector(anchor.X + trinket_off.X + pocket_off.X + second_pocket_off.X, anchor.Y + first_line_offset.Y), mirrored,
 	                          Vector(0.5 * scale.X, 0.5 * scale.Y),
 	                          down_anchor)
+end
+function coopHUD.Player:renderExtras(pos, mirrored, scale, down_anchor)
+	local final_offset = Vector(0, 0)
+	local temp_pos = Vector(pos.X + 4, pos.Y)
+	--
+	local sprite_scale = scale
+	if sprite_scale == nil then sprite_scale = Vector(1, 1) end -- sets def sprite_scale
+	-- Render extra extra_lives
+	if self.entPlayer:GetExtraLives() > 0 then
+		if down_anchor then
+			temp_pos.Y = temp_pos.Y - 16
+		end
+		local text = string.format('x%d', self.entPlayer:GetExtraLives())
+		if self.entPlayer:HasCollectible(CollectibleType.COLLECTIBLE_GUPPYS_COLLAR) then
+			text = text .. "?"
+		end
+		local c = 0
+		if mirrored then
+			temp_pos.X = temp_pos.X - 16
+			c = 1
+		end
+		self.pocket_font:DrawStringScaled(text, temp_pos.X, temp_pos.Y, sprite_scale.X, sprite_scale.Y,
+		                                  self.font_color, c, true)
+	end
+	--Todo: render bethany charge
+	--Todo: render T.??? poops
+	--Todo: Extra protection charge indicator
 end
