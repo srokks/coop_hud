@@ -82,6 +82,10 @@ function coopHUD.Player:update()
 		self.signals.on_pocket_update = true
 		self.signals.on_drop_activate = nil
 	end
+	if self.signals.on_heart_update then
+		self.hearts:update()
+		self:on_signal('on_heart_update')
+	end
 	if self.signals.on_active_update then
 		self.active_item:update()
 		self.schoolbag_item:update()
