@@ -160,6 +160,13 @@ function coopHUD.on_pill_use(_, effect_no, ent_player)
 	--coopHUD.signals.on_heart_update = player_index
 end
 coopHUD:AddCallback(ModCallbacks.MC_USE_PILL, coopHUD.on_pill_use)
+-- __________ On damage
+function coopHUD.on_damage(_, entity)
+	local ent_player = entity:ToPlayer() -- parse entity to player entity
+	local player_index = coopHUD.getPlayerNumByControllerIndex(ent_player.ControllerIndex) -- gets player index
+	coopHUD.players[player_index]:on_signal('on_heart_update') -- triggers heart update for player
+end
+coopHUD:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, coopHUD.on_damage, EntityType.ENTITY_PLAYER)
 -- __________ On item pickup
 function coopHUD.on_item_pickup(_, ent_player, ent_collider, Low)
 	-- Checks if player entity collides with item
@@ -193,6 +200,18 @@ function coopHUD.on_item_pickup(_, ent_player, ent_collider, Low)
 	end
 end
 coopHUD:AddCallback(ModCallbacks.MC_PRE_PLAYER_COLLISION, coopHUD.on_item_pickup)
+-- _____ On battle signal
+coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, function(self)
+	-- on battle signal
+	-- if option turned on checks signals
+	local r = Game():GetLevel():GetCurrentRoom()
+	if not r:IsClear() then
+		-- check if room ready
+		coopHUD.signals.on_battle = true
+	else
+		coopHUD.signals.on_battle = false -- reset signal
+	end
+end)
 -- _____ Post item pickup
 -- Modified  Version of POST_ITEM_PICKUP from pedroff_1 - https://steamcommunity.com/sharedfiles/filedetails/?id=2577953432&searchtext=callback
 function PostItemPickup (_, player)
