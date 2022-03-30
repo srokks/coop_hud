@@ -176,7 +176,7 @@ function coopHUD.on_item_pickup(_, ent_player, ent_collider, Low)
 			-- checks if collide with item
 			if ent_collider.Variant == PickupVariant.PICKUP_HEART then
 				-- check if collides with heart
-				coopHUD.signals.on_heart_update = player_index
+				coopHUD.players[player_index]:on_signal('on_heart_update')
 			elseif ent_collider.Variant == PickupVariant.PICKUP_COIN or -- check if collides with coin
 					ent_collider.Variant == PickupVariant.PICKUP_KEY or -- or with key
 					ent_collider.Variant == PickupVariant.PICKUP_BOMB then
