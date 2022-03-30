@@ -429,7 +429,6 @@ setmetatable(coopHUD.Heart, {
 		return cls.new(...)
 	end,
 })
----@param heart_pos number
 function coopHUD.Heart.new(parent, heart_pos)
 	local self = setmetatable({}, coopHUD.Heart)
 	self.parent = parent
@@ -656,7 +655,7 @@ setmetatable(coopHUD.HeartTable, {
 function coopHUD.HeartTable.new(parent)
 	local self = setmetatable({}, coopHUD.HeartTable)
 	self.parent = parent
-	for i = 0, self.parent.max_health_cap do
+	for i = 0, self.parent.total_hearts do
 		self[i] = coopHUD.Heart(self.parent, i)
 	end
 	return self
@@ -679,7 +678,7 @@ function coopHUD.HeartTable:render(pos, mirrored, scale, down_anchor)
 	end
 	if mirrored then
 		init_pos.X = pos.X - (12 * scale.X) * hearts_span
-		cols = -6
+		cols = cols * -1
 	end
 	if down_anchor then
 		init_pos.Y = pos.Y + (-16 * scale.Y) * math.ceil(self.parent.total_hearts / 6)
