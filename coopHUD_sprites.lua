@@ -703,6 +703,86 @@ function coopHUD.HeartTable:update()
 		self[i] = coopHUD.Heart(self.parent, i)
 	end
 end
+-----coopHUD.ExtraCharge - holds blood or soul charge for Bethany
+-----@param parent coopHUD.Player
+------@return coopHUD.ExtraCharge or nil if not Bethany
+coopHUD.ExtraCharge         = {}
+coopHUD.ExtraCharge.__index = coopHUD.ExtraCharge
+setmetatable(coopHUD.ExtraCharge, {
+	__call = function(cls, ...)
+		return cls.new(...)
+	end,
+})
+function coopHUD.ExtraCharge.new(parent)
+	local self        = setmetatable({}, coopHUD.ExtraCharge)
+	self.parent       = parent
+	self.type         = 0
+	self.amount       = 0
+	--
+	local player_type = self.parent.entPlayer:GetPlayerType()
+	if player_type ~= PlayerType.PLAYER_BETHANY and player_type ~= PlayerType.PLAYER_BETHANY_B then
+		return nil
+	end
+	-- Charge amount init
+	if player_type == PlayerType.PLAYER_BETHANY then
+		-- inits charge amount for Bethany
+		self.amount = self.parent.entPlayer:GetSoulCharge()
+		self.type   = 12
+	elseif player_type == PlayerType.PLAYER_BETHANY_B then
+		-- inits charge amount for T. Bethany
+		self.amount = self.parent.entPlayer:GetBloodCharge()
+		self.type   = 15
+	end
+	-- Sprite init
+	self.sprite = self:getSprite()
+	return self
+end
+function coopHUD.ExtraCharge:getSprite()
+	local sprite = Sprite()
+	sprite:Load(coopHUD.GLOBALS.hud_el_anim_path, true)
+	sprite:SetFrame('Idle', self.type)
+	sprite:LoadGraphics()
+	return sprite
+end
+function coopHUD.ExtraCharge:render(pos, mirrored, scale, down_anchor)
+	-- Scale set
+	local sprite_scale = scale
+	if sprite_scale == nil then sprite_scale = Vector(1, 1) end
+	--
+	local temp_pos = Vector(pos.X, pos.Y)
+	local text_pos = Vector(pos.X, pos.Y)
+	if self.sprite then
+		--
+		if mirrored then
+			temp_pos.X = temp_pos.X - 20 - self.parent.charges_font:GetStringWidth(string.format('x%d', self.amount))
+			text_pos.X = text_pos.X - 16
+		else
+			text_pos.X = text_pos.X + 16
+		end
+		--
+		if down_anchor then
+			temp_pos.Y = temp_pos.Y - 16
+			text_pos.Y = text_pos.Y - 16
+		end
+		--
+		self.sprite:Render(temp_pos)
+		self.parent.charges_font:DrawString(string.format('x%d', self.amount), text_pos.X, text_pos.Y,
+		                                    self.parent.font_color, 0, true)
+	end
+end
+function coopHUD.ExtraCharge:update()
+	if self.type == 12 then
+		-- update charge amount for Bethany
+		if self.amount ~= self.parent.entPlayer:GetSoulCharge() then
+			self.amount = self.parent.entPlayer:GetSoulCharge()
+		end
+	elseif self.type == 15 then
+		-- update charge amount for T. Bethany
+		if self.amount ~= self.parent.entPlayer:GetBloodCharge() then
+			self.amount = self.parent.entPlayer:GetBloodCharge()
+		end
+	end
+end
 --
 coopHUD.Poops = {}
 --
