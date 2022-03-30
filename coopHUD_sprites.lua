@@ -695,6 +695,23 @@ function coopHUD.HeartTable:render(pos, mirrored, scale, down_anchor)
 	--
 	return Vector(12 * scale.X * cols, 12 * scale.Y* rows)
 end
+function coopHUD.HeartTable:update()
+	local temp_total_hearts = math.ceil((self.parent.entPlayer:GetEffectiveMaxHearts() + self.parent.entPlayer:GetSoulHearts()) / 2)
+	if self.parent.total_hearts ~= temp_total_hearts then
+		self.parent.total_hearts = temp_total_hearts
+	end
+	for i = 0, self.parent.total_hearts do
+		self[i] = coopHUD.Heart(self.parent, i)
+	end
+end
+--
+coopHUD.Poops = {}
+--
+coopHUD.Stats = {}
+--
+coopHUD.PlayerHead = {}
+--
+coopHUD.Collectibles = {}
 --
 function coopHUD.getMinimapOffset()
 	local minimap_offset = Vector(Isaac.GetScreenWidth(), 0)
