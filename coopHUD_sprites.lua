@@ -737,7 +737,20 @@ function coopHUD.ExtraCharge.new(parent)
 	self.sprite = self:getSprite()
 	return self
 end
-function coopHUD.ExtraCharge:getSprite()
+function coopHUD.RunInfo.getType(info_type)
+	local type
+	local player = Isaac.GetPlayer(0)
+	if type == coopHUD.RunInfo.KEY then
+		if player:HasGoldenKey() then type = 3 end
+	end
+	if type == coopHUD.RunInfo.BOMB then
+		if player:HasGoldenBomb() then type =  6 end
+		if player:GetNumGigaBombs() > 0 then type =  14 end
+
+	end
+	return type
+end
+function coopHUD.RunInfo:getSprite()
 	local sprite = Sprite()
 	sprite:Load(coopHUD.GLOBALS.hud_el_anim_path, true)
 	sprite:SetFrame('Idle', self.type)
