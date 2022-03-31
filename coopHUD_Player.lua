@@ -106,12 +106,15 @@ function coopHUD.Player:update()
 	end
 	if self.signals.on_heart_update then
 		self.hearts:update()
+		if self.extra_charge then
+			self.extra_charge:update()
+		end
 		self:on_signal('on_heart_update')
 	end
 	if self.signals.on_active_update then
 		self.active_item:update()
 		self.schoolbag_item:update()
-		self:on_active_update()
+		self:on_signal('on_active_update')
 	end
 	if self.signals.on_pocket_update then
 
