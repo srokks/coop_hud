@@ -39,12 +39,12 @@ function coopHUD.Player.new(player_no)
 	-- STATS
 	-- holds player stats [1] - stat; [2] change
 	self.stats = {
-		speed       = { self.entPlayer.MoveSpeed, 0 },
-		tears_delay = { 30 / (self.entPlayer.MaxFireDelay + 1), 0 },
-		damage      = { self.entPlayer.Damage, 0 },
-		range       = { (self.entPlayer.TearRange / 40), 0 },
-		shot_speed  = { self.entPlayer.ShotSpeed, 0 },
-		luck        = { self.entPlayer.Luck, 0 },
+		speed = {self.entPlayer.MoveSpeed, 0},
+		tears_delay = {30 / (self.entPlayer.MaxFireDelay + 1), 0},
+		damage = {self.entPlayer.Damage, 0},
+		range = {(self.entPlayer.TearRange / 40), 0},
+		shot_speed = {self.entPlayer.ShotSpeed, 0},
+		luck = {self.entPlayer.Luck, 0},
 	}
 	-- Extra charges
 	self.extra_charge = coopHUD.ExtraCharge(self) -- holds extra charges as blood/soul charges for Bethany
@@ -96,8 +96,8 @@ function coopHUD.Player:update()
 			self.font_color.Blue = temp_color.B
 		end
 	elseif not coopHUD.options.player_info_color and -- resets color if option turned off
-			(self.font_color.Red ~= 1 or self.font_color.Green ~= 1 or self.font_color.Green ~= 1 ) then
-		self.font_color = KColor(1,1,1,1)
+			(self.font_color.Red ~= 1 or self.font_color.Green ~= 1 or self.font_color.Green ~= 1) then
+		self.font_color = KColor(1, 1, 1, 1)
 	end
 	if self.signals.on_drop_activate then
 		self.signals.on_active_update = true
@@ -159,7 +159,7 @@ function coopHUD.Player:render()
 	--self.active_item:render(Vector(anchor.X + active_off.X + hearts_off.X, anchor.Y), mirrored, scale, down_anchor)
 	-- <Second  top line render> --
 	local first_line_offset = Vector(0, 0)
-	local pocket_desc_off = Vector(0,0)
+	local pocket_desc_off = Vector(0, 0)
 	if down_anchor then
 		first_line_offset.Y = math.min(info_off.Y, active_off.Y, hearts_off.Y, (exl_liv_off.Y + extra_charge_off.Y))
 		pocket_desc_off.Y = -8
@@ -174,15 +174,17 @@ function coopHUD.Player:render()
 	pocket_off = self.first_pocket:render(Vector(anchor.X + trinket_off.X, anchor.Y + first_line_offset.Y), mirrored,
 	                                      scale,
 	                                      down_anchor)
-	second_pocket_off = self.second_pocket:render(Vector(anchor.X + trinket_off.X + pocket_off.X, anchor.Y + first_line_offset.Y +pocket_desc_off.Y), mirrored,
-	                          Vector(0.5 * scale.X, 0.5 * scale.Y),
-	                          down_anchor)
+	second_pocket_off = self.second_pocket:render(Vector(anchor.X + trinket_off.X + pocket_off.X,
+	                                                     anchor.Y + first_line_offset.Y + pocket_desc_off.Y), mirrored,
+	                                              Vector(0.5 * scale.X, 0.5 * scale.Y),
+	                                              down_anchor)
 
-	self.third_pocket:render(Vector(anchor.X + trinket_off.X + pocket_off.X + second_pocket_off.X, anchor.Y + first_line_offset.Y), mirrored,
-	                          Vector(0.5 * scale.X, 0.5 * scale.Y),
-	                          down_anchor)
+	self.third_pocket:render(Vector(anchor.X + trinket_off.X + pocket_off.X + second_pocket_off.X,
+	                                anchor.Y + first_line_offset.Y), mirrored,
+	                         Vector(0.5 * scale.X, 0.5 * scale.Y),
+	                         down_anchor)
 end
-function coopHUD.Player:renderExtras(pos, mirrored, scale, down_anchor)
+function coopHUD.Player:renderExtraLives(pos, mirrored, scale, down_anchor)
 	local final_offset = Vector(0, 0)
 	local temp_pos = Vector(pos.X + 4, pos.Y)
 	--
@@ -190,22 +192,25 @@ function coopHUD.Player:renderExtras(pos, mirrored, scale, down_anchor)
 	if sprite_scale == nil then sprite_scale = Vector(1, 1) end -- sets def sprite_scale
 	-- Render extra extra_lives
 	if self.entPlayer:GetExtraLives() > 0 then
+		local offset = Vector(0, 8 * sprite_scale.X)
 		if down_anchor then
-			temp_pos.Y = temp_pos.Y - 16
+			temp_pos.Y = temp_pos.Y - (16 * sprite_scale.Y)
+			offset.Y = -8 * 1.25 * sprite_scale.Y
 		end
 		local text = string.format('x%d', self.entPlayer:GetExtraLives())
 		if self.entPlayer:HasCollectible(CollectibleType.COLLECTIBLE_GUPPYS_COLLAR) then
 			text = text .. "?"
 		end
-		local c = 0
+		local align = 0
 		if mirrored then
-			temp_pos.X = temp_pos.X - 16
-			c = 1
+			temp_pos.X = temp_pos.X - (16 * sprite_scale.Y)
+			align = 1
 		end
-		self.pocket_font:DrawStringScaled(text, temp_pos.X, temp_pos.Y, sprite_scale.X, sprite_scale.Y,
-		                                  self.font_color, c, true)
+		coopHUD.HUD.fonts.pocket_font:DrawStringScaled(text, temp_pos.X, temp_pos.Y, sprite_scale.X * 1.2,
+		                                               sprite_scale.Y * 1.2,
+		                                               self.font_color, align, true)
+		temp_pos.X = pos.X + offset.X
+		temp_pos.Y = pos.Y + offset.Y
 	end
-	--Todo: render bethany charge
-	--Todo: render T.??? poops
 	--Todo: Extra protection charge indicator
 end
