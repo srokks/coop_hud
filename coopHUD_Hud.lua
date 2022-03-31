@@ -8,12 +8,15 @@ coopHUD.HUD.fonts.lua_mini_lined = Font()
 coopHUD.HUD.fonts.lua_mini_lined:Load("font/luaminioutlined.fnt")
 coopHUD.HUD.fonts.team_meat_10 = Font()
 coopHUD.HUD.fonts.team_meat_10:Load("font/teammeatfont10.fnt")
-coopHUD.HUD.coins = coopHUD.RunInfo(coopHUD.RunInfo.COIN)
-coopHUD.HUD.bombs = coopHUD.RunInfo(coopHUD.RunInfo.BOMB)
-coopHUD.HUD.keys = coopHUD.RunInfo(coopHUD.RunInfo.KEY)
-coopHUD.HUD.beth = coopHUD.RunInfo(coopHUD.RunInfo.BETH)
-coopHUD.HUD.t_beth = coopHUD.RunInfo(coopHUD.RunInfo.T_BETH)
-coopHUD.HUD.poop = coopHUD.RunInfo(coopHUD.RunInfo.POOP)
+function coopHUD.HUD.init()
+	coopHUD.HUD.coins = coopHUD.RunInfo(coopHUD.RunInfo.COIN)
+	coopHUD.HUD.bombs = coopHUD.RunInfo(coopHUD.RunInfo.BOMB)
+	coopHUD.HUD.keys = coopHUD.RunInfo(coopHUD.RunInfo.KEY)
+	coopHUD.HUD.beth = coopHUD.RunInfo(coopHUD.RunInfo.BETH)
+	coopHUD.HUD.t_beth = coopHUD.RunInfo(coopHUD.RunInfo.T_BETH)
+end
+
+--coopHUD.HUD.poop = coopHUD.RunInfo(coopHUD.RunInfo.POOP)
 ---coopHUD.HUD.render - renders specifics to the game like no of coins/keys/bombs
 ---Todo: based on options.show_dest_info - show info about run destination
 ---Todo: based on options.show_difficulty

@@ -45,8 +45,7 @@ function coopHUD.on_start(_, cont)
 		--
 		coopHUD.angel_seen = false -- resets angel seen state on restart
 	end
-	--coopHUD.initHudTables()
-	--coopHUD.updateItems()
+	coopHUD.HUD.init()
 end
 coopHUD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, coopHUD.on_start)
 function coopHUD.on_player_init()
