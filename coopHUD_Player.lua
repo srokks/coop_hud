@@ -64,9 +64,8 @@ function coopHUD.Player.new(player_no)
 		on_pocket_update = false,
 	}
 	--
-	self.pocket_font = Font()
-	self.pocket_font:Load("font/pftempestasevencondensed.fnt")
 	self.font_color = KColor(1, 1, 1, 1)
+	--
 	return self
 end
 function coopHUD.Player:on_signal(signal)
