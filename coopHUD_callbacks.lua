@@ -68,66 +68,38 @@ function coopHUD.on_player_init()
 		if coopHUD.signals.is_joining then coopHUD.signals.is_joining = false end
 	end
 end
-coopHUD:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, coopHUD.on_player_init)
--- _____ INPUTS
-local btn_held = 0
+--_____ INPUTS
 function coopHUD.on_input()
-	-- Handler for turning timer on of on key
-	if Input.IsButtonTriggered(Keyboard.KEY_T, 0) then
-		if coopHUD.options.timer_always_on then
-			coopHUD.options.timer_always_on = false
-		else
-			coopHUD.options.timer_always_on = true
-		end
-	end
-	-- _____ Joining new players logic
-	for i = 0, 8, 1 do
-		if Input.IsActionTriggered(ButtonAction.ACTION_JOINMULTIPLAYER, i) and not coopHUD.signals.is_joining and
-				coopHUD.players[coopHUD.getPlayerNumByControllerIndex(i)] == nil
-				and Game():GetRoom():IsFirstVisit() == true and
-				Game():GetLevel():GetAbsoluteStage() == LevelStage.STAGE1_1 and
-				Game():GetLevel():GetCurrentRoomIndex() == Game():GetLevel():GetStartingRoomIndex() then
+	-- Trigger for turning on/off coop hud on `H` key
+	if Input.IsButtonTriggered(Keyboard.KEY_H, 0) then
+		if coopHUD.options.onRender then
 			coopHUD.options.onRender = false
-			coopHUD.signals.is_joining = true
-			coopHUD.on_player_init()
-		end
-		if Input.IsActionTriggered(ButtonAction.ACTION_MENUBACK, i) and coopHUD.signals.is_joining then
-			coopHUD.signals.is_joining = false
+		else
 			coopHUD.options.onRender = true
 		end
-		if Input.IsActionTriggered(6, i) and coopHUD.signals.on_item_update then
-			coopHUD.test_str = true
-		end
 	end
-	-- MAP BUTTON
-	local mapPressed = false
-	for i = 0, Game():GetNumPlayers() - 1 do
-		local player = Isaac.GetPlayer(i)
-		local player_index = coopHUD.getPlayerNumByControllerIndex(player.ControllerIndex)
-		if Input.IsActionTriggered(ButtonAction.ACTION_DROP, player.ControllerIndex) then
-			coopHUD.players[player_index].signals.on_drop_activate = true
-		end
-		if Input.IsActionTriggered(ButtonAction.ACTION_BOMB, player.ControllerIndex) then
-			--coopHUD.updateItems()
-			coopHUD.signals.on_poop_update = player_index
-		end
-		if Input.IsActionPressed(ButtonAction.ACTION_MAP, player.ControllerIndex) then
-			mapPressed = player_index
-		end
-	end
-	if not coopHUD.signals.on_battle then
-		if mapPressed then
-			btn_held = btn_held + 1
-			if btn_held > 25 then
-				coopHUD.signals.map = mapPressed
+	-- ACTION_JOINMULTIPLAYER
+	if not Game():IsPaused() then
+		for i = 0, 8 do
+			if Input.IsActionTriggered(ButtonAction.ACTION_JOINMULTIPLAYER, i)
+					and coopHUD.getPlayerNumByControllerIndex(i) < 0 -- checks if player is already in tables
+					and not coopHUD.signals.is_joining
+					and Game():GetRoom():IsFirstVisit() == true -- you can join into coop only on first floor of game
+					and Game():GetLevel():GetAbsoluteStage() == LevelStage.STAGE1_1 -- on first level
+					and Game():GetLevel():GetCurrentRoomIndex() == Game():GetLevel():GetStartingRoomIndex() then
+					--
+				coopHUD.signals.is_joining = true
+				coopHUD.text = coopHUD.text + 1
 			end
-		else
-			coopHUD.signals.map = false
-			btn_held = 0
+			-- Catches back button when on
+			if Input.IsActionTriggered(ButtonAction.ACTION_MENUBACK, i) and coopHUD.signals.is_joining then
+			coopHUD.signals.is_joining = false
+			coopHUD.text = coopHUD.text - 1
+				end
 		end
 	end
 end
-coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.on_input)
+coopHUD:AddCallback(ModCallbacks.MC_INPUT_ACTION, coopHUD.on_input)
 -- __________ On active item/pocket activate
 function coopHUD.on_activate(_, type, RNG, EntityPlayer, UseFlags, used_slot, CustomVarData)
 	local player_index = coopHUD.getPlayerNumByControllerIndex(EntityPlayer.ControllerIndex)
