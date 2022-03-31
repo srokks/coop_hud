@@ -47,7 +47,7 @@ function coopHUD.Player.new(player_no)
 		luck        = { self.entPlayer.Luck, 0 },
 	}
 	-- Extra charges
-	bethany_charge = nil -- inits charge for Bethany
+	self.extra_charge = coopHUD.ExtraCharge(self) -- holds extra charges as blood/soul charges for Bethany
 	wisp_jar_use = 0 -- holds info about used jar of wisp
 	-- T.Cain - specifics
 	self.bag_of_crafting = nil
