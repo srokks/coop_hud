@@ -764,12 +764,19 @@ function coopHUD.RunInfo:getType()
 	return type
 end
 function coopHUD.RunInfo:getSprite()
+	if self.type == coopHUD.RunInfo.BOMB then
+		--TODO: if only Tainted ??? on run return nil to not render this item
+	end
 	if self.type == coopHUD.RunInfo.BETH then
-		if self:checkBeth() then
+		if self:checkPlayer() then
 			return nil
 		end
 	elseif self.type == coopHUD.RunInfo.T_BETH then
-		if self:checkBeth() then
+		if self:checkPlayer() then
+			return nil
+		end
+	elseif self.type == coopHUD.RunInfo.POOP then
+		if self:checkPlayer() then
 			return nil
 		end
 	end
@@ -833,7 +840,7 @@ function coopHUD.RunInfo:checkDeepPockets()
 	end
 	return false
 end
-function coopHUD.RunInfo:checkBeth()
+function coopHUD.RunInfo:checkPlayer()
 	for i = 0, Game():GetNumPlayers() - 1, 1 do
 		if self.type == coopHUD.RunInfo.BETH then
 			if Isaac.GetPlayer(i):GetPlayerType() == PlayerType.PLAYER_BETHANY then
@@ -842,6 +849,11 @@ function coopHUD.RunInfo:checkBeth()
 		end
 		if self.type == coopHUD.RunInfo.T_BETH then
 			if Isaac.GetPlayer(i):GetPlayerType() == PlayerType.PLAYER_BETHANY_B then
+				return false
+			end
+		end
+		if self.type == coopHUD.RunInfo.POOP then
+			if Isaac.GetPlayer(i):GetPlayerType() == PlayerType.PLAYER_BLUEBABY_B then
 				return false
 			end
 		end
