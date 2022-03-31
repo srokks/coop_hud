@@ -786,7 +786,17 @@ end
 --
 coopHUD.Poops = {}
 --
-coopHUD.Stats = {}
+coopHUD.Stat = {}
+coopHUD.Stat.__index = coopHUD.Stat
+setmetatable(coopHUD.Stat, {
+	__call = function(cls, ...)
+		return cls.new(...)
+	end,
+})
+function coopHUD.Stat.new(parent)
+	local self = setmetatable({}, coopHUD.Stat)
+	return self
+end
 --
 coopHUD.PlayerHead = {}
 coopHUD.PlayerHead.__index = coopHUD.PlayerHead
