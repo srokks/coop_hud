@@ -251,6 +251,7 @@ function coopHUD.render()
 			if coopHUD.options.onRender and not paused and not coopHUD.signals.is_joining then
 				if Game():GetHUD():IsVisible() then Game():GetHUD():SetVisible(false) end
 				coopHUD.players[i]:render()
+				coopHUD.HUD.render()
 			end
 			if not coopHUD.options.onRender or coopHUD.signals.is_joining then
 				if not Game():GetHUD():IsVisible() then Game():GetHUD():SetVisible(true) end

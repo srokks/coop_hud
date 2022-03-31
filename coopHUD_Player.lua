@@ -47,7 +47,6 @@ function coopHUD.Player.new(player_no)
 		luck = {self.entPlayer.Luck, 0},
 	}
 	-- Extra charges
-	self.extra_charge = coopHUD.ExtraCharge(self) -- holds extra charges as blood/soul charges for Bethany
 	wisp_jar_use = 0 -- holds info about used jar of wisp
 	-- T.Cain - specifics
 	self.bag_of_crafting = nil
@@ -206,7 +205,7 @@ function coopHUD.Player:renderExtraLives(pos, mirrored, scale, down_anchor)
 			temp_pos.X = temp_pos.X - (16 * sprite_scale.Y)
 			align = 1
 		end
-		coopHUD.HUD.fonts.pocket_font:DrawStringScaled(text, temp_pos.X, temp_pos.Y, sprite_scale.X * 1.2,
+		coopHUD.HUD.fonts.pft:DrawStringScaled(text, temp_pos.X, temp_pos.Y, sprite_scale.X * 1.2,
 		                                               sprite_scale.Y * 1.2,
 		                                               self.font_color, align, true)
 		temp_pos.X = pos.X + offset.X
