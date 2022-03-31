@@ -52,24 +52,20 @@ function coopHUD.on_start(_, cont)
 	--coopHUD.updateItems()
 end
 coopHUD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, coopHUD.on_start)
-function coopHUD.on_player_init(_, ent)
-	-- ___ inits coopHUD.tables if table nil or if more players
-	if coopHUD.players[0] == nil or ((#coopHUD.players + coopHUD.essau_no) ~= Game():GetNumPlayers() - 1) then
-		coopHUD.essau_no = 0
+function coopHUD.on_player_init()
+	if (#coopHUD.players + coopHUD.essau_no ) ~= Game():GetNumPlayers()  then
+		coopHUD.players = {}  -- resets players table
+		coopHUD.essau_no = 0  -- resets essau no before full init of players
 		for i = 0, Game():GetNumPlayers() - 1, 1 do
-			local temp_player_table = coopHUD.Player(i)
-			if temp_player_table then
-				coopHUD.players[i - coopHUD.essau_no] = temp_player_table
-				if coopHUD.players[i - coopHUD.essau_no].has_twin then
-					local temp_twin = Isaac.GetPlayer(i):GetOtherTwin()
-					coopHUD.players[i - coopHUD.essau_no].twin = coopHUD.initPlayer(i, temp_twin) -- inits
-					coopHUD.players[i - coopHUD.essau_no].twin.is_twin = true -- inits
-					coopHUD.essau_no = coopHUD.essau_no + 1
-				end
+			local player_type = Isaac.GetPlayer(i):GetPlayerType()
+			if player_type ~= PlayerType.PLAYER_THESOUL_B and player_type ~= PlayerType.PLAYER_ESAU then
+				-- skips iteration when non first character
+				coopHUD.players[i+1 - coopHUD.essau_no] = coopHUD.Player(i)
+			else
+				coopHUD.essau_no = coopHUD.essau_no + 1
 			end
 		end
-		coopHUD.signals.is_joining = false
-		coopHUD.options.onRender = true
+		if coopHUD.signals.is_joining then coopHUD.signals.is_joining = false end
 	end
 end
 coopHUD:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, coopHUD.on_player_init)
