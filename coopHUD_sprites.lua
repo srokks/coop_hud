@@ -47,7 +47,7 @@ function coopHUD.Item.getChargeSprites(self)
 		local beth_charge
 		local color = Color(1, 1, 1, 1, 0, 0, 0)
 		if player_type == PlayerType.PLAYER_BETHANY then
-			beth_charge = player:GetEffectiveSoulCharge()
+			beth_charge = self.entPlayer:GetEffectiveSoulCharge()
 			color:SetColorize(0.8, 0.9, 1.8, 1)
 		elseif player_type == PlayerType.PLAYER_BETHANY_B then
 			beth_charge = self.entPlayer:GetEffectiveBloodCharge()
