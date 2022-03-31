@@ -183,7 +183,7 @@ function coopHUD.Player:render()
 	                         Vector(0.5 * scale.X, 0.5 * scale.Y),
 	                         down_anchor)
 end
-function coopHUD.Player:renderExtraLives(pos, mirrored, scale, down_anchor)
+function coopHUD.Player:renderExtras(pos, mirrored, scale, down_anchor)
 	local final_offset = Vector(0, 0)
 	local temp_pos = Vector(pos.X + 4, pos.Y)
 	--
