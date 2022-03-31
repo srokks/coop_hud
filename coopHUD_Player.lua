@@ -59,9 +59,16 @@ function coopHUD.Player.new(player_no)
 	self.hold_spell = nil -- current spell stashed in hold (int)
 	--
 	self.signals = {
-		on_active_update = false,
-		on_drop_activate = false,
-		on_pocket_update = false,
+		on_active_update = false, --nil or emit player num
+		on_item_update = false, --nil or emit player num
+		on_heart_update = false, --nil or emit player num
+		on_trinket_update = false, --nil or emit player num
+		on_pockets_update = false, --nil or emit player num
+		on_bethany_update = false, --nil or emit player num
+		on_poop_update = false, --nil or emit player num
+		overloaded_hud = false,
+		on_battle = false,
+		on_drop_activate = false, --nil or emit player num
 	}
 	--
 	self.font_color = KColor(1, 1, 1, 1)
