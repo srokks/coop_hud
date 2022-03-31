@@ -174,26 +174,26 @@ function coopHUD.Item:render(pos, mirrored, scale, down_anchor)
 	local sprite_scale = scale
 	local offset = Vector(0, 0)
 	if sprite_scale == nil then sprite_scale = Vector(1, 1) end
-	if mirrored then
-		temp_pos.X = temp_pos.X - (16 * sprite_scale.X)
-		offset.X = -32 * sprite_scale.X
-	else
-		temp_pos.X = temp_pos.X + (16 * sprite_scale.X)
-		offset.X = 32 * sprite_scale.X
-	end
-	if down_anchor then
-		temp_pos.Y = temp_pos.Y - (16 * sprite_scale.Y)
-		offset.Y = -32 * sprite_scale.Y
-	else
-		temp_pos.Y = temp_pos.Y + (16 * sprite_scale.Y)
-		offset.Y = 32 * sprite_scale.Y
-	end
-	if self.slot == ActiveSlot.SLOT_SECONDARY then
-		sprite_scale = Vector(sprite_scale.X * 0.5, sprite_scale.Y * 0.5)
-		temp_pos.X = temp_pos.X - 8
-		temp_pos.Y = temp_pos.Y - 8
-	end
 	if self.sprite ~= nil then
+		if mirrored then
+			temp_pos.X = temp_pos.X - (16 * sprite_scale.X)
+			offset.X = -32 * sprite_scale.X
+		else
+			temp_pos.X = temp_pos.X + (16 * sprite_scale.X)
+			offset.X = 32 * sprite_scale.X
+		end
+		if down_anchor then
+			temp_pos.Y = temp_pos.Y - (16 * sprite_scale.Y)
+			offset.Y = -32 * sprite_scale.Y
+		else
+			temp_pos.Y = temp_pos.Y + (16 * sprite_scale.Y)
+			offset.Y = 32 * sprite_scale.Y
+		end
+		if self.slot == ActiveSlot.SLOT_SECONDARY then
+			sprite_scale = Vector(sprite_scale.X * 0.5, sprite_scale.Y * 0.5)
+			temp_pos.X = temp_pos.X - 8
+			temp_pos.Y = temp_pos.Y - 8
+		end
 		self.sprite.Scale = sprite_scale
 		self.sprite:Render(temp_pos)
 	end
