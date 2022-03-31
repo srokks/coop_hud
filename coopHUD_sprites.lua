@@ -127,27 +127,27 @@ end
 function coopHUD.Item:renderChargeBar(pos, mirrored, scale, down_anchor)
 	local temp_pos = Vector(pos.X, pos.Y)
 	local offset = Vector(0, 0)
-	--
-	local sprite_scale = scale
-	if sprite_scale == nil then sprite_scale = Vector(1, 1) end
-	--
-	if mirrored then
-		temp_pos.X = temp_pos.X - (4 * sprite_scale.X)
-		offset.X = -12 * sprite_scale.X
-	else
-		temp_pos.X = temp_pos.X + (4 * sprite_scale.X)
-		offset.X = 12 * sprite_scale.X
-	end
-	--
-	if down_anchor then
-		temp_pos.Y = temp_pos.Y - (16 * sprite_scale.Y)
-		offset.Y = -32  * sprite_scale.Y
-	else
-		temp_pos.Y = temp_pos.Y + (16 * sprite_scale.Y)
-		offset.Y = 32 * sprite_scale.Y
-	end
-	--
 	if self.charge_sprites then
+		--
+		local sprite_scale = scale
+		if sprite_scale == nil then sprite_scale = Vector(1, 1) end
+		--
+		if mirrored then
+			temp_pos.X = temp_pos.X - (4 * sprite_scale.X)
+			offset.X = -8 * 1.25 * sprite_scale.X
+		else
+			temp_pos.X = temp_pos.X + (4 * sprite_scale.X)
+			offset.X = 8 * sprite_scale.X
+		end
+		--
+		if down_anchor then
+			temp_pos.Y = temp_pos.Y - (16 * sprite_scale.Y)
+			offset.Y = -32 * sprite_scale.Y
+		else
+			temp_pos.Y = temp_pos.Y + (16 * sprite_scale.Y)
+			offset.Y = 32 * sprite_scale.Y
+		end
+		--
 		if self.charge_sprites.charge then
 			self.charge_sprites.charge.Scale = sprite_scale
 			self.charge_sprites.charge:RenderLayer(0, temp_pos)  -- renders background
