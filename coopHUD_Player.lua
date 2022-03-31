@@ -77,6 +77,22 @@ function coopHUD.Player:on_signal(signal)
 	end
 end
 function coopHUD.Player:update()
+	-- Player Color Update
+	if coopHUD.options.player_info_color then
+		local temp_color = coopHUD.colors[coopHUD.players_config.small[self.game_index].color].color
+		if self.font_color.Red ~= temp_color.R then
+			self.font_color.Red = temp_color.R
+		end
+		if self.font_color.Green ~= temp_color.G then
+			self.font_color.Green = temp_color.G
+		end
+		if self.font_color.Blue ~= temp_color.B then
+			self.font_color.Blue = temp_color.B
+		end
+	elseif not coopHUD.options.player_info_color and -- resets color if option turned off
+			(self.font_color.Red ~= 1 or self.font_color.Green ~= 1 or self.font_color.Green ~= 1 ) then
+		self.font_color = KColor(1,1,1,1)
+	end
 	if self.signals.on_drop_activate then
 		self.signals.on_active_update = true
 		self.signals.on_pocket_update = true
