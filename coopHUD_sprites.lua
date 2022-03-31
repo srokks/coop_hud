@@ -703,42 +703,29 @@ function coopHUD.HeartTable:update()
 		self[i] = coopHUD.Heart(self.parent, i)
 	end
 end
------coopHUD.ExtraCharge - holds blood or soul charge for Bethany
------@param parent coopHUD.Player
-------@return coopHUD.ExtraCharge or nil if not Bethany
-coopHUD.ExtraCharge         = {}
-coopHUD.ExtraCharge.__index = coopHUD.ExtraCharge
-setmetatable(coopHUD.ExtraCharge, {
+--
+coopHUD.RunInfo = {}
+coopHUD.RunInfo.__index = coopHUD.RunInfo
+setmetatable(coopHUD.RunInfo, {
 	__call = function(cls, ...)
 		return cls.new(...)
 	end,
 })
-function coopHUD.ExtraCharge.new(parent)
-	local self        = setmetatable({}, coopHUD.ExtraCharge)
-	self.parent       = parent
-	self.type         = 0
-	self.amount       = 0
-	--
-	local player_type = self.parent.entPlayer:GetPlayerType()
-	if player_type ~= PlayerType.PLAYER_BETHANY and player_type ~= PlayerType.PLAYER_BETHANY_B then
-		return nil
-	end
-	-- Charge amount init
-	if player_type == PlayerType.PLAYER_BETHANY then
-		-- inits charge amount for Bethany
-		self.amount = self.parent.entPlayer:GetSoulCharge()
-		self.type   = 12
-	elseif player_type == PlayerType.PLAYER_BETHANY_B then
-		-- inits charge amount for T. Bethany
-		self.amount = self.parent.entPlayer:GetBloodCharge()
-		self.type   = 15
-	end
-	-- Sprite init
+coopHUD.RunInfo.COIN = 0
+coopHUD.RunInfo.KEY = 1
+coopHUD.RunInfo.BOMB = 2
+coopHUD.RunInfo.BOMB = 2
+coopHUD.RunInfo.BETH = 12
+coopHUD.RunInfo.T_BETH = 15
+coopHUD.RunInfo.POOP = 16
+function coopHUD.RunInfo.new(info_type)
+	local self = setmetatable({}, coopHUD.RunInfo)
+	self.type = self.getType(info_type)
 	self.sprite = self:getSprite()
 	return self
 end
 function coopHUD.RunInfo.getType(info_type)
-	local type
+	local type = info_type
 	local player = Isaac.GetPlayer(0)
 	if type == coopHUD.RunInfo.KEY then
 		if player:HasGoldenKey() then type = 3 end
