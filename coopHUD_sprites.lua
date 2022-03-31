@@ -713,76 +713,142 @@ setmetatable(coopHUD.RunInfo, {
 })
 coopHUD.RunInfo.COIN = 0
 coopHUD.RunInfo.KEY = 1
+coopHUD.RunInfo.GOLDEN_KEY = 3
 coopHUD.RunInfo.BOMB = 2
-coopHUD.RunInfo.BOMB = 2
+coopHUD.RunInfo.GOLDEN_BOMB = 6
+coopHUD.RunInfo.GIGA_BOMB = 14
 coopHUD.RunInfo.BETH = 12
 coopHUD.RunInfo.T_BETH = 15
 coopHUD.RunInfo.POOP = 16
 function coopHUD.RunInfo.new(info_type)
 	local self = setmetatable({}, coopHUD.RunInfo)
-	self.type = self.getType(info_type)
+	self.type = info_type
+	self.type = self:getType()
+	self.amount = self:getAmount()
 	self.sprite = self:getSprite()
 	return self
 end
-function coopHUD.RunInfo.getType(info_type)
-	local type = info_type
+function coopHUD.RunInfo:getAmount()
+	local player = Isaac.GetPlayer(0)
+	if player then
+		if self.type == coopHUD.RunInfo.COIN then
+			return player:GetNumCoins()
+		end
+		if self.type == coopHUD.RunInfo.BOMB
+				or self.type == coopHUD.RunInfo.GOLDEN_BOMB
+				or self.type == coopHUD.RunInfo.GIGA_BOMB then
+			return player:GetNumBombs()
+		end
+		if self.type == coopHUD.RunInfo.KEY or
+				self.type == coopHUD.RunInfo.GOLDEN_KEY then
+			return player:GetNumKeys()
+		end
+		if self.type == coopHUD.RunInfo.BETH then
+			return player:GetSoulCharge()
+		end
+		if self.type == coopHUD.RunInfo.T_BETH then
+			return player:GetBloodCharge()
+		end
+	end
+	return 0
+end
+function coopHUD.RunInfo:getType()
+	local type = self.type
 	local player = Isaac.GetPlayer(0)
 	if type == coopHUD.RunInfo.KEY then
-		if player:HasGoldenKey() then type = 3 end
-	end
-	if type == coopHUD.RunInfo.BOMB then
-		if player:HasGoldenBomb() then type =  6 end
-		if player:GetNumGigaBombs() > 0 then type =  14 end
-
+		if player:HasGoldenKey() then type = coopHUD.RunInfo.GOLDEN_KEY end
+	elseif type == coopHUD.RunInfo.BOMB then
+		if player:HasGoldenBomb() then type = coopHUD.RunInfo.GOLDEN_BOMB end
+		if player:GetNumGigaBombs() > 0 then type = coopHUD.RunInfo.GIGA_BOMB end
 	end
 	return type
 end
 function coopHUD.RunInfo:getSprite()
+	if self.type == coopHUD.RunInfo.BETH then
+		if self:checkBeth() then
+			return nil
+		end
+	elseif self.type == coopHUD.RunInfo.T_BETH then
+		if self:checkBeth() then
+			return nil
+		end
+	end
 	local sprite = Sprite()
 	sprite:Load(coopHUD.GLOBALS.hud_el_anim_path, true)
 	sprite:SetFrame('Idle', self.type)
 	sprite:LoadGraphics()
 	return sprite
 end
-function coopHUD.ExtraCharge:render(pos, mirrored, scale, down_anchor)
+function coopHUD.RunInfo:render(pos, mirrored, scale, down_anchor)
+	self:update()
 	-- Scale set
 	local sprite_scale = scale
 	if sprite_scale == nil then sprite_scale = Vector(1, 1) end
 	--
-	local temp_pos = Vector(pos.X, pos.Y)
-	local text_pos = Vector(pos.X, pos.Y)
+	local temp_pos = Vector(pos.X, pos.Y - 1)
+	local text_pos = Vector(pos.X + 16, pos.Y)
+	local offset = Vector(0, 0)
 	if self.sprite then
 		--
 		if mirrored then
-			temp_pos.X = temp_pos.X - 20 - self.parent.charges_font:GetStringWidth(string.format('x%d', self.amount))
-			text_pos.X = text_pos.X - 16
+
 		else
-			text_pos.X = text_pos.X + 16
+
 		end
 		--
 		if down_anchor then
-			temp_pos.Y = temp_pos.Y - 16
-			text_pos.Y = text_pos.Y - 16
+
+		else
+			offset.Y = coopHUD.HUD.fonts.pft:GetBaselineHeight()
 		end
 		--
+		self.sprite.Scale = sprite_scale
 		self.sprite:Render(temp_pos)
-		self.parent.charges_font:DrawString(string.format('x%d', self.amount), text_pos.X, text_pos.Y,
-		                                    self.parent.font_color, 0, true)
+		local format_string = "%.2i"
+		if self.type == coopHUD.RunInfo.COIN and self:checkDeepPockets() then
+			format_string = "%.3i"
+		end
+		coopHUD.HUD.fonts.pft:DrawString(string.format(format_string, self.amount), text_pos.X, text_pos.Y,
+		                                 KColor(1, 1, 1, 1), 0, false)
+	end
+	return offset
+end
+function coopHUD.RunInfo:update()
+	if self.type ~= self:getType() then
+		self.type = self:getType()
+		self.sprite = self:getSprite()
+	end
+	if self.sprite == nil then
+		self.sprite = self:getSprite()
+	end
+	if self.amount ~= self:getAmount() then
+		self.amount = self:getAmount()
 	end
 end
-function coopHUD.ExtraCharge:update()
-	if self.type == 12 then
-		-- update charge amount for Bethany
-		if self.amount ~= self.parent.entPlayer:GetSoulCharge() then
-			self.amount = self.parent.entPlayer:GetSoulCharge()
-		end
-	elseif self.type == 15 then
-		-- update charge amount for T. Bethany
-		if self.amount ~= self.parent.entPlayer:GetBloodCharge() then
-			self.amount = self.parent.entPlayer:GetBloodCharge()
+function coopHUD.RunInfo:checkDeepPockets()
+	for i = 0, Game():GetNumPlayers() - 1, 1 do
+		if Isaac.GetPlayer(i):HasCollectible(CollectibleType.COLLECTIBLE_DEEP_POCKETS) then
+			return true
 		end
 	end
+	return false
 end
+function coopHUD.RunInfo:checkBeth()
+	for i = 0, Game():GetNumPlayers() - 1, 1 do
+		if self.type == coopHUD.RunInfo.BETH then
+			if Isaac.GetPlayer(i):GetPlayerType() == PlayerType.PLAYER_BETHANY then
+				return false
+			end
+		end
+		if self.type == coopHUD.RunInfo.T_BETH then
+			if Isaac.GetPlayer(i):GetPlayerType() == PlayerType.PLAYER_BETHANY_B then
+				return false
+			end
+		end
+	end
+	return true
+end
+
 --
 coopHUD.Poops = {}
 --
@@ -814,8 +880,12 @@ function coopHUD.PlayerHead.new(parent)
 end
 function coopHUD.PlayerHead:getSprite()
 	local player_type = self.parent.entPlayer:GetPlayerType()
-	if self.parent.entPlayer.Variant == 1 then return nil end -- prevents when old coop ghost
-	if player_type == 40 then player_type = 36 end
+	if self.parent.entPlayer.Variant == 1 then
+		return nil
+	end -- prevents when old coop ghost
+	if player_type == 40 then
+		player_type = 36
+	end
 	if 0 <= player_type and player_type <= 37 then
 		local sprite = Sprite()
 		sprite:Load(coopHUD.GLOBALS.player_head_anim_path, true)
@@ -834,7 +904,9 @@ function coopHUD.PlayerHead:render(anchor, mirrored, scale, down_anchor)
 		local text_pos = Vector(anchor.X, anchor.Y)
 		local sprite_scale = scale
 		--
-		if sprite_scale == nil then sprite_scale = Vector(1, 1) end
+		if sprite_scale == nil then
+			sprite_scale = Vector(1, 1)
+		end
 		--
 		if mirrored then
 			temp_pos.X = temp_pos.X - (8 * sprite_scale.X)
@@ -847,18 +919,18 @@ function coopHUD.PlayerHead:render(anchor, mirrored, scale, down_anchor)
 		end
 		--
 		if down_anchor then
-			temp_pos.Y = temp_pos.Y - (coopHUD.HUD.fonts.lua_mini:GetBaselineHeight() )
-			text_pos.Y = text_pos.Y - (coopHUD.HUD.fonts.lua_mini:GetBaselineHeight() )
+			temp_pos.Y = temp_pos.Y - (coopHUD.HUD.fonts.lua_mini:GetBaselineHeight())
+			text_pos.Y = text_pos.Y - (coopHUD.HUD.fonts.lua_mini:GetBaselineHeight())
 		else
-			temp_pos.Y = temp_pos.Y + (coopHUD.HUD.fonts.lua_mini:GetBaselineHeight() )
+			temp_pos.Y = temp_pos.Y + (coopHUD.HUD.fonts.lua_mini:GetBaselineHeight())
 			text_pos.Y = text_pos.Y + (16 * sprite_scale.Y)
 		end
 		--
 		self.sprite.Scale = sprite_scale
 		self.sprite:Render(temp_pos)
 		coopHUD.HUD.fonts.lua_mini:DrawString(self.name,
-		                                            text_pos.X, text_pos.Y,
-		                                            self.parent.font_color, 1, true)
+		                                      text_pos.X, text_pos.Y,
+		                                      self.parent.font_color, 1, true)
 	end
 	return offset
 end
