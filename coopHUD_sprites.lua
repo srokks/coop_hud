@@ -410,14 +410,14 @@ function coopHUD.Pocket:render(pos, mirrored, scale, down_anchor)
 		if Input.IsActionPressed(ButtonAction.ACTION_MAP, self.parent.controller_index) then
 			text = self.desc
 		end
-		local font_height = coopHUD.HUD.pocket_font:GetLineHeight()
+		local font_height = coopHUD.HUD.fonts.pft:GetLineHeight()
 		temp_pos = Vector(pos.X + offset.X, pos.Y + offset.Y - font_height)
 		if mirrored then temp_pos.X = temp_pos.X - string.len(text) * (6 * sprite_scale.X) end
 		if down_anchor then
 			temp_pos.Y = temp_pos.Y - offset.Y
 		end
-		coopHUD.HUD.pocket_font:DrawStringScaled(text, temp_pos.X, temp_pos.Y, sprite_scale.X, sprite_scale.Y,
-		                                         self.parent.font_color, 0, true)
+		coopHUD.HUD.fonts.pft:DrawStringScaled(text, temp_pos.X, temp_pos.Y, sprite_scale.X, sprite_scale.Y,
+		                                       self.parent.font_color, 0, true)
 	end
 	return offset
 end
