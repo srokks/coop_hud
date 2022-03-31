@@ -10,8 +10,8 @@ function coopHUD.Player.new(player_no)
 	--
 	self.entPlayer = Isaac.GetPlayer(player_no)
 	self.controller_index = self.entPlayer.ControllerIndex
-	self.game_index = player_no
-	self.name = 'P' .. tostring(player_no + 1)
+	self.game_index = player_no - coopHUD.essau_no
+	self.player_head = coopHUD.PlayerHead(self)
 	-- Active items
 	self.active_item = coopHUD.Item(self.entPlayer, ActiveSlot.SLOT_PRIMARY)
 	self.schoolbag_item = coopHUD.Item(self.entPlayer, ActiveSlot.SLOT_SECONDARY)
@@ -138,8 +138,13 @@ function coopHUD.Player:render()
 	local extra_charge_off = Vector(0, 0)
 	local poop_spell_off = Vector(0, 0)
 	--
-	self.schoolbag_item:render(anchor, mirrored, scale, down_anchor)
-	active_off = self.active_item:render(anchor, mirrored, scale, down_anchor)
+	if coopHUD.options.render_player_info then
+		info_off = self.player_head:render(anchor, mirrored, scale, down_anchor)
+	end
+	self.schoolbag_item:render(Vector(anchor.X + info_off.X, anchor.Y), mirrored, scale, down_anchor)
+	active_off = self.active_item:render(Vector(anchor.X + info_off.X, anchor.Y), mirrored, scale, down_anchor)
+	active_off.X = active_off.X + info_off.X
+	active_off.Y = active_off.Y + info_off.Y
 	hearts_off = self.hearts:render(Vector(anchor.X + active_off.X, anchor.Y), mirrored, scale, down_anchor)
 	self:renderExtras(Vector(anchor.X + active_off.X + hearts_off.X, anchor.Y), mirrored, scale, down_anchor)
 	--self.active_item:render(Vector(anchor.X + active_off.X + hearts_off.X, anchor.Y), mirrored, scale, down_anchor)

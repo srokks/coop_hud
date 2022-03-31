@@ -4,7 +4,6 @@ function coopHUD.on_start(_, cont)
 	if cont then
 		local json = require("json")
 		-- Logic when game is continued
-		coopHUD.essau_no = 0 -- resets Essau counter before player init
 		if coopHUD.players[0] == nil then
 			coopHUD.on_player_init()
 		end
@@ -41,11 +40,9 @@ function coopHUD.on_start(_, cont)
 			end
 		end
 	else
-		coopHUD.players = {}
 		-- Logic when started new game/ restart thought dbg console
-		coopHUD.essau_no = 0 -- resets Essau counter before player init
-		coopHUD.signals.is_joining = false
-		--end
+		coopHUD.on_player_init()
+		--
 		coopHUD.angel_seen = false -- resets angel seen state on restart
 	end
 	--coopHUD.initHudTables()
@@ -236,3 +233,29 @@ function addCallbackNew(mod, callback, func, arg1, arg2, arg3, arg4)
 end
 Isaac.AddCallback = addCallbackNew
 ---- End of standalone module
+function coopHUD.render()
+	coopHUD.updateAnchors()
+	if #coopHUD.players > 4 then
+		-- prevents to render if more than 4 players for now
+		coopHUD.options.onRender = false
+	end
+	-- _____ Main render function
+	local paused = Game():IsPaused()
+	for i = 1, #coopHUD.players do
+		if coopHUD.players[i] then
+			coopHUD.players[i]:update()
+			coopHUD.on_player_init()
+			--if paused then coopHUD.options.onRender = false end
+			--if coopHUD.options.onRender and not paused and not coopHUD.signals.is_joining then
+			--print(coopHUD.options.onRender and not paused)
+			if coopHUD.options.onRender and not paused and not coopHUD.signals.is_joining then
+				if Game():GetHUD():IsVisible() then Game():GetHUD():SetVisible(false) end
+				coopHUD.players[i]:render()
+			end
+			if not coopHUD.options.onRender or coopHUD.signals.is_joining then
+				if not Game():GetHUD():IsVisible() then Game():GetHUD():SetVisible(true) end
+			end
+		end
+	end
+end
+coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.render)
