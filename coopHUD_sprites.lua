@@ -756,6 +756,9 @@ function coopHUD.RunInfo:getAmount()
 		if self.type == coopHUD.RunInfo.T_BETH then
 			return player:GetBloodCharge()
 		end
+		if self.type == coopHUD.RunInfo.POOP then
+			return player:GetPoopMana()
+		end
 	end
 	return 0
 end
