@@ -946,7 +946,7 @@ function coopHUD.Stat:getAmount()
 		end
 	else
 		if self.type == coopHUD.Stat.SPEED then
-			return self.parent.entPlayer.Speed
+			return self.parent.entPlayer.MoveSpeed
 		elseif self.type == coopHUD.Stat.TEARS_DELAY then
 			return 30 / (self.parent.entPlayer.MaxFireDelay + 1)
 		elseif self.type == coopHUD.Stat.DAMAGE then
