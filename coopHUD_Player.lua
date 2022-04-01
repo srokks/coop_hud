@@ -182,6 +182,14 @@ function coopHUD.Player:render()
 	                                anchor.Y + first_line_offset.Y), mirrored,
 	                         Vector(0.5 * scale.X, 0.5 * scale.Y),
 	                         down_anchor)
+	-- PLAYER COLOR SET
+	local col = Color(1, 1, 1, 1)
+	if coopHUD.options.colorful_players then
+		col.R = self.font_color.Red
+		col.G = self.font_color.Green
+		col.B = self.font_color.Blue
+	end
+	self.entPlayer:SetColor(col, 2, 100, false, false)
 end
 function coopHUD.Player:renderExtras(pos, mirrored, scale, down_anchor)
 	local final_offset = Vector(0, 0)
