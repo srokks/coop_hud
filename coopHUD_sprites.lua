@@ -986,7 +986,7 @@ function coopHUD.Stat:render(pos)
 		local dif_color = KColor(0, 1, 0, 0.7) -- green
 		local dif_sign = ''
 		-- Difference Render
-		local attitude = self:getAttitude()
+		local attitude = self:getAttitude() -- holds true if difference is positive and false if negative
 		if attitude then
 			dif_color = KColor(0, 1, 0, 1) -- green
 			dif_sign = '+'
@@ -1007,6 +1007,8 @@ end
 function coopHUD.Stat:update()
 
 end
+---coopHUD.Stat:getAttitude -- checks stat 'attitude' if its in growth or in shrink :D
+---@return boolean true if self.diff is positive and false if engative
 function coopHUD.Stat:getAttitude()
 	if self.diff > 0 then
 		--
