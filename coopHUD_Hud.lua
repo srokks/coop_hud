@@ -65,13 +65,4 @@ function coopHUD.HUD.render()
 		                                          f_col, 1, true)
 		timer_offset.Y = coopHUD.HUD.fonts.team_meat_10:GetBaselineHeight()
 	end
-	coopHUD.HUD.beth:render(beth_pos)
-	--
-	local beth_pos = Vector(middle_bot_anchor.X, middle_bot_anchor.Y)
-	if poop_offset.X > 0 and bomb_offset.X > 0 then
-		beth_pos.X = middle_bot_anchor.X + 28 + 28
-	else
-		beth_pos.X = middle_bot_anchor.X + 28 + 14
-	end
-	coopHUD.HUD.beth:render(beth_pos)
 end
