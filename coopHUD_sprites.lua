@@ -937,8 +937,31 @@ function coopHUD.Stat.new(parent, type, icon)
 	self.diff_counter = 0
 	return self
 end
-function coopHUD.Stat:getSprite(icon)
-	if icon then
+function coopHUD.Stat:getAmount()
+	if self.icon then
+		if self.type == self.ANGEL then
+		elseif self.type == self.DEVIL then
+		elseif self.type == self.PLANETARIUM then
+
+		end
+	else
+		if self.type == coopHUD.Stat.SPEED then
+			return self.parent.entPlayer.Speed
+		elseif self.type == coopHUD.Stat.TEARS_DELAY then
+			return 30 / (self.parent.entPlayer.MaxFireDelay + 1)
+		elseif self.type == coopHUD.Stat.DAMAGE then
+			return self.parent.entPlayer.Damage
+		elseif self.type == coopHUD.Stat.RANGE then
+			return self.parent.entPlayer.TearRange / 40
+		elseif self.type == coopHUD.Stat.SHOT_SPEED then
+			return self.parent.entPlayer.ShotSpeed
+		elseif self.type == coopHUD.Stat.LUCK then
+			return self.parent.entPlayer.Luck
+		end
+	end
+end
+function coopHUD.Stat:getSprite()
+	if self.icon then
 		local sprite = Sprite()
 		sprite:Load(coopHUD.GLOBALS.hud_stats_anim_path, true)
 		sprite:SetFrame('Idle', 0)
