@@ -713,11 +713,17 @@ setmetatable(coopHUD.RunInfo, {
 })
 coopHUD.RunInfo.COIN = 0
 coopHUD.RunInfo.KEY = 1
-coopHUD.RunInfo.GOLDEN_KEY = 3
 coopHUD.RunInfo.BOMB = 2
+coopHUD.RunInfo.GOLDEN_KEY = 3
+coopHUD.RunInfo.HARD = 4 -- TODO
+coopHUD.RunInfo.NO_ACHIEVEMENTS = 5 -- TODO
 coopHUD.RunInfo.GOLDEN_BOMB = 6
-coopHUD.RunInfo.GIGA_BOMB = 14
+coopHUD.RunInfo.GREED_WAVES = 7
+coopHUD.RunInfo.D_RUN = 7 -- TODO
+coopHUD.RunInfo.SLOT = 9 -- TODO
+coopHUD.RunInfo.GREEDIER = 11
 coopHUD.RunInfo.BETH = 12
+coopHUD.RunInfo.GIGA_BOMB = 14
 coopHUD.RunInfo.T_BETH = 15
 coopHUD.RunInfo.POOP = 16
 function coopHUD.RunInfo.new(info_type)
