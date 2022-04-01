@@ -47,19 +47,23 @@ function coopHUD.HUD.render()
 	temp_pos.X = temp_pos.X + offset.X
 	offset = coopHUD.HUD.t_beth:render(temp_pos)
 	--
-	local keys_pos = Vector(middle_bot_anchor.X, middle_bot_anchor.Y)
-	if poop_offset.X > 0 and bomb_offset.X > 0 then
-		keys_pos.X = middle_bot_anchor.X + 28
-	else
-		keys_pos.X = middle_bot_anchor.X + 14
-	end
-	coopHUD.HUD.keys:render(keys_pos)
+	------ TIMER RENDER
+	-- FIX: on extended map and big right player timer is over rendered
+	-- Code from TBoI Api by wofsauge
+	local timer_offset = Vector(1, 1)
+	local curTime = Game():GetFrameCount()
+	local msecs = curTime % 30 * (10 / 3) -- turns the millisecond value range from [0 to 30] to [0 to 100]
+	local secs = math.floor(curTime / 30) % 60
+	local mins = math.floor(curTime / 30 / 60) % 60
+	local hours = math.floor(curTime / 30 / 60 / 60) % 60
 	--
-	local beth_pos = Vector(middle_bot_anchor.X, middle_bot_anchor.Y)
-	if poop_offset.X > 0 and bomb_offset.X > 0 then
-		beth_pos.X = middle_bot_anchor.X + 28 + 28
-	else
-		beth_pos.X = middle_bot_anchor.X + 28 + 14
+	local time_string = string.format('Time: %.2i:%.2i:%.2i', hours, mins, secs) -- formats
+	local f_col = KColor(0.5, 0.5, 0.5, 1) -- Default font color font color with 0.5 alpha
+	if coopHUD.options.timer_always_on or coopHUD.signals.map then
+		coopHUD.HUD.fonts.team_meat_10:DrawString(time_string,
+		                                          middle_bot_anchor.X, 0,
+		                                          f_col, 1, true)
+		timer_offset.Y = coopHUD.HUD.fonts.team_meat_10:GetBaselineHeight()
 	end
 	coopHUD.HUD.beth:render(beth_pos)
 	--
