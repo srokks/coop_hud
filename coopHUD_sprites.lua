@@ -925,7 +925,25 @@ coopHUD.Stat.PLANETARIUM = 8
 coopHUD.Stat.DUALITY = 10
 function coopHUD.Stat.new(type, icon)
 	local self = setmetatable({}, coopHUD.Stat)
+	self.type = type
+	self.sprite = self:getSprite(icon)
 	return self
+end
+function coopHUD.Stat:getSprite(icon)
+	if icon then
+		local sprite = Sprite()
+		sprite:Load(coopHUD.GLOBALS.hud_stats_anim_path, true)
+		sprite:SetFrame('Idle', 0)
+		sprite.Color = Color(1, 1, 1, 0.5)
+		return sprite
+	else return nil
+	end
+end
+function coopHUD.Stat:render(pos)
+
+end
+function coopHUD.Stat:update()
+
 end
 --
 coopHUD.PlayerHead = {}
