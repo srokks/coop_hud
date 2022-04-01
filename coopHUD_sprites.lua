@@ -923,10 +923,18 @@ coopHUD.Stat.DEVIL = 6
 coopHUD.Stat.ANGEL = 7
 coopHUD.Stat.PLANETARIUM = 8
 coopHUD.Stat.DUALITY = 10
-function coopHUD.Stat.new(type, icon)
+---@param parent table coopHUD.Player -- parent of stat class
+---@param type number coopHUD.Stat.Type -- type of stat class
+---@param icon boolean if true Stat will be rendered with icon else only number stat with diff if is
+function coopHUD.Stat.new(parent, type, icon)
 	local self = setmetatable({}, coopHUD.Stat)
+	self.parent = parent
 	self.type = type
-	self.sprite = self:getSprite(icon)
+	self.icon = icon
+	self.amount = self:getAmount()
+	self.diff = nil
+	self.sprite = self:getSprite()
+	self.diff_counter = 0
 	return self
 end
 function coopHUD.Stat:getSprite(icon)
