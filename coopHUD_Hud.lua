@@ -26,33 +26,51 @@ end
 ---Todo: render floor info
 ---Todo: render stuff page in center
 function coopHUD.HUD.render()
-	local color = KColor(1, 1, 1, 1)
-	local middle_bot_anchor = Vector((Isaac.GetScreenWidth() / 2) - 14, Isaac.GetScreenHeight() - 14) -- middle of screen
-	local offset = Vector(0, 0)
+	local middle_bot_anchor = Vector((Isaac.GetScreenWidth() / 2), Isaac.GetScreenHeight() - 14) -- middle of screen
+	local bomb_offset = Vector(0, 0)
+	local poop_offset = Vector(0, 0)
 	--
-	local bomb_pos = Vector(middle_bot_anchor.X,middle_bot_anchor.Y)
-	if coopHUD.HUD.poop.sprite then
-		bomb_pos.X = bomb_pos.X - (24*1.25) / 2
+	local bomb_pos = Vector(middle_bot_anchor.X, middle_bot_anchor.Y)
+	if coopHUD.HUD.poop.sprite == nil then
+		bomb_pos.X = bomb_pos.X - 14
 	end
-	offset = coopHUD.HUD.bombs:render(bomb_pos)
-	bomb_pos = Vector((Isaac.GetScreenWidth() / 2) - 14, Isaac.GetScreenHeight() - 14)
-	if  offset.X > 0 then
-		bomb_pos.X = bomb_pos.X + 24/2
+	bomb_offset = coopHUD.HUD.bombs:render(bomb_pos)
+	if bomb_offset.X > 0 then
+		bomb_pos.X = middle_bot_anchor.X - 28
+	else
+		bomb_pos.X = middle_bot_anchor.X - 14
 	end
-	coopHUD.HUD.poop:render(bomb_pos)
+	poop_offset = coopHUD.HUD.poop:render(bomb_pos)
 	--
-	local coin_pos = Vector(middle_bot_anchor.X-24 * 1.25, middle_bot_anchor.Y)
-	if coopHUD.HUD.poop.sprite and offset.X > 0 then
-		coin_pos.X = coin_pos.X - 12
+	local coin_pos = Vector(middle_bot_anchor.X, middle_bot_anchor.Y)
+	if poop_offset.X > 0 and bomb_offset.X > 0 then
+		coin_pos.X = middle_bot_anchor.X - 28 * 2
+	else
+		coin_pos.X = middle_bot_anchor.X - 14 - 28
 	end
 	coopHUD.HUD.coins:render(coin_pos)
 	--
-	local keys_pos = Vector(middle_bot_anchor.X+24, middle_bot_anchor.Y)
-	if coopHUD.HUD.poop.sprite and offset.X > 0 then
-		keys_pos.X = middle_bot_anchor.X+36
+	local keys_pos = Vector(middle_bot_anchor.X, middle_bot_anchor.Y)
+	if poop_offset.X > 0 and bomb_offset.X > 0 then
+		keys_pos.X = middle_bot_anchor.X + 28
+	else
+		keys_pos.X = middle_bot_anchor.X + 14
 	end
 	coopHUD.HUD.keys:render(keys_pos)
 	--
-	local beth_pos = Vector(middle_bot_anchor.X+24, middle_bot_anchor.Y)
+	local beth_pos = Vector(middle_bot_anchor.X, middle_bot_anchor.Y)
+	if poop_offset.X > 0 and bomb_offset.X > 0 then
+		beth_pos.X = middle_bot_anchor.X + 28 + 28
+	else
+		beth_pos.X = middle_bot_anchor.X + 28 + 14
+	end
+	coopHUD.HUD.beth:render(beth_pos)
+	--
+	local beth_pos = Vector(middle_bot_anchor.X, middle_bot_anchor.Y)
+	if poop_offset.X > 0 and bomb_offset.X > 0 then
+		beth_pos.X = middle_bot_anchor.X + 28 + 28
+	else
+		beth_pos.X = middle_bot_anchor.X + 28 + 14
+	end
 	coopHUD.HUD.beth:render(beth_pos)
 end
