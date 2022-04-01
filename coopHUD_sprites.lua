@@ -971,7 +971,38 @@ function coopHUD.Stat:getSprite()
 	end
 end
 function coopHUD.Stat:render(pos)
+	if self.icon then -- Icon render
 
+	end
+	if self.amount ~= 0 then
+		-- Amount render
+		coopHUD.HUD.fonts.lua_mini:DrawString(string.format("%.2f", self.amount),
+		                                      pos.X, pos.Y,
+		                                      self.parent.font_color,
+		                                      0, true)
+
+	end
+	if self.diff then
+		local dif_color = KColor(0, 1, 0, 0.7) -- green
+		local dif_sign = ''
+		-- Difference Render
+		local attitude = self:getAttitude()
+		if attitude then
+			dif_color = KColor(0, 1, 0, 1) -- green
+			dif_sign = '+'
+		else
+			dif_color = KColor(1, 0, 0, 1)
+		end
+		coopHUD.HUD.fonts.lua_mini:DrawString(string.format(dif_sign .. "%.2f", self.diff),
+		                                      pos.X + coopHUD.HUD.fonts.lua_mini:GetStringWidth(string.format("%.2f", self.amount)) +4, pos.Y,
+		                                      dif_color,
+		                                      0, true)
+		self.diff_counter = self.diff_counter + 1
+		if self.diff_counter > 200 then
+			self.diff_counter = 0
+			self.diff = nil
+		end
+	end
 end
 function coopHUD.Stat:update()
 
