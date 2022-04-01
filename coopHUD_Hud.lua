@@ -16,6 +16,12 @@ function coopHUD.HUD.init()
 	coopHUD.HUD.t_beth = coopHUD.RunInfo(coopHUD.RunInfo.T_BETH)
 	coopHUD.HUD.poop = coopHUD.RunInfo(coopHUD.RunInfo.POOP)
 	coopHUD.HUD.greed_waves = coopHUD.RunInfo(coopHUD.RunInfo.GREED_WAVES)
+	coopHUD.HUD.speed = coopHUD.Stat(self, coopHUD.Stat.SPEED, true)
+	coopHUD.HUD.tears_delay = coopHUD.Stat(self, coopHUD.Stat.TEARS_DELAY, true)
+	coopHUD.HUD.damage = coopHUD.Stat(self, coopHUD.Stat.DAMAGE, true)
+	coopHUD.HUD.range = coopHUD.Stat(self, coopHUD.Stat.RANGE, true)
+	coopHUD.HUD.shot_speed = coopHUD.Stat(self, coopHUD.Stat.SHOT_SPEED, true)
+	coopHUD.HUD.luck = coopHUD.Stat(self, coopHUD.Stat.LUCK, true)
 end
 
 --coopHUD.HUD.poop = coopHUD.RunInfo(coopHUD.RunInfo.POOP)
