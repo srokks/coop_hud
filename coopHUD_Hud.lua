@@ -27,28 +27,25 @@ end
 ---Todo: render stuff page in center
 function coopHUD.HUD.render()
 	local middle_bot_anchor = Vector((Isaac.GetScreenWidth() / 2), Isaac.GetScreenHeight() - 14) -- middle of screen
-	local bomb_offset = Vector(0, 0)
-	local poop_offset = Vector(0, 0)
+	local offset = Vector(0, 0)
 	--
-	local bomb_pos = Vector(middle_bot_anchor.X, middle_bot_anchor.Y)
-	if coopHUD.HUD.poop.sprite == nil then
-		bomb_pos.X = bomb_pos.X - 14
-	end
-	bomb_offset = coopHUD.HUD.bombs:render(bomb_pos)
-	if bomb_offset.X > 0 then
-		bomb_pos.X = middle_bot_anchor.X - 28
-	else
-		bomb_pos.X = middle_bot_anchor.X - 14
-	end
-	poop_offset = coopHUD.HUD.poop:render(bomb_pos)
-	--
-	local coin_pos = Vector(middle_bot_anchor.X, middle_bot_anchor.Y)
-	if poop_offset.X > 0 and bomb_offset.X > 0 then
-		coin_pos.X = middle_bot_anchor.X - 28 * 2
-	else
-		coin_pos.X = middle_bot_anchor.X - 14 - 28
-	end
-	coopHUD.HUD.coins:render(coin_pos)
+	local temp_pos = Vector(middle_bot_anchor.X, middle_bot_anchor.Y)
+	temp_pos.X = temp_pos.X - coopHUD.HUD.coins:getOffset().X
+	temp_pos.X = temp_pos.X - coopHUD.HUD.bombs:getOffset().X / 2
+	temp_pos.X = temp_pos.X - coopHUD.HUD.poop:getOffset().X / 2
+	temp_pos.X = temp_pos.X - coopHUD.HUD.beth:getOffset().X / 2
+	temp_pos.X = temp_pos.X - coopHUD.HUD.t_beth:getOffset().X / 2
+	offset = coopHUD.HUD.coins:render(temp_pos)
+	temp_pos.X = temp_pos.X + offset.X
+	offset = coopHUD.HUD.bombs:render(temp_pos)
+	temp_pos.X = temp_pos.X + offset.X
+	offset = coopHUD.HUD.poop:render(temp_pos)
+	temp_pos.X = temp_pos.X + offset.X
+	offset = coopHUD.HUD.keys:render(temp_pos)
+	temp_pos.X = temp_pos.X + offset.X
+	offset = coopHUD.HUD.beth:render(temp_pos)
+	temp_pos.X = temp_pos.X + offset.X
+	offset = coopHUD.HUD.t_beth:render(temp_pos)
 	--
 	local keys_pos = Vector(middle_bot_anchor.X, middle_bot_anchor.Y)
 	if poop_offset.X > 0 and bomb_offset.X > 0 then
