@@ -27,7 +27,32 @@ end
 ---Todo: render stuff page in center
 function coopHUD.HUD.render()
 	local color = KColor(1, 1, 1, 1)
-	local anchor = Vector(Isaac.GetScreenWidth() / 2, Isaac.GetScreenHeight() - 16) -- middle of screen
-	local text = ''
-
+	local middle_bot_anchor = Vector((Isaac.GetScreenWidth() / 2) - 14, Isaac.GetScreenHeight() - 14) -- middle of screen
+	local offset = Vector(0, 0)
+	--
+	local bomb_pos = Vector(middle_bot_anchor.X,middle_bot_anchor.Y)
+	if coopHUD.HUD.poop.sprite then
+		bomb_pos.X = bomb_pos.X - (24*1.25) / 2
+	end
+	offset = coopHUD.HUD.bombs:render(bomb_pos)
+	bomb_pos = Vector((Isaac.GetScreenWidth() / 2) - 14, Isaac.GetScreenHeight() - 14)
+	if  offset.X > 0 then
+		bomb_pos.X = bomb_pos.X + 24/2
+	end
+	coopHUD.HUD.poop:render(bomb_pos)
+	--
+	local coin_pos = Vector(middle_bot_anchor.X-24 * 1.25, middle_bot_anchor.Y)
+	if coopHUD.HUD.poop.sprite and offset.X > 0 then
+		coin_pos.X = coin_pos.X - 12
+	end
+	coopHUD.HUD.coins:render(coin_pos)
+	--
+	local keys_pos = Vector(middle_bot_anchor.X+24, middle_bot_anchor.Y)
+	if coopHUD.HUD.poop.sprite and offset.X > 0 then
+		keys_pos.X = middle_bot_anchor.X+36
+	end
+	coopHUD.HUD.keys:render(keys_pos)
+	--
+	local beth_pos = Vector(middle_bot_anchor.X+24, middle_bot_anchor.Y)
+	coopHUD.HUD.beth:render(beth_pos)
 end
