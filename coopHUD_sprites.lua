@@ -961,10 +961,10 @@ function coopHUD.Stat:getAmount()
 	end
 end
 function coopHUD.Stat:getSprite()
-	if self.icon then
+	if self.icon and self.type ~= nil then
 		local sprite = Sprite()
 		sprite:Load(coopHUD.GLOBALS.hud_stats_anim_path, true)
-		sprite:SetFrame('Idle', 0)
+		sprite:SetFrame('Idle', self.type)
 		sprite.Color = Color(1, 1, 1, 0.5)
 		return sprite
 	else return nil
