@@ -816,34 +816,21 @@ function coopHUD.RunInfo:render(pos, mirrored, scale, down_anchor)
 	if self.sprite then
 		--
 		if mirrored then
-
-		else
-
 		end
 		--
 		if down_anchor then
-
-		else
-			offset.Y = coopHUD.HUD.fonts.pft:GetBaselineHeight()
 		end
 		--
+		if self.type == coopHUD.RunInfo.COIN and self:checkDeepPockets() then
+			temp_pos.X = temp_pos.X - 2
+			text_pos.X = text_pos.X - 2
+		end
 		self.sprite.Scale = sprite_scale
 		self.sprite:Render(temp_pos)
-		local format_string = "%.2i"
-		if self.type == coopHUD.RunInfo.COIN and self:checkDeepPockets() then
-			format_string = "%.3i"
-		end
-		local text = string.format(format_string, self.amount)
-		if self.type == coopHUD.RunInfo.GREED_WAVES or self.type == coopHUD.RunInfo.GREEDIER then
-			local current_wave = Game():GetLevel().GreedModeWave
-			local max_waves = 10
-			if  self.type == coopHUD.RunInfo.GREEDIER then
-				max_waves = 11
-			end
-			text = string.format("%d/%2.d", current_wave, max_waves)
-		end
-		coopHUD.HUD.fonts.pft:DrawString(text, text_pos.X, text_pos.Y,
+		coopHUD.HUD.fonts.pft:DrawString(self:getText(), text_pos.X, text_pos.Y,
 		                                 KColor(1, 1, 1, 1), 0, false)
+		offset.Y = coopHUD.HUD.fonts.pft:GetBaselineHeight()
+		offset.X = 16 + coopHUD.HUD.fonts.pft:GetStringWidth(self:getText())
 	end
 	return offset
 end
@@ -891,6 +878,30 @@ function coopHUD.RunInfo:checkPlayer()
 		end
 	end
 	return true
+end
+function coopHUD.RunInfo:getText()
+	local format_string = "%.2i"
+	if self.type == coopHUD.RunInfo.COIN and self:checkDeepPockets() then
+		format_string = "%.3i"
+	end
+	local text = string.format(format_string, self.amount)
+	if self.type == coopHUD.RunInfo.GREED_WAVES or self.type == coopHUD.RunInfo.GREEDIER then
+		local current_wave = Game():GetLevel().GreedModeWave
+		local max_waves = 10
+		if self.type == coopHUD.RunInfo.GREEDIER then
+			max_waves = 11
+		end
+		text = string.format("%d/%2.d", current_wave, max_waves)
+	end
+	return text
+end
+function coopHUD.RunInfo:getOffset()
+	local offset = Vector(0, 0)
+	if self.sprite then
+		offset.X = 16 + coopHUD.HUD.fonts.pft:GetStringWidth(self:getText())
+		offset.Y = math.max(coopHUD.HUD.fonts.pft:GetBaselineHeight(), 16)
+	end
+	return offset
 end
 --
 coopHUD.Poops = {}
