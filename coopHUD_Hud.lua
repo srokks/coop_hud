@@ -26,43 +26,68 @@ end
 ---Todo: render floor info
 ---Todo: render stuff page in center
 function coopHUD.HUD.render()
-	local middle_bot_anchor = Vector((Isaac.GetScreenWidth() / 2), Isaac.GetScreenHeight() - 14) -- middle of screen
-	local offset = Vector(0, 0)
-	--
-	local temp_pos = Vector(middle_bot_anchor.X, middle_bot_anchor.Y)
-	temp_pos.X = temp_pos.X - coopHUD.HUD.coins:getOffset().X
-	temp_pos.X = temp_pos.X - coopHUD.HUD.bombs:getOffset().X / 2
-	temp_pos.X = temp_pos.X - coopHUD.HUD.poop:getOffset().X / 2
-	temp_pos.X = temp_pos.X - coopHUD.HUD.beth:getOffset().X / 2
-	temp_pos.X = temp_pos.X - coopHUD.HUD.t_beth:getOffset().X / 2
-	offset = coopHUD.HUD.coins:render(temp_pos)
-	temp_pos.X = temp_pos.X + offset.X
-	offset = coopHUD.HUD.bombs:render(temp_pos)
-	temp_pos.X = temp_pos.X + offset.X
-	offset = coopHUD.HUD.poop:render(temp_pos)
-	temp_pos.X = temp_pos.X + offset.X
-	offset = coopHUD.HUD.keys:render(temp_pos)
-	temp_pos.X = temp_pos.X + offset.X
-	offset = coopHUD.HUD.beth:render(temp_pos)
-	temp_pos.X = temp_pos.X + offset.X
-	offset = coopHUD.HUD.t_beth:render(temp_pos)
-	--
-	------ TIMER RENDER
-	-- FIX: on extended map and big right player timer is over rendered
-	-- Code from TBoI Api by wofsauge
-	local timer_offset = Vector(1, 1)
-	local curTime = Game():GetFrameCount()
-	local msecs = curTime % 30 * (10 / 3) -- turns the millisecond value range from [0 to 30] to [0 to 100]
-	local secs = math.floor(curTime / 30) % 60
-	local mins = math.floor(curTime / 30 / 60) % 60
-	local hours = math.floor(curTime / 30 / 60 / 60) % 60
-	--
-	local time_string = string.format('Time: %.2i:%.2i:%.2i', hours, mins, secs) -- formats
-	local f_col = KColor(0.5, 0.5, 0.5, 1) -- Default font color font color with 0.5 alpha
-	if coopHUD.options.timer_always_on or coopHUD.signals.map then
-		coopHUD.HUD.fonts.team_meat_10:DrawString(time_string,
-		                                          middle_bot_anchor.X, 0,
-		                                          f_col, 1, true)
-		timer_offset.Y = coopHUD.HUD.fonts.team_meat_10:GetBaselineHeight()
+	if coopHUD.HUD.coins then
+		local middle_bot_anchor = Vector((Isaac.GetScreenWidth() / 2), Isaac.GetScreenHeight() - 14) -- middle of screen
+		local offset = Vector(0, 0)
+		--
+		local temp_pos = Vector(middle_bot_anchor.X, middle_bot_anchor.Y)
+		temp_pos.X = temp_pos.X - coopHUD.HUD.coins:getOffset().X
+		temp_pos.X = temp_pos.X - coopHUD.HUD.bombs:getOffset().X / 2
+		temp_pos.X = temp_pos.X - coopHUD.HUD.poop:getOffset().X / 2
+		temp_pos.X = temp_pos.X - coopHUD.HUD.beth:getOffset().X / 2
+		temp_pos.X = temp_pos.X - coopHUD.HUD.t_beth:getOffset().X / 2
+		offset = coopHUD.HUD.coins:render(temp_pos)
+		temp_pos.X = temp_pos.X + offset.X
+		offset = coopHUD.HUD.bombs:render(temp_pos)
+		temp_pos.X = temp_pos.X + offset.X
+		offset = coopHUD.HUD.poop:render(temp_pos)
+		temp_pos.X = temp_pos.X + offset.X
+		offset = coopHUD.HUD.keys:render(temp_pos)
+		temp_pos.X = temp_pos.X + offset.X
+		offset = coopHUD.HUD.beth:render(temp_pos)
+		temp_pos.X = temp_pos.X + offset.X
+		offset = coopHUD.HUD.t_beth:render(temp_pos)
+		--
+		------ TIMER RENDER
+		-- FIX: on extended map and big right player timer is over rendered
+		-- Code from TBoI Api by wofsauge
+		local timer_offset = Vector(1, 1)
+		local curTime = Game():GetFrameCount()
+		local msecs = curTime % 30 * (10 / 3) -- turns the millisecond value range from [0 to 30] to [0 to 100]
+		local secs = math.floor(curTime / 30) % 60
+		local mins = math.floor(curTime / 30 / 60) % 60
+		local hours = math.floor(curTime / 30 / 60 / 60) % 60
+		--
+		local time_string = string.format('Time: %.2i:%.2i:%.2i', hours, mins, secs) -- formats
+		local f_col = KColor(0.5, 0.5, 0.5, 1) -- Default font color font color with 0.5 alpha
+		if coopHUD.options.timer_always_on or coopHUD.signals.map then
+			coopHUD.HUD.fonts.team_meat_10:DrawString(time_string,
+			                                          middle_bot_anchor.X, 0,
+			                                          f_col, 1, true)
+			timer_offset.Y = coopHUD.HUD.fonts.team_meat_10:GetBaselineHeight()
+		end
+		---- STAT ICONS
+		coopHUD.HUD.stat_anchors = {} -- holds anchors for stats icons
+		table.insert(coopHUD.HUD.stat_anchors, {anchor = Vector(coopHUD.anchors.top_left.X, 100),mirrored = false}) --TODO: proper position
+		if #coopHUD.players >= 2 then
+			table.insert(coopHUD.HUD.stat_anchors, {anchor = Vector(coopHUD.anchors.top_left.X, 100),mirrored = true}) --TODO: proper position
+		end
+		local off = Vector(0, 0)
+		if coopHUD.options.stats.show then
+			for _, stat_anchor in pairs(coopHUD.HUD.stat_anchors) do
+				local temp_stat_pos = Vector(stat_anchor.anchor.X, stat_anchor.anchor.Y)
+				off = coopHUD.HUD.speed:render(temp_stat_pos)
+				temp_stat_pos.Y = temp_stat_pos.Y + off.Y
+				off = coopHUD.HUD.tears_delay:render(temp_stat_pos)
+				temp_stat_pos.Y = temp_stat_pos.Y + off.Y
+				off = coopHUD.HUD.damage:render(temp_stat_pos)
+				temp_stat_pos.Y = temp_stat_pos.Y + off.Y
+				coopHUD.HUD.range:render(temp_stat_pos)
+				temp_stat_pos.Y = temp_stat_pos.Y + off.Y
+				coopHUD.HUD.shot_speed:render(temp_stat_pos)
+				temp_stat_pos.Y = temp_stat_pos.Y + off.Y
+				coopHUD.HUD.luck:render(temp_stat_pos)
+			end
+		end
 	end
 end

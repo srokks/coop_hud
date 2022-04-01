@@ -970,11 +970,14 @@ function coopHUD.Stat:getSprite()
 	else return nil
 	end
 end
-function coopHUD.Stat:render(pos)
+function coopHUD.Stat:render(pos,mirrored)
+	local offset = Vector(0,0)
 	if self.icon then -- Icon render
-
+		self.sprite:Render(Vector(pos.X,pos.Y))
+		offset.X = offset.X + 16
+		offset.Y = offset.Y + 16
 	end
-	if self.amount ~= 0 then
+	if self.amount then
 		-- Amount render
 		coopHUD.HUD.fonts.lua_mini:DrawString(string.format("%.2f", self.amount),
 		                                      pos.X, pos.Y,
@@ -1003,6 +1006,7 @@ function coopHUD.Stat:render(pos)
 			self.diff = nil
 		end
 	end
+	return offset
 end
 function coopHUD.Stat:update()
 
