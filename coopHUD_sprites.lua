@@ -913,7 +913,17 @@ setmetatable(coopHUD.Stat, {
 		return cls.new(...)
 	end,
 })
-function coopHUD.Stat.new(parent)
+coopHUD.Stat.SPEED = 0
+coopHUD.Stat.TEARS_DELAY = 1
+coopHUD.Stat.DAMAGE = 2
+coopHUD.Stat.RANGE = 3
+coopHUD.Stat.SHOT_SPEED = 4
+coopHUD.Stat.LUCK = 5
+coopHUD.Stat.DEVIL = 6
+coopHUD.Stat.ANGEL = 7
+coopHUD.Stat.PLANETARIUM = 8
+coopHUD.Stat.DUALITY = 10
+function coopHUD.Stat.new(type, icon)
 	local self = setmetatable({}, coopHUD.Stat)
 	return self
 end
