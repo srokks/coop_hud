@@ -37,15 +37,12 @@ function coopHUD.Player.new(player_no)
 	sub_heart_types = {}
 	twin = {}
 	-- STATS
-	-- holds player stats [1] - stat; [2] change
-	self.stats = {
-		speed = {self.entPlayer.MoveSpeed, 0},
-		tears_delay = {30 / (self.entPlayer.MaxFireDelay + 1), 0},
-		damage = {self.entPlayer.Damage, 0},
-		range = {(self.entPlayer.TearRange / 40), 0},
-		shot_speed = {self.entPlayer.ShotSpeed, 0},
-		luck = {self.entPlayer.Luck, 0},
-	}
+	self.speed = coopHUD.Stat(self,coopHUD.Stat.SPEED,false)
+	self.tears_delay = coopHUD.Stat(self,coopHUD.Stat.TEARS_DELAY,false)
+	self.damage = coopHUD.Stat(self,coopHUD.Stat.TEARS_DELAY,false)
+	self.range = coopHUD.Stat(self,coopHUD.Stat.TEARS_DELAY,false)
+	self.shot_speed = coopHUD.Stat(self,coopHUD.Stat.TEARS_DELAY,false)
+	self.luck = coopHUD.Stat(self,coopHUD.Stat.TEARS_DELAY,false)
 	-- Extra charges
 	wisp_jar_use = 0 -- holds info about used jar of wisp
 	-- T.Cain - specifics
