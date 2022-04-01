@@ -65,15 +65,7 @@ function coopHUD.on_player_init()
 	end
 end
 --_____ INPUTS
-function coopHUD.on_input()
-	-- Trigger for turning on/off coop hud on `H` key
-	if Input.IsButtonTriggered(Keyboard.KEY_H, 0) then
-		if coopHUD.options.onRender then
-			coopHUD.options.onRender = false
-		else
-			coopHUD.options.onRender = true
-		end
-	end
+function coopHUD.on_join_signal()
 	-- ACTION_JOINMULTIPLAYER
 	if not Game():IsPaused() then
 		for i = 0, 8 do
@@ -95,7 +87,7 @@ function coopHUD.on_input()
 		end
 	end
 end
-coopHUD:AddCallback(ModCallbacks.MC_INPUT_ACTION, coopHUD.on_input)
+coopHUD:AddCallback(ModCallbacks.MC_INPUT_ACTION, coopHUD.on_join_signal)
 -- __________ On active item/pocket activate
 function coopHUD.on_activate(_, type, RNG, EntityPlayer, UseFlags, used_slot, CustomVarData)
 	local player_index = coopHUD.getPlayerNumByControllerIndex(EntityPlayer.ControllerIndex)
@@ -232,6 +224,49 @@ function addCallbackNew(mod, callback, func, arg1, arg2, arg3, arg4)
 end
 Isaac.AddCallback = addCallbackNew
 ---- End of standalone module
+local btn_held = 0
+function coopHUD.inputs_signals()
+	-- Trigger for turning on/off coop hud on `H` key
+	if Input.IsButtonTriggered(Keyboard.KEY_H, 0) then
+		if coopHUD.options.onRender then
+			coopHUD.options.onRender = false
+		else
+			coopHUD.options.onRender = true
+		end
+	end
+	-- Trigger for turning on/off timer on `T` key
+	if Input.IsButtonTriggered(Keyboard.KEY_T, 0) then
+		if coopHUD.options.timer_always_on then
+			coopHUD.options.timer_always_on = false
+		else
+			coopHUD.options.timer_always_on = true
+		end
+	end
+	local mapPressed = false
+	for i = 0, Game():GetNumPlayers() - 1 do
+		local controller_index = Isaac.GetPlayer(i).ControllerIndex
+		local player_index = coopHUD.getPlayerNumByControllerIndex(controller_index)
+		if Input.IsActionPressed(ButtonAction.ACTION_MAP, controller_index) then
+			mapPressed = player_index
+		end
+		if Input.IsActionTriggered(ButtonAction.ACTION_DROP, controller_index) then
+			coopHUD.players[player_index]:on_signal('on_drop_activate')
+		end
+
+	end
+	-- MAP BUTTON
+	local pressTime = 0.5
+	if mapPressed then
+		btn_held = btn_held + 1 / 60
+		if btn_held > pressTime then
+			coopHUD.signals.map = mapPressed
+		end
+	else
+		coopHUD.signals.map = false
+		btn_held = 0
+	end
+end
+coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.inputs_signals)
 function coopHUD.render()
 	coopHUD.updateAnchors()
 	if #coopHUD.players > 4 then
