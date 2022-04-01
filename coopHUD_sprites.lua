@@ -965,7 +965,7 @@ function coopHUD.PlayerHead:render(anchor, mirrored, scale, down_anchor)
 		if mirrored then
 			temp_pos.X = temp_pos.X - (8 * sprite_scale.X)
 			text_pos.X = text_pos.X - (8 * sprite_scale.X)
-			offset.X = (-16 * 1.25) * sprite_scale.X
+			offset.X = (-16 * 0.85) * sprite_scale.X
 		else
 			temp_pos.X = temp_pos.X + (8 * sprite_scale.X)
 			text_pos.X = text_pos.X + (8 * sprite_scale.X)
