@@ -15,6 +15,7 @@ function coopHUD.HUD.init()
 	coopHUD.HUD.beth = coopHUD.RunInfo(coopHUD.RunInfo.BETH)
 	coopHUD.HUD.t_beth = coopHUD.RunInfo(coopHUD.RunInfo.T_BETH)
 	coopHUD.HUD.poop = coopHUD.RunInfo(coopHUD.RunInfo.POOP)
+	coopHUD.HUD.greed_waves = coopHUD.RunInfo(coopHUD.RunInfo.GREED_WAVES)
 end
 
 --coopHUD.HUD.poop = coopHUD.RunInfo(coopHUD.RunInfo.POOP)

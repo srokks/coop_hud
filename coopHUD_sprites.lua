@@ -23,8 +23,8 @@ function coopHUD.Item.getChargeSprites(self)
 	-- Gets charge of item from  player, slot
 	local sprites = {
 		beth_charge = Sprite(),
-		charge      = Sprite(),
-		overlay     = Sprite(),
+		charge = Sprite(),
+		overlay = Sprite(),
 	}
 	if self.id == 0 or self.id == nil or self.slot < 0 then return nil end
 	local max_charges = Isaac.GetItemConfig():GetCollectible(self.id).MaxCharges
@@ -692,7 +692,7 @@ function coopHUD.HeartTable:render(pos, mirrored, scale, down_anchor)
 		end
 	end
 	--
-	return Vector(12 * scale.X * cols, 12 * scale.Y* rows)
+	return Vector(12 * scale.X * cols, 12 * scale.Y * rows)
 end
 function coopHUD.HeartTable:update()
 	local temp_total_hearts = math.ceil((self.parent.entPlayer:GetEffectiveMaxHearts() + self.parent.entPlayer:GetSoulHearts()) / 2)
@@ -726,6 +726,7 @@ coopHUD.RunInfo.BETH = 12
 coopHUD.RunInfo.GIGA_BOMB = 14
 coopHUD.RunInfo.T_BETH = 15
 coopHUD.RunInfo.POOP = 16
+
 function coopHUD.RunInfo.new(info_type)
 	local self = setmetatable({}, coopHUD.RunInfo)
 	self.type = info_type
@@ -787,6 +788,12 @@ function coopHUD.RunInfo:getSprite()
 		if self:checkPlayer() then
 			return nil
 		end
+	elseif self.type == coopHUD.RunInfo.GREED_WAVES or self.type == coopHUD.RunInfo.GREEDIER then
+		-- returns nil if not in greed mode to not render
+		if not Game():IsGreedMode() then return nil end
+		if Game().Difficulty == Difficulty.DIFFICULTY_GREEDIER then
+			self.type = coopHUD.RunInfo.GREEDIER
+		end
 	end
 	local sprite = Sprite()
 	sprite:Load(coopHUD.GLOBALS.hud_el_anim_path, true)
@@ -823,7 +830,16 @@ function coopHUD.RunInfo:render(pos, mirrored, scale, down_anchor)
 		if self.type == coopHUD.RunInfo.COIN and self:checkDeepPockets() then
 			format_string = "%.3i"
 		end
-		coopHUD.HUD.fonts.pft:DrawString(string.format(format_string, self.amount), text_pos.X, text_pos.Y,
+		local text = string.format(format_string, self.amount)
+		if self.type == coopHUD.RunInfo.GREED_WAVES or self.type == coopHUD.RunInfo.GREEDIER then
+			local current_wave = Game():GetLevel().GreedModeWave
+			local max_waves = 10
+			if  self.type == coopHUD.RunInfo.GREEDIER then
+				max_waves = 11
+			end
+			text = string.format("%d/%2.d", current_wave, max_waves)
+		end
+		coopHUD.HUD.fonts.pft:DrawString(text, text_pos.X, text_pos.Y,
 		                                 KColor(1, 1, 1, 1), 0, false)
 	end
 	return offset
@@ -873,7 +889,6 @@ function coopHUD.RunInfo:checkPlayer()
 	end
 	return true
 end
-
 --
 coopHUD.Poops = {}
 --
@@ -991,7 +1006,8 @@ function coopHUD.getMinimapOffset()
 			end
 			minimap_offset = Vector(minx - 4, 2) -- Small
 		end
-		if MinimapAPI:GetConfig("Disable") or MinimapAPI.Disable then minimap_offset = Vector(screen_size.X - 4, 2) end
+		if MinimapAPI:GetConfig("Disable") or MinimapAPI.Disable then minimap_offset = Vector(screen_size.X - 4,
+		                                                                                      2) end
 		local r = MinimapAPI:GetCurrentRoom()
 		if r ~= nil then
 			if MinimapAPI:GetConfig("HideInCombat") == 2 then
@@ -1021,7 +1037,8 @@ function coopHUD.updateAnchors()
 	if coopHUD.anchors.bot_left ~= Vector(0, Isaac.GetScreenHeight()) + Vector(offset * 2.2, -offset * 1.6) then
 		coopHUD.anchors.bot_left = Vector(0, Isaac.GetScreenHeight()) + Vector(offset * 2.2, -offset * 1.6)
 	end
-	if coopHUD.anchors.top_right ~= Vector(coopHUD.getMinimapOffset().X, 0) + Vector(-offset * 2.2, offset * 1.2) then
+	if coopHUD.anchors.top_right ~= Vector(coopHUD.getMinimapOffset().X, 0) + Vector(-offset * 2.2,
+	                                                                                 offset * 1.2) then
 		coopHUD.anchors.top_right = Vector(coopHUD.getMinimapOffset().X, 0) + Vector(-offset * 2.2, offset * 1.2)
 	end
 	if coopHUD.anchors.bot_right ~= Vector(Isaac.GetScreenWidth(), Isaac.GetScreenHeight()) + Vector(-offset * 2.2,
