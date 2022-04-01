@@ -190,6 +190,11 @@ function coopHUD.Player:render()
 		col.B = self.font_color.Blue
 	end
 	self.entPlayer:SetColor(col, 2, 100, false, false)
+	if coopHUD.options.show_player_names then
+		local position = Isaac.WorldToRenderPosition(self.entPlayer.Position)
+		coopHUD.HUD.fonts.pft:DrawString(self.player_head.name, position.X - 5, position.Y, self.font_color)
+	end
+
 end
 function coopHUD.Player:renderExtras(pos, mirrored, scale, down_anchor)
 	local final_offset = Vector(0, 0)

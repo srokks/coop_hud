@@ -77,7 +77,6 @@ function coopHUD.on_join_signal()
 					and Game():GetLevel():GetCurrentRoomIndex() == Game():GetLevel():GetStartingRoomIndex() then
 					--
 				coopHUD.signals.is_joining = true
-				coopHUD.text = coopHUD.text + 1
 			end
 			-- Catches back button when on
 			if Input.IsActionTriggered(ButtonAction.ACTION_MENUBACK, i) and coopHUD.signals.is_joining then
