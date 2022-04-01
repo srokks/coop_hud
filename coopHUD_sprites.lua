@@ -1007,6 +1007,15 @@ end
 function coopHUD.Stat:update()
 
 end
+function coopHUD.Stat:getAttitude()
+	if self.diff > 0 then
+		--
+		return true
+	elseif self.diff == 0 then
+		return true
+	else
+	end
+end
 --
 coopHUD.PlayerHead = {}
 coopHUD.PlayerHead.__index = coopHUD.PlayerHead
