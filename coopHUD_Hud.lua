@@ -17,13 +17,6 @@ function coopHUD.HUD.init()
 	coopHUD.HUD.t_beth = coopHUD.RunInfo(coopHUD.RunInfo.T_BETH)
 	coopHUD.HUD.poop = coopHUD.RunInfo(coopHUD.RunInfo.POOP)
 	coopHUD.HUD.greed_waves = coopHUD.RunInfo(coopHUD.RunInfo.GREED_WAVES)
-	-- Stats icons
-	coopHUD.HUD.speed = coopHUD.Stat(nil, coopHUD.Stat.SPEED, true)
-	coopHUD.HUD.tears_delay = coopHUD.Stat(nil, coopHUD.Stat.TEARS_DELAY, true)
-	coopHUD.HUD.damage = coopHUD.Stat(nil, coopHUD.Stat.DAMAGE, true)
-	coopHUD.HUD.range = coopHUD.Stat(nil, coopHUD.Stat.RANGE, true)
-	coopHUD.HUD.shot_speed = coopHUD.Stat(nil, coopHUD.Stat.SHOT_SPEED, true)
-	coopHUD.HUD.luck = coopHUD.Stat(nil, coopHUD.Stat.LUCK, true)
 	-- Deals icons
 	coopHUD.HUD.angel = coopHUD.Stat(coopHUD.HUD, coopHUD.Stat.ANGEL, true)
 	coopHUD.HUD.devil = coopHUD.Stat(coopHUD.HUD, coopHUD.Stat.DEVIL, true)
