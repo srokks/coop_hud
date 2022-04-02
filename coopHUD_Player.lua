@@ -159,7 +159,6 @@ function coopHUD.Player:render()
 	self.schoolbag_item:render(Vector(anchor.X + info_off.X, anchor.Y), mirrored, scale, down_anchor)
 	active_off = self.active_item:render(Vector(anchor.X + info_off.X, anchor.Y), mirrored, scale, down_anchor)
 	active_off.X = active_off.X + info_off.X
-	active_off.Y = active_off.Y + info_off.Y
 	hearts_off = self.hearts:render(Vector(anchor.X + active_off.X, anchor.Y), mirrored, scale, down_anchor)
 	self:renderExtras(Vector(anchor.X + active_off.X + hearts_off.X, anchor.Y), mirrored, scale, down_anchor)
 	--self.active_item:render(Vector(anchor.X + active_off.X + hearts_off.X, anchor.Y), mirrored, scale, down_anchor)
@@ -172,10 +171,9 @@ function coopHUD.Player:render()
 	local first_line_offset = Vector(0, 0)
 	local pocket_desc_off = Vector(0, 0)
 	if down_anchor then
-		first_line_offset.Y = math.min(info_off.Y, active_off.Y, hearts_off.Y, (exl_liv_off.Y + extra_charge_off.Y))
 		pocket_desc_off.Y = -8
 	else
-		first_line_offset.Y = math.max(info_off.Y, active_off.Y, hearts_off.Y, exl_liv_off.Y + extra_charge_off.Y)
+		first_line_offset.Y = math.max(info_off.Y, active_off.Y, hearts_off.Y )
 	end
 	trinket_off = self.first_trinket:render(Vector(anchor.X, anchor.Y + first_line_offset.Y), mirrored, scale,
 	                                        down_anchor)
@@ -191,7 +189,7 @@ function coopHUD.Player:render()
 	                                              down_anchor)
 
 	self.third_pocket:render(Vector(anchor.X + trinket_off.X + pocket_off.X + second_pocket_off.X,
-	                                anchor.Y + first_line_offset.Y), mirrored,
+	                                anchor.Y + first_line_offset.Y+ pocket_desc_off.Y), mirrored,
 	                         Vector(0.5 * scale.X, 0.5 * scale.Y),
 	                         down_anchor)
 	-- PLAYER COLOR SET
@@ -237,8 +235,7 @@ function coopHUD.Player:render()
 		self .luck:render(temp_stat_pos, mirrored)
 	end
 	if self.signals.map_btn then
-		coopHUD.HUD.fonts.lua_mini:DrawString(self.player_head.name, 100, 100, self.font_color, 0, true)
-		print(self.player_head.name)
+		-- TODO: stuff page render of button signal
 	end
 end
 function coopHUD.Player:renderExtras(pos, mirrored, scale, down_anchor)
