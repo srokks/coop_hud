@@ -259,6 +259,7 @@ function coopHUD.inputs_signals()
 		btn_held = btn_held + 1 / 60
 		if btn_held > pressTime then
 			coopHUD.signals.map = mapPressed
+			coopHUD.players[mapPressed].signals.map_btn = true
 		end
 	else
 		coopHUD.signals.map = false
