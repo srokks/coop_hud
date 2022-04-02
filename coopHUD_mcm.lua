@@ -324,30 +324,6 @@ if ModConfigMenu then
 	})
 	-- __ Players
 	ModConfigMenu.AddTitle(mod_name, "Colors", 'General')
-	-- stats.colorful
-	ModConfigMenu.AddSetting(mod_name, "Colors", {
-		Type           = ModConfigMenu.OptionType.BOOLEAN,
-		CurrentSetting = function()
-			return coopHUD.options.stats.colorful
-		end,
-		Default        = coopHUD.options.stats.colorful,
-
-		Display        = function()
-			local onOff = "Off"
-			if coopHUD.options.stats.colorful then
-				onOff = "On"
-			end
-
-			return "Colorful stats: " .. onOff
-		end,
-		OnChange       = function(currentBool)
-			coopHUD.options.stats.colorful = currentBool
-			coopHUD.save_options()
-		end,
-		Info           = function()
-			return "Colors stats according to player color"
-		end
-	})
 	-- .player_info_color
 	ModConfigMenu.AddSetting(mod_name, "Colors", {
 		Type           = ModConfigMenu.OptionType.BOOLEAN,
@@ -362,14 +338,14 @@ if ModConfigMenu then
 				onOff = "On"
 			end
 
-			return "Colorful names: " .. onOff
+			return "Colorful HUD: " .. onOff
 		end,
 		OnChange       = function(currentBool)
 			coopHUD.options.player_info_color = currentBool
 			coopHUD.save_options()
 		end,
 		Info           = function()
-			return "Colors player pocket name and name"
+			return "Player info/stats will be colorfull"
 		end
 	})
 	-- colorful players
