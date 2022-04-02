@@ -984,7 +984,6 @@ function coopHUD.Stat:getSprite()
 		local sprite = Sprite()
 		sprite:Load(coopHUD.GLOBALS.hud_stats_anim_path, true)
 		sprite:SetFrame('Idle', self.type)
-		sprite.Color = Color(1, 1, 1, 1)
 		return sprite
 	else
 		return nil
@@ -997,6 +996,13 @@ function coopHUD.Stat:render(pos, mirrored, vertical)
 		init_pos.Y = init_pos.Y - 16
 	end
 	local offset = Vector(0, 0)
+	local color_alpha = 1
+			if self.type <= coopHUD.Stat.LUCK then
+			color_alpha = 0.5
+			if self.parent.signals.map_btn then
+				color_alpha = 1
+			end
+		end
 	if self.icon and self.sprite then
 		-- Icon render
 		if mirrored then
@@ -1005,6 +1011,7 @@ function coopHUD.Stat:render(pos, mirrored, vertical)
 			offset.X = offset.X + 16
 		end
 		offset.Y = offset.Y + 16
+		self.sprite.Color = Color(1,1,1,color_alpha)
 		self.sprite:Render(Vector(init_pos.X, init_pos.Y))
 	end
 	-- STAT.amount render
@@ -1015,9 +1022,10 @@ function coopHUD.Stat:render(pos, mirrored, vertical)
 		if mirrored then
 			align = 1
 		end
+		local f_color = KColor(self.parent.font_color.Red, self.parent.font_color.Green, self.parent.font_color.Blue,color_alpha)
 		coopHUD.HUD.fonts.lua_mini:DrawString(amount_string,
 		                                      init_pos.X + offset.X, init_pos.Y,
-		                                      self.parent.font_color,
+		                                      f_color,
 		                                      align, false)
 		-- increases horizontal offset of string width
 		if mirrored then
