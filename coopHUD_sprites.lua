@@ -940,11 +940,21 @@ end
 function coopHUD.Stat:getAmount()
 	if self.icon then
 		local deals = self.calculateDeal()
-		if self.type == self.ANGEL then
+		if self.type == coopHUD.Stat.ANGEL or self.type == coopHUD.Stat.DUALITY then
+			if deals.duality then
+				self.type = coopHUD.Stat.DUALITY
+			else
+				self.type = coopHUD.Stat.ANGEL
+			end
+		end
+		if self.type == coopHUD.Stat.DUALITY then
+			return deals.angel + deals.devil
+		elseif self.type == coopHUD.Stat.ANGEL then
 			return deals.angel
-		elseif self.type == self.DEVIL then
-			return deals.devil
-		elseif self.type == self.PLANETARIUM then
+		elseif self.type == coopHUD.Stat.DEVIL then
+			if deals.duality then return nil
+			else return deals.devil end
+		elseif self.type == coopHUD.Stat.PLANETARIUM then
 			return Game():GetLevel():GetPlanetariumChance() * 100
 		end
 	else
