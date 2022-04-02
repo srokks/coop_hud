@@ -1294,19 +1294,22 @@ function coopHUD.PlayerHead:render(anchor, mirrored, scale, down_anchor)
 		if mirrored then
 			temp_pos.X = temp_pos.X - (8 * sprite_scale.X)
 			text_pos.X = text_pos.X - (8 * sprite_scale.X)
-			offset.X = (-16 * 0.85) * sprite_scale.X
+			offset.X = (-16 * 1.5) * sprite_scale.X
 		else
 			temp_pos.X = temp_pos.X + (8 * sprite_scale.X)
 			text_pos.X = text_pos.X + (8 * sprite_scale.X)
-			offset.X = (16 * sprite_scale.X)
+			offset.X = (18 * sprite_scale.X)
 		end
 		--
 		if down_anchor then
+			--FIXME: wrong offset return
 			temp_pos.Y = temp_pos.Y - (coopHUD.HUD.fonts.lua_mini:GetBaselineHeight())
 			text_pos.Y = text_pos.Y - (coopHUD.HUD.fonts.lua_mini:GetBaselineHeight())
+			offset.Y = (-16 * sprite_scale.Y) - coopHUD.HUD.fonts.lua_mini:GetBaselineHeight()
 		else
 			temp_pos.Y = temp_pos.Y + (coopHUD.HUD.fonts.lua_mini:GetBaselineHeight())
 			text_pos.Y = text_pos.Y + (16 * sprite_scale.Y)
+			offset.Y = (16 * sprite_scale.Y) + coopHUD.HUD.fonts.lua_mini:GetBaselineHeight()
 		end
 		--
 		self.sprite.Scale = sprite_scale
