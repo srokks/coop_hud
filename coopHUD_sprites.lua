@@ -1039,7 +1039,11 @@ function coopHUD.Stat:render(pos, mirrored, vertical)
 	return offset
 end
 function coopHUD.Stat:update()
-
+	local temp_amount = self:getAmount()
+	if self.amount ~= temp_amount then
+		self.diff = temp_amount - self.amount
+		self.amount = temp_amount
+	end
 end
 function coopHUD.Stat.calculateDeal()
 	local lvl = Game():GetLevel()
