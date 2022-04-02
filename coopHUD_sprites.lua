@@ -968,7 +968,7 @@ function coopHUD.Stat:getSprite()
 		local sprite = Sprite()
 		sprite:Load(coopHUD.GLOBALS.hud_stats_anim_path, true)
 		sprite:SetFrame('Idle', self.type)
-		sprite.Color = Color(1, 1, 1, 0.5)
+		sprite.Color = Color(1, 1, 1, 1)
 		return sprite
 	else return nil
 	end
@@ -1051,7 +1051,7 @@ function coopHUD.Stat.calculateDeal()
 	local deal = 0.0
 	local angel = 0.0
 	local devil = 0.0
-	local banned_stages = { [1] = true, [9] = true, [10] = true, [11] = true, [12] = true, [12] = true }
+	local banned_stages = {[1] = true, [9] = true, [10] = true, [11] = true, [12] = true, [12] = true}
 	if angel_seen == nil then angel_seen = false end
 	-- door chance
 	if banned_stages[Game():GetLevel():GetStage()] == nil and
@@ -1063,14 +1063,14 @@ function coopHUD.Stat.calculateDeal()
 	end
 	-- angel components
 	local comp = {
-		rosary_bead   = { false, 0.5 },
-		key_piece_1   = { false, 0.75 },
-		key_piece_2   = { false, 0.75 },
-		virtouses     = { false, 0.75 },
-		bum_killed    = { false, 0.75 },
-		bum_left      = { false, 0.9 },
-		dead_bum_left = { false, 1.1 },
-		donation      = { false, 0.5 },
+		rosary_bead = {false, 0.5},
+		key_piece_1 = {false, 0.75},
+		key_piece_2 = {false, 0.75},
+		virtouses = {false, 0.75},
+		bum_killed = {false, 0.75},
+		bum_left = {false, 0.9},
+		dead_bum_left = {false, 1.1},
+		donation = {false, 0.5},
 	}
 	-- check collectibles
 	local duality = false
@@ -1155,10 +1155,10 @@ function coopHUD.Stat.calculateDeal()
 	end
 	devil = deal * (1.0 - angel)
 	angel = deal * angel
-	return { devil       =  devil * 100,
-	         angel       = angel * 100,
-	         --planetarium = { lvl:GetPlanetariumChance() * 100, 0 },
-	         duality     = duality }
+	return {devil = devil * 100,
+	        angel = angel * 100,
+		--planetarium = { lvl:GetPlanetariumChance() * 100, 0 },
+		    duality = duality}
 end
 function coopHUD.Stat:getOffset(vertical)
 	local offset = Vector(0, 0)
