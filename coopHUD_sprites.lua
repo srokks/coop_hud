@@ -938,26 +938,7 @@ function coopHUD.Stat.new(parent, type, icon)
 	return self
 end
 function coopHUD.Stat:getAmount()
-	if self.icon then
-		local deals = self.calculateDeal()
-		if self.type == coopHUD.Stat.ANGEL or self.type == coopHUD.Stat.DUALITY then
-			if deals.duality then
-				self.type = coopHUD.Stat.DUALITY
-			else
-				self.type = coopHUD.Stat.ANGEL
-			end
-		end
-		if self.type == coopHUD.Stat.DUALITY then
-			return deals.angel + deals.devil
-		elseif self.type == coopHUD.Stat.ANGEL then
-			return deals.angel
-		elseif self.type == coopHUD.Stat.DEVIL then
-			if deals.duality then return nil
-			else return deals.devil end
-		elseif self.type == coopHUD.Stat.PLANETARIUM then
-			return Game():GetLevel():GetPlanetariumChance() * 100
-		end
-	else
+	if self.type <= coopHUD.Stat.LUCK then
 		if self.type == coopHUD.Stat.SPEED then
 			return self.parent.entPlayer.MoveSpeed
 		elseif self.type == coopHUD.Stat.TEARS_DELAY then
@@ -971,11 +952,35 @@ function coopHUD.Stat:getAmount()
 		elseif self.type == coopHUD.Stat.LUCK then
 			return self.parent.entPlayer.Luck
 		end
+	else
+		local deals = self.calculateDeal()
+		if self.type == coopHUD.Stat.ANGEL or self.type == coopHUD.Stat.DUALITY then
+			if deals.duality then
+				self.type = coopHUD.Stat.DUALITY
+			else
+				self.type = coopHUD.Stat.ANGEL
+			end
+			if self.type == coopHUD.Stat.ANGEL then
+				return deals.angel
+			elseif self.type == coopHUD.Stat.DUALITY then
+				return deals.angel + deals.devil
+			end
+		elseif self.type == coopHUD.Stat.DEVIL then
+			if deals.duality then
+				return nil
+			else
+				return deals.devil
+			end
+			if self.type == coopHUD.Stat.DEVIL then
+
+			end
+		elseif self.type == coopHUD.Stat.PLANETARIUM then
+			return Game():GetLevel():GetPlanetariumChance() * 100
+		end
 	end
 end
 function coopHUD.Stat:getSprite()
 	if self.icon and self.type ~= nil then
-		if self.amount == nil then return nil end
 		local sprite = Sprite()
 		sprite:Load(coopHUD.GLOBALS.hud_stats_anim_path, true)
 		sprite:SetFrame('Idle', self.type)
