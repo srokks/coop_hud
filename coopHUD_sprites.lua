@@ -986,7 +986,8 @@ function coopHUD.Stat:getSprite()
 		sprite:SetFrame('Idle', self.type)
 		sprite.Color = Color(1, 1, 1, 1)
 		return sprite
-	else return nil
+	else
+		return nil
 	end
 end
 function coopHUD.Stat:render(pos, mirrored, vertical)
@@ -998,20 +999,32 @@ function coopHUD.Stat:render(pos, mirrored, vertical)
 	local offset = Vector(0, 0)
 	if self.icon and self.sprite then
 		-- Icon render
-		self.sprite:Render(Vector(init_pos.X, init_pos.Y))
-		offset.X = offset.X + 16
+		if mirrored then
+			init_pos.X = init_pos.X - 16
+		else
+			offset.X = offset.X + 16
+		end
 		offset.Y = offset.Y + 16
+		self.sprite:Render(Vector(init_pos.X, init_pos.Y))
 	end
 	-- STAT.amount render
 	if self.amount then
 		local amount_string = string.format("%.2f", self.amount)
 		-- Amount render
+		local align = 0
+		if mirrored then
+			align = 1
+		end
 		coopHUD.HUD.fonts.lua_mini:DrawString(amount_string,
 		                                      init_pos.X + offset.X, init_pos.Y,
 		                                      self.parent.font_color,
-		                                      0, true)
+		                                      align, false)
 		-- increases horizontal offset of string width
-		offset.X = offset.X + coopHUD.HUD.fonts.lua_mini:GetStringWidth(amount_string)
+		if mirrored then
+			offset.X = offset.X - coopHUD.HUD.fonts.lua_mini:GetStringWidth(amount_string)
+		else
+			offset.X = offset.X + coopHUD.HUD.fonts.lua_mini:GetStringWidth(amount_string)
+		end
 		-- increases vertical offset of max of string base height and last icon offset
 		offset.Y = math.max(offset.Y, coopHUD.HUD.fonts.lua_mini:GetBaselineHeight())
 		-- STAT.Diff - render
@@ -1034,11 +1047,13 @@ function coopHUD.Stat:render(pos, mirrored, vertical)
 					diff_pos.X = diff_pos.X + 12
 				end
 				diff_pos.Y = diff_pos.Y - coopHUD.HUD.fonts.lua_mini:GetBaselineHeight()
-				align = 0
 				offset.Y = offset.Y + coopHUD.HUD.fonts.lua_mini:GetBaselineHeight() / 2
 			else
 				diff_pos.X = diff_pos.X + offset.X
 				offset.X = offset.X + coopHUD.HUD.fonts.lua_mini:GetStringWidth(dif_string)
+			end
+			if mirrored then
+				align = 1
 			end
 			coopHUD.HUD.fonts.lua_mini:DrawString(dif_string,
 			                                      diff_pos.X,
@@ -1078,7 +1093,9 @@ function coopHUD.Stat.calculateDeal()
 	local angel = 0.0
 	local devil = 0.0
 	local banned_stages = {[1] = true, [9] = true, [10] = true, [11] = true, [12] = true, [12] = true}
-	if angel_seen == nil then angel_seen = false end
+	if angel_seen == nil then
+		angel_seen = false
+	end
 	-- door chance
 	if banned_stages[Game():GetLevel():GetStage()] == nil and
 			Game():GetLevel():GetCurseName() ~= "Curse of the Labyrinth!" or Game().Difficulty > 1 then
@@ -1324,8 +1341,9 @@ function coopHUD.getMinimapOffset()
 			end
 			minimap_offset = Vector(minx - 4, 2) -- Small
 		end
-		if MinimapAPI:GetConfig("Disable") or MinimapAPI.Disable then minimap_offset = Vector(screen_size.X - 4,
-		                                                                                      2) end
+		if MinimapAPI:GetConfig("Disable") or MinimapAPI.Disable then
+			minimap_offset = Vector(screen_size.X - 4,
+			                        2) end
 		local r = MinimapAPI:GetCurrentRoom()
 		if r ~= nil then
 			if MinimapAPI:GetConfig("HideInCombat") == 2 then
