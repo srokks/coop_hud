@@ -1104,9 +1104,6 @@ function coopHUD.Stat.calculateDeal()
 	local angel = 0.0
 	local devil = 0.0
 	local banned_stages = {[1] = true, [9] = true, [10] = true, [11] = true, [12] = true, [12] = true}
-	if angel_seen == nil then
-		angel_seen = false
-	end
 	-- door chance
 	if banned_stages[Game():GetLevel():GetStage()] == nil and
 			Game():GetLevel():GetCurseName() ~= "Curse of the Labyrinth!" or Game().Difficulty > 1 then
@@ -1178,6 +1175,7 @@ function coopHUD.Stat.calculateDeal()
 			if door ~= nil then
 				if door.TargetRoomType == 15 then
 					coopHUD.angel_seen = true
+					coopHUD.save_options()
 				end
 			end
 		end
