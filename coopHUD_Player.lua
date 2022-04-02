@@ -64,8 +64,8 @@ function coopHUD.Player.new(player_no)
 		on_bethany_update = false, --nil or emit player num
 		on_poop_update = false, --nil or emit player num
 		overloaded_hud = false,
-		on_battle = false,
 		on_drop_activate = false, --nil or emit player num
+		map_btn = false,
 	}
 	--
 	self.font_color = KColor(1, 1, 1, 1)
@@ -125,11 +125,16 @@ function coopHUD.Player:update()
 		self.second_trinket:update()
 		self.signals.on_trinket_update = nil
 	end
+	if self.signals.map_btn then
+		if not coopHUD.signals.map then self.signals.map_btn = false end
+	end
 end
 function coopHUD.Player:render()
 	--
 	local anchor = Vector(coopHUD.anchors[coopHUD.players_config.small[self.game_index].anchor].X,
 	                      coopHUD.anchors[coopHUD.players_config.small[self.game_index].anchor].Y)
+	local anchor_bot = Vector(coopHUD.anchors[coopHUD.players_config.small[self.game_index].anchor_bot].X,
+	                      coopHUD.anchors[coopHUD.players_config.small[self.game_index].anchor_bot].Y)
 	local mirrored = coopHUD.players_config.small[self.game_index].mirrored
 	local scale = coopHUD.players_config.small.scale
 	local down_anchor = coopHUD.players_config.small[self.game_index].down_anchor
@@ -155,6 +160,11 @@ function coopHUD.Player:render()
 	self:renderExtras(Vector(anchor.X + active_off.X + hearts_off.X, anchor.Y), mirrored, scale, down_anchor)
 	--self.active_item:render(Vector(anchor.X + active_off.X + hearts_off.X, anchor.Y), mirrored, scale, down_anchor)
 	-- <Second  top line render> --
+	if #coopHUD.players  < 3 and not coopHUD.options.force_small_hud then -- special version of hud when only when <2 players and not forced in options
+		anchor.X = anchor_bot.X
+		anchor.Y = anchor_bot.Y
+		down_anchor = true
+	end
 	local first_line_offset = Vector(0, 0)
 	local pocket_desc_off = Vector(0, 0)
 	if down_anchor then
@@ -198,29 +208,33 @@ function coopHUD.Player:render()
 			font_color = self.font_color
 		end
 
-		local temp_stat_pos = Vector(anchor.X, 100)
+		local temp_stat_pos = Vector(anchor_bot.X, 100)
 		local off = Vector(0, 14) -- static offset for stats
 		if self.game_index == 2 or self.game_index == 3 then
 			-- checks if player is 3rd or 4th
 			if mirrored then
-				temp_stat_pos.X = temp_stat_pos.X -16 * 1.25 -- changes horizontal base position
+				temp_stat_pos.X = temp_stat_pos.X - 16 * 1.25 -- changes horizontal base position
 				temp_stat_pos.Y = temp_stat_pos.Y + 7  -- changes  vertical base position
 			else
 				temp_stat_pos.X = temp_stat_pos.X + 16 -- changes horizontal base position
 				temp_stat_pos.Y = temp_stat_pos.Y + 7 -- changes  vertical base position
 			end
 		end
-		self.speed:render(temp_stat_pos,mirrored) -- renders object with player mirrored spec
+		self.speed:render(temp_stat_pos, mirrored) -- renders object with player mirrored spec
 		temp_stat_pos.Y = temp_stat_pos.Y + off.Y -- increments position with static offset vertical
-		self.tears_delay:render(temp_stat_pos,mirrored)
+		self.tears_delay:render(temp_stat_pos, mirrored)
 		temp_stat_pos.Y = temp_stat_pos.Y + off.Y
-		self.damage:render(temp_stat_pos,mirrored)
+		self.damage:render(temp_stat_pos, mirrored)
 		temp_stat_pos.Y = temp_stat_pos.Y + off.Y
-		self.range:render(temp_stat_pos,mirrored)
+		self.range:render(temp_stat_pos, mirrored)
 		temp_stat_pos.Y = temp_stat_pos.Y + off.Y
-		self.shot_speed:render(temp_stat_pos,mirrored)
+		self.shot_speed:render(temp_stat_pos, mirrored)
 		temp_stat_pos.Y = temp_stat_pos.Y + off.Y
-		self .luck:render(temp_stat_pos,mirrored)
+		self .luck:render(temp_stat_pos, mirrored)
+	end
+	if self.signals.map_btn then
+		coopHUD.HUD.fonts.lua_mini:DrawString(self.player_head.name, 100, 100, self.font_color, 0, true)
+		print(self.player_head.name)
 	end
 end
 function coopHUD.Player:renderExtras(pos, mirrored, scale, down_anchor)
@@ -246,8 +260,8 @@ function coopHUD.Player:renderExtras(pos, mirrored, scale, down_anchor)
 			align = 1
 		end
 		coopHUD.HUD.fonts.pft:DrawStringScaled(text, temp_pos.X, temp_pos.Y, sprite_scale.X * 1.2,
-		                                               sprite_scale.Y * 1.2,
-		                                               self.font_color, align, true)
+		                                       sprite_scale.Y * 1.2,
+		                                       self.font_color, align, true)
 		temp_pos.X = pos.X + offset.X
 		temp_pos.Y = pos.Y + offset.Y
 	end

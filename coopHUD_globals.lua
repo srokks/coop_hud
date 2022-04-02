@@ -45,22 +45,11 @@ coopHUD.players = {}
 coopHUD.essau_no = 0
 coopHUD.angel_seen = false
 coopHUD.players_config = {
-	[0] = {
-		anchor_top = 'top_left',
-		anchor_bot = 'bot_left',
-		mirrored = false,
-		name = 'P1'
-	},
-	[1] = {
-		anchor_top = 'top_right',
-		anchor_bot = 'bot_right',
-		mirrored = true,
-		name = 'P2'
-	},
 	small = {
 		scale = Vector(0.8, 0.8),
 		[0] = {
 			anchor = 'top_left',
+			anchor_bot = 'bot_left',
 			mirrored = false,
 			down_anchor = false,
 			name = 'P1',
@@ -69,6 +58,7 @@ coopHUD.players_config = {
 		},
 		[1] = {
 			anchor = 'top_right',
+			anchor_bot = 'bot_right',
 			mirrored = true,
 			down_anchor = false,
 			name = 'P2',
@@ -77,6 +67,7 @@ coopHUD.players_config = {
 		},
 		[2] = {
 			anchor = 'bot_left',
+			anchor_bot = 'bot_left',
 			mirrored = false,
 			down_anchor = true,
 			name = 'P3',
@@ -85,6 +76,7 @@ coopHUD.players_config = {
 		},
 		[3] = {
 			anchor = 'bot_right',
+			anchor_bot = 'bot_right',
 			mirrored = true,
 			down_anchor = true,
 			name = 'P4',
