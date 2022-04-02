@@ -975,6 +975,7 @@ function coopHUD.Stat:getAmount()
 end
 function coopHUD.Stat:getSprite()
 	if self.icon and self.type ~= nil then
+		if self.amount == nil then return nil end
 		local sprite = Sprite()
 		sprite:Load(coopHUD.GLOBALS.hud_stats_anim_path, true)
 		sprite:SetFrame('Idle', self.type)
@@ -990,7 +991,7 @@ function coopHUD.Stat:render(pos, mirrored, vertical)
 		init_pos.Y = init_pos.Y - 16
 	end
 	local offset = Vector(0, 0)
-	if self.icon then
+	if self.icon and self.sprite then
 		-- Icon render
 		self.sprite:Render(Vector(init_pos.X, init_pos.Y))
 		offset.X = offset.X + 16
@@ -1051,8 +1052,18 @@ end
 function coopHUD.Stat:update()
 	local temp_amount = self:getAmount()
 	if self.amount ~= temp_amount then
-		self.diff = temp_amount - self.amount
+		if temp_amount and self.amount then
+			self.diff = temp_amount - self.amount
+		end
 		self.amount = temp_amount
+		if self.amount == nil then
+			self.sprite = nil
+		else
+			self.sprite = self:getSprite()
+		end
+	end
+	if self.type == coopHUD.Stat.ANGEL then
+
 	end
 end
 function coopHUD.Stat.calculateDeal()
@@ -1182,7 +1193,7 @@ function coopHUD.Stat:getOffset(vertical)
 		offset.Y = math.max(offset.Y, coopHUD.HUD.fonts.lua_mini:GetBaselineHeight())
 		if self.diff then
 			local dif_string = string.format("%.1f", self.diff)
-			if self:getAttitude()   then
+			if self:getAttitude() then
 				dif_string = '+' .. dif_string
 			end
 			if vertical then
