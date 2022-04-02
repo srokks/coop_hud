@@ -60,19 +60,27 @@ function coopHUD.HUD.render()
 		offset = coopHUD.HUD.beth:render(temp_pos)
 		temp_pos.X = temp_pos.X + offset.X
 		offset = coopHUD.HUD.t_beth:render(temp_pos)
-		------ DEALS RENDER
-		local deals_pos = Vector(middle_bot_anchor.X, middle_bot_anchor.Y + 4)
-		deals_pos.X = deals_pos.X - coopHUD.HUD.angel:getOffset().X
-		deals_pos.X = deals_pos.X - coopHUD.HUD.devil:getOffset().X / 2
-		-- ANGEL
-		off = coopHUD.HUD.angel:render(deals_pos, false, true)
-		deals_pos.X = deals_pos.X + off.X
-		-- DEVIL
-		off = coopHUD.HUD.devil:render(deals_pos, false, true)
-		--deals_pos.X = deals_pos.X + off.X
-		deals_pos.X = deals_pos.X + off.X
-		off = coopHUD.HUD.planetarium:render(deals_pos, false, true)
-		--
+		------ DEALS RENDER`
+		---TODO:deals.hide on battle option and signal
+		if coopHUD.options.deals.show then
+			local deals_pos = Vector(middle_bot_anchor.X, middle_bot_anchor.Y + 4)
+			deals_pos.X = deals_pos.X - coopHUD.HUD.angel:getOffset().X
+			if not coopHUD.options.deals.show_planetarium then
+				deals_pos.X = deals_pos.X + coopHUD.HUD.angel:getOffset().X / 2
+			end
+			deals_pos.X = deals_pos.X - coopHUD.HUD.devil:getOffset().X / 2
+			-- ANGEL
+			coopHUD.HUD.angel:render(deals_pos, false, true)
+			-- DEVIL
+			off = coopHUD.HUD.devil:render(Vector(deals_pos.X + coopHUD.HUD.angel:getOffset().X, deals_pos.Y),
+			                               false, true)
+			--PLANETARIUM
+			if coopHUD.options.deals.show_planetarium then
+				coopHUD.HUD.planetarium:render(Vector(deals_pos.X + coopHUD.HUD.angel:getOffset().X + coopHUD.HUD.devil:getOffset().X,
+				                                      deals_pos.Y),
+				                               false, true)
+			end
+		end
 		------ TIMER RENDER
 		-- FIX: on extended map and big right player timer is over rendered
 		-- Code from TBoI Api by wofsauge
