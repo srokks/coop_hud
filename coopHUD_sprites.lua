@@ -973,40 +973,62 @@ function coopHUD.Stat:getSprite()
 	else return nil
 	end
 end
-function coopHUD.Stat:render(pos,mirrored)
-	local offset = Vector(0,0)
-	if self.icon then -- Icon render
-		self.sprite:Render(Vector(pos.X,pos.Y))
+function coopHUD.Stat:render(pos, mirrored, vertical)
+	self:update()
+	local init_pos = (Vector(pos.X, pos.Y))
+	if vertical then
+		init_pos.Y = init_pos.Y - 16
+	end
+	local offset = Vector(0, 0)
+	if self.icon then
+		-- Icon render
+		self.sprite:Render(Vector(init_pos.X, init_pos.Y))
 		offset.X = offset.X + 16
 		offset.Y = offset.Y + 16
 	end
+	-- STAT.amount render
 	if self.amount then
+		local amount_string = string.format("%.2f", self.amount)
 		-- Amount render
-		coopHUD.HUD.fonts.lua_mini:DrawString(string,
-		                                      pos.X+offset.X, pos.Y,
+		coopHUD.HUD.fonts.lua_mini:DrawString(amount_string,
+		                                      init_pos.X + offset.X, init_pos.Y,
 		                                      self.parent.font_color,
 		                                      0, true)
 		-- increases horizontal offset of string width
-		offset.X = offset.X + coopHUD.HUD.fonts.lua_mini:GetStringWidth(string)
+		offset.X = offset.X + coopHUD.HUD.fonts.lua_mini:GetStringWidth(amount_string)
 		-- increases vertical offset of max of string base height and last icon offset
-		offset.Y = math.max(offset.Y,coopHUD.HUD.fonts.lua_mini:GetBaselineHeight())
+		offset.Y = math.max(offset.Y, coopHUD.HUD.fonts.lua_mini:GetBaselineHeight())
+		-- STAT.Diff - render
 		if self.diff then
 			local dif_color = KColor(0, 1, 0, 0.7) -- green
-			local dif_sign = ''
+			local dif_string = string.format("%.1f", self.diff)
 			-- Difference Render
 			local attitude = self:getAttitude() -- holds true if difference is positive and false if negative
 			if attitude then
 				dif_color = KColor(0, 1, 0, 1) -- green
-				dif_sign = '+'
+				dif_string = '+' .. dif_string
 			else
 				dif_color = KColor(1, 0, 0, 1)
 			end
-			coopHUD.HUD.fonts.lua_mini:DrawString(string.format(dif_sign .. "%.2f", self.diff),
-			                                      pos.X + coopHUD.HUD.fonts.lua_mini:GetStringWidth(string.format("%.2f",
-			                                                                                                      self.amount)) + 4,
-			                                      pos.Y,
+			local diff_off = Vector(0, 0)
+			local diff_pos = Vector(init_pos.X, init_pos.Y)
+			local align = 0
+			if vertical then
+				if self.sprite then
+					diff_pos.X = diff_pos.X + 12
+				end
+				diff_pos.Y = diff_pos.Y - coopHUD.HUD.fonts.lua_mini:GetBaselineHeight()
+				align = 0
+				offset.Y = offset.Y + coopHUD.HUD.fonts.lua_mini:GetBaselineHeight() / 2
+			else
+				diff_pos.X = diff_pos.X + offset.X
+				offset.X = offset.X + coopHUD.HUD.fonts.lua_mini:GetStringWidth(dif_string)
+			end
+			coopHUD.HUD.fonts.lua_mini:DrawString(dif_string,
+			                                      diff_pos.X,
+			                                      diff_pos.Y,
 			                                      dif_color,
-			                                      0, true)
+			                                      align, false)
 			self.diff_counter = self.diff_counter + 1
 			if self.diff_counter > 200 then
 				self.diff_counter = 0
