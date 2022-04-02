@@ -96,6 +96,10 @@ function coopHUD.Player:update()
 			(self.font_color.Red ~= 1 or self.font_color.Green ~= 1 or self.font_color.Green ~= 1) then
 		self.font_color = KColor(1, 1, 1, 1)
 	end
+	-- Every render frame update controller_index
+	if self.controller_index ~= self.entPlayer.ControllerIndex then
+		self.controller_index = self.entPlayer.ControllerIndex
+	end
 	if self.signals.on_drop_activate then
 		self.signals.on_active_update = true
 		self.signals.on_pocket_update = true
