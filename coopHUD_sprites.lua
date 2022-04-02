@@ -939,10 +939,13 @@ function coopHUD.Stat.new(parent, type, icon)
 end
 function coopHUD.Stat:getAmount()
 	if self.icon then
+		local deals = self.calculateDeal()
 		if self.type == self.ANGEL then
+			return deals.angel
 		elseif self.type == self.DEVIL then
+			return deals.devil
 		elseif self.type == self.PLANETARIUM then
-
+			return Game():GetLevel():GetPlanetariumChance() * 100
 		end
 	else
 		if self.type == coopHUD.Stat.SPEED then
