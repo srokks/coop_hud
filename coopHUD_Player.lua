@@ -192,7 +192,25 @@ function coopHUD.Player:render()
 		local position = Isaac.WorldToRenderPosition(self.entPlayer.Position)
 		coopHUD.HUD.fonts.pft:DrawString(self.player_head.name, position.X - 5, position.Y, self.font_color)
 	end
+	if coopHUD.options.stats.show then
+		local font_color = KColor(1, 1, 1, 1)
+		if coopHUD.options.stats.colorful then
+			font_color = self.font_color
+		end
 
+		local temp_stat_pos = Vector(anchor.X, 100)
+		off = self.speed:render(temp_stat_pos,mirrored)
+		temp_stat_pos.Y = temp_stat_pos.Y + off.Y
+		off = self.tears_delay:render(temp_stat_pos,mirrored)
+		temp_stat_pos.Y = temp_stat_pos.Y + off.Y
+		off = self.damage:render(temp_stat_pos,mirrored)
+		temp_stat_pos.Y = temp_stat_pos.Y + off.Y
+		self.range:render(temp_stat_pos,mirrored)
+		temp_stat_pos.Y = temp_stat_pos.Y + off.Y
+		self.shot_speed:render(temp_stat_pos,mirrored)
+		temp_stat_pos.Y = temp_stat_pos.Y + off.Y
+		self .luck:render(temp_stat_pos,mirrored)
+	end
 end
 function coopHUD.Player:renderExtras(pos, mirrored, scale, down_anchor)
 	local final_offset = Vector(0, 0)
