@@ -1160,6 +1160,30 @@ function coopHUD.Stat.calculateDeal()
 	         --planetarium = { lvl:GetPlanetariumChance() * 100, 0 },
 	         duality     = duality }
 end
+function coopHUD.Stat:getOffset(vertical)
+	local offset = Vector(0, 0)
+	if self.sprite then
+		offset.X = offset.X + 16
+		offset.Y = offset.Y + 16
+	end
+	if self.amount then
+		local amount_string = string.format("%.2f", self.amount)
+		offset.X = offset.X + coopHUD.HUD.fonts.lua_mini:GetStringWidth(amount_string)
+		offset.Y = math.max(offset.Y, coopHUD.HUD.fonts.lua_mini:GetBaselineHeight())
+		if self.diff then
+			local dif_string = string.format("%.1f", self.diff)
+			if self:getAttitude()   then
+				dif_string = '+' .. dif_string
+			end
+			if vertical then
+				offset.Y = offset.Y + coopHUD.HUD.fonts.lua_mini:GetBaselineHeight() / 2
+			else
+				--offset.X = offset.X + coopHUD.HUD.fonts.lua_mini:GetStringWidth(dif_string)
+			end
+		end
+	end
+	return offset
+end
 ---coopHUD.Stat:getAttitude -- checks stat 'attitude' if its in growth or in shrink :D
 ---@return boolean true if self.diff is positive and false if engative
 function coopHUD.Stat:getAttitude()
