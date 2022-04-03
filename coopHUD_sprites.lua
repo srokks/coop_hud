@@ -97,13 +97,13 @@ function coopHUD.Item:getSprite()
 end
 function coopHUD.Item:getFrameNum()
 	local frame_num = 0
-	if self.id> 0 and self.slot >= 0 then
+	if self.id > 0 and self.slot >= 0 then
 		-- Sets overlay/charges state frame --
 		local max_charges = Isaac.GetItemConfig():GetCollectible(self.id).MaxCharges -- gets max charges
 		if max_charges == 0 then
 			-- checks id item has any charges
 			frame_num = 0 -- set frame to unloaded
-		elseif self.entPlayer:NeedsCharge(self.slot) == false or  (self.charge and self.charge >= max_charges) then
+		elseif self.entPlayer:NeedsCharge(self.slot) == false or (self.charge and self.charge >= max_charges) then
 			-- checks if item dont needs charges or item is overloaded
 			frame_num = 1 -- set frame to loaded
 		else
@@ -318,13 +318,13 @@ function coopHUD.Pocket:getPocket()
 		pocket_id = self.parent.entPlayer:GetActiveItem(2)
 		pocket_type = 3
 		if self.slot == 1 then
-			if self.parent.first_pocket and   self.parent.first_pocket.type == 3 then
+			if self.parent.first_pocket and self.parent.first_pocket.type == 3 then
 				pocket_id = 0
 				pocket_type = 0
 			end
 		elseif self.slot == 2 then
-			if (self.parent.first_pocket and   self.parent.first_pocket.type == 3)
-					or (self.parent.second_pocket and   self.parent.second_pocket.type == 3)then
+			if (self.parent.first_pocket and self.parent.first_pocket.type == 3)
+					or (self.parent.second_pocket and self.parent.second_pocket.type == 3) then
 				pocket_id = 0
 				pocket_type = 0
 			end
@@ -1351,6 +1351,63 @@ function coopHUD.PlayerHead:render(anchor, mirrored, scale, down_anchor)
 end
 --
 coopHUD.Collectibles = {}
+--
+coopHUD.Streak = {}
+coopHUD.Streak.FLOOR = 0
+coopHUD.Streak.PICKUP = 1
+setmetatable(coopHUD.Streak, {
+	__call = function(cls, ...)
+		return cls.trigger(...)
+	end,
+})
+function coopHUD.Streak.getSprite()
+	local sprite = Sprite()
+	sprite:Load(coopHUD.GLOBALS.streak_anim_path, true)
+	sprite:SetFrame('TextStay', 0)
+	return sprite
+end
+coopHUD.Streak.sprite = coopHUD.Streak.getSprite()
+coopHUD.Streak.signal = false
+function coopHUD.Streak.render()
+	if coopHUD.Streak.signal then
+		if coopHUD.Streak.sprite then
+			local temp_pos = Vector(Isaac.GetScreenWidth() / 2, 48)
+			if coopHUD.Streak.down_anchor then
+				temp_pos.Y = Isaac.GetScreenHeight() - 48
+			end
+			coopHUD.Streak.sprite:RenderLayer(0,temp_pos)
+			if coopHUD.Streak.first_line then
+				coopHUD.HUD.fonts.upheaval:DrawString(coopHUD.Streak.first_line,
+				                                      temp_pos.X,temp_pos.Y - coopHUD.HUD.fonts.upheaval:GetBaselineHeight() * 0.75,
+				                                      KColor(1,1,1,1),1,true)
+			end
+			if coopHUD.Streak.second_line then
+				local line_off = Vector(0,12)
+				local f_color = KColor(1,1,1,1)
+				local font = coopHUD.HUD.fonts.pft
+				if coopHUD.Streak.type == coopHUD.Streak.FLOOR then
+					coopHUD.Streak.sprite:RenderLayer(1,temp_pos)
+					line_off.Y = 16
+					f_color = KColor(0,0,0,1)
+					font = coopHUD.HUD.fonts.team_meat_12
+				end
+				font:DrawString(coopHUD.Streak.second_line,
+				                                      temp_pos.X,temp_pos.Y +line_off.Y ,
+				                                      f_color,1,true)
+			end
+		end
+	end
+end
+---@param down_anchor boolean define if streak need to be rendered down of screen
+function coopHUD.Streak.trigger(down_anchor,type,first_line,second_line)
+	if not coopHUD.Streak.signal then
+		coopHUD.Streak.signal = true
+	end -- triggers a render signal
+		coopHUD.Streak.down_anchor = down_anchor
+		coopHUD.Streak.type = type
+		coopHUD.Streak.first_line = first_line
+		coopHUD.Streak.second_line = second_line
+end
 --
 function coopHUD.getMinimapOffset()
 	local minimap_offset = Vector(Isaac.GetScreenWidth(), 0)
