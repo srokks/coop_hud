@@ -1363,7 +1363,7 @@ setmetatable(coopHUD.Streak, {
 function coopHUD.Streak.getSprite()
 	local sprite = Sprite()
 	sprite:Load(coopHUD.GLOBALS.streak_anim_path, true)
-	sprite:SetFrame('TextStay', 0)
+	sprite:SetFrame('Text', 0)
 	return sprite
 end
 coopHUD.Streak.sprite = coopHUD.Streak.getSprite()
@@ -1375,11 +1375,28 @@ function coopHUD.Streak.render()
 			if coopHUD.Streak.down_anchor then
 				temp_pos.Y = Isaac.GetScreenHeight() - 48
 			end
-			coopHUD.Streak.sprite:RenderLayer(0,temp_pos)
-			if coopHUD.Streak.first_line then
-				coopHUD.HUD.fonts.upheaval:DrawString(coopHUD.Streak.first_line,
-				                                      temp_pos.X,temp_pos.Y - coopHUD.HUD.fonts.upheaval:GetBaselineHeight() * 0.75,
-				                                      KColor(1,1,1,1),1,true)
+			coopHUD.Streak.sprite:RenderLayer(0, temp_pos)
+			if cur_frame > 4 and cur_frame < 65 then
+				if coopHUD.Streak.first_line then
+					coopHUD.HUD.fonts.upheaval:DrawString(coopHUD.Streak.first_line,
+					                                      temp_pos.X,
+					                                      temp_pos.Y - coopHUD.HUD.fonts.upheaval:GetBaselineHeight() * 0.75,
+					                                      KColor(1, 1, 1, 1), 1, true)
+				end
+				if coopHUD.Streak.second_line then
+					local line_off = Vector(0, 12)
+					local f_color = KColor(1, 1, 1, 1)
+					local font = coopHUD.HUD.fonts.pft
+					if coopHUD.Streak.type == coopHUD.Streak.FLOOR then
+						coopHUD.Streak.sprite:RenderLayer(1, temp_pos)
+						line_off.Y = 16
+						f_color = KColor(0, 0, 0, 1)
+						font = coopHUD.HUD.fonts.team_meat_12
+					end
+					font:DrawString(coopHUD.Streak.second_line,
+					                temp_pos.X, temp_pos.Y + line_off.Y,
+					                f_color, 1, true)
+				end
 			end
 			if coopHUD.Streak.second_line then
 				local line_off = Vector(0,12)
@@ -1402,6 +1419,11 @@ end
 function coopHUD.Streak.trigger(down_anchor,type,first_line,second_line)
 	if not coopHUD.Streak.signal then
 		coopHUD.Streak.signal = true
+		coopHUD.Streak.sprite:Play("Text", true)
+		coopHUD.Streak.down_anchor = down_anchor
+		coopHUD.Streak.type = type
+		coopHUD.Streak.first_line = first_line
+		coopHUD.Streak.second_line = second_line
 	end -- triggers a render signal
 		coopHUD.Streak.down_anchor = down_anchor
 		coopHUD.Streak.type = type
