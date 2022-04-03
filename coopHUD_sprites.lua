@@ -769,11 +769,13 @@ end
 function coopHUD.RunInfo:getType()
 	local type = self.type
 	local player = Isaac.GetPlayer(0)
-	if type == coopHUD.RunInfo.KEY then
-		if player:HasGoldenKey() then type = coopHUD.RunInfo.GOLDEN_KEY end
-	elseif type == coopHUD.RunInfo.BOMB then
-		if player:HasGoldenBomb() then type = coopHUD.RunInfo.GOLDEN_BOMB end
-		if player:GetNumGigaBombs() > 0 then type = coopHUD.RunInfo.GIGA_BOMB end
+	if player then
+		if type == coopHUD.RunInfo.KEY then
+			if player:HasGoldenKey() then type = coopHUD.RunInfo.GOLDEN_KEY end
+		elseif type == coopHUD.RunInfo.BOMB then
+			if player:HasGoldenBomb() then type = coopHUD.RunInfo.GOLDEN_BOMB end
+			if player:GetNumGigaBombs() > 0 then type = coopHUD.RunInfo.GIGA_BOMB end
+		end
 	end
 	return type
 end
