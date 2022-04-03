@@ -16,7 +16,7 @@ function coopHUD.Item.new(player, slot, item_id)
 	end
 	self.frame_num = self:getFrameNum()
 	self.sprite = self:getSprite()
-	self.charge = self.entPlayer:GetActiveCharge(self.slot)
+	self.charge = self:getCharge()
 	self.charge_sprites = self.getChargeSprites(self)
 	return self
 end
@@ -103,7 +103,7 @@ function coopHUD.Item:getFrameNum()
 		if max_charges == 0 then
 			-- checks id item has any charges
 			frame_num = 0 -- set frame to unloaded
-		elseif self.entPlayer:NeedsCharge(self.slot) == false or self.entPlayer:GetActiveCharge(self.slot) >= max_charges then
+		elseif self.entPlayer:NeedsCharge(self.slot) == false or  (self.charge and self.charge >= max_charges) then
 			-- checks if item dont needs charges or item is overloaded
 			frame_num = 1 -- set frame to loaded
 		else
@@ -112,6 +112,17 @@ function coopHUD.Item:getFrameNum()
 	end
 	return frame_num
 end
+function coopHUD.Item:getCharge()
+	local item_charge = self.entPlayer:GetActiveCharge(self.slot)
+	if self.entPlayer:GetPlayerType() == PlayerType.PLAYER_BETHANY then
+		-- Bethany Soul Charge integration
+		item_charge = item_charge + self.entPlayer:GetSoulCharge()
+	elseif self.entPlayer:GetPlayerType() == PlayerType.PLAYER_BETHANY_B then
+		-- T. Bethany Blood Charge integration
+		item_charge = item_charge + self.entPlayer:GetBloodCharge()
+	end
+	return item_charge
+end
 function coopHUD.Item:update()
 	if self.id ~= self.entPlayer:GetActiveItem(self.slot) then
 		self.id = self.entPlayer:GetActiveItem(self.slot)
@@ -119,11 +130,11 @@ function coopHUD.Item:update()
 	end
 end
 function coopHUD.Item:updateCharge()
-		if self.charge ~= self.entPlayer:GetActiveCharge(self.slot) then
-			self.charge = self.entPlayer:GetActiveCharge(self.slot)
-			self.charge_sprites = self.getChargeSprites(self)
-			self:updateSprite()
-		end
+	if self.charge ~= self:getCharge() then
+		self.charge = self:getCharge()
+		self.charge_sprites = self.getChargeSprites(self)
+		self:updateSprite()
+	end
 end
 function coopHUD.Item:updateSprite()
 	if self.sprite then
