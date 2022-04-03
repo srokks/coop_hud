@@ -14,6 +14,7 @@ function coopHUD.Item.new(player, slot, item_id)
 	else
 		self.id = item_id
 	end
+	self.frame_num = self:getFrameNum()
 	self.sprite = self:getSprite()
 	self.charge = self.entPlayer:GetActiveCharge(self.slot)
 	self.charge_sprites = self.getChargeSprites(self)
@@ -68,7 +69,6 @@ function coopHUD.Item:getSprite()
 	local sprite = Sprite()
 	local sprite_path = Isaac.GetItemConfig():GetCollectible(self.id).GfxFileName
 	local anim_name = "Idle"
-	local frame_num = 0
 	sprite:Load(coopHUD.GLOBALS.item_anim_path, false)
 	--
 	-- Custom sprites set - jars etc.
@@ -86,7 +86,18 @@ function coopHUD.Item:getSprite()
 	elseif self.id == CollectibleType.COLLECTIBLE_URN_OF_SOULS then
 		item_sprite = "gfx/ui/hud_urnofsouls.png"
 	end
-	if self.slot >= 0 then
+	sprite:ReplaceSpritesheet(0, sprite_path) -- item
+	sprite:ReplaceSpritesheet(1, sprite_path) -- border
+	sprite:ReplaceSpritesheet(2, sprite_path) -- shadow
+	--
+	sprite:SetFrame(anim_name, self.frame_num)
+	sprite:LoadGraphics()
+	--
+	return sprite
+end
+function coopHUD.Item:getFrameNum()
+	local frame_num = 0
+	if self.id> 0 and self.slot >= 0 then
 		-- Sets overlay/charges state frame --
 		local max_charges = Isaac.GetItemConfig():GetCollectible(self.id).MaxCharges -- gets max charges
 		if max_charges == 0 then
@@ -99,30 +110,28 @@ function coopHUD.Item:getSprite()
 			frame_num = 0  -- set frame to unloaded
 		end
 	end
-	sprite:ReplaceSpritesheet(0, sprite_path) -- item
-	sprite:ReplaceSpritesheet(1, sprite_path) -- border
-	sprite:ReplaceSpritesheet(2, sprite_path) -- shadow
-	--
-	sprite:SetFrame(anim_name, frame_num)
-	sprite:LoadGraphics()
-	--
-	return sprite
+	return frame_num
 end
 function coopHUD.Item:update()
 	if self.id ~= self.entPlayer:GetActiveItem(self.slot) then
-
 		self.id = self.entPlayer:GetActiveItem(self.slot)
-		self:updateSprite()
-	end
-	if self.charge ~= self.entPlayer:GetActiveCharge(self.slot) then
-
-		self.charge = self.entPlayer:GetActiveCharge(self.slot)
-		self.charge_sprites = self.getChargeSprites(self)
-		self:updateSprite()
+		self.sprite = self:getSprite()
 	end
 end
+function coopHUD.Item:updateCharge()
+		if self.charge ~= self.entPlayer:GetActiveCharge(self.slot) then
+			self.charge = self.entPlayer:GetActiveCharge(self.slot)
+			self.charge_sprites = self.getChargeSprites(self)
+			self:updateSprite()
+		end
+end
 function coopHUD.Item:updateSprite()
-	self.sprite = self:getSprite()
+	if self.sprite then
+		if self.frame_num ~= self:getFrameNum() then
+			self.frame_num = self:getFrameNum()
+			self.sprite = self:getSprite()
+		end
+	end
 end
 function coopHUD.Item:renderChargeBar(pos, mirrored, scale, down_anchor)
 	local temp_pos = Vector(pos.X, pos.Y)
@@ -170,6 +179,7 @@ function coopHUD.Item:renderChargeBar(pos, mirrored, scale, down_anchor)
 	return offset
 end
 function coopHUD.Item:render(pos, mirrored, scale, down_anchor)
+	self:updateCharge()
 	local temp_pos = Vector(pos.X, pos.Y)
 	local sprite_scale = scale
 	local offset = Vector(0, 0)
