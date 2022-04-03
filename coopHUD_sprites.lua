@@ -294,19 +294,19 @@ function coopHUD.Pocket:getPocket()
 		pocket_id = self.parent.entPlayer:GetPill(self.slot)
 		pocket_type = 2
 	else
+		pocket_id = self.parent.entPlayer:GetActiveItem(2)
+		pocket_type = 3
 		if self.slot == 1 then
-			if self.parent.first_pocket.type ~= 3 then
-				pocket_id = self.parent.entPlayer:GetActiveItem(2)
-				self.type = 3
+			if self.parent.first_pocket and   self.parent.first_pocket.type == 3 then
+				pocket_id = 0
+				pocket_type = 0
 			end
 		elseif self.slot == 2 then
-			if self.parent.first_pocket.type ~= 3 and self.parent.second_pocket.type ~= 3 then
-				self.id = self.parent.entPlayer:GetActiveItem(2)
-				self.type = 3
+			if (self.parent.first_pocket and   self.parent.first_pocket.type == 3)
+					or (self.parent.second_pocket and   self.parent.second_pocket.type == 3)then
+				pocket_id = 0
+				pocket_type = 0
 			end
-		else
-			pocket_id = self.parent.entPlayer:GetActiveItem(2)
-			pocket_type = 3
 		end
 	end
 	return pocket_type, pocket_id
@@ -1003,12 +1003,12 @@ function coopHUD.Stat:render(pos, mirrored, vertical)
 	end
 	local offset = Vector(0, 0)
 	local color_alpha = 1
-			if self.type <= coopHUD.Stat.LUCK then
-			color_alpha = 0.5
-			if self.parent.signals.map_btn then
-				color_alpha = 1
-			end
+	if self.type <= coopHUD.Stat.LUCK then
+		color_alpha = 0.5
+		if self.parent.signals.map_btn then
+			color_alpha = 1
 		end
+	end
 	if self.icon and self.sprite then
 		-- Icon render
 		if mirrored then
@@ -1017,7 +1017,7 @@ function coopHUD.Stat:render(pos, mirrored, vertical)
 			offset.X = offset.X + 16
 		end
 		offset.Y = offset.Y + 16
-		self.sprite.Color = Color(1,1,1,color_alpha)
+		self.sprite.Color = Color(1, 1, 1, color_alpha)
 		self.sprite:Render(Vector(init_pos.X, init_pos.Y))
 	end
 	-- STAT.amount render
@@ -1031,7 +1031,8 @@ function coopHUD.Stat:render(pos, mirrored, vertical)
 		if mirrored then
 			align = 1
 		end
-		local f_color = KColor(self.parent.font_color.Red, self.parent.font_color.Green, self.parent.font_color.Blue,color_alpha)
+		local f_color = KColor(self.parent.font_color.Red, self.parent.font_color.Green, self.parent.font_color.Blue,
+		                       color_alpha)
 		coopHUD.HUD.fonts.lua_mini:DrawString(amount_string,
 		                                      init_pos.X + offset.X, init_pos.Y,
 		                                      f_color,
