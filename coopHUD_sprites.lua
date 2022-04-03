@@ -676,6 +676,10 @@ function coopHUD.HeartTable:render(pos, mirrored, scale, down_anchor)
 	if self.parent.total_hearts < 6 then
 		cols = math.ceil(self.parent.total_hearts % 6)
 	end
+	if self[0] and self[0].type == 'CurseHeart' then
+		cols = 1
+		hearts_span = 1
+	end
 	if mirrored then
 		init_pos.X = pos.X - (12 * scale.X) * hearts_span
 		cols = cols * -1
