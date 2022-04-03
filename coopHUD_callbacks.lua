@@ -167,6 +167,11 @@ coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, function(self)
 		coopHUD.signals.on_battle = false -- reset signal
 	end
 end)
+-- __________ Force update on new floor/room
+--- Function force updates all table. Triggers on new room/floor
+coopHUD:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function()
+	--coopHUD.HUD.:trigger()
+end)
 -- _____ Post item pickup
 -- Modified  Version of POST_ITEM_PICKUP from pedroff_1 - https://steamcommunity.com/sharedfiles/filedetails/?id=2577953432&searchtext=callback
 function PostItemPickup (_, player)
@@ -186,14 +191,11 @@ function PostItemPickup (_, player)
 		end
 		player:FlushQueueItem()
 		--____ Flashes triggers streak text with picked up name
-		--if langAPI then
-		--	coopHUD.HUD_table.streak:ReplaceSpritesheet(1, "/gfx/ui/blank.png")
-		--	coopHUD.HUD_table.streak:LoadGraphics()
-		--	coopHUD.streak_main_line = langAPI.getItemName(string.sub(item_queue.Item.Name, 2))
-		--	coopHUD.streak_sec_line = langAPI.getItemName(string.sub(item_queue.Item.Description, 2))
-		--	coopHUD.HUD_table.streak_sec_color = KColor(1, 1, 1, 1)
-		--	coopHUD.HUD_table.streak_sec_line_font:Load("font/pftempestasevencondensed.fnt")
-		--end
+		if langAPI then
+			local streak_main_line = langAPI.getItemName(string.sub(item_queue.Item.Name, 2))
+			local streak_sec_line = langAPI.getItemName(string.sub(item_queue.Item.Description, 2))
+			coopHUD.Streak.trigger(false,coopHUD.Streak.ITEM,streak_main_line,streak_sec_line)
+		end
 		--_____ Updates actives of player
 		local player_index = coopHUD.getPlayerNumByControllerIndex(player.ControllerIndex)
 		if item_queue.Item.Type == ItemType.ITEM_ACTIVE then
