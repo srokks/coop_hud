@@ -92,28 +92,5 @@ function coopHUD.HUD.render()
 			                                          f_col, 1, true)
 			timer_offset.Y = coopHUD.HUD.fonts.team_meat_10:GetBaselineHeight()
 		end
-		---- STAT ICONS
-		coopHUD.HUD.stat_anchors = {} -- holds anchors for stats icons
-		table.insert(coopHUD.HUD.stat_anchors, {anchor = Vector(coopHUD.anchors.top_left.X, 100),mirrored = false}) --TODO: proper position
-		if #coopHUD.players >= 2 then
-			table.insert(coopHUD.HUD.stat_anchors, {anchor = Vector(coopHUD.anchors.top_left.X, 100),mirrored = true}) --TODO: proper position
-		end
-		local off = Vector(0, 0)
-		if coopHUD.options.stats.show then
-			for _, stat_anchor in pairs(coopHUD.HUD.stat_anchors) do
-				local temp_stat_pos = Vector(stat_anchor.anchor.X, stat_anchor.anchor.Y)
-				off = coopHUD.HUD.speed:render(temp_stat_pos)
-				temp_stat_pos.Y = temp_stat_pos.Y + off.Y
-				off = coopHUD.HUD.tears_delay:render(temp_stat_pos)
-				temp_stat_pos.Y = temp_stat_pos.Y + off.Y
-				off = coopHUD.HUD.damage:render(temp_stat_pos)
-				temp_stat_pos.Y = temp_stat_pos.Y + off.Y
-				coopHUD.HUD.range:render(temp_stat_pos)
-				temp_stat_pos.Y = temp_stat_pos.Y + off.Y
-				coopHUD.HUD.shot_speed:render(temp_stat_pos)
-				temp_stat_pos.Y = temp_stat_pos.Y + off.Y
-				coopHUD.HUD.luck:render(temp_stat_pos)
-			end
-		end
 	end
 end
