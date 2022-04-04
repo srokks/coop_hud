@@ -8,6 +8,10 @@ coopHUD.HUD.fonts.lua_mini_lined = Font()
 coopHUD.HUD.fonts.lua_mini_lined:Load("font/luaminioutlined.fnt")
 coopHUD.HUD.fonts.team_meat_10 = Font()
 coopHUD.HUD.fonts.team_meat_10:Load("font/teammeatfont10.fnt")
+coopHUD.HUD.fonts.team_meat_12 = Font()
+coopHUD.HUD.fonts.team_meat_12:Load("font/teammeatfont12.fnt")
+coopHUD.HUD.fonts.upheaval = Font()
+coopHUD.HUD.fonts.upheaval:Load("font/upheaval.fnt")
 coopHUD.HUD.font_color = KColor(1, 1, 1, 1) -- holds hud font color
 function coopHUD.HUD.init()
 	coopHUD.HUD.coins = coopHUD.RunInfo(coopHUD.RunInfo.COIN)
@@ -21,7 +25,6 @@ function coopHUD.HUD.init()
 	coopHUD.HUD.angel = coopHUD.Stat(coopHUD.HUD, coopHUD.Stat.ANGEL, true)
 	coopHUD.HUD.devil = coopHUD.Stat(coopHUD.HUD, coopHUD.Stat.DEVIL, true)
 	coopHUD.HUD.planetarium = coopHUD.Stat(coopHUD.HUD, coopHUD.Stat.PLANETARIUM, true)
-
 end
 
 --coopHUD.HUD.poop = coopHUD.RunInfo(coopHUD.RunInfo.POOP)
