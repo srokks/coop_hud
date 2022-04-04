@@ -113,15 +113,17 @@ function coopHUD.Item:getFrameNum()
 	return frame_num
 end
 function coopHUD.Item:getCharge()
-	local item_charge = self.entPlayer:GetActiveCharge(self.slot)
-	if self.entPlayer:GetPlayerType() == PlayerType.PLAYER_BETHANY then
-		-- Bethany Soul Charge integration
-		item_charge = item_charge + self.entPlayer:GetSoulCharge()
-	elseif self.entPlayer:GetPlayerType() == PlayerType.PLAYER_BETHANY_B then
-		-- T. Bethany Blood Charge integration
-		item_charge = item_charge + self.entPlayer:GetBloodCharge()
+	if self.slot >= 0 then
+		local item_charge = self.entPlayer:GetActiveCharge(self.slot)
+		if self.entPlayer:GetPlayerType() == PlayerType.PLAYER_BETHANY then
+			-- Bethany Soul Charge integration
+			item_charge = item_charge + self.entPlayer:GetSoulCharge()
+		elseif self.entPlayer:GetPlayerType() == PlayerType.PLAYER_BETHANY_B then
+			-- T. Bethany Blood Charge integration
+			item_charge = item_charge + self.entPlayer:GetBloodCharge()
+		end
+		return item_charge
 	end
-	return item_charge
 end
 function coopHUD.Item:update()
 	if self.id ~= self.entPlayer:GetActiveItem(self.slot) then
