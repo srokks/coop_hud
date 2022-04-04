@@ -64,7 +64,7 @@ function coopHUD.Item.getChargeSprites(self)
 	return sprites
 end
 function coopHUD.Item:getSprite()
-	if self.id == 0 or self.entPlayer.Variant == 1 then return nil end
+	if self.id == 0 or (self.entPlayer and self.entPlayer.Variant == 1) then return nil end
 	-- locals initial
 	local sprite = Sprite()
 	local sprite_path = Isaac.GetItemConfig():GetCollectible(self.id).GfxFileName
@@ -1417,7 +1417,6 @@ function coopHUD.Collectibles.render()
 
 
 	--
-	coopHUD.Collectibles.sprite:RenderLayer(3, sprite_pos)
 end
 function coopHUD.Collectibles.trigger(Player, mirrored, type, first_line, second_line, force_reset)
 	coopHUD.Collectibles.signal = Game():GetFrameCount() -- sets streak signal as current frame num
