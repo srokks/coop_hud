@@ -97,6 +97,27 @@ function coopHUD.on_activate(_, type, RNG, EntityPlayer, UseFlags, used_slot, Cu
 	if used_slot >=2 then
 		coopHUD.players[player_index]:on_signal('on_pocket_update')
 	end
+	if type == CollectibleType.COLLECTIBLE_HOLD then
+		-- Hold on use change sprite
+		--TODO:Poops: define hold charge sprite
+	elseif type == CollectibleType.COLLECTIBLE_SMELTER then
+		-- Check if used Smelter or trinket been smelted (bu Gulp Pill or Marbles)
+		--TODO:Collectibles: add gulped trinket to collectibles table
+		coopHUD.players[player_index].signals.on_trinket_update = true -- update trinkets
+	elseif type == CollectibleType.COLLECTIBLE_D4 then
+		-- Refresh collectibles - order them in alphabetical order
+		--TODO:Collectibles: reroll collectibles logic
+		--coopHUD.players[player_index].collectibles = {}
+		--for i = 1, Isaac.GetItemConfig():GetCollectibles().Size - 1 do
+		--	if Isaac.GetPlayer(coopHUD.players[player_index].game_index):HasCollectible(i) then
+		--		local item = Isaac.GetItemConfig():GetCollectible(i)
+		--		if item.Type ~= ItemType.ITEM_ACTIVE then
+		--			coopHUD.add_collectible(player_index, item)
+		--		end
+		--	end
+		--end
+	end
+	coopHUD.players[player_index].signals.on_heart_update = true -- update hearts
 end
 coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM, coopHUD.on_activate)
 -- _____ On card use
@@ -117,7 +138,7 @@ function coopHUD.on_pill_use(_, effect_no, ent_player)
 	if langAPI ~= nil then
 		-- if langAPI loaded
 		pill_sys_name = langAPI.getPocketName(pill_sys_name) -- get name from api in set language
-	coopHUD.Streak.trigger(false, coopHUD.Streak.ITEM, pill_sys_name) -- triggers streak
+		coopHUD.Streak.trigger(false, coopHUD.Streak.ITEM, pill_sys_name) -- triggers streak
 	end
 end
 coopHUD:AddCallback(ModCallbacks.MC_USE_PILL, coopHUD.on_pill_use)
@@ -142,7 +163,8 @@ function coopHUD.on_item_pickup(_, ent_player, ent_collider, Low)
 				coopHUD.players[player_index]:on_signal('on_active_update')-- triggers active updates
 				coopHUD.players[player_index]:on_signal('on_pocket_update') -- triggers pockets updates
 			elseif ent_collider.Variant == PickupVariant.PICKUP_TAROTCARD and not ent_player:ToPlayer():IsHoldingItem() then
-				if langAPI then -- triggers streak on card pickup
+				if langAPI then
+					-- triggers streak on card pickup
 					local name = Isaac.GetItemConfig():GetCard(ent_collider.SubType).Name
 					name = string.sub(name, 2) --  get rid of # on front of
 					name = langAPI.getPocketName(name)
@@ -150,7 +172,7 @@ function coopHUD.on_item_pickup(_, ent_player, ent_collider, Low)
 					local desc = Isaac.GetItemConfig():GetCard(ent_collider.SubType).Description
 					desc = string.sub(desc, 2) --  get rid of # on front of
 					desc = langAPI.getPocketName(desc)
-					coopHUD.Streak.trigger(false,coopHUD.Streak.ITEM,name,desc)
+					coopHUD.Streak.trigger(false, coopHUD.Streak.ITEM, name, desc)
 				end
 				coopHUD.players[player_index]:on_signal('on_pocket_update') -- triggers pocket update by signal
 			elseif ent_collider.Variant == PickupVariant.PICKUP_PILL then
@@ -158,10 +180,6 @@ function coopHUD.on_item_pickup(_, ent_player, ent_collider, Low)
 			elseif ent_collider.Variant == PickupVariant.PICKUP_POOP then
 				--TODO:on poop update
 			end
-		end
-		if ent_collider.Type == EntityType.ENTITY_SLOT then
-			-- checks if collide with slot machine
-			coopHUD.signals.on_item_update = true -- triggers item update
 		end
 	end
 end
@@ -205,7 +223,7 @@ function PostItemPickup (_, player)
 		if langAPI then
 			local streak_main_line = langAPI.getItemName(string.sub(item_queue.Item.Name, 2))
 			local streak_sec_line = langAPI.getItemName(string.sub(item_queue.Item.Description, 2))
-			coopHUD.Streak.trigger(false, coopHUD.Streak.ITEM, streak_main_line, streak_sec_line,true)
+			coopHUD.Streak.trigger(false, coopHUD.Streak.ITEM, streak_main_line, streak_sec_line, true)
 		end
 		--_____ Updates actives of player
 		local player_index = coopHUD.getPlayerNumByControllerIndex(player.ControllerIndex)
