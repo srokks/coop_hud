@@ -108,11 +108,16 @@ end
 coopHUD:AddCallback(ModCallbacks.MC_USE_CARD, coopHUD.on_card_use)
 -- _____ On pill use
 function coopHUD.on_pill_use(_, effect_no, ent_player)
-	-- Triggers streak text on pill use
 	local player_index = coopHUD.getPlayerNumByControllerIndex(ent_player.ControllerIndex)
 	-- Triggers pocket update signal
 	coopHUD.players[player_index]:on_signal('on_pocket_update')
-	--coopHUD.signals.on_heart_update = player_index
+	-- Triggers streak text on pill use
+	local pill_sys_name = Isaac.GetItemConfig():GetPillEffect(effect_no).Name -- gets pill sys name
+	pill_sys_name = string.sub(pill_sys_name, 2) --  get rid of # on front of
+	if langAPI ~= nil then -- if langAPI loaded
+		pill_sys_name = langAPI.getPocketName(pill_sys_name) -- get name from api in set language
+	end
+	coopHUD.Streak.trigger(false, coopHUD.Streak.ITEM, pill_sys_name) -- triggers streak
 end
 coopHUD:AddCallback(ModCallbacks.MC_USE_PILL, coopHUD.on_pill_use)
 -- __________ On damage
