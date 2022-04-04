@@ -1355,6 +1355,28 @@ function coopHUD.PlayerHead:render(anchor, mirrored, scale, down_anchor)
 end
 --
 coopHUD.Collectibles = {}
+setmetatable(coopHUD.Collectibles, {
+	__call = function(cls, ...)
+		return cls.trigger(...)
+	end,
+})
+coopHUD.Collectibles.sprite = Sprite()
+coopHUD.Collectibles.sprite:Load(coopHUD.GLOBALS.pause_screen_anim_path, true)
+coopHUD.Collectibles.sprite:SetFrame('Idle', 0)
+coopHUD.Collectibles.mirrored = false -- if mirrored stuff page anchors near right side else on left
+--coopHUD.Collectibles.sprite:Play('Appear', 0)
+function coopHUD.Collectibles.render()
+	local sprite_pos = Vector(Isaac.GetScreenWidth()/2+60, Isaac.GetScreenHeight()/2 - 30)
+	if coopHUD.Collectibles.mirrored  then
+		sprite_pos.X = Isaac.GetScreenWidth() + 30
+	end
+	coopHUD.Collectibles.sprite:RenderLayer(3, sprite_pos)
+	--
+	coopHUD.Collectibles.sprite:RenderLayer(3, sprite_pos)
+end
+function coopHUD.Collectibles.trigger()
+
+end
 --
 coopHUD.Streak = {}
 -- STREAK TYPES
@@ -1375,10 +1397,11 @@ coopHUD.Streak.sprite = coopHUD.Streak.getSprite() -- inits streak sprite
 coopHUD.Streak.signal = false -- trigger signal
 function coopHUD.Streak.render()
 	--TODO: when type ITEM and colorful hud option draw colored strings with player color
-	if coopHUD.Streak.sprite and coopHUD.Streak.first_line and coopHUD.Streak.first_line ~= '' and not coopHUD.Streak.sprite:IsFinished()  then
+	if coopHUD.Streak.sprite and coopHUD.Streak.first_line and coopHUD.Streak.first_line ~= '' and not coopHUD.Streak.sprite:IsFinished() then
 		-- prevents from no sprite loaded error and rendering when no passed first line or empty
 		local cur_frame = coopHUD.Streak.sprite:GetFrame()
-		if cur_frame > 16 and coopHUD.Streak.signal then -- controls enter animation and that sprite stays on screen
+		if cur_frame > 16 and coopHUD.Streak.signal then
+			-- controls enter animation and that sprite stays on screen
 			local streak_span = 30 -- controls how long streak will be rendered after signal = nil
 			if coopHUD.Streak.signal + streak_span < Game():GetFrameCount() then
 				coopHUD.Streak.signal = false -- resets signals and lets continue to render sprite
@@ -1419,7 +1442,7 @@ function coopHUD.Streak.render()
 		end
 	end
 end
-function coopHUD.Streak.trigger(down_anchor, type, first_line, second_line,force_reset)
+function coopHUD.Streak.trigger(down_anchor, type, first_line, second_line, force_reset)
 	coopHUD.Streak.signal = Game():GetFrameCount() -- sets streak signal as current frame num
 	if coopHUD.Streak.sprite:IsFinished() or force_reset then
 		-- if streak is finished play animation
