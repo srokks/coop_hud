@@ -289,6 +289,10 @@ function coopHUD.Trinket:render(pos, mirrored, scale, down_anchor)
 end
 --
 coopHUD.Pocket = {}
+coopHUD.Pocket.NONE = 0
+coopHUD.Pocket.CARD = 1
+coopHUD.Pocket.PILL = 2
+coopHUD.Pocket.COLLECTIBLE = 3
 coopHUD.Pocket.__index = coopHUD.Pocket
 setmetatable(coopHUD.Pocket, {
 	__call = function(cls, ...)
@@ -334,11 +338,11 @@ function coopHUD.Pocket:getPocket()
 end
 function coopHUD.Pocket:getSprite()
 	local sprite = Sprite()
-	if self.type == 1 then
+	if self.type == coopHUD.Pocket.CARD then
 		-- Card
 		sprite:Load(coopHUD.GLOBALS.card_anim_path, true)
 		sprite:SetFrame("CardFronts", self.id) -- sets card frame
-	elseif self.type == 2 then
+	elseif self.type == coopHUD.Pocket.PILL then
 		-- Pill
 		if self.id > 2048 then self.id = self.id - 2048 end -- check if its horse pill and change id to normal
 		sprite:Load(coopHUD.GLOBALS.pill_anim_path, true)
@@ -356,8 +360,8 @@ function coopHUD.Pocket:getName()
 	local name = nil
 	local desc = nil
 	if self.type == nil then return nil, nil end
-	if self.id == 0 then return nil, nil end
-	if self.type == 1 then
+	if self.id == coopHUD.Pocket.NONE then return nil, nil end
+	if self.type == coopHUD.Pocket.CARD then
 		name = Isaac.GetItemConfig():GetCard(self.id).Name
 		name = string.sub(name, 2) --  get rid of # on front of
 		name = langAPI.getPocketName(name)
@@ -365,7 +369,7 @@ function coopHUD.Pocket:getName()
 		desc = Isaac.GetItemConfig():GetCard(self.id).Description
 		desc = string.sub(desc, 2) --  get rid of # on front of
 		desc = langAPI.getPocketName(desc)
-	elseif self.type == 2 then
+	elseif self.type == coopHUD.Pocket.PILL then
 		name = "???" .. " "
 		desc = "???" .. " "
 		local item_pool = Game():GetItemPool()
@@ -376,7 +380,7 @@ function coopHUD.Pocket:getName()
 			name = langAPI.getPocketName(name)
 			desc = name
 		end
-	elseif self.type == 3 then
+	elseif self.type == coopHUD.Pocket.COLLECTIBLE then
 		name = Isaac.GetItemConfig():GetCollectible(self.id).Name
 		desc = Isaac.GetItemConfig():GetCollectible(self.id).Description
 		name = string.sub(name, 2) --  get rid of # on front of
