@@ -1375,7 +1375,7 @@ coopHUD.Streak.sprite = coopHUD.Streak.getSprite() -- inits streak sprite
 coopHUD.Streak.signal = false -- trigger signal
 function coopHUD.Streak.render()
 	--TODO: when type ITEM and colorful hud option draw colored strings with player color
-	if coopHUD.Streak.sprite and coopHUD.Streak.first_line and coopHUD.Streak.first_line ~= '' then
+	if coopHUD.Streak.sprite and coopHUD.Streak.first_line and coopHUD.Streak.first_line ~= '' and not coopHUD.Streak.sprite:IsFinished()  then
 		-- prevents from no sprite loaded error and rendering when no passed first line or empty
 		local cur_frame = coopHUD.Streak.sprite:GetFrame()
 		if cur_frame > 16 and coopHUD.Streak.signal then -- controls enter animation and that sprite stays on screen
