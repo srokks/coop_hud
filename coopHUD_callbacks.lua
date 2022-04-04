@@ -145,7 +145,17 @@ function coopHUD.on_item_pickup(_, ent_player, ent_collider, Low)
 			elseif ent_collider.Variant == PickupVariant.PICKUP_LIL_BATTERY then
 				coopHUD.players[player_index]:on_signal('on_active_update')-- triggers active updates
 				coopHUD.players[player_index]:on_signal('on_pocket_update') -- triggers pockets updates
-			elseif ent_collider.Variant == PickupVariant.PICKUP_TAROTCARD then
+			elseif ent_collider.Variant == PickupVariant.PICKUP_TAROTCARD and not ent_player:ToPlayer():IsHoldingItem() then
+				if langAPI then -- triggers streak on card pickup
+					local name = Isaac.GetItemConfig():GetCard(ent_collider.SubType).Name
+					name = string.sub(name, 2) --  get rid of # on front of
+					name = langAPI.getPocketName(name)
+					--
+					local desc = Isaac.GetItemConfig():GetCard(ent_collider.SubType).Description
+					desc = string.sub(desc, 2) --  get rid of # on front of
+					desc = langAPI.getPocketName(desc)
+					coopHUD.Streak.trigger(false,coopHUD.Streak.ITEM,name,desc)
+				end
 				coopHUD.players[player_index]:on_signal('on_pocket_update') -- triggers pocket update by signal
 			elseif ent_collider.Variant == PickupVariant.PICKUP_PILL then
 				coopHUD.players[player_index]:on_signal('on_pocket_update') -- triggers pocket update by signal
