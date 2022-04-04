@@ -139,7 +139,7 @@ function coopHUD.on_pill_use(_, effect_no, ent_player)
 	if langAPI ~= nil then
 		-- if langAPI loaded
 		pill_sys_name = langAPI.getPocketName(pill_sys_name) -- get name from api in set language
-		coopHUD.Streak.trigger(false, coopHUD.Streak.ITEM, pill_sys_name) -- triggers streak
+		coopHUD.Streak(false, coopHUD.Streak.ITEM, pill_sys_name) -- triggers streak
 	end
 end
 coopHUD:AddCallback(ModCallbacks.MC_USE_PILL, coopHUD.on_pill_use)
@@ -173,7 +173,7 @@ function coopHUD.on_item_pickup(_, ent_player, ent_collider, Low)
 					local desc = Isaac.GetItemConfig():GetCard(ent_collider.SubType).Description
 					desc = string.sub(desc, 2) --  get rid of # on front of
 					desc = langAPI.getPocketName(desc)
-					coopHUD.Streak.trigger(false, coopHUD.Streak.ITEM, name, desc)
+					coopHUD.Streak(false, coopHUD.Streak.ITEM, name, desc)
 				end
 				coopHUD.players[player_index]:on_signal('on_pocket_update') -- triggers pocket update by signal
 			elseif ent_collider.Variant == PickupVariant.PICKUP_PILL then
@@ -200,7 +200,7 @@ end)
 -- __________ Force update on new floor/room
 --- Function force updates all table. Triggers on new room/floor
 coopHUD:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function()
-	coopHUD.Streak.trigger(false, coopHUD.Streak.FLOOR)
+	coopHUD.Streak(false, coopHUD.Streak.FLOOR)
 end)
 -- _____ Post item pickup
 -- Modified  Version of POST_ITEM_PICKUP from pedroff_1 - https://steamcommunity.com/sharedfiles/filedetails/?id=2577953432&searchtext=callback
@@ -224,7 +224,7 @@ function PostItemPickup (_, player)
 		if langAPI then
 			local streak_main_line = langAPI.getItemName(string.sub(item_queue.Item.Name, 2))
 			local streak_sec_line = langAPI.getItemName(string.sub(item_queue.Item.Description, 2))
-			coopHUD.Streak.trigger(false, coopHUD.Streak.ITEM, streak_main_line, streak_sec_line, true)
+			coopHUD.Streak(false, coopHUD.Streak.ITEM, streak_main_line, streak_sec_line, true)
 		end
 		--_____ Updates actives of player
 		local player_index = coopHUD.getPlayerNumByControllerIndex(player.ControllerIndex)
@@ -289,7 +289,7 @@ function coopHUD.inputs_signals()
 		btn_held = btn_held + 1 / 60
 		if btn_held > pressTime then
 			coopHUD.signals.map = mapPressed
-			coopHUD.Streak.trigger(true, coopHUD.Streak.FLOOR)
+			coopHUD.Streak(true, coopHUD.Streak.FLOOR)
 			coopHUD.players[mapPressed].signals.map_btn = true
 		end
 	else
