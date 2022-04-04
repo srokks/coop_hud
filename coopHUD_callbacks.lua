@@ -114,10 +114,11 @@ function coopHUD.on_pill_use(_, effect_no, ent_player)
 	-- Triggers streak text on pill use
 	local pill_sys_name = Isaac.GetItemConfig():GetPillEffect(effect_no).Name -- gets pill sys name
 	pill_sys_name = string.sub(pill_sys_name, 2) --  get rid of # on front of
-	if langAPI ~= nil then -- if langAPI loaded
+	if langAPI ~= nil then
+		-- if langAPI loaded
 		pill_sys_name = langAPI.getPocketName(pill_sys_name) -- get name from api in set language
-	end
 	coopHUD.Streak.trigger(false, coopHUD.Streak.ITEM, pill_sys_name) -- triggers streak
+	end
 end
 coopHUD:AddCallback(ModCallbacks.MC_USE_PILL, coopHUD.on_pill_use)
 -- __________ On damage
@@ -137,11 +138,6 @@ function coopHUD.on_item_pickup(_, ent_player, ent_collider, Low)
 			if ent_collider.Variant == PickupVariant.PICKUP_HEART then
 				-- check if collides with heart
 				coopHUD.players[player_index]:on_signal('on_heart_update')
-			elseif ent_collider.Variant == PickupVariant.PICKUP_COIN or -- check if collides with coin
-					ent_collider.Variant == PickupVariant.PICKUP_KEY or -- or with key
-					ent_collider.Variant == PickupVariant.PICKUP_BOMB then
-				-- or with bomb
-				coopHUD.signals.on_item_update = true -- triggers item update by signal
 			elseif ent_collider.Variant == PickupVariant.PICKUP_LIL_BATTERY then
 				coopHUD.players[player_index]:on_signal('on_active_update')-- triggers active updates
 				coopHUD.players[player_index]:on_signal('on_pocket_update') -- triggers pockets updates
@@ -160,7 +156,7 @@ function coopHUD.on_item_pickup(_, ent_player, ent_collider, Low)
 			elseif ent_collider.Variant == PickupVariant.PICKUP_PILL then
 				coopHUD.players[player_index]:on_signal('on_pocket_update') -- triggers pocket update by signal
 			elseif ent_collider.Variant == PickupVariant.PICKUP_POOP then
-				coopHUD.signals.on_poop_update = player_index
+				--TODO:on poop update
 			end
 		end
 		if ent_collider.Type == EntityType.ENTITY_SLOT then
@@ -220,9 +216,7 @@ function PostItemPickup (_, player)
 		else
 			--coopHUD.add_collectible(player_index, item_queue.Item)
 		end
-		--coopHUD.updateExtraLives(player_index) -- triggers extra lives update
-		--coopHUD.updateItems() -- triggers update items when picked up item - Shops
-		--coopHUD.updateHearts(player_index) -- triggers update hearts if item picked up - Devil deals
+		coopHUD.players[player_index].signals.on_heart_update = true
 	end
 end
 coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, PostItemPickup)
