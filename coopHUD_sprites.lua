@@ -1421,12 +1421,13 @@ function coopHUD.Streak.trigger(down_anchor, type, first_line, second_line)
 		coopHUD.Streak.sprite:Play("Text", true)
 		coopHUD.Streak.type = type
 		coopHUD.Streak.down_anchor = down_anchor -- defines if streak will render down screen or top screen
-	end
-	coopHUD.Streak.first_line = first_line -- gets line string from passed parameters
-	coopHUD.Streak.second_line = second_line
-	if type == coopHUD.Streak.FLOOR then -- in case of floor streak ignore passed strings
-		coopHUD.Streak.first_line = Game():GetLevel():GetName() -- and get floor specs
-		coopHUD.Streak.second_line = Game():GetLevel():GetCurseName()
+		coopHUD.Streak.first_line = first_line -- gets line string from passed parameters
+		coopHUD.Streak.second_line = second_line
+		if type == coopHUD.Streak.FLOOR then
+			-- in case of floor streak ignore passed strings
+			coopHUD.Streak.first_line = Game():GetLevel():GetName() -- and get floor specs
+			coopHUD.Streak.second_line = Game():GetLevel():GetCurseName()
+		end
 	end
 end
 --
