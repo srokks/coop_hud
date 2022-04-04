@@ -1364,15 +1364,58 @@ setmetatable(coopHUD.Collectibles, {
 })
 coopHUD.Collectibles.sprite = Sprite()
 coopHUD.Collectibles.sprite:Load(coopHUD.GLOBALS.pause_screen_anim_path, true)
-coopHUD.Collectibles.sprite:SetFrame('Idle', 0)
+coopHUD.Collectibles.sprite:SetFrame('Dissapear', 13) -- sets to last frame to not trigger on run
+coopHUD.Collectibles.item_table = {}
 coopHUD.Collectibles.mirrored = false -- if mirrored stuff page anchors near right side else on left
---coopHUD.Collectibles.sprite:Play('Appear', 0)
+coopHUD.Collectibles.signal = false
 function coopHUD.Collectibles.render()
 	local sprite_pos = Vector(Isaac.GetScreenWidth()/2+60, Isaac.GetScreenHeight()/2 - 30)
 	if coopHUD.Collectibles.mirrored  then
 		sprite_pos.X = Isaac.GetScreenWidth() + 30
 	end
+	if coopHUD.Collectibles.sprite:GetFrame() > 11 and coopHUD.Collectibles.signal then
+		if coopHUD.Collectibles.signal + 15 < Game():GetFrameCount() then
+			coopHUD.Collectibles.signal = false -- resets signals and lets continue to render sprite
+		end
+	else
+		coopHUD.Collectibles.sprite:Update() -- update sprite frame
+	end
+	if coopHUD.Collectibles.sprite:IsPlaying('Dissapear') then
+		coopHUD.Collectibles.sprite:Update()
+	end
+	coopHUD.Collectibles.sprite:Update() -- update sprite frame
 	coopHUD.Collectibles.sprite:RenderLayer(3, sprite_pos)
+	local item_pos = Vector(0 + 76, Isaac.GetScreenHeight() / 2 - 32)
+	local temp_counter = 1
+	for i = #coopHUD.Collectibles.item_table, 1, -1 do
+		local scale = Vector(1, 1)
+		local rows_no = 5
+		if #coopHUD.Collectibles.item_table > 10 then
+			scale = Vector(0.7, 0.7)
+			rows_no = 7
+		end
+		if #coopHUD.Collectibles.item_table > 20 then
+			scale = Vector(0.6, 0.6)
+			rows_no = 8
+		end
+		if #coopHUD.Collectibles.item_table > 32 then
+			scale = Vector(0.5, 0.5)
+			rows_no = 10
+		end
+		if #coopHUD.Collectibles.item_table > 42 then
+			scale = Vector(0.5, 0.5)
+			rows_no = 10
+		end
+		local off = coopHUD.Collectibles.item_table[i]:render(item_pos, false, scale, false)
+		item_pos.X = item_pos.X + off.X / 1.5
+		if temp_counter % rows_no == 0 then
+			item_pos.Y = item_pos.Y + off.Y
+			item_pos.X = 0 + 72
+		end
+		temp_counter = temp_counter + 1
+	end
+
+
 	--
 	coopHUD.Collectibles.sprite:RenderLayer(3, sprite_pos)
 end
