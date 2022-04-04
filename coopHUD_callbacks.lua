@@ -209,7 +209,7 @@ function PostItemPickup (_, player)
 		if langAPI then
 			local streak_main_line = langAPI.getItemName(string.sub(item_queue.Item.Name, 2))
 			local streak_sec_line = langAPI.getItemName(string.sub(item_queue.Item.Description, 2))
-			coopHUD.Streak.trigger(false,coopHUD.Streak.ITEM,streak_main_line,streak_sec_line)
+			coopHUD.Streak.trigger(false, coopHUD.Streak.ITEM, streak_main_line, streak_sec_line,true)
 		end
 		--_____ Updates actives of player
 		local player_index = coopHUD.getPlayerNumByControllerIndex(player.ControllerIndex)

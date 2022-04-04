@@ -1419,9 +1419,9 @@ function coopHUD.Streak.render()
 		end
 	end
 end
-function coopHUD.Streak.trigger(down_anchor, type, first_line, second_line)
+function coopHUD.Streak.trigger(down_anchor, type, first_line, second_line,force_reset)
 	coopHUD.Streak.signal = Game():GetFrameCount() -- sets streak signal as current frame num
-	if coopHUD.Streak.sprite:IsFinished() then
+	if coopHUD.Streak.sprite:IsFinished() or force_reset then
 		-- if streak is finished play animation
 		coopHUD.Streak.sprite:Play("Text", true)
 		coopHUD.Streak.type = type
