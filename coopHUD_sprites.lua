@@ -1415,20 +1415,19 @@ function coopHUD.Streak.render()
 		end
 	end
 end
----@param down_anchor boolean define if streak need to be rendered down of screen
-function coopHUD.Streak.trigger(down_anchor,type,first_line,second_line)
-	if not coopHUD.Streak.signal then
-		coopHUD.Streak.signal = true
+function coopHUD.Streak.trigger(down_anchor, type, first_line, second_line)
+	coopHUD.Streak.signal = Game():GetFrameCount() -- sets streak signal as current frame num
+	if coopHUD.Streak.sprite:IsFinished() then -- if streak is finished play animation
 		coopHUD.Streak.sprite:Play("Text", true)
-		coopHUD.Streak.down_anchor = down_anchor
 		coopHUD.Streak.type = type
-		coopHUD.Streak.first_line = first_line
-		coopHUD.Streak.second_line = second_line
-	end -- triggers a render signal
-		coopHUD.Streak.down_anchor = down_anchor
-		coopHUD.Streak.type = type
-		coopHUD.Streak.first_line = first_line
-		coopHUD.Streak.second_line = second_line
+		coopHUD.Streak.down_anchor = down_anchor -- defines if streak will render down screen or top screen
+	end
+	coopHUD.Streak.first_line = first_line -- gets line string from passed parameters
+	coopHUD.Streak.second_line = second_line
+	if type == coopHUD.Streak.FLOOR then -- in case of floor streak ignore passed strings
+		coopHUD.Streak.first_line = Game():GetLevel():GetName() -- and get floor specs
+		coopHUD.Streak.second_line = Game():GetLevel():GetCurseName()
+	end
 end
 --
 function coopHUD.getMinimapOffset()
