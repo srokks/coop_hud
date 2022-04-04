@@ -175,7 +175,7 @@ end)
 -- __________ Force update on new floor/room
 --- Function force updates all table. Triggers on new room/floor
 coopHUD:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function()
-	--coopHUD.HUD.:trigger()
+	coopHUD.Streak.trigger(false, coopHUD.Streak.FLOOR)
 end)
 -- _____ Post item pickup
 -- Modified  Version of POST_ITEM_PICKUP from pedroff_1 - https://steamcommunity.com/sharedfiles/filedetails/?id=2577953432&searchtext=callback
