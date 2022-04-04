@@ -132,6 +132,7 @@ function coopHUD.on_pill_use(_, effect_no, ent_player)
 	local player_index = coopHUD.getPlayerNumByControllerIndex(ent_player.ControllerIndex)
 	-- Triggers pocket update signal
 	coopHUD.players[player_index]:on_signal('on_pocket_update')
+	coopHUD.players[player_index]:on_signal('on_heart_update')
 	-- Triggers streak text on pill use
 	local pill_sys_name = Isaac.GetItemConfig():GetPillEffect(effect_no).Name -- gets pill sys name
 	pill_sys_name = string.sub(pill_sys_name, 2) --  get rid of # on front of
