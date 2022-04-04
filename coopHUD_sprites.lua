@@ -1419,8 +1419,13 @@ function coopHUD.Collectibles.render()
 	--
 	coopHUD.Collectibles.sprite:RenderLayer(3, sprite_pos)
 end
-function coopHUD.Collectibles.trigger()
-
+function coopHUD.Collectibles.trigger(Player, mirrored, type, first_line, second_line, force_reset)
+	coopHUD.Collectibles.signal = Game():GetFrameCount() -- sets streak signal as current frame num
+	if coopHUD.Collectibles.sprite:IsFinished('Dissapear') or force_reset then
+		-- if Collectibles is finished play animation
+		coopHUD.Collectibles.item_table = Player.collectibles
+		coopHUD.Collectibles.sprite:Play("Appear", true)
+	end
 end
 --
 coopHUD.Streak = {}
