@@ -102,3 +102,19 @@ coopHUD.colors = {
 	{ name = "Aqua",color = Color(0, 1, 1) },
 	{ name = "Orange",color = Color(1, 0.5, 0) },
 }
+coopHUD.PlayerForm = {}
+coopHUD.PlayerForm[PlayerForm.PLAYERFORM_GUPPY] = "Guppy!"
+coopHUD.PlayerForm[PlayerForm.PLAYERFORM_LORD_OF_THE_FLIES] = "Beelzebub!"
+coopHUD.PlayerForm[PlayerForm.PLAYERFORM_MUSHROOM] = "Fun Guy!"
+coopHUD.PlayerForm[PlayerForm.PLAYERFORM_ANGEL] = "Seraphim!"
+coopHUD.PlayerForm[PlayerForm.PLAYERFORM_BOB] = "Bob!"
+coopHUD.PlayerForm[PlayerForm.PLAYERFORM_DRUGS] = "Spun!"
+coopHUD.PlayerForm[PlayerForm.PLAYERFORM_MOM] = "Yes mother?!"
+coopHUD.PlayerForm[PlayerForm.PLAYERFORM_BABY] = "Conjoined!"
+coopHUD.PlayerForm[PlayerForm.PLAYERFORM_EVIL_ANGEL] ="Leviathan!"
+coopHUD.PlayerForm[PlayerForm.PLAYERFORM_POOP] = "Oh crap!"
+coopHUD.PlayerForm[PlayerForm.PLAYERFORM_BOOK_WORM] ="Book Worm!"
+coopHUD.PlayerForm[PlayerForm.PLAYERFORM_ADULTHOOD] = "Adult!"
+coopHUD.PlayerForm[PlayerForm.PLAYERFORM_SPIDERBABY] ="Spider Baby!"
+coopHUD.PlayerForm[PlayerForm.PLAYERFORM_STOMPY] = "Stompy!"
+coopHUD.PlayerForm[PlayerForm.PLAYERFORM_FLIGHT] = "Flight!"
