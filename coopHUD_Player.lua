@@ -182,6 +182,7 @@ function coopHUD.Player:render()
 	local first_line_offset = Vector(0, 0)
 	local pocket_desc_off = Vector(0, 0)
 	if down_anchor then
+		first_line_offset.Y = math.min(info_off.Y, active_off.Y, hearts_off.Y )
 		pocket_desc_off.Y = -8
 	else
 		first_line_offset.Y = math.max(info_off.Y, active_off.Y, hearts_off.Y )
