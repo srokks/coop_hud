@@ -23,6 +23,11 @@ function coopHUD.Player.new(player_no)
 	self.second_pocket = coopHUD.Pocket(self, 1)
 	self.third_pocket = coopHUD.Pocket(self, 2)
 	--
+	self.transformations = {}
+	for i=0,PlayerForm.NUM_PLAYER_FORMS -1 do
+		self.transformations[i] = false
+	end
+	--
 	self.collectibles = {} -- item
 	self.gulped_trinkets = {} -- trinket
 	-- HEARTS
@@ -131,6 +136,12 @@ function coopHUD.Player:update()
 	end
 	if self.signals.map_btn then
 		if not coopHUD.signals.map then self.signals.map_btn = false end
+	end
+	for i=0,PlayerForm.NUM_PLAYER_FORMS -1 do
+		if self.transformations[i] ~= self.entPlayer:HasPlayerForm(i) then
+			self.transformations[i] = self.entPlayer:HasPlayerForm(i)
+			coopHUD.Streak.trigger(false,coopHUD.Streak.ITEM,coopHUD.PlayerForm[i],nil,true)
+		end
 	end
 end
 function coopHUD.Player:render()
