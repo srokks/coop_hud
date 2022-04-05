@@ -1375,6 +1375,7 @@ function coopHUD.Collectibles.render()
 	if coopHUD.Collectibles.sprite:GetFrame() > 11 and coopHUD.Collectibles.signal then
 		if coopHUD.Collectibles.signal + 15 < Game():GetFrameCount() then
 			coopHUD.Collectibles.signal = false -- resets signals and lets continue to render sprite
+			coopHUD.Collectibles.sprite:Play('Dissapear',0)
 		end
 	else
 		coopHUD.Collectibles.sprite:Update() -- update sprite frame
@@ -1384,6 +1385,7 @@ function coopHUD.Collectibles.render()
 	end
 	coopHUD.Collectibles.sprite:Update() -- update sprite frame
 	coopHUD.Collectibles.sprite:RenderLayer(3, sprite_pos)
+	-- collectibles table render
 	local item_pos = Vector(0 + 76, Isaac.GetScreenHeight() / 2 - 32)
 	local temp_counter = 1
 	for i = #coopHUD.Collectibles.item_table, 1, -1 do
@@ -1413,8 +1415,7 @@ function coopHUD.Collectibles.render()
 		end
 		temp_counter = temp_counter + 1
 	end
-
-
+	if coopHUD.Collectibles.sprite:IsPlaying('Dissapear') then coopHUD.Collectibles.item_table = {} end
 	--
 end
 function coopHUD.Collectibles.trigger(Player, mirrored, type, first_line, second_line, force_reset)
