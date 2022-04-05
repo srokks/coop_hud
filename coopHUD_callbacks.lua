@@ -64,7 +64,7 @@ function coopHUD.on_player_init()
 		if coopHUD.signals.is_joining then coopHUD.signals.is_joining = false end
 	end
 end
---_____ INPUTS
+--_____ INPUTS ACTION_JOINMULTIPLAYER
 function coopHUD.on_join_signal()
 	-- ACTION_JOINMULTIPLAYER
 	if not Game():IsPaused() then
@@ -197,12 +197,11 @@ coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, function(self)
 		coopHUD.signals.on_battle = false -- reset signal
 	end
 end)
--- __________ Force update on new floor/room
---- Function force updates all table. Triggers on new room/floor
+-- __________ New floor streak trigger
 coopHUD:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function()
 	coopHUD.Streak(false, coopHUD.Streak.FLOOR)
 end)
----- End of standalone module
+-- INPUT TRIGGERS
 local btn_held = 0
 function coopHUD.inputs_signals()
 	-- Trigger for turning on/off coop hud on `H` key
@@ -248,6 +247,7 @@ function coopHUD.inputs_signals()
 	end
 end
 coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.inputs_signals)
+-- MAIN RENDER
 function coopHUD.render()
 	coopHUD.updateAnchors()
 	if #coopHUD.players > 4 then

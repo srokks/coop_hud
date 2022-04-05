@@ -85,6 +85,16 @@ function coopHUD.Player.new(player_no)
 		end
 	end)
 	--
+	coopHUD:AddCallback(ModCallbacks.MC_USE_PILL, function(_, effect_no, entPlayer)
+		if self.entPlayer.Index == entPlayer.Index then
+			local pill_sys_name = Isaac.GetItemConfig():GetPillEffect(effect_no).Name
+			pill_sys_name = string.sub(pill_sys_name, 2) --  get rid of # on front of
+			if langAPI ~= nil then
+				coopHUD.Streak(false, coopHUD.Streak.ITEM, langAPI.getPocketName(pill_sys_name), nil, true)
+			end
+		end
+	end)
+	--
 	return self
 end
 function coopHUD.Player:on_signal(signal)
