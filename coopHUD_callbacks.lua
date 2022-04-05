@@ -202,56 +202,6 @@ end)
 coopHUD:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function()
 	coopHUD.Streak(false, coopHUD.Streak.FLOOR)
 end)
--- _____ Post item pickup
--- Modified  Version of POST_ITEM_PICKUP from pedroff_1 - https://steamcommunity.com/sharedfiles/filedetails/?id=2577953432&searchtext=callback
-function PostItemPickup (_, player)
-	local item_queue = player.QueuedItem
-	if item_queue and item_queue.Item then
-		local list = PostItemPickupFunctions
-		if list[item_queue.Item.ID] then
-			for i, v in pairs(list[item_queue.Item.ID]) do
-				v(_, player)
-			end
-		end
-		list = PostItemPickupFunctions[-1]
-		if list then
-			for i, v in pairs(list) do
-				v(_, player, item_queue.Item.ID)
-			end
-		end
-		player:FlushQueueItem()
-		--____ Flashes triggers streak text with picked up name
-		if langAPI then
-			local streak_main_line = langAPI.getItemName(string.sub(item_queue.Item.Name, 2))
-			local streak_sec_line = langAPI.getItemName(string.sub(item_queue.Item.Description, 2))
-			coopHUD.Streak(false, coopHUD.Streak.ITEM, streak_main_line, streak_sec_line, true)
-		end
-		--_____ Updates actives of player
-		local player_index = coopHUD.getPlayerNumByControllerIndex(player.ControllerIndex)
-		if item_queue.Item.Type == ItemType.ITEM_ACTIVE then
-			coopHUD.players[player_index].signals.on_active_update = true
-		elseif item_queue.Item.Type == ItemType.ITEM_TRINKET then
-			coopHUD.players[player_index].signals.on_trinket_update = true
-		else
-			--coopHUD.add_collectible(player_index, item_queue.Item)
-		end
-		coopHUD.players[player_index].signals.on_heart_update = true
-	end
-end
-coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, PostItemPickup)
-local addCallbackOld = Isaac.AddCallback
-ModCallbacks.MC_POST_ITEM_PICKUP = 271
-PostItemPickupFunctions = PostItemPickupFunctions or {}
-function addCallbackNew(mod, callback, func, arg1, arg2, arg3, arg4)
-	if callback == ModCallbacks.MC_POST_ITEM_PICKUP then
-		arg1 = arg1 or -1
-		PostItemPickupFunctions[arg1] = PostItemPickupFunctions[arg1] or {}
-		PostItemPickupFunctions[arg1][tostring(func)] = func
-	else
-		addCallbackOld(mod, callback, func, arg1, arg2, arg3, arg4)
-	end
-end
-Isaac.AddCallback = addCallbackNew
 ---- End of standalone module
 local btn_held = 0
 function coopHUD.inputs_signals()

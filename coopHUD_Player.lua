@@ -24,7 +24,7 @@ function coopHUD.Player.new(player_no)
 	self.third_pocket = coopHUD.Pocket(self, 2)
 	--
 	self.transformations = {}
-	for i=0,PlayerForm.NUM_PLAYER_FORMS -1 do
+	for i = 0, PlayerForm.NUM_PLAYER_FORMS - 1 do
 		self.transformations[i] = false
 	end
 	--
@@ -75,6 +75,24 @@ function coopHUD.Player.new(player_no)
 	--
 	self.font_color = KColor(1, 1, 1, 1)
 	--
+	coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, function(_, entPlayer)
+		if self.entPlayer.Index == entPlayer.Index then
+			local item_queue = entPlayer.QueuedItem
+			if item_queue and item_queue.Item and item_queue.Item ~= nil and self.temp_item == nil then
+				self.temp_item = item_queue.Item -- saves as temp item
+				--____ Flashes triggers streak text with picked up name
+				if langAPI then
+					local streak_main_line = langAPI.getItemName(string.sub(item_queue.Item.Name, 2))
+					local streak_sec_line = langAPI.getItemName(string.sub(item_queue.Item.Description, 2))
+					coopHUD.Streak(false, coopHUD.Streak.ITEM, streak_main_line, streak_sec_line, true)
+				end
+			end
+			if not entPlayer:IsHoldingItem() and self.temp_item then
+				self.temp_item = nil
+			end
+		end
+	end)
+	--
 	return self
 end
 function coopHUD.Player:on_signal(signal)
@@ -105,51 +123,14 @@ function coopHUD.Player:update()
 	if self.controller_index ~= self.entPlayer.ControllerIndex then
 		self.controller_index = self.entPlayer.ControllerIndex
 	end
-	if self.signals.on_drop_activate then
-		self.signals.on_active_update = true
-		self.signals.on_pocket_update = true
-		self.signals.on_drop_activate = nil
-	end
-	if self.signals.on_heart_update then
-		self.hearts:update()
-		if self.extra_charge then
-			self.extra_charge:update()
-		end
-		self:on_signal('on_heart_update')
-	end
-	if self.signals.on_active_update then
-		self.active_item:update()
-		self.schoolbag_item:update()
-		self:on_signal('on_active_update')
-	end
-	if self.signals.on_pocket_update then
-
-		self.first_pocket:update()
-		self.second_pocket:update()
-		self.third_pocket:update()
-		self:on_signal('on_pocket_update')
-	end
-	if self.signals.on_trinket_update then
-		self.first_trinket:update()
-		self.second_trinket:update()
-		self.signals.on_trinket_update = nil
-	end
-	if self.signals.map_btn then
-		if not coopHUD.signals.map then self.signals.map_btn = false end
-	end
-	for i=0,PlayerForm.NUM_PLAYER_FORMS -1 do
-		if self.transformations[i] ~= self.entPlayer:HasPlayerForm(i) then
-			self.transformations[i] = self.entPlayer:HasPlayerForm(i)
-			coopHUD.Streak.trigger(false,coopHUD.Streak.ITEM,coopHUD.PlayerForm[i],nil,true)
-		end
-	end
 end
 function coopHUD.Player:render()
+	self:update()
 	--
 	local anchor = Vector(coopHUD.anchors[coopHUD.players_config.small[self.game_index].anchor].X,
 	                      coopHUD.anchors[coopHUD.players_config.small[self.game_index].anchor].Y)
 	local anchor_bot = Vector(coopHUD.anchors[coopHUD.players_config.small[self.game_index].anchor_bot].X,
-	                      coopHUD.anchors[coopHUD.players_config.small[self.game_index].anchor_bot].Y)
+	                          coopHUD.anchors[coopHUD.players_config.small[self.game_index].anchor_bot].Y)
 	local mirrored = coopHUD.players_config.small[self.game_index].mirrored
 	local scale = coopHUD.players_config.small.scale
 	local down_anchor = coopHUD.players_config.small[self.game_index].down_anchor
@@ -174,7 +155,8 @@ function coopHUD.Player:render()
 	self:renderExtras(Vector(anchor.X + active_off.X + hearts_off.X, anchor.Y), mirrored, scale, down_anchor)
 	--self.active_item:render(Vector(anchor.X + active_off.X + hearts_off.X, anchor.Y), mirrored, scale, down_anchor)
 	-- <Second  top line render> --
-	if #coopHUD.players  < 3 and not coopHUD.options.force_small_hud then -- special version of hud when only when <2 players and not forced in options
+	if #coopHUD.players < 3 and not coopHUD.options.force_small_hud then
+		-- special version of hud when only when <2 players and not forced in options
 		anchor.X = anchor_bot.X
 		anchor.Y = anchor_bot.Y
 		down_anchor = true
@@ -182,13 +164,13 @@ function coopHUD.Player:render()
 	local first_line_offset = Vector(0, 0)
 	local pocket_desc_off = Vector(0, 0)
 	if down_anchor then
-		first_line_offset.Y = math.min(info_off.Y, active_off.Y, hearts_off.Y )
+		first_line_offset.Y = math.min(info_off.Y, active_off.Y, hearts_off.Y)
 		if #coopHUD.players < 3 and not coopHUD.options.force_small_hud then
 			first_line_offset.Y = 0
 		end
 		pocket_desc_off.Y = -8
 	else
-		first_line_offset.Y = math.max(info_off.Y, active_off.Y, hearts_off.Y )
+		first_line_offset.Y = math.max(info_off.Y, active_off.Y, hearts_off.Y)
 	end
 	trinket_off = self.first_trinket:render(Vector(anchor.X, anchor.Y + first_line_offset.Y), mirrored, scale,
 	                                        down_anchor)
@@ -204,7 +186,7 @@ function coopHUD.Player:render()
 	                                              down_anchor)
 
 	self.third_pocket:render(Vector(anchor.X + trinket_off.X + pocket_off.X + second_pocket_off.X,
-	                                anchor.Y + first_line_offset.Y+ pocket_desc_off.Y), mirrored,
+	                                anchor.Y + first_line_offset.Y + pocket_desc_off.Y), mirrored,
 	                         Vector(0.5 * scale.X, 0.5 * scale.Y),
 	                         down_anchor)
 	-- PLAYER COLOR SET
@@ -219,8 +201,10 @@ function coopHUD.Player:render()
 		local position = Isaac.WorldToRenderPosition(self.entPlayer.Position)
 		coopHUD.HUD.fonts.pft:DrawString(self.player_head.name, position.X - 5, position.Y, self.font_color)
 	end
-	if coopHUD.options.stats.show then -- when options.stats.show on
-		if not (coopHUD.options.stats.hide_in_battle and coopHUD.signals.on_battle) then --when options.stats.hide_in_battle on and battle signal
+	if coopHUD.options.stats.show then
+		-- when options.stats.show on
+		if not (coopHUD.options.stats.hide_in_battle and coopHUD.signals.on_battle) then
+			--when options.stats.hide_in_battle on and battle signal
 			local font_color = KColor(1, 1, 1, 1)
 			if coopHUD.options.stats.colorful then
 				font_color = self.font_color
