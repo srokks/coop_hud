@@ -19,14 +19,6 @@ function coopHUD.Item.new(player, slot, item_id)
 	self.charge = self:getCharge()
 	self.charge_sprites = self.getChargeSprites(self)
 	self.temp_item = nil
-	if self.slot >= 0 then
-		-- conect player update callback to item update if slot > 0 - non collectibles
-		coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, function(_, entPlayer)
-			if self.entPlayer.Index == entPlayer.Index then
-				self:update() -- Updates item
-			end
-		end)
-	end
 	return self
 end
 function coopHUD.Item.getChargeSprites(self)
@@ -251,7 +243,6 @@ function coopHUD.Trinket.new(player, slot, trinket_id)
 	self.slot = slot
 	self.id = player:GetTrinket(self.slot)
 	self.sprite = self:getSprite()
-
 	return self
 end
 function coopHUD.Trinket:getSprite()
@@ -472,7 +463,6 @@ function coopHUD.Heart.new(parent, heart_pos)
 	self.parent = parent
 	self.pos = heart_pos
 	self.type, self.overlay = self:getType()
-	if self.type == nil then return nil end
 	self.sprite = self:getSprite()
 	return self
 end
@@ -693,7 +683,7 @@ setmetatable(coopHUD.HeartTable, {
 function coopHUD.HeartTable.new(parent)
 	local self = setmetatable({}, coopHUD.HeartTable)
 	self.parent = parent
-	for i = 0, self.parent.total_hearts do
+	for i = 0, self.parent.max_health_cap do
 		self[i] = coopHUD.Heart(self.parent, i)
 	end
 	return self
@@ -728,10 +718,8 @@ function coopHUD.HeartTable:render(pos, mirrored, scale, down_anchor)
 	end
 	-- RENDER
 	for i = 0, self.parent.max_health_cap do
-		if self[i] then
-			local temp_pos = Vector(init_pos.X + temp_off.X, init_pos.Y + temp_off.Y)
-			temp_off = self[i]:render(temp_pos, scale)
-		end
+		local temp_pos = Vector(init_pos.X + temp_off.X, init_pos.Y + temp_off.Y)
+		temp_off = self[i]:render(temp_pos, scale)
 	end
 	--
 	return Vector(12 * scale.X * cols, 12 * scale.Y * rows)
@@ -742,7 +730,7 @@ function coopHUD.HeartTable:update()
 		self.parent.total_hearts = temp_total_hearts
 	end
 	for i = 0, self.parent.total_hearts do
-		self[i] = coopHUD.Heart(self.parent, i)
+		self[i]:update()
 	end
 end
 --

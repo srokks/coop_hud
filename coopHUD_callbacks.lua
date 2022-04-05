@@ -258,7 +258,6 @@ function coopHUD.render()
 	local paused = Game():IsPaused()
 	for i = 1, #coopHUD.players do
 		if coopHUD.players[i] then
-			coopHUD.players[i]:update()
 			coopHUD.on_player_init()
 			--if paused then coopHUD.options.onRender = false end
 			--if coopHUD.options.onRender and not paused and not coopHUD.signals.is_joining then

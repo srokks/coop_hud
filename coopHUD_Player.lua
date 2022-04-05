@@ -61,15 +61,6 @@ function coopHUD.Player.new(player_no)
 	self.hold_spell = nil -- current spell stashed in hold (int)
 	--
 	self.signals = {
-		on_active_update = false, --nil or emit player num
-		on_item_update = false, --nil or emit player num
-		on_heart_update = false, --nil or emit player num
-		on_trinket_update = false, --nil or emit player num
-		on_pockets_update = false, --nil or emit player num
-		on_bethany_update = false, --nil or emit player num
-		on_poop_update = false, --nil or emit player num
-		overloaded_hud = false,
-		on_drop_activate = false, --nil or emit player num
 		map_btn = false,
 	}
 	--
@@ -77,6 +68,7 @@ function coopHUD.Player.new(player_no)
 	--
 	coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, function(_, entPlayer)
 		if self.entPlayer.Index == entPlayer.Index then
+			self:update()
 			local item_queue = entPlayer.QueuedItem
 			if item_queue and item_queue.Item and item_queue.Item ~= nil and self.temp_item == nil then
 				self.temp_item = item_queue.Item -- saves as temp item
@@ -123,9 +115,16 @@ function coopHUD.Player:update()
 	if self.controller_index ~= self.entPlayer.ControllerIndex then
 		self.controller_index = self.entPlayer.ControllerIndex
 	end
+	self.active_item:update()
+	self.schoolbag_item:update()
+	self.first_trinket:update()
+	self.second_trinket:update()
+	self.first_pocket:update()
+	self.second_pocket:update()
+	self.third_pocket:update()
+	self.hearts:update()
 end
 function coopHUD.Player:render()
-	self:update()
 	--
 	local anchor = Vector(coopHUD.anchors[coopHUD.players_config.small[self.game_index].anchor].X,
 	                      coopHUD.anchors[coopHUD.players_config.small[self.game_index].anchor].Y)
