@@ -239,6 +239,7 @@ function coopHUD.inputs_signals()
 		if btn_held > pressTime then
 			coopHUD.signals.map = mapPressed
 			coopHUD.Streak(true, coopHUD.Streak.FLOOR)
+			coopHUD.Collectibles(coopHUD.players[coopHUD.signals.map])
 			coopHUD.players[mapPressed].signals.map_btn = true
 		end
 	else

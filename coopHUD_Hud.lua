@@ -95,6 +95,7 @@ function coopHUD.HUD.render()
 			                                          f_col, 1, true)
 			timer_offset.Y = coopHUD.HUD.fonts.team_meat_10:GetBaselineHeight()
 		end
-		coopHUD.Streak:render(coopHUD.signals.map)
+		coopHUD.Streak:render()
+		coopHUD.Collectibles.render()
 	end
 end
