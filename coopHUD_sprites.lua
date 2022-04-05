@@ -18,6 +18,15 @@ function coopHUD.Item.new(player, slot, item_id)
 	self.sprite = self:getSprite()
 	self.charge = self:getCharge()
 	self.charge_sprites = self.getChargeSprites(self)
+	self.temp_item = nil
+	if self.slot >= 0 then
+		-- conect player update callback to item update if slot > 0 - non collectibles
+		coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, function(_, entPlayer)
+			if self.entPlayer.Index == entPlayer.Index then
+				self:update() -- Updates item
+			end
+		end)
+	end
 	return self
 end
 function coopHUD.Item.getChargeSprites(self)
@@ -129,6 +138,7 @@ function coopHUD.Item:update()
 	if self.id ~= self.entPlayer:GetActiveItem(self.slot) then
 		self.id = self.entPlayer:GetActiveItem(self.slot)
 		self.sprite = self:getSprite()
+		self.charge_sprites = self.getChargeSprites(self)
 	end
 end
 function coopHUD.Item:updateCharge()
@@ -241,6 +251,7 @@ function coopHUD.Trinket.new(player, slot, trinket_id)
 	self.slot = slot
 	self.id = player:GetTrinket(self.slot)
 	self.sprite = self:getSprite()
+
 	return self
 end
 function coopHUD.Trinket:getSprite()
@@ -1369,8 +1380,8 @@ coopHUD.Collectibles.item_table = {}
 coopHUD.Collectibles.mirrored = false -- if mirrored stuff page anchors near right side else on left
 coopHUD.Collectibles.signal = false
 function coopHUD.Collectibles.render()
-	local sprite_pos = Vector(Isaac.GetScreenWidth()/2+60, Isaac.GetScreenHeight()/2 - 30)
-	if coopHUD.Collectibles.mirrored  then
+	local sprite_pos = Vector(Isaac.GetScreenWidth() / 2 + 60, Isaac.GetScreenHeight() / 2 - 30)
+	if coopHUD.Collectibles.mirrored then
 		sprite_pos.X = Isaac.GetScreenWidth() + 30
 	end
 	if coopHUD.Collectibles.sprite:GetFrame() > 11 and coopHUD.Collectibles.signal then
