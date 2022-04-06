@@ -80,6 +80,11 @@ function coopHUD.Player.new(player_no)
 				end
 			end
 			if not entPlayer:IsHoldingItem() and self.temp_item then
+				if self.temp_item.Type == ItemType.ITEM_ACTIVE then
+				elseif self.temp_item.Type == ItemType.ITEM_TRINKET then
+				else
+					table.insert(self.collectibles,coopHUD.Item(nil,-1,self.temp_item.ID))
+				end
 				self.temp_item = nil
 			end
 		end
