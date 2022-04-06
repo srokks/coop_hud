@@ -241,7 +241,11 @@ function coopHUD.Trinket.new(player, slot, trinket_id)
 	local self = setmetatable({}, coopHUD.Trinket)
 	self.entPlayer = player
 	self.slot = slot
-	self.id = player:GetTrinket(self.slot)
+	if self.slot >= 0 then
+		self.id = player:GetTrinket(self.slot)
+	else
+		self.id = trinket_id
+	end
 	self.sprite = self:getSprite()
 	return self
 end
