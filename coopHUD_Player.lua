@@ -108,7 +108,12 @@ function coopHUD.Player.new(player_no)
 
 			                    elseif collectible_type == CollectibleType.COLLECTIBLE_SMELTER then
 				                    -- Check if used Smelter or trinket been smelted (bu Gulp Pill or Marbles)
-				                    print('smelt',self.game_index)
+
+				                    print(entPlayer:GetTrinket(0))
+				                    if self.first_trinket.id ~= 0 then
+					                    table.insert(self.collectibles, coopHUD.Trinket(nil, -1, self.first_trinket.id))
+					                    print('first gulped')
+				                    end
 			                    elseif collectible_type == CollectibleType.COLLECTIBLE_D4 then
 				                    -- Refresh collectibles - order them in alphabetical order
 			                    end
