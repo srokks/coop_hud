@@ -83,7 +83,7 @@ function coopHUD.Player.new(player_no)
 				if self.temp_item.Type == ItemType.ITEM_ACTIVE then
 				elseif self.temp_item.Type == ItemType.ITEM_TRINKET then
 				else
-					table.insert(self.collectibles,coopHUD.Item(nil,-1,self.temp_item.ID))
+					table.insert(self.collectibles, coopHUD.Item(nil, -1, self.temp_item.ID))
 				end
 				self.temp_item = nil
 			end
@@ -99,6 +99,21 @@ function coopHUD.Player.new(player_no)
 			end
 		end
 	end)
+	-- USE ITEM CALLBACK
+	coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
+	                    function(_, collectible_type, rng, entPlayer, use_flags, slot, var_data)
+		                    if self.entPlayer.Index == entPlayer.Index then
+			                    if collectible_type == CollectibleType.COLLECTIBLE_HOLD then
+				                    -- Hold on use change sprite
+
+			                    elseif collectible_type == CollectibleType.COLLECTIBLE_SMELTER then
+				                    -- Check if used Smelter or trinket been smelted (bu Gulp Pill or Marbles)
+				                    print('smelt',self.game_index)
+			                    elseif collectible_type == CollectibleType.COLLECTIBLE_D4 then
+				                    -- Refresh collectibles - order them in alphabetical order
+			                    end
+		                    end
+	                    end)
 	--
 	return self
 end
