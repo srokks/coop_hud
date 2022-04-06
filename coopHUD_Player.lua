@@ -99,26 +99,25 @@ function coopHUD.Player.new(player_no)
 			end
 		end
 	end)
-	-- USE ITEM CALLBACK
-	coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
+	-- CollectibleType.COLLECTIBLE_SMELTER
+	-- connect to MC_PRE_USE_ITEM to handle gulping trinkets even when they are currently in entityPlayer.Queue
+	coopHUD:AddCallback(ModCallbacks.MC_PRE_USE_ITEM,
 	                    function(_, collectible_type, rng, entPlayer, use_flags, slot, var_data)
-		                    if self.entPlayer.Index == entPlayer.Index then
-			                    if collectible_type == CollectibleType.COLLECTIBLE_HOLD then
-				                    -- Hold on use change sprite
-
-			                    elseif collectible_type == CollectibleType.COLLECTIBLE_SMELTER then
-				                    -- Check if used Smelter or trinket been smelted (bu Gulp Pill or Marbles)
-
-				                    print(entPlayer:GetTrinket(0))
-				                    if self.first_trinket.id ~= 0 then
-					                    table.insert(self.collectibles, coopHUD.Trinket(nil, -1, self.first_trinket.id))
-					                    print('first gulped')
-				                    end
-			                    elseif collectible_type == CollectibleType.COLLECTIBLE_D4 then
-				                    -- Refresh collectibles - order them in alphabetical order
+		                    -- checks if player currently holding trinket over head
+		                    if entPlayer.QueuedItem.Item and entPlayer.QueuedItem.Item:IsTrinket() then
+			                    table.insert(self.collectibles, coopHUD.Trinket(nil, -1, entPlayer.QueuedItem.Item.ID))
+		                    end
+		                    -- checks if player has first trinket
+		                    if self.first_trinket.id > 0 then
+			                    -- add to collectibles table
+			                    table.insert(self.collectibles, coopHUD.Trinket(nil, -1, self.first_trinket.id))
+			                    -- checks if player has first secont trinket
+			                    if self.second_trinket.id > 0 then
+				                    -- add to collectibles table
+				                    table.insert(self.collectibles, coopHUD.Trinket(nil, -1, self.second_trinket.id))
 			                    end
 		                    end
-	                    end)
+	                    end, CollectibleType.COLLECTIBLE_SMELTER)
 	--
 	return self
 end
