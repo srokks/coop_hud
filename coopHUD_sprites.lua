@@ -276,18 +276,18 @@ function coopHUD.Trinket:render(pos, mirrored, scale, down_anchor)
 	if self.sprite then
 		if mirrored then
 			temp_pos.X = temp_pos.X - (16 * sprite_scale.X)
-			offset.X = -24
+			offset.X = -24 * sprite_scale.X
 		else
 			temp_pos.X = temp_pos.X + (16 * sprite_scale.X)
-			offset.X = 24
+			offset.X = 24 * sprite_scale.X
 		end
 		--
 		if down_anchor then
 			temp_pos.Y = temp_pos.Y - (16 * sprite_scale.Y)
-			offset.Y = -32
+			offset.Y = -32 * sprite_scale.Y
 		else
 			temp_pos.Y = temp_pos.Y + (16 * sprite_scale.Y)
-			offset.Y = 24
+			offset.Y = 24 * sprite_scale.Y
 		end
 		--
 		self.sprite.Scale = sprite_scale
@@ -1373,7 +1373,6 @@ coopHUD.Collectibles.mirrored = false -- if mirrored stuff page anchors near rig
 coopHUD.Collectibles.signal = false
 function coopHUD.Collectibles.render()
 	local sprite_pos = Vector(Isaac.GetScreenWidth() / 2 + 60, Isaac.GetScreenHeight() / 2 - 30)
-	print()
 	if coopHUD.Collectibles.mirrored then
 		sprite_pos.X = Isaac.GetScreenWidth() + 30
 	end
@@ -1443,7 +1442,7 @@ function coopHUD.Collectibles.render()
 end
 function coopHUD.Collectibles.trigger(Player)
 	coopHUD.Collectibles.signal = Game():GetFrameCount() -- sets streak signal as current frame num
-	if coopHUD.Collectibles.sprite:IsFinished('Dissapear')  then
+	if coopHUD.Collectibles.sprite:IsFinished('Dissapear') then
 		-- if Collectibles is finished play animation
 		coopHUD.Collectibles.color = Player.font_color
 		coopHUD.Collectibles.mirrored = coopHUD.players_config.small[Player.game_index].mirrored
