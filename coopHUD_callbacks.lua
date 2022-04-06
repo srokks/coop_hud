@@ -13,29 +13,32 @@ function coopHUD.on_start(_, cont)
 			if coopHUD.VERSION == save.version then
 				coopHUD.angel_seen = save.run.angel_seen
 				-- Loads player data from save
-				for player_no, player_save in pairs(save.run.players) do
-					--` load collectibles
-					--for _, item_id in pairs(player_save.collectibles) do
-					--	local item = Isaac.GetItemConfig():GetCollectible(item_id)
-					--	--coopHUD.add_collectible(tonumber(player_no), item)
-					--end
-					-- load gulped_trinket
-					for _, trinket_id in pairs(player_save.gulped_trinkets) do
-						local temp_trinket = Isaac.GetItemConfig():GetTrinket(trinket_id)
-						table.insert(coopHUD.players[tonumber(player_no)].gulped_trinkets,
-						             { id = temp_trinket.ID, sprite = coopHUD.getTrinketSpriteByID(temp_trinket.ID) })
+				if false then
+					--DEBUG: not load player info on start
+					for player_no, player_save in pairs(save.run.players) do
+						--` load collectibles
+						--for _, item_id in pairs(player_save.collectibles) do
+						--	local item = Isaac.GetItemConfig():GetCollectible(item_id)
+						--	--coopHUD.add_collectible(tonumber(player_no), item)
+						--end
+						-- load gulped_trinket
+						for _, trinket_id in pairs(player_save.gulped_trinkets) do
+							local temp_trinket = Isaac.GetItemConfig():GetTrinket(trinket_id)
+							table.insert(coopHUD.players[tonumber(player_no)].gulped_trinkets,
+							             {id = temp_trinket.ID, sprite = coopHUD.getTrinketSpriteByID(temp_trinket.ID)})
+						end
+						-- load bag of crafting
+						for _, item_id in pairs(player_save.bag_of_crafting) do
+							table.insert(coopHUD.players[tonumber(player_no)].bag_of_crafting,
+							             {value = coopHUD.getItemValue(item_id), id = item_id, sprite = coopHUD.getCraftingItemSprite(item_id)})
+						end
+						-- load hold spell current load
+						if player_save.hold_spell ~= nil then
+							coopHUD.players[tonumber(player_no)].hold_spell = player_save.hold_spell
+						end
+						coopHUD.signals.on_pockets_update = tonumber(player_no)
 					end
-					-- load bag of crafting
-					for _, item_id in pairs(player_save.bag_of_crafting) do
-						table.insert(coopHUD.players[tonumber(player_no)].bag_of_crafting,
-						             { value = coopHUD.getItemValue(item_id), id = item_id, sprite = coopHUD.getCraftingItemSprite(item_id) })
-					end
-					-- load hold spell current load
-					if player_save.hold_spell ~= nil then
-						coopHUD.players[tonumber(player_no)].hold_spell = player_save.hold_spell
-					end
-					coopHUD.signals.on_pockets_update = tonumber(player_no)
-				end
+				end --DEBUG:/
 				--
 			end
 		end
@@ -49,14 +52,17 @@ function coopHUD.on_start(_, cont)
 end
 coopHUD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, coopHUD.on_start)
 function coopHUD.on_player_init()
-	if (#coopHUD.players + coopHUD.essau_no ) ~= Game():GetNumPlayers()  then
+	if (#coopHUD.players + coopHUD.essau_no) ~= Game():GetNumPlayers() then
 		coopHUD.players = {}  -- resets players table
 		coopHUD.essau_no = 0  -- resets essau no before full init of players
 		for i = 0, Game():GetNumPlayers() - 1, 1 do
 			local player_type = Isaac.GetPlayer(i):GetPlayerType()
 			if player_type ~= PlayerType.PLAYER_THESOUL_B and player_type ~= PlayerType.PLAYER_ESAU then
 				-- skips iteration when non first character
-				coopHUD.players[i+1 - coopHUD.essau_no] = coopHUD.Player(i)
+				coopHUD.players[i + 1 - coopHUD.essau_no] = coopHUD.Player(i)
+				if coopHUD.players[i + 1 - coopHUD.essau_no] then
+					--coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, coopHUD.players[i + 1 - coopHUD.essau_no].update)
+				end
 			else
 				coopHUD.essau_no = coopHUD.essau_no + 1
 			end
@@ -75,116 +81,17 @@ function coopHUD.on_join_signal()
 					and Game():GetRoom():IsFirstVisit() == true -- you can join into coop only on first floor of game
 					and Game():GetLevel():GetAbsoluteStage() == LevelStage.STAGE1_1 -- on first level
 					and Game():GetLevel():GetCurrentRoomIndex() == Game():GetLevel():GetStartingRoomIndex() then
-					--
+				--
 				coopHUD.signals.is_joining = true
 			end
 			-- Catches back button when on
 			if Input.IsActionTriggered(ButtonAction.ACTION_MENUBACK, i) and coopHUD.signals.is_joining then
-			coopHUD.signals.is_joining = false
-			coopHUD.text = coopHUD.text - 1
-				end
-		end
-	end
-end
-coopHUD:AddCallback(ModCallbacks.MC_INPUT_ACTION, coopHUD.on_join_signal)
--- __________ On active item/pocket activate
-function coopHUD.on_activate(_, type, RNG, EntityPlayer, UseFlags, used_slot, CustomVarData)
-	local player_index = coopHUD.getPlayerNumByControllerIndex(EntityPlayer.ControllerIndex)
-	EntityPlayer:FlushQueueItem()
-	if used_slot <2 then
-		coopHUD.players[player_index]:on_signal('on_active_update')
-	end
-	if used_slot >=2 then
-		coopHUD.players[player_index]:on_signal('on_pocket_update')
-	end
-	if type == CollectibleType.COLLECTIBLE_HOLD then
-		-- Hold on use change sprite
-		--TODO:Poops: define hold charge sprite
-	elseif type == CollectibleType.COLLECTIBLE_SMELTER then
-		-- Check if used Smelter or trinket been smelted (bu Gulp Pill or Marbles)
-		--TODO:Collectibles: add gulped trinket to collectibles table
-		coopHUD.players[player_index].signals.on_trinket_update = true -- update trinkets
-	elseif type == CollectibleType.COLLECTIBLE_D4 then
-		-- Refresh collectibles - order them in alphabetical order
-		--TODO:Collectibles: reroll collectibles logic
-		--coopHUD.players[player_index].collectibles = {}
-		--for i = 1, Isaac.GetItemConfig():GetCollectibles().Size - 1 do
-		--	if Isaac.GetPlayer(coopHUD.players[player_index].game_index):HasCollectible(i) then
-		--		local item = Isaac.GetItemConfig():GetCollectible(i)
-		--		if item.Type ~= ItemType.ITEM_ACTIVE then
-		--			coopHUD.add_collectible(player_index, item)
-		--		end
-		--	end
-		--end
-	end
-	coopHUD.players[player_index].signals.on_heart_update = true -- update hearts
-end
-coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM, coopHUD.on_activate)
--- _____ On card use
-function coopHUD.on_card_use(_, effect_no, ent_player)
-	--Triggers pocket update signal
-	local player_index = coopHUD.getPlayerNumByControllerIndex(ent_player.ControllerIndex)
-	coopHUD.players[player_index]:on_signal('on_pocket_update')
-end
-coopHUD:AddCallback(ModCallbacks.MC_USE_CARD, coopHUD.on_card_use)
--- _____ On pill use
-function coopHUD.on_pill_use(_, effect_no, ent_player)
-	local player_index = coopHUD.getPlayerNumByControllerIndex(ent_player.ControllerIndex)
-	-- Triggers pocket update signal
-	coopHUD.players[player_index]:on_signal('on_pocket_update')
-	coopHUD.players[player_index]:on_signal('on_heart_update')
-	-- Triggers streak text on pill use
-	local pill_sys_name = Isaac.GetItemConfig():GetPillEffect(effect_no).Name -- gets pill sys name
-	pill_sys_name = string.sub(pill_sys_name, 2) --  get rid of # on front of
-	if langAPI ~= nil then
-		-- if langAPI loaded
-		pill_sys_name = langAPI.getPocketName(pill_sys_name) -- get name from api in set language
-		coopHUD.Streak(false, coopHUD.Streak.ITEM, pill_sys_name) -- triggers streak
-	end
-end
-coopHUD:AddCallback(ModCallbacks.MC_USE_PILL, coopHUD.on_pill_use)
--- __________ On damage
-function coopHUD.on_damage(_, entity)
-	local ent_player = entity:ToPlayer() -- parse entity to player entity
-	local player_index = coopHUD.getPlayerNumByControllerIndex(ent_player.ControllerIndex) -- gets player index
-	coopHUD.players[player_index]:on_signal('on_heart_update') -- triggers heart update for player
-end
-coopHUD:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, coopHUD.on_damage, EntityType.ENTITY_PLAYER)
--- __________ On item pickup
-function coopHUD.on_item_pickup(_, ent_player, ent_collider, Low)
-	-- Checks if player entity collides with item
-	if ent_collider then
-		local player_index = coopHUD.getPlayerNumByControllerIndex(ent_player.ControllerIndex)
-		if ent_collider.Type == EntityType.ENTITY_PICKUP then
-			-- checks if collide with item
-			if ent_collider.Variant == PickupVariant.PICKUP_HEART then
-				-- check if collides with heart
-				coopHUD.players[player_index]:on_signal('on_heart_update')
-			elseif ent_collider.Variant == PickupVariant.PICKUP_LIL_BATTERY then
-				coopHUD.players[player_index]:on_signal('on_active_update')-- triggers active updates
-				coopHUD.players[player_index]:on_signal('on_pocket_update') -- triggers pockets updates
-			elseif ent_collider.Variant == PickupVariant.PICKUP_TAROTCARD and not ent_player:ToPlayer():IsHoldingItem() then
-				if langAPI then
-					-- triggers streak on card pickup
-					local name = Isaac.GetItemConfig():GetCard(ent_collider.SubType).Name
-					name = string.sub(name, 2) --  get rid of # on front of
-					name = langAPI.getPocketName(name)
-					--
-					local desc = Isaac.GetItemConfig():GetCard(ent_collider.SubType).Description
-					desc = string.sub(desc, 2) --  get rid of # on front of
-					desc = langAPI.getPocketName(desc)
-					coopHUD.Streak(false, coopHUD.Streak.ITEM, name, desc)
-				end
-				coopHUD.players[player_index]:on_signal('on_pocket_update') -- triggers pocket update by signal
-			elseif ent_collider.Variant == PickupVariant.PICKUP_PILL then
-				coopHUD.players[player_index]:on_signal('on_pocket_update') -- triggers pocket update by signal
-			elseif ent_collider.Variant == PickupVariant.PICKUP_POOP then
-				--TODO:on poop update
+				coopHUD.signals.is_joining = false
 			end
 		end
 	end
 end
-coopHUD:AddCallback(ModCallbacks.MC_PRE_PLAYER_COLLISION, coopHUD.on_item_pickup)
+coopHUD:AddCallback(ModCallbacks.MC_INPUT_ACTION, coopHUD.on_join_signal)
 -- _____ On battle signal
 coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, function(self)
 	-- on battle signal
