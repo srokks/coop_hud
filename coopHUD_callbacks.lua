@@ -239,7 +239,9 @@ function coopHUD.inputs_signals()
 		if btn_held > pressTime then
 			coopHUD.signals.map = mapPressed
 			coopHUD.Streak(true, coopHUD.Streak.FLOOR)
-			coopHUD.Collectibles(coopHUD.players[coopHUD.signals.map])
+			if btn_held > 0.9 then
+				coopHUD.Collectibles(coopHUD.players[coopHUD.signals.map])
+			end
 			coopHUD.players[mapPressed].signals.map_btn = true
 		end
 	else
@@ -247,10 +249,10 @@ function coopHUD.inputs_signals()
 		btn_held = 0
 	end
 end
-coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.inputs_signals)
 -- MAIN RENDER
 function coopHUD.render()
 	coopHUD.updateAnchors()
+	coopHUD.inputs_signals()
 	if #coopHUD.players > 4 then
 		-- prevents to render if more than 4 players for now
 		coopHUD.options.onRender = false
