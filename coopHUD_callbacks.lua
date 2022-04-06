@@ -8,39 +8,22 @@ function coopHUD.on_start(_, cont)
 			coopHUD.on_player_init()
 		end
 		--
-		if coopHUD:HasData() then
-			local save = json.decode(coopHUD:LoadData())
-			if coopHUD.VERSION == save.version then
-				coopHUD.angel_seen = save.run.angel_seen
-				-- Loads player data from save
-				if false then
-					--DEBUG: not load player info on start
-					for player_no, player_save in pairs(save.run.players) do
-						--` load collectibles
-						--for _, item_id in pairs(player_save.collectibles) do
-						--	local item = Isaac.GetItemConfig():GetCollectible(item_id)
-						--	--coopHUD.add_collectible(tonumber(player_no), item)
-						--end
-						-- load gulped_trinket
-						for _, trinket_id in pairs(player_save.gulped_trinkets) do
-							local temp_trinket = Isaac.GetItemConfig():GetTrinket(trinket_id)
-							table.insert(coopHUD.players[tonumber(player_no)].gulped_trinkets,
-							             {id = temp_trinket.ID, sprite = coopHUD.getTrinketSpriteByID(temp_trinket.ID)})
-						end
-						-- load bag of crafting
-						for _, item_id in pairs(player_save.bag_of_crafting) do
-							table.insert(coopHUD.players[tonumber(player_no)].bag_of_crafting,
-							             {value = coopHUD.getItemValue(item_id), id = item_id, sprite = coopHUD.getCraftingItemSprite(item_id)})
-						end
-						-- load hold spell current load
-						if player_save.hold_spell ~= nil then
-							coopHUD.players[tonumber(player_no)].hold_spell = player_save.hold_spell
-						end
-						coopHUD.signals.on_pockets_update = tonumber(player_no)
+		local save = json.decode(coopHUD:LoadData())
+		if coopHUD.VERSION == save.version then
+			coopHUD.angel_seen = save.run.angel_seen
+			-- Loads player data from save
+			for player_no, player_save in pairs(save.run.players) do
+				--` load collectibles
+				for _, item_id in pairs(player_save.collectibles) do
+					local type, id = item_id[1], item_id[2]
+					if type == PickupVariant.PICKUP_COLLECTIBLE then
+						table.insert(coopHUD.players[player_no].collectibles, coopHUD.Item(nil, -1, id))
+					elseif type == PickupVariant.PICKUP_TRINKET then
+						table.insert(coopHUD.players[player_no].collectibles, coopHUD.Trinket(nil, -1, id))
 					end
-				end --DEBUG:/
-				--
+				end
 			end
+			--
 		end
 	else
 		-- Logic when started new game/ restart thought dbg console
