@@ -1,5 +1,6 @@
 coopHUD.Item = {}
 coopHUD.Item.__index = coopHUD.Item
+coopHUD.Item.type = PickupVariant.PICKUP_COLLECTIBLE
 setmetatable(coopHUD.Item, {
 	__call = function(cls, ...)
 		return cls.new(...)
@@ -231,6 +232,7 @@ function coopHUD.Item:render(pos, mirrored, scale, down_anchor)
 end
 --
 coopHUD.Trinket = {}
+coopHUD.Trinket.type = PickupVariant.PICKUP_TRINKET
 coopHUD.Trinket.__index = coopHUD.Trinket
 setmetatable(coopHUD.Trinket, {
 	__call = function(cls, ...)
