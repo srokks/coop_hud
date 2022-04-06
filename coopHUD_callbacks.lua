@@ -227,10 +227,6 @@ function coopHUD.inputs_signals()
 		if Input.IsActionPressed(ButtonAction.ACTION_MAP, controller_index) then
 			mapPressed = player_index
 		end
-		if Input.IsActionTriggered(ButtonAction.ACTION_DROP, controller_index) then
-			coopHUD.players[player_index]:on_signal('on_drop_activate')
-		end
-
 	end
 	-- MAP BUTTON
 	local pressTime = 0.5

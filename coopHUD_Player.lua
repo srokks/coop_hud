@@ -117,13 +117,6 @@ function coopHUD.Player.new(player_no)
 	--
 	return self
 end
-function coopHUD.Player:on_signal(signal)
-	if self.signals[signal] then
-		self.signals[signal] = false
-	else
-		self.signals[signal] = true
-	end
-end
 function coopHUD.Player:update()
 	-- Player Color Update
 	if coopHUD.options.player_info_color then
