@@ -430,11 +430,11 @@ function coopHUD.Pocket:getName()
 	if self.type == coopHUD.Pocket.CARD then
 		name = Isaac.GetItemConfig():GetCard(self.id).Name
 		name = string.sub(name, 2) --  get rid of # on front of
-		name = langAPI.getPocketName(name)
+		name = coopHUD.langAPI.getPocketName(name)
 		--
 		desc = Isaac.GetItemConfig():GetCard(self.id).Description
 		desc = string.sub(desc, 2) --  get rid of # on front of
-		desc = langAPI.getPocketName(desc)
+		desc = coopHUD.langAPI.getPocketName(desc)
 	elseif self.type == coopHUD.Pocket.PILL then
 		name = "???" .. " "
 		desc = "???" .. " "
@@ -443,16 +443,16 @@ function coopHUD.Pocket:getName()
 			local pill_effect = item_pool:GetPillEffect(self.id, self.parent.entPlayer)
 			name = Isaac.GetItemConfig():GetPillEffect(pill_effect).Name
 			name = string.sub(name, 2) --  get rid of # on front of
-			name = langAPI.getPocketName(name)
+			name = coopHUD.langAPI.getPocketName(name)
 			desc = name
 		end
 	elseif self.type == coopHUD.Pocket.COLLECTIBLE then
 		name = Isaac.GetItemConfig():GetCollectible(self.id).Name
 		desc = Isaac.GetItemConfig():GetCollectible(self.id).Description
 		name = string.sub(name, 2) --  get rid of # on front of
-		name = langAPI.getItemName(name)
+		name = coopHUD.langAPI.getItemName(name)
 		desc = string.sub(desc, 2) --  get rid of # on front of
-		desc = langAPI.getItemName(desc)
+		desc = coopHUD.langAPI.getItemName(desc)
 	end
 	return name, desc
 end

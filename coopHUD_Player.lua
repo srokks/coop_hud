@@ -73,9 +73,9 @@ function coopHUD.Player.new(player_no)
 			if item_queue and item_queue.Item and item_queue.Item ~= nil and self.temp_item == nil then
 				self.temp_item = item_queue.Item -- saves as temp item
 				--____ Flashes triggers streak text with picked up name
-				if langAPI then
-					local streak_main_line = langAPI.getItemName(string.sub(item_queue.Item.Name, 2))
-					local streak_sec_line = langAPI.getItemName(string.sub(item_queue.Item.Description, 2))
+				if coopHUD.langAPI then
+					local streak_main_line = coopHUD.langAPI.getItemName(string.sub(item_queue.Item.Name, 2))
+					local streak_sec_line = coopHUD.langAPI.getItemName(string.sub(item_queue.Item.Description, 2))
 					coopHUD.Streak(false, coopHUD.Streak.ITEM, streak_main_line, streak_sec_line, true)
 				end
 			end
@@ -94,9 +94,8 @@ function coopHUD.Player.new(player_no)
 		if self.entPlayer.Index == entPlayer.Index then
 			local pill_sys_name = Isaac.GetItemConfig():GetPillEffect(effect_no).Name
 			pill_sys_name = string.sub(pill_sys_name, 2) --  get rid of # on front of
-			if langAPI ~= nil then
-				coopHUD.Streak(false, coopHUD.Streak.ITEM, langAPI.getPocketName(pill_sys_name), nil, true)
-			end
+			coopHUD.Streak(false, coopHUD.Streak.ITEM, coopHUD.langAPI.getPocketName(pill_sys_name), nil, true)
+
 		end
 	end)
 	-- CollectibleType.COLLECTIBLE_SMELTER
@@ -158,7 +157,8 @@ function coopHUD.Player.new(player_no)
 	coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
 	                    function(_, collectible_type, rng, entPlayer, use_flags, slot, var_data)
 		                    if self.entPlayer.Index == entPlayer.Index then
-			                    if coopHUD.jar_of_wisp_charge < 11 then -- max charge 12
+			                    if coopHUD.jar_of_wisp_charge < 11 then
+				                    -- max charge 12
 				                    coopHUD.jar_of_wisp_charge = coopHUD.jar_of_wisp_charge + 1 --increase charge
 			                    end
 		                    end
