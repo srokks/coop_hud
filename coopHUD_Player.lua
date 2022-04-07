@@ -124,20 +124,26 @@ function coopHUD.Player.new(player_no)
 	coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
 	                    function(_, collectible_type, rng, entPlayer, use_flags, slot, var_data)
 		                    local trinkets = {}
+		                    -- saves trinkets into temp table - gulped trinkets do not roll
 		                    for i = 1, #self.collectibles do
 			                    if self.collectibles[i].type == PickupVariant.PICKUP_TRINKET then
 				                    table.insert(trinkets, self.collectibles[i])
 			                    end
 		                    end
-							--self.collectibles = {}
-		                    --for i = 1, Isaac.GetItemConfig():GetCollectibles().Size - 1 do
-			                --    if self.entPlayer:HasCollectible(i) then
-				            --        table.insert(self.collectibles, coopHUD.Item(nil, -1, i))
-			                --    end
-		                    --end
-		                    --for i=1,#trinkets do
-			                --    table.insert(new_collectibles, trinkets[i])
-		                    --end
+		                    self.collectibles = {} -- resets players collectible table
+		                    for i = 1, Isaac.GetItemConfig():GetCollectibles().Size - 1 do
+			                    -- check if player has collectible
+			                    if self.entPlayer:HasCollectible(i) then
+				                    -- skips active items
+				                    if Isaac.GetItemConfig():GetCollectible(i).Type ~= ItemType.ITEM_ACTIVE then
+					                    table.insert(self.collectibles, coopHUD.Item(nil, -1, i))
+				                    end
+			                    end
+		                    end
+		                    -- adds saved trinkets on top of collectibles table
+		                    for i = 1, #trinkets do
+			                    table.insert(self.collectibles, trinkets[i])
+		                    end
 	                    end, CollectibleType.COLLECTIBLE_D4)
 	--
 	return self
