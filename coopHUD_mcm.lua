@@ -195,7 +195,7 @@ if ModConfigMenu then
 		end
 	})
 	-- __ Stats
-	ModConfigMenu.AddTitle(mod_name, 'Stats', 'General')
+	ModConfigMenu.AddTitle(mod_name, 'Stats', 'Stats')
 	-- stats.show
 	ModConfigMenu.AddSetting(mod_name, "Stats", {
 		Type = ModConfigMenu.OptionType.BOOLEAN,
@@ -268,6 +268,30 @@ if ModConfigMenu then
 		end,
 		Info = function()
 			return "Shows deal chances"
+		end
+	})
+	-- deals position
+	ModConfigMenu.AddSetting(mod_name, "Stats", {
+		Type = ModConfigMenu.OptionType.BOOLEAN,
+		CurrentSetting = function()
+			return coopHUD.options.deals.vanilla_position
+		end,
+		Default = coopHUD.options.deals.vanilla_position,
+
+		Display = function()
+			local onOff = "coopHUD"
+			if coopHUD.options.deals.vanilla_position then
+				onOff = "Vanilla"
+			end
+
+			return "Deals position: " .. onOff
+		end,
+		OnChange = function(currentBool)
+			coopHUD.options.deals.vanilla_position = currentBool
+			coopHUD.save_options()
+		end,
+		Info = function()
+			return "Deals chance position"
 		end
 	})
 	-- show planetarium

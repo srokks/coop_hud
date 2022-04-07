@@ -24,7 +24,8 @@ coopHUD.options = {
 	deals = {
 		show = true,
 		hide_in_battle = true,
-		show_planetarium = true
+		show_planetarium = true,
+		vanilla_position = false
 	}
 }
 coopHUD.GLOBALS = {
@@ -46,7 +47,7 @@ coopHUD.essau_no = 0
 coopHUD.angel_seen = false
 coopHUD.players_config = {
 	small = {
-		scale = Vector(0.8, 0.8),
+		scale = Vector(1,1),
 		[0] = {
 			anchor = 'top_left',
 			anchor_bot = 'bot_left',
