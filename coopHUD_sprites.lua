@@ -200,6 +200,7 @@ function coopHUD.Item:render(pos, mirrored, scale, down_anchor)
 	local sprite_scale = scale
 	local offset = Vector(0, 0)
 	if sprite_scale == nil then sprite_scale = Vector(1, 1) end
+	if self.entPlayer:IsCoopGhost() then return offset end -- if player is coop ghost skips render
 	if self.sprite ~= nil then
 		if mirrored then
 			temp_pos.X = temp_pos.X - (16 * sprite_scale.X)
@@ -292,6 +293,7 @@ function coopHUD.Trinket:render(pos, mirrored, scale, down_anchor)
 			offset.Y = 24 * sprite_scale.Y
 		end
 		--
+		if self.entPlayer:IsCoopGhost() then return offset end -- if player is coop ghost skips render
 		self.sprite.Scale = sprite_scale
 		self.sprite:Render(temp_pos)
 	end
@@ -433,6 +435,7 @@ function coopHUD.Pocket:render(pos, mirrored, scale, down_anchor)
 			offset.Y = 24 * sprite_scale.Y
 		end
 	end
+	if self.parent.entPlayer:IsCoopGhost() then return offset end -- if player is coop ghost skips render
 	--
 	if self.sprite then
 		self.sprite.Scale = sprite_scale
@@ -696,6 +699,7 @@ function coopHUD.HeartTable.new(parent)
 end
 function coopHUD.HeartTable:render(pos, mirrored, scale, down_anchor)
 	local temp_off = Vector(0, 0)
+	if self.parent.entPlayer:IsCoopGhost() then return temp_off end -- if player is coop ghost skips render
 	local init_pos = Vector(pos.X, pos.Y)
 	--
 	local hearts_span
