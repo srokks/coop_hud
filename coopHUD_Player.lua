@@ -118,6 +118,27 @@ function coopHUD.Player.new(player_no)
 			                    end
 		                    end
 	                    end, CollectibleType.COLLECTIBLE_SMELTER)
+	-- CollectibleType.COLLECTIBLE_D4
+	-- connect to MC_USE_ITEM to handle roll of collectibles
+	-- Isaac uses use signal of D4 to roll in Dice Room and other occasions
+	coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
+	                    function(_, collectible_type, rng, entPlayer, use_flags, slot, var_data)
+		                    local trinkets = {}
+		                    for i = 1, #self.collectibles do
+			                    if self.collectibles[i].type == PickupVariant.PICKUP_TRINKET then
+				                    table.insert(trinkets, self.collectibles[i])
+			                    end
+		                    end
+							--self.collectibles = {}
+		                    --for i = 1, Isaac.GetItemConfig():GetCollectibles().Size - 1 do
+			                --    if self.entPlayer:HasCollectible(i) then
+				            --        table.insert(self.collectibles, coopHUD.Item(nil, -1, i))
+			                --    end
+		                    --end
+		                    --for i=1,#trinkets do
+			                --    table.insert(new_collectibles, trinkets[i])
+		                    --end
+	                    end, CollectibleType.COLLECTIBLE_D4)
 	--
 	return self
 end
