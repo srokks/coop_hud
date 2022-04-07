@@ -90,8 +90,8 @@ function coopHUD.Item:getSprite()
 		-- Fixme: Flip weird sprite (too much white :D) when lazarus b
 		sprite_path = 'gfx/ui/ui_flip_coop.png'
 	elseif self.id == CollectibleType.COLLECTIBLE_URN_OF_SOULS then
-		item_sprite = "gfx/ui/hud_urnofsouls.png"
-		--anim_name = "SoulUrn"
+		sprite_path = "gfx/ui/hud_urnofsouls.png"
+		anim_name = "SoulUrn"
 	end
 	sprite:ReplaceSpritesheet(0, sprite_path) -- item
 	sprite:ReplaceSpritesheet(1, sprite_path) -- border
@@ -114,16 +114,21 @@ function coopHUD.Item:getFrameNum()
 			local wisp_charge = 0 -- holds if item charged and needed to add 15 to set proper frame
 			local max_charges = Isaac.GetItemConfig():GetCollectible(self.id).MaxCharges
 			if self.entPlayer:NeedsCharge(self.slot) == false or (self.charge and self.charge >= max_charges) then
-				wisp_charge = 15
+				wisp_charge = 19
 			end
-			return coopHUD.jar_of_wisp_charge + wisp_charge
+			frame_num = coopHUD.jar_of_wisp_charge + wisp_charge
 		elseif self.id == CollectibleType.COLLECTIBLE_EVERYTHING_JAR then
 			frame_num = self:getCharge() + 1
 		elseif self.id == CollectibleType.COLLECTIBLE_FLIP then
 			-- Fixme: Flip weird sprite (too much white :D) when lazarus b
 
 		elseif self.id == CollectibleType.COLLECTIBLE_URN_OF_SOULS then
-
+			local tempEffects = self.entPlayer:GetEffects()
+			local urn_state = tempEffects:GetCollectibleEffectNum(640) -- gets effect of item 0-closed urn/1- opened
+			if urn_state ~= 0 then
+				-- checks if urn is open
+				frame_num = 22 -- opened urn frame no
+			end
 		else
 			-- Sets overlay/charges state frame --
 			local max_charges = Isaac.GetItemConfig():GetCollectible(self.id).MaxCharges -- gets max charges
