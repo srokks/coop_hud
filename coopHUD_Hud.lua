@@ -13,6 +13,7 @@ coopHUD.HUD.fonts.team_meat_12:Load("font/teammeatfont12.fnt")
 coopHUD.HUD.fonts.upheaval = Font()
 coopHUD.HUD.fonts.upheaval:Load("font/upheaval.fnt")
 coopHUD.HUD.font_color = KColor(1, 1, 1, 1) -- holds hud font color
+coopHUD.HUD.stat_anchor = Vector(0,0)
 function coopHUD.HUD.init()
 	coopHUD.HUD.coins = coopHUD.RunInfo(coopHUD.RunInfo.COIN)
 	coopHUD.HUD.bombs = coopHUD.RunInfo(coopHUD.RunInfo.BOMB)
@@ -60,25 +61,37 @@ function coopHUD.HUD.render()
 		if coopHUD.options.deals.show then
 			if not (coopHUD.options.deals.hide_in_battle and coopHUD.signals.on_battle) then
 				--when options.stats.hide_in_battle on and battle signal
-				local deals_pos = Vector(middle_bot_anchor.X, middle_bot_anchor.Y + 4)
-				deals_pos.X = deals_pos.X - coopHUD.HUD.angel:getOffset().X
-				if not coopHUD.options.deals.show_planetarium then
-					deals_pos.X = deals_pos.X + coopHUD.HUD.angel:getOffset().X / 2
-				end
-				deals_pos.X = deals_pos.X - coopHUD.HUD.devil:getOffset().X / 2
-				-- ANGEL
-				coopHUD.HUD.angel:render(deals_pos, false, true)
-				-- DEVIL
-				off = coopHUD.HUD.devil:render(Vector(deals_pos.X + coopHUD.HUD.angel:getOffset().X, deals_pos.Y),
-				                               false, true)
-				--PLANETARIUM
-				if coopHUD.options.deals.show_planetarium then
-					coopHUD.HUD.planetarium:render(Vector(deals_pos.X + coopHUD.HUD.angel:getOffset().X + coopHUD.HUD.devil:getOffset().X,
-					                                      deals_pos.Y),
+				if coopHUD.options.deals.vanilla_position then
+					local deals_pos = Vector(coopHUD.HUD.stat_anchor.X,coopHUD.HUD.stat_anchor.Y)
+					coopHUD.HUD.font_color = coopHUD.players[1].font_color
+					coopHUD.HUD.devil:render(deals_pos, false, false)
+					deals_pos.Y = deals_pos.Y + 14
+					coopHUD.HUD.angel:render(deals_pos, false, false)
+					deals_pos.Y = deals_pos.Y + 14
+					if coopHUD.options.deals.show_planetarium then
+						coopHUD.HUD.planetarium:render(deals_pos,false, false)
+					end
+				else
+					local deals_pos = Vector(middle_bot_anchor.X, middle_bot_anchor.Y + 4)
+					coopHUD.HUD.font_color = KColor(1,1,1,1)
+					deals_pos.X = deals_pos.X - coopHUD.HUD.angel:getOffset().X
+					if not coopHUD.options.deals.show_planetarium then
+						deals_pos.X = deals_pos.X + coopHUD.HUD.angel:getOffset().X / 2
+					end
+					deals_pos.X = deals_pos.X - coopHUD.HUD.devil:getOffset().X / 2
+					-- ANGEL
+					coopHUD.HUD.angel:render(deals_pos, false, true)
+					-- DEVIL
+					off = coopHUD.HUD.devil:render(Vector(deals_pos.X + coopHUD.HUD.angel:getOffset().X, deals_pos.Y),
 					                               false, true)
+					--PLANETARIUM
+					if coopHUD.options.deals.show_planetarium then
+						coopHUD.HUD.planetarium:render(Vector(deals_pos.X + coopHUD.HUD.angel:getOffset().X + coopHUD.HUD.devil:getOffset().X,
+						                                      deals_pos.Y),
+						                               false, true)
+					end
 				end
 			end
-
 		end
 		------ TIMER RENDER
 		-- FIX: on extended map and big right player timer is over rendered

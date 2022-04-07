@@ -1060,7 +1060,7 @@ function coopHUD.Stat:render(pos, mirrored, vertical)
 	if self.amount then
 		local amount_string = string.format("%.2f", self.amount)
 		if self.type > coopHUD.Stat.LUCK then
-			amount_string = string.format("%.1f", self.amount)
+			amount_string = string.format("%.1f", self.amount).."%"
 		end
 		-- Amount render
 		local align = 0

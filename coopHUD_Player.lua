@@ -284,7 +284,11 @@ function coopHUD.Player:render()
 			temp_stat_pos.Y = temp_stat_pos.Y + off.Y
 			self.shot_speed:render(temp_stat_pos, mirrored)
 			temp_stat_pos.Y = temp_stat_pos.Y + off.Y
-			self .luck:render(temp_stat_pos, mirrored)
+			self.luck:render(temp_stat_pos, mirrored)
+			temp_stat_pos.Y = temp_stat_pos.Y + off.Y
+			if self.game_index==0 then -- saves pos under stats for other hud modules to access like deals stats
+				coopHUD.HUD.stat_anchor = temp_stat_pos
+			end
 		end
 	end
 	if self.signals.map_btn then
