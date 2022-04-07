@@ -10,12 +10,14 @@ function coopHUD.on_start(_, cont)
 		--
 		local save = json.decode(coopHUD:LoadData())
 		if coopHUD.VERSION == save.version then
+			coopHUD.essau_no = save.run.essau_no
 			coopHUD.angel_seen = save.run.angel_seen
 			-- Loads player data from save
 			for player_no, player_save in pairs(save.run.players) do
 				--` load collectibles
 				for _, item_id in pairs(player_save.collectibles) do
 					local type, id = item_id[1], item_id[2]
+					--print(type,id,coopHUD.players[player_no])
 					if type == PickupVariant.PICKUP_COLLECTIBLE then
 						table.insert(coopHUD.players[player_no].collectibles, coopHUD.Item(nil, -1, id))
 					elseif type == PickupVariant.PICKUP_TRINKET then

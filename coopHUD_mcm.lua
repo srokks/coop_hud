@@ -1,10 +1,7 @@
 local json = require("json")
 if coopHUD:HasData() then
 	local save = json.decode(coopHUD:LoadData())
-	-- TODO: current hold load if in game
 	if coopHUD.VERSION == save.version then
-		coopHUD.players_config[0] = save.players_config['0']
-		coopHUD.players_config[1] = save.players_config['1']
 		coopHUD.players_config.small[0] = save.players_config.small['0']
 		coopHUD.players_config.small[1] = save.players_config.small['1']
 		coopHUD.players_config.small[2] = save.players_config.small['2']
@@ -27,16 +24,19 @@ function coopHUD.save_options()
 	for i = 1, #coopHUD.players do
 		-- saves player collectibles
 		local collectibles = {}
-		for j = 1, #coopHUD.players[i].collectibles do
-			table.insert(collectibles, {coopHUD.players[i].collectibles[j].type, coopHUD.players[i].collectibles[j].id})
+		if coopHUD.players[i] then
+			for j = 1, #coopHUD.players[i].collectibles do
+				table.insert(collectibles,
+				             {coopHUD.players[i].collectibles[j].type, coopHUD.players[i].collectibles[j].id})
+			end
 		end
 		-- save player bag of crafting
-		--local bag_of_crafting = {}
-		--if coopHUD.players[i].bag_of_crafting ~= nil then
-		--	for j = 1, #coopHUD.players[i].bag_of_crafting do
-		--		table.insert(bag_of_crafting, coopHUD.players[i].bag_of_crafting[j].id)
-		--	end
-		--end
+		--[[local bag_of_crafting = {}
+		if coopHUD.players[i].bag_of_crafting ~= nil then
+			for j = 1, #coopHUD.players[i].bag_of_crafting do
+				table.insert(bag_of_crafting, coopHUD.players[i].bag_of_crafting[j].id)
+			end
+		end]]
 		players[i] = {collectibles = collectibles}
 		--
 	end
@@ -412,18 +412,18 @@ if ModConfigMenu then
 	--
 	ModConfigMenu.AddTitle(mod_name, "Positions", '2 players HUD')
 	ModConfigMenu.AddSetting(mod_name, "Positions", {
-		Type           = ModConfigMenu.OptionType.BOOLEAN,
+		Type = ModConfigMenu.OptionType.BOOLEAN,
 		CurrentSetting = function()
 			return coopHUD.players_config[0].anchor_top == 'top_left'
 		end,
-		Display        = function()
+		Display = function()
 			local pos = "right"
 			if coopHUD.players_config[0].anchor_top == 'top_left' then
 				pos = "left"
 			end
 			return "Player 1 anchor: " .. pos
 		end,
-		OnChange       = function(currentBool)
+		OnChange = function(currentBool)
 			if currentBool then
 				coopHUD.players_config[0].anchor_top = 'top_left'
 				coopHUD.players_config[0].anchor_bot = 'bot_left'
@@ -441,23 +441,23 @@ if ModConfigMenu then
 			end
 			coopHUD.save_options()
 		end,
-		Info           = function()
+		Info = function()
 			return "Change side where renders HUD on big mode"
 		end
 	})
 	ModConfigMenu.AddSetting(mod_name, "Positions", {
-		Type           = ModConfigMenu.OptionType.BOOLEAN,
+		Type = ModConfigMenu.OptionType.BOOLEAN,
 		CurrentSetting = function()
 			return coopHUD.players_config[1].anchor_top == 'top_left'
 		end,
-		Display        = function()
+		Display = function()
 			local pos = "right"
 			if coopHUD.players_config[1].anchor_top == 'top_left' then
 				pos = "left"
 			end
 			return "Player 2 anchor: " .. pos
 		end,
-		OnChange       = function(currentBool)
+		OnChange = function(currentBool)
 			if currentBool then
 				coopHUD.players_config[0].anchor_top = 'top_right'
 				coopHUD.players_config[0].anchor_bot = 'bot_right'
@@ -475,7 +475,7 @@ if ModConfigMenu then
 			end
 			coopHUD.save_options()
 		end,
-		Info           = function()
+		Info = function()
 			return "Change side where renders HUD on big mode"
 		end
 	})
