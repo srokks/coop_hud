@@ -321,7 +321,8 @@ function coopHUD.Player:renderExtras(pos, mirrored, scale, down_anchor)
 	local sprite_scale = scale
 	if sprite_scale == nil then sprite_scale = Vector(1, 1) end -- sets def sprite_scale
 	-- Render extra extra_lives
-	if self.entPlayer:GetExtraLives() > 0 then
+	if Game():GetLevel():GetCurses() ~= LevelCurse.CURSE_OF_THE_UNKNOWN then
+		if self.entPlayer:GetExtraLives() > 0 then
 		local offset = Vector(0, 8 * sprite_scale.X)
 		if down_anchor then
 			temp_pos.Y = temp_pos.Y - (16 * sprite_scale.Y)
@@ -342,5 +343,7 @@ function coopHUD.Player:renderExtras(pos, mirrored, scale, down_anchor)
 		temp_pos.X = pos.X + offset.X
 		temp_pos.Y = pos.Y + offset.Y
 	end
+	end
+
 	--Todo: Extra protection charge indicator
 end

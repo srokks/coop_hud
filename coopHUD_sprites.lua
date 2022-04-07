@@ -538,21 +538,23 @@ function coopHUD.Heart:getType()
 	local golden = false
 	local remain_souls = 0
 	local overlay = nil
-	if player_type == 10 or player_type == 31 then
-		if self.pos == 0 then
-			-- only returns for first pos
-			-- checks if Holy Mantle is loaded
-			if player:GetEffects():GetCollectibleEffectNum(CollectibleType.COLLECTIBLE_HOLY_MANTLE) ~= 0 then
-				heart_type = 'HolyMantle'
-			end
-		end
-	elseif Game():GetLevel():GetCurses() == 8 then
+	if Game():GetLevel():GetCurses() == 8 then
 		-- checks curse of the unknown
 		if self.pos == 0 and not player:IsSubPlayer() then
 			heart_type = 'CurseHeart'
 			return heart_type, overlay
 		end
 	else
+		if player_type == 10 or player_type == 31 then
+			if self.pos == 0 then
+				-- only returns for first pos
+				-- checks if Holy Mantle is loaded
+				if player:GetEffects():GetCollectibleEffectNum(CollectibleType.COLLECTIBLE_HOLY_MANTLE) ~= 0 then
+					heart_type = 'HolyMantle'
+					return heart_type, overlay
+				end
+			end
+		end
 		eternal = false
 		golden = false
 		local total_hearts = math.ceil((player:GetEffectiveMaxHearts() + player:GetSoulHearts()) / 2)
