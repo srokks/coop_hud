@@ -87,8 +87,9 @@ function coopHUD.Item:getSprite()
 		sprite_path = "gfx/ui/hud_everythingjar.png"
 		anim_name = "EverythingJar"
 	elseif self.id == CollectibleType.COLLECTIBLE_FLIP then
-		-- Fixme: Flip weird sprite (too much white :D) when lazarus b
-		sprite_path = 'gfx/ui/ui_flip_coop.png'
+		if self.entPlayer:GetPlayerType() == PlayerType.PLAYER_LAZARUS2_B then
+			sprite_path = 'gfx/ui/ui_flip_coop.png'
+		end
 	elseif self.id == CollectibleType.COLLECTIBLE_URN_OF_SOULS then
 		sprite_path = "gfx/ui/hud_urnofsouls.png"
 		anim_name = "SoulUrn"
@@ -96,6 +97,24 @@ function coopHUD.Item:getSprite()
 	sprite:ReplaceSpritesheet(0, sprite_path) -- item
 	sprite:ReplaceSpritesheet(1, sprite_path) -- border
 	sprite:ReplaceSpritesheet(2, sprite_path) -- shadow
+	--
+	if self.slot == ActiveSlot.SLOT_PRIMARY then
+		local book_sprite_path = nil
+		self.virtuoses_check = self.entPlayer:HasCollectible(CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES) and self.id ~= CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES
+		self.belial_check = self.entPlayer:GetPlayerType() == PlayerType.PLAYER_JUDAS
+				and self.entPlayer:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) and self.id ~= CollectibleType.COLLECTIBLE_BIRTHRIGHT
+		if self.virtuoses_check and self.belial_check then
+			book_sprite_path = 'gfx/ui/hud_bookofvirtueswithbelial.png' -- sets virt/belial sprite
+		elseif self.virtuoses_check then
+			book_sprite_path = 'gfx/ui/hud_bookofvirtues.png' -- sets virtouses sprite
+		elseif self.belial_check then
+			book_sprite_path = 'gfx/ui/hud_bookofbelial.png' -- sets belial sprite
+		end
+		if book_sprite_path then
+			sprite:ReplaceSpritesheet(3, book_sprite_path)
+			sprite:ReplaceSpritesheet(4, book_sprite_path)
+		end
+	end
 	--
 	sprite:SetFrame(anim_name, self.frame_num)
 	sprite:LoadGraphics()
@@ -119,9 +138,6 @@ function coopHUD.Item:getFrameNum()
 			frame_num = coopHUD.jar_of_wisp_charge + wisp_charge
 		elseif self.id == CollectibleType.COLLECTIBLE_EVERYTHING_JAR then
 			frame_num = self:getCharge() + 1
-		elseif self.id == CollectibleType.COLLECTIBLE_FLIP then
-			-- Fixme: Flip weird sprite (too much white :D) when lazarus b
-
 		elseif self.id == CollectibleType.COLLECTIBLE_URN_OF_SOULS then
 			local tempEffects = self.entPlayer:GetEffects()
 			local urn_state = tempEffects:GetCollectibleEffectNum(640) -- gets effect of item 0-closed urn/1- opened
@@ -167,6 +183,9 @@ function coopHUD.Item:update()
 	if self.frame_num ~= self:getFrameNum() then
 		self.frame_num = self:getFrameNum()
 		self.sprite = self:getSprite()
+	end
+	if self.belial_check or self.virtuoses_check then
+		self:updateSprite()
 	end
 end
 function coopHUD.Item:updateCharge()
