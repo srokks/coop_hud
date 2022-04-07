@@ -29,6 +29,7 @@ function coopHUD.save_options()
 				table.insert(collectibles,
 				             {coopHUD.players[i].collectibles[j].type, coopHUD.players[i].collectibles[j].id})
 			end
+			players[i] = {collectibles = collectibles}
 		end
 		-- save player bag of crafting
 		--[[local bag_of_crafting = {}
@@ -37,7 +38,6 @@ function coopHUD.save_options()
 				table.insert(bag_of_crafting, coopHUD.players[i].bag_of_crafting[j].id)
 			end
 		end]]
-		players[i] = {collectibles = collectibles}
 		--
 	end
 	save.run.players = players
