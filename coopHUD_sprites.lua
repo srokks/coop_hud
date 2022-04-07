@@ -1040,9 +1040,10 @@ function coopHUD.Stat:render(pos, mirrored, vertical)
 	local offset = Vector(0, 0)
 	local color_alpha = 1
 	if self.type <= coopHUD.Stat.LUCK then
-		color_alpha = 0.5
 		if self.parent.signals.map_btn then
 			color_alpha = 1
+		else
+			color_alpha = 0.5
 		end
 	end
 	if self.icon and self.sprite then
@@ -1060,7 +1061,7 @@ function coopHUD.Stat:render(pos, mirrored, vertical)
 	if self.amount then
 		local amount_string = string.format("%.2f", self.amount)
 		if self.type > coopHUD.Stat.LUCK then
-			amount_string = string.format("%.1f", self.amount).."%"
+			amount_string = string.format("%.1f", self.amount) .. "%"
 		end
 		-- Amount render
 		local align = 0

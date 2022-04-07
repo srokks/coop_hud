@@ -133,6 +133,9 @@ function coopHUD.inputs_signals()
 			coopHUD.players[mapPressed].signals.map_btn = true
 		end
 	else
+		if coopHUD.signals.map then
+			coopHUD.players[coopHUD.signals.map].signals.map_btn = false
+		end
 		coopHUD.signals.map = false
 		btn_held = 0
 	end
