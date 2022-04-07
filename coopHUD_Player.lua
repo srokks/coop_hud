@@ -104,17 +104,21 @@ function coopHUD.Player.new(player_no)
 	coopHUD:AddCallback(ModCallbacks.MC_PRE_USE_ITEM,
 	                    function(_, collectible_type, rng, entPlayer, use_flags, slot, var_data)
 		                    -- checks if player currently holding trinket over head
-		                    if entPlayer.QueuedItem.Item and entPlayer.QueuedItem.Item:IsTrinket() then
-			                    table.insert(self.collectibles, coopHUD.Trinket(nil, -1, entPlayer.QueuedItem.Item.ID))
-		                    end
-		                    -- checks if player has first trinket
-		                    if self.first_trinket.id > 0 then
-			                    -- add to collectibles table
-			                    table.insert(self.collectibles, coopHUD.Trinket(nil, -1, self.first_trinket.id))
-			                    -- checks if player has first secont trinket
-			                    if self.second_trinket.id > 0 then
+		                    if self.entPlayer.Index == entPlayer.Index then
+			                    if entPlayer.QueuedItem.Item and entPlayer.QueuedItem.Item:IsTrinket() then
+				                    table.insert(self.collectibles,
+				                                 coopHUD.Trinket(nil, -1, entPlayer.QueuedItem.Item.ID))
+			                    end
+			                    -- checks if player has first trinket
+			                    if self.first_trinket.id > 0 then
 				                    -- add to collectibles table
-				                    table.insert(self.collectibles, coopHUD.Trinket(nil, -1, self.second_trinket.id))
+				                    table.insert(self.collectibles, coopHUD.Trinket(nil, -1, self.first_trinket.id))
+				                    -- checks if player has first secont trinket
+				                    if self.second_trinket.id > 0 then
+					                    -- add to collectibles table
+					                    table.insert(self.collectibles,
+					                                 coopHUD.Trinket(nil, -1, self.second_trinket.id))
+				                    end
 			                    end
 		                    end
 	                    end, CollectibleType.COLLECTIBLE_SMELTER)
@@ -123,29 +127,43 @@ function coopHUD.Player.new(player_no)
 	-- Isaac uses use signal of D4 to roll in Dice Room and other occasions
 	coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
 	                    function(_, collectible_type, rng, entPlayer, use_flags, slot, var_data)
-		                    local trinkets = {}
-		                    -- saves trinkets into temp table - gulped trinkets do not roll
-		                    for i = 1, #self.collectibles do
-			                    if self.collectibles[i].type == PickupVariant.PICKUP_TRINKET then
-				                    table.insert(trinkets, self.collectibles[i])
-			                    end
-		                    end
-		                    self.collectibles = {} -- resets players collectible table
-		                    for i = 1, Isaac.GetItemConfig():GetCollectibles().Size - 1 do
-			                    -- check if player has collectible
-			                    if self.entPlayer:HasCollectible(i) then
-				                    -- skips active items
-				                    if Isaac.GetItemConfig():GetCollectible(i).Type ~= ItemType.ITEM_ACTIVE then
-					                    table.insert(self.collectibles, coopHUD.Item(nil, -1, i))
+		                    if self.entPlayer.Index == entPlayer.Index then
+			                    local trinkets = {}
+			                    -- saves trinkets into temp table - gulped trinkets do not roll
+			                    for i = 1, #self.collectibles do
+				                    if self.collectibles[i].type == PickupVariant.PICKUP_TRINKET then
+					                    table.insert(trinkets, self.collectibles[i])
 				                    end
 			                    end
-		                    end
-		                    -- adds saved trinkets on top of collectibles table
-		                    for i = 1, #trinkets do
-			                    table.insert(self.collectibles, trinkets[i])
+			                    self.collectibles = {} -- resets players collectible table
+			                    for i = 1, Isaac.GetItemConfig():GetCollectibles().Size - 1 do
+				                    -- check if player has collectible
+				                    if self.entPlayer:HasCollectible(i) then
+					                    -- skips active items
+					                    if Isaac.GetItemConfig():GetCollectible(i).Type ~= ItemType.ITEM_ACTIVE then
+						                    table.insert(self.collectibles, coopHUD.Item(nil, -1, i))
+					                    end
+				                    end
+			                    end
+			                    -- adds saved trinkets on top of collectibles table
+			                    for i = 1, #trinkets do
+				                    table.insert(self.collectibles, trinkets[i])
+			                    end
 		                    end
 	                    end, CollectibleType.COLLECTIBLE_D4)
-	--
+	-- CollectibleType.COLLECTIBLE_JAR_OF_WISPS
+	-- connect to MC_USE_ITEM to handle jar of wisp since no possibility to get var var_data
+	-- on use will increase global jar_of_wisp use variable
+	-- FIXME: no charges for multiples jar of wisp instances in one run
+	coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
+	                    function(_, collectible_type, rng, entPlayer, use_flags, slot, var_data)
+		                    if self.entPlayer.Index == entPlayer.Index then
+			                    if coopHUD.jar_of_wisp_charge < 11 then -- max charge 12
+				                    coopHUD.jar_of_wisp_charge = coopHUD.jar_of_wisp_charge + 1 --increase charge
+			                    end
+		                    end
+
+	                    end, CollectibleType.COLLECTIBLE_JAR_OF_WISPS)
 	return self
 end
 function coopHUD.Player:update()
@@ -286,7 +304,8 @@ function coopHUD.Player:render()
 			temp_stat_pos.Y = temp_stat_pos.Y + off.Y
 			self.luck:render(temp_stat_pos, mirrored)
 			temp_stat_pos.Y = temp_stat_pos.Y + off.Y
-			if self.game_index==0 then -- saves pos under stats for other hud modules to access like deals stats
+			if self.game_index == 0 then
+				-- saves pos under stats for other hud modules to access like deals stats
 				coopHUD.HUD.stat_anchor = temp_stat_pos
 			end
 		end

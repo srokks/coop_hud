@@ -82,10 +82,10 @@ function coopHUD.Item:getSprite()
 		anim_name = "Jar"
 	elseif self.id == CollectibleType.COLLECTIBLE_JAR_OF_WISPS then
 		sprite_path = "gfx/ui/hud_jarofwisps.png"
-		--anim_name = "WispJar"
+		anim_name = "WispJar"
 	elseif self.id == CollectibleType.COLLECTIBLE_EVERYTHING_JAR then
 		sprite_path = "gfx/ui/hud_everythingjar.png"
-		--anim_name = "EverythingJar"
+		anim_name = "EverythingJar"
 	elseif self.id == CollectibleType.COLLECTIBLE_FLIP then
 		-- Fixme: Flip weird sprite (too much white :D) when lazarus b
 		sprite_path = 'gfx/ui/ui_flip_coop.png'
@@ -111,9 +111,14 @@ function coopHUD.Item:getFrameNum()
 		elseif self.id == CollectibleType.COLLECTIBLE_JAR_OF_FLIES then
 			frame_num = self.entPlayer:GetJarFlies()
 		elseif self.id == CollectibleType.COLLECTIBLE_JAR_OF_WISPS then
-
+			local wisp_charge = 0 -- holds if item charged and needed to add 15 to set proper frame
+			local max_charges = Isaac.GetItemConfig():GetCollectible(self.id).MaxCharges
+			if self.entPlayer:NeedsCharge(self.slot) == false or (self.charge and self.charge >= max_charges) then
+				wisp_charge = 15
+			end
+			return coopHUD.jar_of_wisp_charge + wisp_charge
 		elseif self.id == CollectibleType.COLLECTIBLE_EVERYTHING_JAR then
-
+			frame_num = self:getCharge() + 1
 		elseif self.id == CollectibleType.COLLECTIBLE_FLIP then
 			-- Fixme: Flip weird sprite (too much white :D) when lazarus b
 

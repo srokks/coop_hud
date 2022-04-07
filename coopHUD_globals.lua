@@ -25,7 +25,7 @@ coopHUD.options = {
 		show = true,
 		hide_in_battle = true,
 		show_planetarium = true,
-		vanilla_position = false
+		vanilla_position = false -- defines if deals show under stats (true) or on down_screen (false)
 	}
 }
 coopHUD.GLOBALS = {
@@ -42,9 +42,10 @@ coopHUD.GLOBALS = {
 	pause_screen_anim_path = "gfx/ui/pausescreen.anm2",
 	crating_anim_path = "gfx/ui/ui_crafting.anm2",
 }
-coopHUD.players = {}
-coopHUD.essau_no = 0
-coopHUD.angel_seen = false
+coopHUD.players = {} -- main players table, holds coopHUD.Player instances
+coopHUD.essau_no = 0 -- holds run info about extra players in game (Essau,Lost from T.Forgotten)
+coopHUD.angel_seen = false -- holds run info, if angel room was seen, used in deals calculate
+coopHUD.jar_of_wisp_charge = 0 -- holds run info, charge of jar of wisp
 coopHUD.players_config = {
 	small = {
 		scale = Vector(1,1),
