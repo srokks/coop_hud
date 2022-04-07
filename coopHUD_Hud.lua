@@ -57,25 +57,28 @@ function coopHUD.HUD.render()
 		temp_pos.X = temp_pos.X + offset.X
 		offset = coopHUD.HUD.t_beth:render(temp_pos)
 		------ DEALS RENDER`
-		---TODO:deals.hide on battle option and signal
 		if coopHUD.options.deals.show then
-			local deals_pos = Vector(middle_bot_anchor.X, middle_bot_anchor.Y + 4)
-			deals_pos.X = deals_pos.X - coopHUD.HUD.angel:getOffset().X
-			if not coopHUD.options.deals.show_planetarium then
-				deals_pos.X = deals_pos.X + coopHUD.HUD.angel:getOffset().X / 2
-			end
-			deals_pos.X = deals_pos.X - coopHUD.HUD.devil:getOffset().X / 2
-			-- ANGEL
-			coopHUD.HUD.angel:render(deals_pos, false, true)
-			-- DEVIL
-			off = coopHUD.HUD.devil:render(Vector(deals_pos.X + coopHUD.HUD.angel:getOffset().X, deals_pos.Y),
-			                               false, true)
-			--PLANETARIUM
-			if coopHUD.options.deals.show_planetarium then
-				coopHUD.HUD.planetarium:render(Vector(deals_pos.X + coopHUD.HUD.angel:getOffset().X + coopHUD.HUD.devil:getOffset().X,
-				                                      deals_pos.Y),
+			if not (coopHUD.options.deals.hide_in_battle and coopHUD.signals.on_battle) then
+				--when options.stats.hide_in_battle on and battle signal
+				local deals_pos = Vector(middle_bot_anchor.X, middle_bot_anchor.Y + 4)
+				deals_pos.X = deals_pos.X - coopHUD.HUD.angel:getOffset().X
+				if not coopHUD.options.deals.show_planetarium then
+					deals_pos.X = deals_pos.X + coopHUD.HUD.angel:getOffset().X / 2
+				end
+				deals_pos.X = deals_pos.X - coopHUD.HUD.devil:getOffset().X / 2
+				-- ANGEL
+				coopHUD.HUD.angel:render(deals_pos, false, true)
+				-- DEVIL
+				off = coopHUD.HUD.devil:render(Vector(deals_pos.X + coopHUD.HUD.angel:getOffset().X, deals_pos.Y),
 				                               false, true)
+				--PLANETARIUM
+				if coopHUD.options.deals.show_planetarium then
+					coopHUD.HUD.planetarium:render(Vector(deals_pos.X + coopHUD.HUD.angel:getOffset().X + coopHUD.HUD.devil:getOffset().X,
+					                                      deals_pos.Y),
+					                               false, true)
+				end
 			end
+
 		end
 		------ TIMER RENDER
 		-- FIX: on extended map and big right player timer is over rendered
@@ -95,7 +98,9 @@ function coopHUD.HUD.render()
 			                                          f_col, 1, true)
 			timer_offset.Y = coopHUD.HUD.fonts.team_meat_10:GetBaselineHeight()
 		end
-		coopHUD.Streak:render()
-		coopHUD.Collectibles.render()
+		if not coopHUD.signals.on_battle then
+			coopHUD.Streak:render()
+			coopHUD.Collectibles.render()
+		end
 	end
 end
