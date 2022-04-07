@@ -76,17 +76,22 @@ function coopHUD.Item:getSprite()
 	-- Custom sprites set - jars etc.
 	if self.id == CollectibleType.COLLECTIBLE_THE_JAR then
 		sprite_path = "gfx/characters/costumes/costume_rebirth_90_thejar.png"
+		anim_name = "Jar"
 	elseif self.id == CollectibleType.COLLECTIBLE_JAR_OF_FLIES then
 		sprite_path = "gfx/characters/costumes/costume_434_jarofflies.png"
+		anim_name = "Jar"
 	elseif self.id == CollectibleType.COLLECTIBLE_JAR_OF_WISPS then
 		sprite_path = "gfx/ui/hud_jarofwisps.png"
+		--anim_name = "WispJar"
 	elseif self.id == CollectibleType.COLLECTIBLE_EVERYTHING_JAR then
 		sprite_path = "gfx/ui/hud_everythingjar.png"
+		--anim_name = "EverythingJar"
 	elseif self.id == CollectibleType.COLLECTIBLE_FLIP then
 		-- Fixme: Flip weird sprite (too much white :D) when lazarus b
 		sprite_path = 'gfx/ui/ui_flip_coop.png'
 	elseif self.id == CollectibleType.COLLECTIBLE_URN_OF_SOULS then
 		item_sprite = "gfx/ui/hud_urnofsouls.png"
+		--anim_name = "SoulUrn"
 	end
 	sprite:ReplaceSpritesheet(0, sprite_path) -- item
 	sprite:ReplaceSpritesheet(1, sprite_path) -- border
@@ -100,16 +105,32 @@ end
 function coopHUD.Item:getFrameNum()
 	local frame_num = 0
 	if self.id > 0 and self.slot >= 0 then
-		-- Sets overlay/charges state frame --
-		local max_charges = Isaac.GetItemConfig():GetCollectible(self.id).MaxCharges -- gets max charges
-		if max_charges == 0 then
-			-- checks id item has any charges
-			frame_num = 0 -- set frame to unloaded
-		elseif self.entPlayer:NeedsCharge(self.slot) == false or (self.charge and self.charge >= max_charges) then
-			-- checks if item dont needs charges or item is overloaded
-			frame_num = 1 -- set frame to loaded
+		--The Jar/Jar of Flies - charges check
+		if self.id == CollectibleType.COLLECTIBLE_THE_JAR then
+			frame_num = math.ceil(self.entPlayer:GetJarHearts() / 2)
+		elseif self.id == CollectibleType.COLLECTIBLE_JAR_OF_FLIES then
+			frame_num = self.entPlayer:GetJarFlies()
+		elseif self.id == CollectibleType.COLLECTIBLE_JAR_OF_WISPS then
+
+		elseif self.id == CollectibleType.COLLECTIBLE_EVERYTHING_JAR then
+
+		elseif self.id == CollectibleType.COLLECTIBLE_FLIP then
+			-- Fixme: Flip weird sprite (too much white :D) when lazarus b
+
+		elseif self.id == CollectibleType.COLLECTIBLE_URN_OF_SOULS then
+
 		else
-			frame_num = 0  -- set frame to unloaded
+			-- Sets overlay/charges state frame --
+			local max_charges = Isaac.GetItemConfig():GetCollectible(self.id).MaxCharges -- gets max charges
+			if max_charges == 0 then
+				-- checks id item has any charges
+				frame_num = 0 -- set frame to unloaded
+			elseif self.entPlayer:NeedsCharge(self.slot) == false or (self.charge and self.charge >= max_charges) then
+				-- checks if item dont needs charges or item is overloaded
+				frame_num = 1 -- set frame to loaded
+			else
+				frame_num = 0  -- set frame to unloaded
+			end
 		end
 	end
 	return frame_num
@@ -132,6 +153,10 @@ function coopHUD.Item:update()
 		self.id = self.entPlayer:GetActiveItem(self.slot)
 		self.sprite = self:getSprite()
 		self.charge_sprites = self.getChargeSprites(self)
+	end
+	if self.frame_num ~= self:getFrameNum() then
+		self.frame_num = self:getFrameNum()
+		self.sprite = self:getSprite()
 	end
 end
 function coopHUD.Item:updateCharge()
