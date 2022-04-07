@@ -1212,7 +1212,7 @@ function coopHUD.Stat.calculateDeal()
 		comp.donation[1] = true
 	end
 	-- Check after boss battle angel door spawned
-	if room:GetType(RoomType.ROOM_BOSS) and room:IsClear() then
+	if room:GetType(RoomType.ROOM_BOSS) and room:IsClear() and coopHUD.angel_seen == false then
 		for i = 0, 7, 1 do
 			local door = room:GetDoor(i)
 			if door ~= nil then
