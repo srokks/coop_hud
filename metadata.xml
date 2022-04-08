@@ -3,91 +3,90 @@
 	<name>Coop HUD *WIP*</name>
 	<directory>coop_hud</directory>
 	<id>2731267631</id>
-	<description>  [h1]Coop HUD[/h1]
-
-		I've been tired of playing Isaac in coop with vanilla broken hud so I've created a new one.
-		This mod is my try to render proper HUD for game like it should be from begging.
+	<description>[h1]Coop HUD - proper HUD for coop[/h1]
+		Mod renders player items/trinkets/stats and more for up to 4 coop players.
+		[h3]Recently due performance issues mod has been rewritten.
+		Check what this mod do to check whats working[/h3]
 
 		[h3] [b] MOD IS STILL DEVELOPED PLEASE SUBMIT ANY WEIR BEHAVIOUR ( weird positions/ console errors/ log files)
 		in Bugs topic[/b] [/h3]
-		[h3] [b] MOD might get laggy when too much on screen. 4 normal players (exl. Jacob / Essau) works fine on my old
-		laptop. Still working on optimization [/b] [/h3]
-		[h2] *NEW* [/h2]
-		[h3] v.0.5.5 [/h3]
-		[list]
-			[ ] Tainted Isaac collectibles
-			[ ] Tainted Maggy - pulsing hearts
-			[*] Tainted ??? - shows poop spell for up to 4 players but mana is share throught all Tainted ??? Players
-			[ ] Bag of crafting integration:
-			[list]
-				[ ] Shows crafting inventory for Tainted Cain for up to 4 players
-				[ ] Inventory is loaded when continue game
-				[ ] Show bag of crafting proper sprite for normal players
-			[/list]
-			[*] EXTRA HUD - show collectibles on MAP key
-			[list]
-				[*] Every player can lookup his collectibles (by holding Map button)
-                [*] Color stuff page according to player number (can turn off in options)
-                [*] Show gulped trinkets
-                [ ] Reload collectibles in options menu
-			[/list]
-			[*] Fixed joining logic
-			[*] Small fixes
-		[/list]
+
 		[h2] What this mod do[/h2]
+		[list]
+		[*] Renders proper HUD for coop/multiplayer up to 4 players
+		[*] Colorful players and HUD info - can turn off
+		[*] Shows pockets/pills/card names
+		[*] Bethany charges/ colored charge bar
+		[*] Vanilla like prompts (using cards/ pills/ active items/ transformations ) with color of player
+		[*] Stats - just like vanilla FoundHUD stat display:
 			[list]
-				[*] Renders proper HUD for single player
-				[*] Renders proper HUD for coop/multiplayer up to 4 players
-				[*] Shows pockets/pills/card names
-				[*] Bethany charges/ colored charge bar
-				[*] Vanilla like prompts (using cards/ pills/ active items )
-				[*] Jacob and Essau FULL SUPPORT
-				[*] Mod sprites refreshes on demand
-				[[*] Stats - just like vanilla FoundHUD stat display:
-				[list]
-					[*] Highlight on map button
-					[*] Stats colors - can turn on/off
-					[*] Hide stats on battle - can turn on/off
-					[*] Angel/Devil/Planetarium chances
-					[*] Integration with Jacob / Essau - to show Essau stats while more than 2 player press map button *
-				[/list]
-		** While too much stuff on hud - all trinkets/pockets activeitems while playing Jacob and Essau
+			[*] Show stats up to 4 players
+			[*] Highlight on map button
+			[*] Stats colors - can turn on/off
+			[*] Hide stats on battle - can turn on/off
+			[*] Angel/Devil/Planetarium chances - with customizable positions
 			[/list]
-		[h2] Planned features [/h2]
-			[list]
-
-			[/list]
+		[*] ExtraHUD - hold map button to trigger my stuff page:
+		[list]
+			[*] Shows collected passive collectibles and gulped trinkets
+			[*] Colorful page color to recognize from other players
+			[*] Scalable item sprites according to sum of collected items
+			[*] Supports up to 136 collected item - earliest collected items won't be show
+		[/list]
+		[/list]
+		[h2] Planned features/ not implemented yet[/h2]
+		[list]
+			[*] Gideon/Greed Wave Counter
+			[*] Destination icons
+			[*] Jacob and Essau - show both players inventory
+			[*] Small HUD - customizable positions
+			[*] Forgotten - Lost -
+			[*] Tainted Isaac - inventory
+			[*] Tainted Maggy - pulsing hearts animation
+			[*] Tainted Cain - bag of crafting
+			[*] Bag of crafting for other players
+			[*] Tainted ??? - poop spells
+		[/list]
 		[h2] What this mod lack of[/h2]
-			[list]
-				[*] Boss bars – I won’t be messing with. I suggest using [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2635267643] [Rep] Enhanced Boss Bars [/url] from  [url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge[/url]
-				My mod should override Boss bars settings in case bar covers coopHUD check options. If boss bar covers items change it padding in settings.
-				[*] Minimap – Same as boss bars – Use [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1978904635] MiniMAPI[/url] from [url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge[/url]
-				My mod should override MiniMAPI settings.
-				Options should be:
-				General -> Display on No HUD seed - On
-				Map (1) - > Show map effect icons - Off
-			[/list]
+		[list]
+		[*] Boss bars – I won’t be messing with. I suggest using
+		[url=https://steamcommunity.com/sharedfiles/filedetails/?id=2635267643] [Rep] Enhanced Boss Bars [/url] from
+		[url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge[/url]
+		My mod should override Boss bars settings in case bar covers coopHUD check options. If boss bar covers items
+		change it padding in settings.
+		[*] Minimap – Same as boss bars – Use [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1978904635]
+		MiniMAPI[/url] from [url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge[/url]
+		My mod should override MiniMAPI settings.
+		Options should be:
+		General -> Display on No HUD seed - On
+		Map (1) - > Show map effect icons - Off
+		[/list]
 		[h2]Issues/ not working/missing[/h2]
-			[list]
-				[*] Modded characters support (for now)
-				[*] Tainted ??? - for coop players poop mana is the
-				[*] Urn of soul - only show open/close sprite state - no modding API function
-				[*] Jar of Wisp - manual charge detection/ resets on restart- no modding API function
-			[/list]
+		[list]
+			[*] Modded cards/pills support
+			[*] Modded characters
+			[*] Jar of Wisp - cannot get Jar of Wisps charge from API, charge counted manual.
+				No support for multiple Jar of Wisp on one run - wont show proper indicator
+			[*] Urn of soul - cannot get souls from game API, only opened/closed sprite indicator
+		[/list]
 		[h2] Mods Compatibility[/h2]
-			[list]
-				[*] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2635267643] [Rep] Enhanced Boss Bars [/url] from  [url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge
-				[*] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1978904635] MiniMAPI[/url] from [url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge
-				[*] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=836319872] [AB+|Rep] External item descriptions[/url] from [url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge[/url]
-For right now you must set EID position manually
-				[*] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2376005362] Encyclopedia - An In-Game Wiki[/url] from [url=https://steamcommunity.com/id/AgentCucco/myworkshopfiles/?appid=250900] AgentCucco[/url]
-
-			[/list]
+		[list]
+		[*] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2635267643] [Rep] Enhanced Boss Bars [/url] from
+		[url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge
+		[*] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1978904635] MiniMAPI[/url] from
+		[url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge
+		[*] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=836319872] [AB+|Rep] External item
+		descriptions[/url] from [url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900]
+		Wofsauge[/url]
+		For right now you must set EID position manually
+		[*] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2376005362] Encyclopedia - An In-Game Wiki[/url]
+		from [url=https://steamcommunity.com/id/AgentCucco/myworkshopfiles/?appid=250900] AgentCucco[/url]
+		[/list]
 		[h2] Thanks to![/h2]
-			[list]
-				[*] [url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge[/url] - for TBoI API and his mods which helped in developing this mod
-				[*] [url=https://steamcommunity.com/id/pedroff_1/myworkshopfiles/?appid=250900] pedroff_1[/url] for  [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2577953432] !!MC_POST_ITEM_PICKUP callback[/url]
-			[/list]
+		[list]
+		[*] [url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge[/url] - for TBoI API and
+		his mods which helped in developing this mod
+		[/list]
 
 	</description>
 	<version>0.5.2</version>
