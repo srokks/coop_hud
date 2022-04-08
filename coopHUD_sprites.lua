@@ -463,6 +463,9 @@ function coopHUD.Pocket:update()
 		self.sprite = self:getSprite()
 		self.item = self:getItem()
 		self.name, self.desc = self:getName()
+		if self.slot == 0 and self.parent.entPlayer:IsHoldingItem() and self.type == coopHUD.Pocket.CARD then
+			coopHUD.Streak(false,coopHUD.Streak.ITEM,self.name,self.desc,true)
+		end
 	end
 end
 function coopHUD.Pocket:render(pos, mirrored, scale, down_anchor)
