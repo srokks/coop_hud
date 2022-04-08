@@ -25,7 +25,7 @@ function coopHUD.Player.new(player_no)
 	--
 	self.transformations = {}
 	for i = 0, PlayerForm.NUM_PLAYER_FORMS - 1 do
-		self.transformations[i] = false
+		self.transformations[i] = self.entPlayer:HasPlayerForm(i)
 	end
 	--
 	self.collectibles = {} -- item
@@ -86,6 +86,12 @@ function coopHUD.Player.new(player_no)
 					table.insert(self.collectibles, coopHUD.Item(nil, -1, self.temp_item.ID))
 				end
 				self.temp_item = nil
+			end
+			for i = 0, PlayerForm.NUM_PLAYER_FORMS - 1 do
+				if self.transformations[i] ~= self.entPlayer:HasPlayerForm(i) then
+					coopHUD.Streak(false,coopHUD.Streak.ITEM,coopHUD.PlayerForm[i],nil,true)
+					self.transformations[i] = self.entPlayer:HasPlayerForm(i)
+				end
 			end
 		end
 	end)
@@ -344,6 +350,5 @@ function coopHUD.Player:renderExtras(pos, mirrored, scale, down_anchor)
 		temp_pos.Y = pos.Y + offset.Y
 	end
 	end
-
 	--Todo: Extra protection charge indicator
 end
