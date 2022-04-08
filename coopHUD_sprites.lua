@@ -1437,6 +1437,7 @@ coopHUD.Collectibles.sprite:SetFrame('Dissapear', 13) -- sets to last frame to n
 coopHUD.Collectibles.item_table = {}
 coopHUD.Collectibles.mirrored = false -- if mirrored stuff page anchors near right side else on left
 coopHUD.Collectibles.signal = false
+coopHUD.Collectibles.color = Color(1,1,1)
 function coopHUD.Collectibles.render()
 	local sprite_pos = Vector(Isaac.GetScreenWidth() / 2 + 60, Isaac.GetScreenHeight() / 2 - 30)
 	if coopHUD.Collectibles.mirrored then
@@ -1454,6 +1455,7 @@ function coopHUD.Collectibles.render()
 		coopHUD.Collectibles.sprite:Update()
 	end
 	coopHUD.Collectibles.sprite:Update() -- update sprite frame
+
 	coopHUD.Collectibles.sprite:RenderLayer(3, sprite_pos)
 	-- collectibles table render
 	local item_pos = Vector(0 + 76, Isaac.GetScreenHeight() / 2 - 32)
@@ -1510,7 +1512,7 @@ function coopHUD.Collectibles.trigger(Player)
 	coopHUD.Collectibles.signal = Game():GetFrameCount() -- sets streak signal as current frame num
 	if coopHUD.Collectibles.sprite:IsFinished('Dissapear') then
 		-- if Collectibles is finished play animation
-		coopHUD.Collectibles.color = Player.font_color
+		coopHUD.Collectibles.sprite.Color = Color(Player.font_color.Red,Player.font_color.Green,Player.font_color.Blue)
 		coopHUD.Collectibles.mirrored = coopHUD.players_config.small[Player.game_index].mirrored
 		coopHUD.Collectibles.item_table = Player.collectibles
 		coopHUD.Collectibles.sprite:Play("Appear", true)
