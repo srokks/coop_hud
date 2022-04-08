@@ -1,460 +1,572 @@
--- Sprites get function
-function coopHUD.getActiveItemSprite(player, slot)
-	local overlay = ''
-	local active_item = player:GetActiveItem(slot)
-	if active_item == 0 or player.Variant == 1 then return false end
-	local this_sprite = Sprite() -- replaced
-	this_sprite:Load(coopHUD.GLOBALS.item_anim_path, true)
-	local item_sprite = Isaac.GetItemConfig():GetCollectible(active_item).GfxFileName
-	-- Custom sprites set - jars etc.
-	if active_item == CollectibleType.COLLECTIBLE_THE_JAR then
-		-- the jar
-		item_sprite = "gfx/characters/costumes/costume_rebirth_90_thejar.png"
-	elseif active_item == CollectibleType.COLLECTIBLE_JAR_OF_FLIES then
-		-- jar of flies
-		item_sprite = "gfx/characters/costumes/costume_434_jarofflies.png"
-	elseif active_item == CollectibleType.COLLECTIBLE_JAR_OF_WISPS then
-		-- jar of wisp
-		item_sprite = "gfx/ui/hud_jarofwisps.png"
-	elseif active_item == CollectibleType.COLLECTIBLE_EVERYTHING_JAR then
-		-- everything jar
-		item_sprite = "gfx/ui/hud_everythingjar.png"
-	elseif active_item == CollectibleType.COLLECTIBLE_FLIP and player:GetPlayerType() == PlayerType.PLAYER_LAZARUS2_B then
-		-- Fixme: Flip weird sprite (too much white :D) when lazarus b
-		item_sprite = 'gfx/ui/ui_flip_coop.png'
-		this_sprite:ReplaceSpritesheet(0, item_sprite)
-		this_sprite:ReplaceSpritesheet(1, item_sprite)
-		this_sprite:ReplaceSpritesheet(2, item_sprite)
-	end
-	-- Urn of Souls - sprite set
-	if active_item == CollectibleType.COLLECTIBLE_URN_OF_SOULS then
-		item_sprite = "gfx/ui/hud_urnofsouls.png"
-	end
-	this_sprite:ReplaceSpritesheet(0, item_sprite) -- item
-	this_sprite:ReplaceSpritesheet(1, item_sprite) -- border
-	this_sprite:ReplaceSpritesheet(2, item_sprite) -- shadow
-
-	-- Sets overlay/charges state frame --
-	local item_charge = Isaac.GetItemConfig():GetCollectible(active_item).MaxCharges -- gets max charges
-	if item_charge == 0 then
-		-- checks id item has any charges
-		this_sprite:SetFrame("Idle", 0) -- set frame to unloaded
-	elseif player:NeedsCharge(slot) == false or player:GetActiveCharge(slot) >= item_charge then
-		-- checks if item dont needs charges or item is overloaded
-		this_sprite:SetFrame("Idle", 1) -- set frame to loaded
+coopHUD.Item = {}
+coopHUD.Item.__index = coopHUD.Item
+coopHUD.Item.type = PickupVariant.PICKUP_COLLECTIBLE
+setmetatable(coopHUD.Item, {
+	__call = function(cls, ...)
+		return cls.new(...)
+	end,
+})
+function coopHUD.Item.new(player, slot, item_id)
+	local self = setmetatable({}, coopHUD.Item)
+	self.entPlayer = player
+	self.slot = slot
+	if slot >= 0 then
+		self.id = self.entPlayer:GetActiveItem(self.slot)
 	else
-		this_sprite:SetFrame("Idle", 0) -- set frame to unloaded
+		self.id = item_id
 	end
-	--The Jar/Jar of Flies - charges check
-	if active_item == CollectibleType.COLLECTIBLE_THE_JAR or active_item == CollectibleType.COLLECTIBLE_JAR_OF_FLIES then
-		--
-		local frame = 0
-		if active_item == CollectibleType.COLLECTIBLE_THE_JAR then frame = math.ceil(player:GetJarHearts() / 2) end -- gets no of hearts in jar
-		if active_item == CollectibleType.COLLECTIBLE_JAR_OF_FLIES then frame = player:GetJarFlies() end --gets no of flies in jar of flies
-		this_sprite:SetFrame("Jar", frame)
-	end
-	-- Hold - charge set
-	if active_item == CollectibleType.COLLECTIBLE_HOLD then
-		-- SKELETON
-		this_sprite:ReplaceSpritesheet(3, 'gfx/ui/ui_poops.png')
-		local hold_spell = 0
-		if coopHUD.players[coopHUD.getPlayerNumByControllerIndex(player.ControllerIndex)] and
-				-- prevents from error when not everything loaded
-				coopHUD.players[coopHUD.getPlayerNumByControllerIndex(player.ControllerIndex)].hold_spell then
-			hold_spell = coopHUD.players[coopHUD.getPlayerNumByControllerIndex(player.ControllerIndex)].hold_spell
-		end
-		this_sprite:SetFrame('Hold', hold_spell)
-	end
-	-- Everything Jar - charges set
-	if active_item == CollectibleType.COLLECTIBLE_EVERYTHING_JAR then
-		fi_charge = player:GetActiveCharge()
-		this_sprite:SetFrame("EverythingJar", fi_charge + 1)
-	end
-	-- Jar of wisp - charges set
-	if active_item == CollectibleType.COLLECTIBLE_JAR_OF_WISPS and coopHUD.jar_of_wisp_charge ~= nil then
-		local wisp_charge = 0
-		if item_charge == 0 then
-			-- checks id item has any charges
-			wisp_charge = 0 -- set frame to unloaded
-		elseif player:NeedsCharge(slot) == false or player:GetActiveCharge(slot) >= item_charge then
-			-- checks if item dont needs charges or item is overloaded
-			wisp_charge = 15 -- set frame to loaded
-		else
-			wisp_charge = 0 -- set frame to unloaded
-		end
-		this_sprite:SetFrame('WispJar', coopHUD.jar_of_wisp_charge + wisp_charge) -- sets proper frame
-	end
-	-- Urn of soul
-	-- For this moment can only show when urn is open/closed no api function
-	-- FIXME: Urn of soul charge: wait till api is fixed
-	if active_item == CollectibleType.COLLECTIBLE_URN_OF_SOULS then
-		-- sets frame
-		local tempEffects = player:GetEffects()
-		local urn_state = tempEffects:GetCollectibleEffectNum(640) -- gets effect of item 0-closed urn/1- opened
-		local state = 0  -- closed urn frame no
-		if urn_state ~= 0 then
-			-- checks if urn is open
-			state = 22 -- opened urn frame no
-		end
-		this_sprite:SetFrame("SoulUrn", state)
-	end
-	if player:HasCollectible(CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES) or player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
-		-- checks if player has virtuoses or birthright
-		if player:HasCollectible(CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES) and active_item ~= CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES then
-			-- sets virtuoses sprite
-			item_sprite = 'gfx/ui/hud_bookofvirtues.png'
-			this_sprite:ReplaceSpritesheet(3, item_sprite)
-			this_sprite:ReplaceSpritesheet(4, item_sprite)
-
-		end
-		if player:GetPlayerType() == PlayerType.PLAYER_JUDAS and player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
-			-- if judas and has birthrignt
-			if player:HasCollectible(CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES) and active_item ~= CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES then
-				item_sprite = 'gfx/ui/hud_bookofvirtueswithbelial.png' -- sets virt/belial sprite
-				this_sprite:ReplaceSpritesheet(3, item_sprite)
-				this_sprite:ReplaceSpritesheet(4, item_sprite)
-			else
-				item_sprite = 'gfx/ui/hud_bookofbelial.png' -- sets belial sprite
-				this_sprite:ReplaceSpritesheet(3, item_sprite)
-				this_sprite:ReplaceSpritesheet(4, item_sprite)
-			end
-		end
-	end
-	this_sprite:LoadGraphics()
-
-	return this_sprite
+	self.frame_num = self:getFrameNum()
+	self.sprite = self:getSprite()
+	self.charge = self:getCharge()
+	self.charge_sprites = self.getChargeSprites(self)
+	self.temp_item = nil
+	return self
 end
-function coopHUD.getChargeSprites(player, slot)
+function coopHUD.Item.getChargeSprites(self)
 	-- Gets charge of item from  player, slot
 	local sprites = {
 		beth_charge = Sprite(),
-		charge      = Sprite(),
-		overlay     = Sprite(),
+		charge = Sprite(),
+		overlay = Sprite(),
 	}
-	local active_item = player:GetActiveItem(slot)
-	if active_item == 0 or player.Variant == 1 then return false end
-	local item_charge = Isaac.GetItemConfig():GetCollectible(active_item).MaxCharges
-	if item_charge == 0 then return false end
+	if self.id == 0 or self.id == nil or self.slot < 0 then return nil end
+	local max_charges = Isaac.GetItemConfig():GetCollectible(self.id).MaxCharges
+	if max_charges == 0 then return false end
 	-- Normal and battery charge
-	local charges = player:GetActiveCharge(slot) + player:GetBatteryCharge(slot)
-	local step = math.floor((charges / (item_charge * 2)) * 46)
+	local charges = self.entPlayer:GetActiveCharge(self.slot) + self.entPlayer:GetBatteryCharge(self.slot)
+	local step = math.floor((charges / (max_charges * 2)) * 46)
 	sprites.charge:Load(coopHUD.GLOBALS.charge_anim_path, true)
 	sprites.charge:SetFrame('ChargeBar', step)
 	-- Overlay sprite
 	sprites.overlay:Load(coopHUD.GLOBALS.charge_anim_path, true)
-	if (item_charge > 1 and item_charge < 5) or item_charge == 6 or item_charge == 12 then
-		sprites.overlay:SetFrame("BarOverlay" .. item_charge, 0)
+	if (max_charges > 1 and max_charges < 5) or max_charges == 6 or max_charges == 12 then
+		sprites.overlay:SetFrame("BarOverlay" .. max_charges, 0)
 	else
 		sprites.overlay:SetFrame("BarOverlay1", 0)
 	end
 	-- Bethany charge
-	local player_type = player:GetPlayerType()
-	if player_type == 18 or player_type == 36 then
+	local player_type = self.entPlayer:GetPlayerType()
+	if player_type == PlayerType.PLAYER_BETHANY or player_type == PlayerType.PLAYER_BETHANY_B then
 		local beth_charge
 		local color = Color(1, 1, 1, 1, 0, 0, 0)
-		if player_type == 18 then
-			beth_charge = player:GetEffectiveSoulCharge()
+		if player_type == PlayerType.PLAYER_BETHANY then
+			beth_charge = self.entPlayer:GetEffectiveSoulCharge()
 			color:SetColorize(0.8, 0.9, 1.8, 1)
-		elseif player_type == 36 then
-			beth_charge = player:GetEffectiveBloodCharge()
+		elseif player_type == PlayerType.PLAYER_BETHANY_B then
+			beth_charge = self.entPlayer:GetEffectiveBloodCharge()
 			color:SetColorize(1, 0.2, 0.2, 1)
 		end
 		sprites.beth_charge:Load(coopHUD.GLOBALS.charge_anim_path, true)
 		sprites.beth_charge.Color = color
-		step = step + math.floor((beth_charge / (item_charge * 2)) * 46) + 1
+		step = step + math.floor((beth_charge / (max_charges * 2)) * 46) + 1
 		sprites.beth_charge:SetFrame('ChargeBar', step)
 	else
 		sprites.beth_charge = false
 	end
 	return sprites
 end
-function coopHUD.getTrinketSprite(player, trinket_pos)
-	local trinket_id = player:GetTrinket(trinket_pos)
-	if trinket_id == 0 or player.Variant == 1 then return false end
+function coopHUD.Item:getSprite()
+	if self.id == 0 or (self.entPlayer and self.entPlayer.Variant == 1) then return nil end
+	-- locals initial
 	local sprite = Sprite()
-	sprite:Load(coopHUD.GLOBALS.item_anim_path, true)
-	local item_sprite = Isaac.GetItemConfig():GetTrinket(trinket_id).GfxFileName
-	sprite:ReplaceSpritesheet(0, item_sprite) -- item layer
-	sprite:ReplaceSpritesheet(2, item_sprite) -- shadow layer
-	sprite:LoadGraphics()
-	sprite:SetFrame("Idle", 0)
-	return sprite
-end
-function coopHUD.getTrinketSpriteByID(trinket_id)
-	local sprite = Sprite()
-	sprite:Load(coopHUD.GLOBALS.item_anim_path, true)
-	local item_sprite = Isaac.GetItemConfig():GetTrinket(trinket_id).GfxFileName
-	sprite:ReplaceSpritesheet(0, item_sprite) -- item layer
-	sprite:ReplaceSpritesheet(2, item_sprite) -- shadow layer
-	sprite:LoadGraphics()
-	sprite:SetFrame("Idle", 0)
-	return sprite
-end
-function coopHUD.getPocketItemSprite(player, slot)
-	-- cards/runes/
-	local pocket_sprite = Sprite()
-	local pocket = coopHUD.getPocketID(player, slot)
-	local pocket_type = pocket[2]
-	local pocket_id = pocket[1]
-	if pocket_type == 1 then
-		-- Card
-		pocket_sprite:Load(coopHUD.GLOBALS.card_anim_path, true)
-		pocket_sprite:SetFrame("CardFronts", pocket_id) -- sets card frame
-	elseif pocket_type == 2 then
-		-- Pill
-		if pocket_id > 2048 then pocket_id = pocket_id - 2048 end -- check if its horse pill and change id to normal
-		pocket_sprite:Load(coopHUD.GLOBALS.pill_anim_path, true)
-		pocket_sprite:SetFrame("Pills", pocket_id) --sets frame to pills with correct id
-		return pocket_sprite
-	elseif pocket_type == 3 then
-		pocket_sprite = coopHUD.getActiveItemSprite(player, 2)
-	else
-		pocket_sprite = false
+	local sprite_path = Isaac.GetItemConfig():GetCollectible(self.id).GfxFileName
+	local anim_name = "Idle"
+	sprite:Load(coopHUD.GLOBALS.item_anim_path, false)
+	--
+	-- Custom sprites set - jars etc.
+	if self.id == CollectibleType.COLLECTIBLE_THE_JAR then
+		sprite_path = "gfx/characters/costumes/costume_rebirth_90_thejar.png"
+		anim_name = "Jar"
+	elseif self.id == CollectibleType.COLLECTIBLE_JAR_OF_FLIES then
+		sprite_path = "gfx/characters/costumes/costume_434_jarofflies.png"
+		anim_name = "Jar"
+	elseif self.id == CollectibleType.COLLECTIBLE_JAR_OF_WISPS then
+		sprite_path = "gfx/ui/hud_jarofwisps.png"
+		anim_name = "WispJar"
+	elseif self.id == CollectibleType.COLLECTIBLE_EVERYTHING_JAR then
+		sprite_path = "gfx/ui/hud_everythingjar.png"
+		anim_name = "EverythingJar"
+	elseif self.id == CollectibleType.COLLECTIBLE_FLIP then
+		if self.entPlayer:GetPlayerType() == PlayerType.PLAYER_LAZARUS2_B then
+			sprite_path = 'gfx/ui/ui_flip_coop.png'
+		end
+	elseif self.id == CollectibleType.COLLECTIBLE_URN_OF_SOULS then
+		sprite_path = "gfx/ui/hud_urnofsouls.png"
+		anim_name = "SoulUrn"
 	end
-	return pocket_sprite
+	sprite:ReplaceSpritesheet(0, sprite_path) -- item
+	sprite:ReplaceSpritesheet(1, sprite_path) -- border
+	sprite:ReplaceSpritesheet(2, sprite_path) -- shadow
+	--
+	if self.slot == ActiveSlot.SLOT_PRIMARY then
+		local book_sprite_path = nil
+		self.virtuoses_check = self.entPlayer:HasCollectible(CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES) and self.id ~= CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES
+		self.belial_check = self.entPlayer:GetPlayerType() == PlayerType.PLAYER_JUDAS
+				and self.entPlayer:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) and self.id ~= CollectibleType.COLLECTIBLE_BIRTHRIGHT
+		if self.virtuoses_check and self.belial_check then
+			book_sprite_path = 'gfx/ui/hud_bookofvirtueswithbelial.png' -- sets virt/belial sprite
+		elseif self.virtuoses_check then
+			book_sprite_path = 'gfx/ui/hud_bookofvirtues.png' -- sets virtouses sprite
+		elseif self.belial_check then
+			book_sprite_path = 'gfx/ui/hud_bookofbelial.png' -- sets belial sprite
+		end
+		if book_sprite_path then
+			sprite:ReplaceSpritesheet(3, book_sprite_path)
+			sprite:ReplaceSpritesheet(4, book_sprite_path)
+		end
+	end
+	--
+	sprite:SetFrame(anim_name, self.frame_num)
+	sprite:LoadGraphics()
+	--
+	return sprite
 end
-function coopHUD.getHeartSprite(heart_type, overlay)
-	if heart_type ~= 'None' then
-		local sprite = Sprite()
-		sprite:Load(coopHUD.GLOBALS.hearts_anim_path, true)
-		sprite:SetFrame(heart_type, 0)
-		if overlay ~= 'None' then
-			if overlay ~= 'GoldWhiteOverlay' then
-				sprite:SetOverlayFrame(overlay, 0)
-			else
-				sprite:ReplaceSpritesheet(0, "gfx/ui/ui_hearts_gold_coop.png") -- replaces png file to get
-				sprite:SetOverlayFrame('WhiteHeartOverlay', 0)
-				sprite:LoadGraphics()
+function coopHUD.Item:getFrameNum()
+	local frame_num = 0
+	if self.id > 0 and self.slot >= 0 then
+		--The Jar/Jar of Flies - charges check
+		if self.id == CollectibleType.COLLECTIBLE_THE_JAR then
+			frame_num = math.ceil(self.entPlayer:GetJarHearts() / 2)
+		elseif self.id == CollectibleType.COLLECTIBLE_JAR_OF_FLIES then
+			frame_num = self.entPlayer:GetJarFlies()
+		elseif self.id == CollectibleType.COLLECTIBLE_JAR_OF_WISPS then
+			local wisp_charge = 0 -- holds if item charged and needed to add 15 to set proper frame
+			local max_charges = Isaac.GetItemConfig():GetCollectible(self.id).MaxCharges
+			if self.entPlayer:NeedsCharge(self.slot) == false or (self.charge and self.charge >= max_charges) then
+				wisp_charge = 19
 			end
+			frame_num = coopHUD.jar_of_wisp_charge + wisp_charge
+		elseif self.id == CollectibleType.COLLECTIBLE_EVERYTHING_JAR then
+			frame_num = self:getCharge() + 1
+		elseif self.id == CollectibleType.COLLECTIBLE_URN_OF_SOULS then
+			local tempEffects = self.entPlayer:GetEffects()
+			local urn_state = tempEffects:GetCollectibleEffectNum(640) -- gets effect of item 0-closed urn/1- opened
+			if urn_state ~= 0 then
+				-- checks if urn is open
+				frame_num = 22 -- opened urn frame no
+			end
+		else
+			-- Sets overlay/charges state frame --
+			local max_charges = Isaac.GetItemConfig():GetCollectible(self.id).MaxCharges -- gets max charges
+			if max_charges == 0 then
+				-- checks id item has any charges
+				frame_num = 0 -- set frame to unloaded
+			elseif self.entPlayer:NeedsCharge(self.slot) == false or (self.charge and self.charge >= max_charges) then
+				-- checks if item dont needs charges or item is overloaded
+				frame_num = 1 -- set frame to loaded
+			else
+				frame_num = 0  -- set frame to unloaded
+			end
+		end
+	end
+	return frame_num
+end
+function coopHUD.Item:getCharge()
+	if self.slot >= 0 then
+		local item_charge = self.entPlayer:GetActiveCharge(self.slot)
+		if self.entPlayer:GetPlayerType() == PlayerType.PLAYER_BETHANY then
+			-- Bethany Soul Charge integration
+			item_charge = item_charge + self.entPlayer:GetSoulCharge()
+		elseif self.entPlayer:GetPlayerType() == PlayerType.PLAYER_BETHANY_B then
+			-- T. Bethany Blood Charge integration
+			item_charge = item_charge + self.entPlayer:GetBloodCharge()
+		end
+		return item_charge
+	end
+end
+function coopHUD.Item:update()
+	if self.id ~= self.entPlayer:GetActiveItem(self.slot) then
+		self.id = self.entPlayer:GetActiveItem(self.slot)
+		self.sprite = self:getSprite()
+		self.charge_sprites = self.getChargeSprites(self)
+	end
+	if self.frame_num ~= self:getFrameNum() then
+		self.frame_num = self:getFrameNum()
+		self.sprite = self:getSprite()
+	end
+	if self.belial_check or self.virtuoses_check then
+		self:updateSprite()
+	end
+end
+function coopHUD.Item:updateCharge()
+	if self.charge ~= self:getCharge() then
+		self.charge = self:getCharge()
+		self.charge_sprites = self.getChargeSprites(self)
+		self:updateSprite()
+	end
+end
+function coopHUD.Item:updateSprite()
+	if self.sprite then
+		if self.frame_num ~= self:getFrameNum() then
+			self.frame_num = self:getFrameNum()
+			self.sprite = self:getSprite()
+		end
+	end
+end
+function coopHUD.Item:renderChargeBar(pos, mirrored, scale, down_anchor)
+	local temp_pos = Vector(pos.X, pos.Y)
+	local offset = Vector(0, 0)
+	if self.charge_sprites then
+		--
+		local sprite_scale = scale
+		if sprite_scale == nil then sprite_scale = Vector(1, 1) end
+		--
+		if mirrored then
+			temp_pos.X = temp_pos.X - (4 * sprite_scale.X)
+			offset.X = -8 * 1.25 * sprite_scale.X
+		else
+			temp_pos.X = temp_pos.X + (4 * sprite_scale.X)
+			offset.X = 8 * sprite_scale.X
+		end
+		--
+		if down_anchor then
+			temp_pos.Y = temp_pos.Y - (16 * sprite_scale.Y)
+			offset.Y = -32 * sprite_scale.Y
+		else
+			temp_pos.Y = temp_pos.Y + (16 * sprite_scale.Y)
+			offset.Y = 32 * sprite_scale.Y
+		end
+		--
+		if self.charge_sprites.charge then
+			self.charge_sprites.charge.Scale = sprite_scale
+			self.charge_sprites.charge:RenderLayer(0, temp_pos)  -- renders background
+		end
+		if self.charge_sprites.beth_charge then
+			self.charge_sprites.beth_charge.Scale = sprite_scale
+			self.charge_sprites.beth_charge:RenderLayer(1, temp_pos) -- renders bethany charge
+		end
+		if self.charge_sprites.charge then
+			self.charge_sprites.charge.Scale = sprite_scale
+			self.charge_sprites.charge:RenderLayer(1, temp_pos)
+			self.charge_sprites.charge:RenderLayer(2, temp_pos)
+		end
+		if self.charge_sprites.overlay then
+			self.charge_sprites.overlay.Scale = sprite_scale
+			self.charge_sprites.overlay:Render(temp_pos)
+		end
 
+	end
+	return offset
+end
+function coopHUD.Item:render(pos, mirrored, scale, down_anchor)
+	self:updateCharge()
+	local temp_pos = Vector(pos.X, pos.Y)
+	local sprite_scale = scale
+	local offset = Vector(0, 0)
+	if sprite_scale == nil then sprite_scale = Vector(1, 1) end
+	if self.entPlayer and self.entPlayer:IsCoopGhost() then return offset end -- if player is coop ghost skips render
+	if self.sprite ~= nil then
+		if mirrored then
+			temp_pos.X = temp_pos.X - (16 * sprite_scale.X)
+			offset.X = -32 * sprite_scale.X
+		else
+			temp_pos.X = temp_pos.X + (16 * sprite_scale.X)
+			offset.X = 32 * sprite_scale.X
 		end
-		return sprite
+		if down_anchor then
+			temp_pos.Y = temp_pos.Y - (16 * sprite_scale.Y)
+			offset.Y = -32 * sprite_scale.Y
+		else
+			temp_pos.Y = temp_pos.Y + (16 * sprite_scale.Y)
+			offset.Y = 32 * sprite_scale.Y
+		end
+		if self.slot == ActiveSlot.SLOT_SECONDARY then
+			sprite_scale = Vector(sprite_scale.X * 0.5, sprite_scale.Y * 0.5)
+			temp_pos.X = temp_pos.X - 8
+			temp_pos.Y = temp_pos.Y - 8
+		end
+		self.sprite.Scale = sprite_scale
+		self.sprite:Render(temp_pos)
+	end
+	if self.slot >= 0 and self.slot ~= ActiveSlot.SLOT_SECONDARY then
+		local charge_off = self:renderChargeBar(Vector(pos.X + offset.X, pos.Y), mirrored, scale, down_anchor)
+		offset.X = offset.X + charge_off.X
+	end
+
+	return offset
+end
+--
+coopHUD.Trinket = {}
+coopHUD.Trinket.type = PickupVariant.PICKUP_TRINKET
+coopHUD.Trinket.__index = coopHUD.Trinket
+setmetatable(coopHUD.Trinket, {
+	__call = function(cls, ...)
+		return cls.new(...)
+	end,
+})
+function coopHUD.Trinket.new(player, slot, trinket_id)
+	local self = setmetatable({}, coopHUD.Trinket)
+	self.entPlayer = player
+	self.slot = slot
+	if self.slot >= 0 then
+		self.id = player:GetTrinket(self.slot)
 	else
-		return False
+		self.id = trinket_id
 	end
+	self.sprite = self:getSprite()
+	return self
 end
-function coopHUD.getHeartSpriteTable(player)
-	local max_health_cap = 12
-	local heart_type, overlay = ''
-	local heart_sprites = {}
-	-- Sets increased heatlh cap when playing Maggy with Birthright
-	if player:GetPlayerType() == PlayerType.PLAYER_MAGDALENA and -- checks if player is Maggy
-			player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
-		max_health_cap = 18
-	end
-	for counter = 0, max_health_cap, 1 do
-		heart_type, overlay = coopHUD.getHeartType(player, counter)
-		heart_sprites[counter] = coopHUD.getHeartSprite(heart_type, overlay)
-	end
-	return heart_sprites
-end
-function coopHUD.getPoopSprite(player, i)
-	local spell_type
-	local layer_name = 'IdleSmall'
-	spell_type = player:GetPoopSpell(i)
-	if i == 0 then layer_name = 'Idle' end
-	if spell_type ~= 0 then
-		local sprite = Sprite()
-		sprite:Load(coopHUD.GLOBALS.poop_anim_path, true)
-		sprite:SetFrame(layer_name, spell_type)
-		if i >= player:GetPoopMana() then
-			local col = Color(1, 1, 1, 1)
-			col:SetColorize(1, 1, 1, 1)
-			sprite.Color = Color(0.3, 0.3, 0.3, 0.3)
-		end
-		return sprite
-	else
-		return nil
-	end
-end
-function coopHUD.getPoopSpriteTable(player)
-	local poop_table = {}
-	for i = 0, PoopSpellType.SPELL_QUEUE_SIZE - 1, 1 do
-		poop_table[i] = coopHUD.getPoopSprite(player, i)
-	end
-	return poop_table
-end
-function coopHUD.getPlayerHeadSprite(player)
-	local player_type = player:GetPlayerType()
-	if player.Variant == 1 then return nil end -- prevents when old coop ghost
-	if player_type == 40 then player_type = 36 end
-	if 0 <= player_type and player_type <= 37 then
-		local sprite = Sprite()
-		sprite:Load(coopHUD.GLOBALS.player_head_anim_path, true)
-		sprite:SetFrame('Main', player_type + 1)
-		sprite:ReplaceSpritesheet(1, "/gfx/ui/blank.png")
-		sprite:LoadGraphics()
-		return sprite
-	else
-		return nil
-	end
-end
-function coopHUD.getHUDSprites()
-	local player = Isaac.GetPlayer(0)
-	--Items font
-	local item_font = Font()
-	item_font:Load("font/pftempestasevencondensed.fnt")
-	--
-	local timer_font = Font()
-	timer_font:Load("font/teammeatfont10.fnt")
-	--
-	local streak_sec_line_font = Font()
-	streak_sec_line_font:Load("font/teammeatfont10.fnt")
-	-- Coin sprite
-	local coin_sprite = Sprite()
-	coin_sprite:Load(coopHUD.GLOBALS.hud_el_anim_path, true)
-	coin_sprite:SetFrame('Idle', 0)
-	-- Bomb sprite
-	-- TODO: T.??? PoopSpell integration
-	local bomb_sprite = Sprite()
-	bomb_sprite:Load(coopHUD.GLOBALS.hud_el_anim_path, true)
-	bomb_sprite:SetFrame('Idle', 2)
-	if player and player:HasGoldenBomb() then bomb_sprite:SetFrame('Idle', 6) end
-	if player and player:GetNumGigaBombs() > 0 then
-		bomb_sprite:SetFrame('Idle', 14)
-		if player and player:HasGoldenBomb() then
-			-- TODO: giga golden bomb
-		end
-	end
-	-- Key sprite
-	local key_sprite = Sprite()
-	key_sprite:Load(coopHUD.GLOBALS.hud_el_anim_path, true)
-	key_sprite:SetFrame('Idle', 1)
-	if player and player:HasGoldenKey() then key_sprite:SetFrame('Idle', 3) end
-	-- my_stuff_sprite
-	local my_stuff_sprite = Sprite()
-	my_stuff_sprite:Load(coopHUD.GLOBALS.pause_screen_anim_path, true)
-	my_stuff_sprite:SetFrame('Idle', 0)
-	--
-	return { ['item_font']            = item_font,
-	         ['timer_font']           = timer_font,
-	         ['streak_sec_line_font'] = streak_sec_line_font,
-	         ['coin_sprite']          = coin_sprite,
-	         ['bomb_sprite']          = bomb_sprite,
-	         ['key_sprite']           = key_sprite,
-	         ['my_stuff_sprite']      = my_stuff_sprite }
-end
-function coopHUD.getItemSprite(item_id)
-	local sprite = nil
-	if item_id ~= nil then
-		if item_id > 0 then
-			sprite = Sprite()
-			local item_sprite = Isaac.GetItemConfig():GetCollectible(item_id).GfxFileName
-			sprite:Load(coopHUD.GLOBALS.item_anim_path, false)
-			sprite:ReplaceSpritesheet(0, item_sprite)
-			sprite:ReplaceSpritesheet(1, item_sprite)
-			sprite:ReplaceSpritesheet(2, item_sprite)
-			sprite:LoadGraphics()
-			sprite:SetFrame('Idle', 0)
-		end
-	end
-		return sprite
-end
-function coopHUD.getCraftingItemSprite(item_id)
+function coopHUD.Trinket:getSprite()
+	if self.id == 0 or self.id == nil then return nil end
 	local sprite = Sprite()
-	sprite:Load(coopHUD.GLOBALS.crating_anim_path, true)
-	sprite:SetFrame('Idle', item_id)
+	sprite:Load(coopHUD.GLOBALS.item_anim_path, true)
+	local item_sprite = Isaac.GetItemConfig():GetTrinket(self.id).GfxFileName
+	sprite:ReplaceSpritesheet(0, item_sprite) -- item layer
+	sprite:ReplaceSpritesheet(2, item_sprite) -- shadow layer
+	sprite:LoadGraphics()
+	sprite:SetFrame("Idle", 0)
 	return sprite
 end
-function coopHUD.getStreakSprite()
-	sprite = Sprite()
-	sprite:Load(coopHUD.GLOBALS.streak_anim_path, true)
+function coopHUD.Trinket:update()
+	if self.id ~= self.entPlayer:GetTrinket(self.slot) then
+		self.id = self.entPlayer:GetTrinket(self.slot)
+		self.sprite = self:getSprite()
+	end
+end
+function coopHUD.Trinket:render(pos, mirrored, scale, down_anchor)
+	local temp_pos = Vector(pos.X, pos.Y)
+	local sprite_scale = scale
+	local offset = Vector(0, 0)
+	--
+	if sprite_scale == nil then sprite_scale = Vector(1, 1) end -- sets def sprite_scale
+	--
+	if self.sprite then
+		if mirrored then
+			temp_pos.X = temp_pos.X - (16 * sprite_scale.X)
+			offset.X = -24 * sprite_scale.X
+		else
+			temp_pos.X = temp_pos.X + (16 * sprite_scale.X)
+			offset.X = 24 * sprite_scale.X
+		end
+		--
+		if down_anchor then
+			temp_pos.Y = temp_pos.Y - (16 * sprite_scale.Y)
+			offset.Y = -32 * sprite_scale.Y
+		else
+			temp_pos.Y = temp_pos.Y + (16 * sprite_scale.Y)
+			offset.Y = 24 * sprite_scale.Y
+		end
+		--
+		if self.entPlayer and self.entPlayer:IsCoopGhost() then return offset end -- if player is coop ghost skips render
+		self.sprite.Scale = sprite_scale
+		self.sprite:Render(temp_pos)
+	end
+	return offset
+end
+--
+coopHUD.Pocket = {}
+coopHUD.Pocket.NONE = 0
+coopHUD.Pocket.CARD = 1
+coopHUD.Pocket.PILL = 2
+coopHUD.Pocket.COLLECTIBLE = 3
+coopHUD.Pocket.__index = coopHUD.Pocket
+setmetatable(coopHUD.Pocket, {
+	__call = function(cls, ...)
+		return cls.new(...)
+	end,
+})
+function coopHUD.Pocket.new(parent, slot)
+	local self = setmetatable({}, coopHUD.Pocket)
+	self.parent = parent
+	self.slot = slot
+	self.type, self.id = self:getPocket() -- holds pocket type -- 0 - none, 1 - card, 2 - pill, 3 - item
+	self.sprite = self:getSprite()
+	self.item = self:getItem()
+	self.name, self.desc = self:getName()
+	return self
+end
+function coopHUD.Pocket:getPocket()
+	local pocket_type = 0
+	local pocket_id = 0
+	if self.parent.entPlayer:GetCard(self.slot) > 0 then
+		pocket_id = self.parent.entPlayer:GetCard(self.slot)
+		pocket_type = 1
+	elseif self.parent.entPlayer:GetPill(self.slot) > 0 then
+		pocket_id = self.parent.entPlayer:GetPill(self.slot)
+		pocket_type = 2
+	else
+		pocket_id = self.parent.entPlayer:GetActiveItem(2)
+		pocket_type = 3
+		if self.slot == 1 then
+			if self.parent.first_pocket and self.parent.first_pocket.type == 3 then
+				pocket_id = 0
+				pocket_type = 0
+			end
+		elseif self.slot == 2 then
+			if (self.parent.first_pocket and self.parent.first_pocket.type == 3)
+					or (self.parent.second_pocket and self.parent.second_pocket.type == 3) then
+				pocket_id = 0
+				pocket_type = 0
+			end
+		end
+	end
+	return pocket_type, pocket_id
+end
+function coopHUD.Pocket:getSprite()
+	local sprite = Sprite()
+	if self.type == coopHUD.Pocket.CARD then
+		-- Card
+		sprite:Load(coopHUD.GLOBALS.card_anim_path, true)
+		sprite:SetFrame("CardFronts", self.id) -- sets card frame
+	elseif self.type == coopHUD.Pocket.PILL then
+		-- Pill
+		if self.id > 2048 then self.id = self.id - 2048 end -- check if its horse pill and change id to normal
+		sprite:Load(coopHUD.GLOBALS.pill_anim_path, true)
+		sprite:SetFrame("Pills", self.id) --sets frame to pills with correct id
+	else
+		sprite = nil
+	end
 	return sprite
 end
-function coopHUD.getStatSprites()
-	stats = {
-		speed       = Sprite(),
-		tears_delay = Sprite(),
-		damage      = Sprite(),
-		range       = Sprite(),
-		shot_speed  = Sprite(),
-		luck        = Sprite(),
-		font        = Font()
-	}
-	stats.speed:Load(coopHUD.GLOBALS.hud_stats_anim_path, true)
-	stats.speed:SetFrame('Idle', 0)
-	stats.speed.Color = Color(1, 1, 1, 0.5)
-	stats.tears_delay:Load(coopHUD.GLOBALS.hud_stats_anim_path, true)
-	stats.tears_delay:SetFrame('Idle', 1)
-	stats.tears_delay.Color = Color(1, 1, 1, 0.5)
-	stats.damage:Load(coopHUD.GLOBALS.hud_stats_anim_path, true)
-	stats.damage:SetFrame('Idle', 2)
-	stats.damage.Color = Color(1, 1, 1, 0.5)
-	stats.range:Load(coopHUD.GLOBALS.hud_stats_anim_path, true)
-	stats.range:SetFrame('Idle', 3)
-	stats.range.Color = Color(1, 1, 1, 0.5)
-	stats.shot_speed:Load(coopHUD.GLOBALS.hud_stats_anim_path, true)
-	stats.shot_speed:SetFrame('Idle', 4)
-	stats.shot_speed.Color = Color(1, 1, 1, 0.5)
-	stats.luck:Load(coopHUD.GLOBALS.hud_stats_anim_path, true)
-	stats.luck:SetFrame('Idle', 5)
-	stats.luck.Color = Color(1, 1, 1, 0.5)
-	stats.font:Load('font/luamini.fnt')
-	return stats
+function coopHUD.Pocket:getItem()
+	if self.type ~= 3 then return nil end
+	return coopHUD.Item(self.parent.entPlayer, 2)
 end
-function coopHUD.getDealSprites()
-	local deals_sprites = {
-		devil       = Sprite(),
-		angel       = Sprite(),
-		planetarium = Sprite(),
-		duality     = Sprite(),
-	}
-	deals_sprites.devil:Load(coopHUD.GLOBALS.hud_stats_anim_path, true)
-	deals_sprites.devil:SetFrame('Idle', 6)
-	--deals_sprites.devil.Color = Color(1, 1, 1, 0.5)
-	deals_sprites.angel:Load(coopHUD.GLOBALS.hud_stats_anim_path, true)
-	deals_sprites.angel:SetFrame('Idle', 7)
-	--deals_sprites.angel.Color = Color(1, 1, 1, 0.5)
-	deals_sprites.planetarium:Load(coopHUD.GLOBALS.hud_stats_anim_path, true)
-	deals_sprites.planetarium:SetFrame('Idle', 8)
-	--deals_sprites.planetarium.Color = Color(1, 1, 1, 0.5)
-	deals_sprites.duality:Load(coopHUD.GLOBALS.hud_stats_anim_path, true)
-	deals_sprites.duality:SetFrame('Idle', 10)
-	--deals_sprites.duality.Color = Color(1, 1, 1, 0.5)
-	return deals_sprites
+function coopHUD.Pocket:getName()
+	local name = nil
+	local desc = nil
+	if self.type == nil then return nil, nil end
+	if self.id == coopHUD.Pocket.NONE then return nil, nil end
+	if self.type == coopHUD.Pocket.CARD then
+		name = Isaac.GetItemConfig():GetCard(self.id).Name
+		name = string.sub(name, 2) --  get rid of # on front of
+		name = coopHUD.langAPI.getPocketName(name)
+		--
+		desc = Isaac.GetItemConfig():GetCard(self.id).Description
+		desc = string.sub(desc, 2) --  get rid of # on front of
+		desc = coopHUD.langAPI.getPocketName(desc)
+	elseif self.type == coopHUD.Pocket.PILL then
+		name = "???" .. " "
+		desc = "???" .. " "
+		local item_pool = Game():GetItemPool()
+		if item_pool:IsPillIdentified(self.id) then
+			local pill_effect = item_pool:GetPillEffect(self.id, self.parent.entPlayer)
+			name = Isaac.GetItemConfig():GetPillEffect(pill_effect).Name
+			name = string.sub(name, 2) --  get rid of # on front of
+			name = coopHUD.langAPI.getPocketName(name)
+			desc = name
+		end
+	elseif self.type == coopHUD.Pocket.COLLECTIBLE then
+		name = Isaac.GetItemConfig():GetCollectible(self.id).Name
+		desc = Isaac.GetItemConfig():GetCollectible(self.id).Description
+		name = string.sub(name, 2) --  get rid of # on front of
+		name = coopHUD.langAPI.getItemName(name)
+		desc = string.sub(desc, 2) --  get rid of # on front of
+		desc = coopHUD.langAPI.getItemName(desc)
+	end
+	return name, desc
 end
---___ Help functions
--- Hearts
-function coopHUD.getHeartType(player, heart_pos)
+function coopHUD.Pocket:update()
+	local type, id = self:getPocket()
+	if self.id ~= id then
+		self.type, self.id = type, id
+		self.sprite = self:getSprite()
+		self.item = self:getItem()
+		self.name, self.desc = self:getName()
+		if self.slot == 0 and self.parent.entPlayer:IsHoldingItem() and self.type == coopHUD.Pocket.CARD then
+			coopHUD.Streak(false, coopHUD.Streak.ITEM, self.name, self.desc, true, self.parent.font_color)
+		end
+	end
+end
+function coopHUD.Pocket:render(pos, mirrored, scale, down_anchor)
+	local temp_pos = Vector(pos.X, pos.Y)
+	local sprite_scale = scale
+	local offset = Vector(0, 0)
+	--
+	if sprite_scale == nil then sprite_scale = Vector(1, 1) end -- sets def sprite_scale
+	--
+	if self.sprite or self.item then
+		if mirrored then
+			temp_pos.X = temp_pos.X - (16 * sprite_scale.X)
+			offset.X = -24 * sprite_scale.X
+		else
+			temp_pos.X = temp_pos.X + (16 * sprite_scale.X)
+			offset.X = 24 * sprite_scale.X
+		end
+		--
+		if down_anchor then
+			temp_pos.Y = temp_pos.Y - (16 * sprite_scale.Y)
+			offset.Y = -32 * sprite_scale.Y
+		else
+			temp_pos.Y = temp_pos.Y + (16 * sprite_scale.Y)
+			offset.Y = 24 * sprite_scale.Y
+		end
+	end
+	if self.parent.entPlayer and self.parent.entPlayer:IsCoopGhost() then return offset end -- if player is coop ghost skips render
+	--
+	if self.sprite then
+		self.sprite.Scale = sprite_scale
+		self.sprite:Render(temp_pos)
+	elseif self.item then
+		offset = self.item:render(pos, mirrored, scale, down_anchor)
+	end
+	if (self.name or self.desc) and self.slot == 0 then
+		local text = self.name
+		if Input.IsActionPressed(ButtonAction.ACTION_MAP, self.parent.controller_index) then
+			text = self.desc
+		end
+		local font_height = coopHUD.HUD.fonts.pft:GetLineHeight()
+		temp_pos = Vector(pos.X + offset.X, pos.Y + offset.Y - font_height)
+		if mirrored then temp_pos.X = temp_pos.X - string.len(text) * (6 * sprite_scale.X) end
+		if down_anchor then
+			temp_pos.Y = temp_pos.Y - offset.Y
+		end
+		coopHUD.HUD.fonts.pft:DrawStringScaled(text, temp_pos.X, temp_pos.Y, sprite_scale.X, sprite_scale.Y,
+		                                       self.parent.font_color, 0, true)
+	end
+	return offset
+end
+--
+coopHUD.Heart = {}
+coopHUD.Heart.__index = coopHUD.Heart
+setmetatable(coopHUD.Heart, {
+	__call = function(cls, ...)
+		return cls.new(...)
+	end,
+})
+function coopHUD.Heart.new(parent, heart_pos)
+	local self = setmetatable({}, coopHUD.Heart)
+	self.parent = parent
+	self.pos = heart_pos
+	self.type, self.overlay = self:getType()
+	self.sprite = self:getSprite()
+	return self
+end
+function coopHUD.Heart:getType()
 	---- Modified function from HUD_API from NeatPotato mod
+	local player = self.parent.entPlayer
 	local player_type = player:GetPlayerType()
-	local heart_type = 'None'
+	local heart_type = nil
 	local eternal = false
 	local golden = false
 	local remain_souls = 0
-	local overlay = 'None'
-	if player_type == 10 or player_type == 31 then
-		if heart_pos == 0 then
-			-- only returns for first pos
-			-- checks if Holy Mantle is loaded
-			if player:GetEffects():GetCollectibleEffectNum(CollectibleType.COLLECTIBLE_HOLY_MANTLE) ~= 0 then
-				heart_type = 'HolyMantle'
-			end
-		end
-	elseif Game():GetLevel():GetCurses() == 8 then
+	local overlay = nil
+	if Game():GetLevel():GetCurses() == 8 then
 		-- checks curse of the unknown
-		if heart_pos == 0 and not player:IsSubPlayer() then
+		if self.pos == 0 and not player:IsSubPlayer() then
 			heart_type = 'CurseHeart'
 			return heart_type, overlay
 		end
+	elseif player_type == 10 or player_type == 31 then
+		return nil, nil
 	else
 		eternal = false
 		golden = false
 		local total_hearts = math.ceil((player:GetEffectiveMaxHearts() + player:GetSoulHearts()) / 2)
 		local empty_hearts = math.floor((player:GetMaxHearts() - player:GetHearts()) / 2)
 		if empty_hearts < 0 then empty_hearts = 0 end
-		if player:GetGoldenHearts() > 0 and (heart_pos >= total_hearts - (player:GetGoldenHearts() + empty_hearts)) then ---(total_hearts - (player:GetGoldenHearts()+empty_hearts)))
+		if player:GetGoldenHearts() > 0 and (self.pos >= total_hearts - (player:GetGoldenHearts() + empty_hearts)) then ---(total_hearts - (player:GetGoldenHearts()+empty_hearts)))
 		golden = true
 		end
 		-- <Normal hearts>
-		if player:GetMaxHearts() / 2 > heart_pos then
+		if player:GetMaxHearts() / 2 > self.pos then
 			-- red heart type
 			-- <Keeper Hearts>
 			if player_type == 14 or player_type == 33 then
 				golden = false
-				if player:GetHearts() - (heart_pos * 2) > 1 then
+				if player:GetHearts() - (self.pos * 2) > 1 then
 					heart_type = "CoinHeartFull"
-				elseif player:GetHearts() - (heart_pos * 2) == 1 then
+				elseif player:GetHearts() - (self.pos * 2) == 1 then
 					heart_type = "CoinHeartHalf"
 				else
 					heart_type = "CoinEmpty"
@@ -462,9 +574,9 @@ function coopHUD.getHeartType(player, heart_pos)
 				-- </Keeper Hearts>
 			else
 				-- <Red Hearts Hearts>
-				if player:GetHearts() - (heart_pos * 2) > 1 then
+				if player:GetHearts() - (self.pos * 2) > 1 then
 					heart_type = "RedHeartFull"
-				elseif player:GetHearts() - (heart_pos * 2) == 1 then
+				elseif player:GetHearts() - (self.pos * 2) == 1 then
 					heart_type = "RedHeartHalf"
 				else
 					heart_type = "EmptyHeart"
@@ -473,17 +585,17 @@ function coopHUD.getHeartType(player, heart_pos)
 			end
 			-- <Eternal check>
 			if player:GetEternalHearts() > 0 and -- checks if any eternal hearts
-					heart_pos + 1 == player:GetMaxHearts() / 2 then
-				-- checks if heart_pos is last pos
+					self.pos + 1 == player:GetMaxHearts() / 2 then
+				-- checks if self.pos is last pos
 				eternal = true
 			end
 			-- </Normal hearts>
 			-- <BLue/Black hearts>
 		elseif player:GetSoulHearts() > 0 or player:GetBoneHearts() > 0 then
 			-- checks
-			local red_offset = heart_pos - (player:GetMaxHearts() / 2)
+			local red_offset = self.pos - (player:GetMaxHearts() / 2)
 			if math.ceil(player:GetSoulHearts() / 2) + player:GetBoneHearts() <= red_offset then
-				heart_type = "None"
+				heart_type = nil
 			else
 				local prev_red = 0
 				if player:IsBoneHeart(red_offset) then
@@ -496,7 +608,7 @@ function coopHUD.getHeartType(player, heart_pos)
 						end
 					end
 					-- HUDAPI
-					local overloader_reds = player:GetHearts() + prev_red - (heart_pos * 2) --overloaded reds heart in red cointainers
+					local overloader_reds = player:GetHearts() + prev_red - (self.pos * 2) --overloaded reds heart in red cointainers
 					if overloader_reds > 1 then
 						heart_type = "BoneHeartFull"
 					elseif overloader_reds == 1 then
@@ -529,7 +641,7 @@ function coopHUD.getHeartType(player, heart_pos)
 						end
 					end
 					--eternal heart overlay
-					if player:GetEternalHearts() > 0 and heart_pos == 0 then
+					if player:GetEternalHearts() > 0 and self.pos == 0 then
 						eternal = true
 					end
 				end
@@ -540,11 +652,11 @@ function coopHUD.getHeartType(player, heart_pos)
 		if player:GetRottenHearts() > 0 then
 			local non_rotten_reds = player:GetHearts() / 2 - player:GetRottenHearts()
 			if heart_type == "RedHeartFull" then
-				if heart_pos >= non_rotten_reds then
+				if self.pos >= non_rotten_reds then
 					heart_type = "RottenHeartFull"
 				end
 			elseif heart_type == "BoneHeartFull" then
-				local overloader_reds = player:GetHearts() + remain_souls - (heart_pos * 2)
+				local overloader_reds = player:GetHearts() + remain_souls - (self.pos * 2)
 				if overloader_reds - player:GetRottenHearts() * 2 <= 0 then
 					heart_type = "RottenBoneHeartFull"
 				end
@@ -553,7 +665,7 @@ function coopHUD.getHeartType(player, heart_pos)
 		-- </RottenHearts hearts>
 		-- <Broken heart type>  - https://bindingofisaacrebirth.fandom.com/wiki/Health#Broken_Hearts
 		if player:GetBrokenHearts() > 0 then
-			if heart_pos > total_hearts - 1 and total_hearts + player:GetBrokenHearts() > heart_pos then
+			if self.pos > total_hearts - 1 and total_hearts + player:GetBrokenHearts() > self.pos then
 				if player:GetPlayerType() == PlayerType.PLAYER_KEEPER or -- Check if Keeper
 						player:GetPlayerType() == PlayerType.PLAYER_KEEPER_B then
 					heart_type = 'BrokenCoinHeart'
@@ -571,180 +683,525 @@ function coopHUD.getHeartType(player, heart_pos)
 		elseif golden then
 			overlay = "GoldHeartOverlay"
 		else
-			overlay = 'None'
+			overlay = nil
 		end
 	end
 	return heart_type, overlay
 end
-function coopHUD.getHeartTypeTable(player)
-	local max_health_cap = 12
-	local heart_type, overlay = ''
-	local heart_types = {}
-	-- Sets increased heatlh cap when playing Maggy with Birthright
-	if player:GetPlayerType() == PlayerType.PLAYER_MAGDALENA and -- checks if player is Maggy
-			player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
-		max_health_cap = 18
-	end
-	for counter = 0, max_health_cap, 1 do
-		heart_type, overlay = coopHUD.getHeartType(player, counter)
-		heart_types[counter] = {
-			heart_type = heart_type,
-			overlay    = overlay,
-		}
-	end
-	return heart_types
-end
--- Pockets
-function coopHUD.getPocketID(player, slot)
-	local pocket_id = 0
-	local pocket_type = 0 -- 0 - none, 1 - card, 2 - pill, 3 - item
-	if player then
-		-- prevents from restart tables update error
-		if player:GetCard(slot) > 0 then
-			pocket_id = player:GetCard(slot)
-			pocket_type = 1
-		elseif player:GetPill(slot) > 0 then
-			pocket_id = player:GetPill(slot)
-			pocket_type = 2
-		else
-			if slot == 1 then
-				if coopHUD.getPocketID(player, 0)[2] ~= 3 then
-					pocket_id = player:GetActiveItem(2)
-					pocket_type = 3
-				end
-			elseif slot == 2 then
-				if coopHUD.getPocketID(player, 0)[2] ~= 3 and coopHUD.getPocketID(player, 1)[2] ~= 3 then
-					pocket_id = player:GetActiveItem(2)
-					pocket_type = 3
-				end
+function coopHUD.Heart:getSprite()
+	if self.type ~= nil then
+		local sprite = Sprite()
+		sprite:Load(coopHUD.GLOBALS.hearts_anim_path, true)
+		sprite:SetFrame(self.type, 0)
+		if self.overlay ~= nil then
+			if self.overlay ~= 'GoldWhiteOverlay' then
+				sprite:SetOverlayFrame(self.overlay, 0)
 			else
-				pocket_id = player:GetActiveItem(2)
-				pocket_type = 3
+				sprite:ReplaceSpritesheet(0, "gfx/ui/ui_hearts_gold_coop.png") -- replaces png file to get
+				sprite:SetOverlayFrame('WhiteHeartOverlay', 0)
+				sprite:LoadGraphics()
 			end
 		end
+		return sprite
+	else
+		return nil
 	end
-	return { pocket_id, pocket_type }
 end
-function coopHUD.getMainPocketDesc(player)
-	local name = 'Error'
-	local desc = 'Error'
-	if langAPI ~= nil then
-		if player:GetPill(0) < 1 and player:GetCard(0) < 1 then
-			if player:GetActiveItem(2) > 0 then
-				name = Isaac.GetItemConfig():GetCollectible(player:GetActiveItem(2)).Name
-				desc = Isaac.GetItemConfig():GetCollectible(player:GetActiveItem(2)).Description
-			elseif player:GetActiveItem(3) > 0 then
-				name = Isaac.GetItemConfig():GetCollectible(player:GetActiveItem(3)).Name
-				desc = Isaac.GetItemConfig():GetCollectible(player:GetActiveItem(3)).Description
-			else
+function coopHUD.Heart:update()
+	local type, overlay = self:getType()
+	if self.type ~= type then
+		self.type = type
+		self.sprite = self:getSprite()
+	end
+	if self.overlay ~= overlay then
+		self.overlay = overlay
+		self.sprite = self:getSprite()
+	end
+end
+function coopHUD.Heart:render(pos, scale)
+	local offset = Vector(0, 0)
+	local sprite_scale = scale
+	if sprite_scale == nil then sprite_scale = Vector(1, 1) end
+	local temp_pos = Vector(pos.X + (8 * sprite_scale.X), pos.Y + (8 * sprite_scale.Y))
+	--
+	if self.sprite then
+		self.sprite.Scale = sprite_scale
+		self.sprite:Render(temp_pos)
+		offset.X = 12 * math.ceil((self.pos + 1) % 6) * sprite_scale.X
+		offset.Y = 10 * math.floor((self.pos + 1) / 6) * sprite_scale.Y
+	end
+	return offset
+end
+coopHUD.Mantle = Sprite()
+coopHUD.Mantle:Load(coopHUD.GLOBALS.hearts_anim_path, true)
+coopHUD.Mantle:SetFrame('HolyMantle', 0)
+--
+coopHUD.HeartTable = {}
+coopHUD.HeartTable.__index = coopHUD.HeartTable
+setmetatable(coopHUD.HeartTable, {
+	__call = function(cls, ...)
+		return cls.new(...)
+	end,
+})
+function coopHUD.HeartTable.new(parent)
+	local self = setmetatable({}, coopHUD.HeartTable)
+	self.parent = parent
+	for i = 0, self.parent.max_health_cap do
+		self[i] = coopHUD.Heart(self.parent, i)
+	end
+	return self
+end
+function coopHUD.HeartTable:render(pos, mirrored, scale, down_anchor)
+	local temp_off = Vector(0, 0)
+	if self.parent.entPlayer and self.parent.entPlayer:IsCoopGhost() then return temp_off end -- if player is coop ghost skips render
+	local init_pos = Vector(pos.X, pos.Y)
+	--
+	local hearts_span
+	if self.parent.total_hearts >= 6 then
+		-- Determines how many columns will be
+		hearts_span = 6
+	else
+		hearts_span = self.parent.total_hearts % 6
+	end
+	local rows = math.ceil(self.parent.total_hearts / 6)
+	local cols = 6
+	if self.parent.total_hearts < 6 then
+		cols = math.ceil(self.parent.total_hearts % 6)
+	end
+	if self[0] and self[0].type == 'CurseHeart' then
+		cols = 1
+		hearts_span = 1
+	end
+	if mirrored then
+		init_pos.X = pos.X - (12 * scale.X) * hearts_span
+		cols = cols * -1
+	end
+	if down_anchor then
+		init_pos.Y = pos.Y + (-16 * scale.Y) * math.ceil(self.parent.total_hearts / 6)
+		rows = rows * -1.5
+	end
+	-- RENDER
+	for i = 0, self.parent.max_health_cap do
+		local temp_pos = Vector(init_pos.X + temp_off.X, init_pos.Y + temp_off.Y)
+		temp_off = self[i]:render(temp_pos, scale)
+	end
+	--
+	return Vector(12 * scale.X * cols, 12 * scale.Y * rows)
+end
+function coopHUD.HeartTable:update()
+	local temp_total_hearts = math.ceil((self.parent.entPlayer:GetEffectiveMaxHearts() + self.parent.entPlayer:GetSoulHearts()) / 2)
+	if self.parent.total_hearts ~= temp_total_hearts then
+		self.parent.total_hearts = temp_total_hearts
+	end
+	for i = 0, self.parent.total_hearts do
+		self[i]:update()
+	end
+end
+--
+coopHUD.RunInfo = {}
+coopHUD.RunInfo.__index = coopHUD.RunInfo
+setmetatable(coopHUD.RunInfo, {
+	__call = function(cls, ...)
+		return cls.new(...)
+	end,
+})
+coopHUD.RunInfo.COIN = 0
+coopHUD.RunInfo.KEY = 1
+coopHUD.RunInfo.BOMB = 2
+coopHUD.RunInfo.GOLDEN_KEY = 3
+coopHUD.RunInfo.HARD = 4 -- TODO
+coopHUD.RunInfo.NO_ACHIEVEMENTS = 5 -- TODO
+coopHUD.RunInfo.GOLDEN_BOMB = 6
+coopHUD.RunInfo.GREED_WAVES = 7
+coopHUD.RunInfo.D_RUN = 7 -- TODO
+coopHUD.RunInfo.SLOT = 9 -- TODO
+coopHUD.RunInfo.GREEDIER = 11
+coopHUD.RunInfo.BETH = 12
+coopHUD.RunInfo.GIGA_BOMB = 14
+coopHUD.RunInfo.T_BETH = 15
+coopHUD.RunInfo.POOP = 16
+
+function coopHUD.RunInfo.new(info_type)
+	local self = setmetatable({}, coopHUD.RunInfo)
+	self.type = info_type
+	self.type = self:getType()
+	self.amount = self:getAmount()
+	self.sprite = self:getSprite()
+	return self
+end
+function coopHUD.RunInfo:getAmount()
+	local player = Isaac.GetPlayer(0)
+	if player then
+		if self.type == coopHUD.RunInfo.COIN then
+			return player:GetNumCoins()
+		end
+		if self.type == coopHUD.RunInfo.BOMB
+				or self.type == coopHUD.RunInfo.GOLDEN_BOMB
+				or self.type == coopHUD.RunInfo.GIGA_BOMB then
+			return player:GetNumBombs()
+		end
+		if self.type == coopHUD.RunInfo.KEY or
+				self.type == coopHUD.RunInfo.GOLDEN_KEY then
+			return player:GetNumKeys()
+		end
+		if self.type == coopHUD.RunInfo.BETH then
+			return player:GetSoulCharge()
+		end
+		if self.type == coopHUD.RunInfo.T_BETH then
+			return player:GetBloodCharge()
+		end
+		if self.type == coopHUD.RunInfo.POOP then
+			return player:GetPoopMana()
+		end
+	end
+	return 0
+end
+function coopHUD.RunInfo:getType()
+	local type = self.type
+	local player = Isaac.GetPlayer(0)
+	if player then
+		if type == coopHUD.RunInfo.KEY then
+			if player:HasGoldenKey() then type = coopHUD.RunInfo.GOLDEN_KEY end
+		elseif type == coopHUD.RunInfo.BOMB then
+			if player:HasGoldenBomb() then type = coopHUD.RunInfo.GOLDEN_BOMB end
+			if player:GetNumGigaBombs() > 0 then type = coopHUD.RunInfo.GIGA_BOMB end
+		end
+	end
+	return type
+end
+function coopHUD.RunInfo:getSprite()
+	if self.type == coopHUD.RunInfo.BOMB then
+		if self:checkPlayer() then
+			return nil
+		end
+	end
+	if self.type == coopHUD.RunInfo.BETH then
+		if self:checkPlayer() then
+			return nil
+		end
+	elseif self.type == coopHUD.RunInfo.T_BETH then
+		if self:checkPlayer() then
+			return nil
+		end
+	elseif self.type == coopHUD.RunInfo.POOP then
+		if self:checkPlayer() then
+			return nil
+		end
+	elseif self.type == coopHUD.RunInfo.GREED_WAVES or self.type == coopHUD.RunInfo.GREEDIER then
+		-- returns nil if not in greed mode to not render
+		if not Game():IsGreedMode() then return nil end
+		if Game().Difficulty == Difficulty.DIFFICULTY_GREEDIER then
+			self.type = coopHUD.RunInfo.GREEDIER
+		end
+	end
+	local sprite = Sprite()
+	sprite:Load(coopHUD.GLOBALS.hud_el_anim_path, true)
+	sprite:SetFrame('Idle', self.type)
+	sprite:LoadGraphics()
+	return sprite
+end
+function coopHUD.RunInfo:render(pos, mirrored, scale, down_anchor)
+	self:update()
+	-- Scale set
+	local sprite_scale = scale
+	if sprite_scale == nil then sprite_scale = Vector(1, 1) end
+	--
+	local temp_pos = Vector(pos.X, pos.Y - 1)
+	local text_pos = Vector(pos.X + 16, pos.Y)
+	local offset = Vector(0, 0)
+	if self.sprite then
+		--
+		if mirrored then
+		end
+		--
+		if down_anchor then
+		end
+		--
+		if self.type == coopHUD.RunInfo.COIN and self:checkDeepPockets() then
+			temp_pos.X = temp_pos.X - 2
+			text_pos.X = text_pos.X - 2
+		end
+		self.sprite.Scale = sprite_scale
+		self.sprite:Render(temp_pos)
+		coopHUD.HUD.fonts.pft:DrawString(self:getText(), text_pos.X, text_pos.Y,
+		                                 KColor(1, 1, 1, 1), 0, false)
+		offset.Y = coopHUD.HUD.fonts.pft:GetBaselineHeight()
+		offset.X = 16 + coopHUD.HUD.fonts.pft:GetStringWidth(self:getText())
+	end
+	return offset
+end
+function coopHUD.RunInfo:update()
+	if self.type ~= self:getType() then
+		self.type = self:getType()
+		self.sprite = self:getSprite()
+	end
+	if self.sprite == nil then
+		self.sprite = self:getSprite()
+	end
+	if self.amount ~= self:getAmount() then
+		self.amount = self:getAmount()
+	end
+end
+function coopHUD.RunInfo:checkDeepPockets()
+	for i = 0, Game():GetNumPlayers() - 1, 1 do
+		if Isaac.GetPlayer(i):HasCollectible(CollectibleType.COLLECTIBLE_DEEP_POCKETS) then
+			return true
+		end
+	end
+	return false
+end
+function coopHUD.RunInfo:checkPlayer()
+	for i = 0, Game():GetNumPlayers() - 1, 1 do
+		if self.type == coopHUD.RunInfo.BOMB then
+			if Isaac.GetPlayer(i):GetPlayerType() ~= PlayerType.PLAYER_BLUEBABY_B then
 				return false
 			end
-			name = string.sub(name, 2) --  get rid of # on front of
-			name = langAPI.getItemName(name)
-			desc = string.sub(desc, 2) --  get rid of # on front of
-			desc = langAPI.getItemName(desc)
 		end
-		if player:GetCard(0) > 0 then
-			name = Isaac.GetItemConfig():GetCard(player:GetCard(0)).Name
-			name = string.sub(name, 2) --  get rid of # on front of
-			name = langAPI.getPocketName(name)
-			--
-			desc = Isaac.GetItemConfig():GetCard(player:GetCard(0)).Description
-			desc = string.sub(desc, 2) --  get rid of # on front of
-			desc = langAPI.getPocketName(desc)
-		elseif player:GetPill(0) > 0 then
-			name = "???" .. " "
-			desc = "???" .. " "
-			local pill = player:GetPill(0)
-			local item_pool = Game():GetItemPool()
-			if item_pool:IsPillIdentified(pill) then
-				local pill_effect = item_pool:GetPillEffect(pill, player)
-				name = Isaac.GetItemConfig():GetPillEffect(pill_effect).Name
-				name = string.sub(name, 2) --  get rid of # on front of
-				name = langAPI.getPocketName(name)
-				desc = name
+		if self.type == coopHUD.RunInfo.BETH then
+			if Isaac.GetPlayer(i):GetPlayerType() == PlayerType.PLAYER_BETHANY then
+				return false
 			end
+		end
+		if self.type == coopHUD.RunInfo.T_BETH then
+			if Isaac.GetPlayer(i):GetPlayerType() == PlayerType.PLAYER_BETHANY_B then
+				return false
+			end
+		end
+		if self.type == coopHUD.RunInfo.POOP then
+			if Isaac.GetPlayer(i):GetPlayerType() == PlayerType.PLAYER_BLUEBABY_B then
+				return false
+			end
+		end
+	end
+	return true
+end
+function coopHUD.RunInfo:getText()
+	local format_string = "%.2i"
+	if self.type == coopHUD.RunInfo.COIN and self:checkDeepPockets() then
+		format_string = "%.3i"
+	end
+	local text = string.format(format_string, self.amount)
+	if self.type == coopHUD.RunInfo.GREED_WAVES or self.type == coopHUD.RunInfo.GREEDIER then
+		local current_wave = Game():GetLevel().GreedModeWave
+		local max_waves = 10
+		if self.type == coopHUD.RunInfo.GREEDIER then
+			max_waves = 11
+		end
+		text = string.format("%d/%2.d", current_wave, max_waves)
+	end
+	return text
+end
+function coopHUD.RunInfo:getOffset()
+	local offset = Vector(0, 0)
+	if self.sprite then
+		offset.X = 16 + coopHUD.HUD.fonts.pft:GetStringWidth(self:getText())
+		offset.Y = math.max(coopHUD.HUD.fonts.pft:GetBaselineHeight(), 16)
+	end
+	return offset
+end
+--
+coopHUD.Poops = {}
+--
+coopHUD.Stat = {}
+coopHUD.Stat.__index = coopHUD.Stat
+setmetatable(coopHUD.Stat, {
+	__call = function(cls, ...)
+		return cls.new(...)
+	end,
+})
+coopHUD.Stat.SPEED = 0
+coopHUD.Stat.TEARS_DELAY = 1
+coopHUD.Stat.DAMAGE = 2
+coopHUD.Stat.RANGE = 3
+coopHUD.Stat.SHOT_SPEED = 4
+coopHUD.Stat.LUCK = 5
+coopHUD.Stat.DEVIL = 6
+coopHUD.Stat.ANGEL = 7
+coopHUD.Stat.PLANETARIUM = 8
+coopHUD.Stat.DUALITY = 10
+---@param parent table coopHUD.Player -- parent of stat class
+---@param type number coopHUD.Stat.Type -- type of stat class
+---@param icon boolean if true Stat will be rendered with icon else only number stat with diff if is
+function coopHUD.Stat.new(parent, type, icon)
+	local self = setmetatable({}, coopHUD.Stat)
+	self.parent = parent
+	self.type = type
+	self.icon = icon
+	self.amount = self:getAmount()
+	self.diff = nil
+	self.sprite = self:getSprite()
+	self.diff_counter = 0
+	return self
+end
+function coopHUD.Stat:getAmount()
+	if self.type <= coopHUD.Stat.LUCK then
+		if self.type == coopHUD.Stat.SPEED then
+			return self.parent.entPlayer.MoveSpeed
+		elseif self.type == coopHUD.Stat.TEARS_DELAY then
+			return 30 / (self.parent.entPlayer.MaxFireDelay + 1)
+		elseif self.type == coopHUD.Stat.DAMAGE then
+			return self.parent.entPlayer.Damage
+		elseif self.type == coopHUD.Stat.RANGE then
+			return self.parent.entPlayer.TearRange / 40
+		elseif self.type == coopHUD.Stat.SHOT_SPEED then
+			return self.parent.entPlayer.ShotSpeed
+		elseif self.type == coopHUD.Stat.LUCK then
+			return self.parent.entPlayer.Luck
 		end
 	else
-		name = 'Error! - langAPI not installed'
-		desc = 'Install langAPI for compatibility'
-	end
-	return { ['name'] = name, ['desc'] = desc }
-end
-function coopHUD.getPoopSpellTable(player_no)
-	local poop_table = {}
-	for i = 0, PoopSpellType.SPELL_QUEUE_SIZE, 1 do
-		poop_table[i] = Isaac.GetPlayer(player_no):GetPoopSpell(i)
-	end
-	return poop_table
-end
--- Other
-function coopHUD.getMinimapOffset()
-	local minimap_offset = Vector(Isaac.GetScreenWidth(), 0)
-	if MinimapAPI ~= nil then
-		-- Modified function from minimAPI by Wolfsauge
-		local screen_size = Vector(Isaac.GetScreenWidth(), 0)
-		local is_large = MinimapAPI:IsLarge()
-		if not is_large and MinimapAPI:GetConfig("DisplayMode") == 2 then
-			-- BOUNDED MAP
-			minimap_offset = Vector(screen_size.X - MinimapAPI:GetConfig("MapFrameWidth") - MinimapAPI:GetConfig("PositionX") - 4,
-			                        2)
-		elseif not is_large and MinimapAPI:GetConfig("DisplayMode") == 4
-				or Game():GetLevel():GetCurses() == LevelCurse.CURSE_OF_THE_LOST then
-			-- NO MAP or cure of the lost active
-			minimap_offset = Vector(screen_size.X - 4, 2)
-		else
-			-- LARGE
-			local minx = screen_size.X
-			for i, v in ipairs(MinimapAPI:GetLevel()) do
-				if v ~= nil then
-					if v:GetDisplayFlags() > 0 then
-						if v.RenderOffset ~= nil then
-							minx = math.min(minx, v.RenderOffset.X)
-						end
-					end
-				end
+		local deals = self.calculateDeal()
+		if self.type == coopHUD.Stat.ANGEL or self.type == coopHUD.Stat.DUALITY then
+			if deals.duality then
+				self.type = coopHUD.Stat.DUALITY
+			else
+				self.type = coopHUD.Stat.ANGEL
+			end
+			if self.type == coopHUD.Stat.ANGEL then
+				return deals.angel
+			elseif self.type == coopHUD.Stat.DUALITY then
+				return deals.angel + deals.devil
+			end
+		elseif self.type == coopHUD.Stat.DEVIL then
+			if deals.duality then
+				return nil
+			else
+				return deals.devil
+			end
+			if self.type == coopHUD.Stat.DEVIL then
 
 			end
-			minimap_offset = Vector(minx - 4, 2) -- Small
+		elseif self.type == coopHUD.Stat.PLANETARIUM then
+			return Game():GetLevel():GetPlanetariumChance() * 100
 		end
-		if MinimapAPI:GetConfig("Disable") or MinimapAPI.Disable then minimap_offset = Vector(screen_size.X - 4, 2) end
-		local r = MinimapAPI:GetCurrentRoom()
-		if r ~= nil then
-			if MinimapAPI:GetConfig("HideInCombat") == 2 then
-				if not r:IsClear() and r:GetType() == RoomType.ROOM_BOSS then
-					minimap_offset = Vector(screen_size.X - 0, 2)
+	end
+end
+function coopHUD.Stat:getSprite()
+	if self.icon and self.type ~= nil then
+		local sprite = Sprite()
+		sprite:Load(coopHUD.GLOBALS.hud_stats_anim_path, true)
+		sprite:SetFrame('Idle', self.type)
+		return sprite
+	else
+		return nil
+	end
+end
+function coopHUD.Stat:render(pos, mirrored, vertical)
+	self:update()
+	local init_pos = (Vector(pos.X, pos.Y))
+	if vertical then
+		init_pos.Y = init_pos.Y - 16
+	end
+	local offset = Vector(0, 0)
+	local color_alpha = 1
+	if self.type <= coopHUD.Stat.LUCK then
+		if self.parent.signals.map_btn then
+			color_alpha = 1
+		else
+			color_alpha = 0.5
+		end
+	end
+	if self.icon and self.sprite then
+		-- Icon render
+		if mirrored then
+			init_pos.X = init_pos.X - 16
+		else
+			offset.X = offset.X + 16
+		end
+		offset.Y = offset.Y + 16
+		self.sprite.Color = Color(1, 1, 1, color_alpha)
+		self.sprite:Render(Vector(init_pos.X, init_pos.Y))
+	end
+	-- STAT.amount render
+	if self.amount then
+		local amount_string = string.format("%.2f", self.amount)
+		if self.type > coopHUD.Stat.LUCK then
+			amount_string = string.format("%.1f", self.amount) .. "%"
+		end
+		-- Amount render
+		local align = 0
+		if mirrored then
+			align = 1
+		end
+		local f_color = KColor(self.parent.font_color.Red, self.parent.font_color.Green, self.parent.font_color.Blue,
+		                       color_alpha)
+		coopHUD.HUD.fonts.lua_mini:DrawString(amount_string,
+		                                      init_pos.X + offset.X, init_pos.Y,
+		                                      f_color,
+		                                      align, false)
+		-- increases horizontal offset of string width
+		if mirrored then
+			offset.X = offset.X - coopHUD.HUD.fonts.lua_mini:GetStringWidth(amount_string)
+		else
+			offset.X = offset.X + coopHUD.HUD.fonts.lua_mini:GetStringWidth(amount_string)
+		end
+		-- increases vertical offset of max of string base height and last icon offset
+		offset.Y = math.max(offset.Y, coopHUD.HUD.fonts.lua_mini:GetBaselineHeight())
+		-- STAT.Diff - render
+		if self.diff then
+			local dif_color = KColor(0, 1, 0, 0.7) -- green
+			local dif_string = string.format("%.1f", self.diff)
+			-- Difference Render
+			local attitude = self:getAttitude() -- holds true if difference is positive and false if negative
+			if attitude then
+				dif_color = KColor(0, 1, 0, 1) -- green
+				dif_string = '+' .. dif_string
+			else
+				dif_color = KColor(1, 0, 0, 1)
+			end
+			local diff_off = Vector(0, 0)
+			local diff_pos = Vector(init_pos.X, init_pos.Y)
+			local align = 0
+			if vertical then
+				if self.sprite then
+					diff_pos.X = diff_pos.X + 12
 				end
-			elseif MinimapAPI:GetConfig("HideInCombat") == 3 then
-				if r ~= nil then
-					if not r:IsClear() then
-						minimap_offset = Vector(screen_size.X - 0, 2)
-					end
-				end
+				diff_pos.Y = diff_pos.Y - coopHUD.HUD.fonts.lua_mini:GetBaselineHeight()
+				offset.Y = offset.Y + coopHUD.HUD.fonts.lua_mini:GetBaselineHeight() / 2
+			else
+				diff_pos.X = diff_pos.X + offset.X
+				offset.X = offset.X + coopHUD.HUD.fonts.lua_mini:GetStringWidth(dif_string)
+			end
+			if mirrored then
+				align = 1
+			end
+			coopHUD.HUD.fonts.lua_mini:DrawString(dif_string,
+			                                      diff_pos.X,
+			                                      diff_pos.Y,
+			                                      dif_color,
+			                                      align, false)
+			self.diff_counter = self.diff_counter + 1
+			if self.diff_counter > 200 then
+				self.diff_counter = 0
+				self.diff = nil
 			end
 		end
 	end
-	return minimap_offset
+	return offset
 end
-function coopHUD.checkDeepPockets()
-	local deep_check = false
-	local player_no = Game():GetNumPlayers() - 1
-	for i = 0, player_no, 1 do
-		local deep = Isaac.GetPlayer(i):HasCollectible(416)
-		if deep then
-			deep_check = true
+function coopHUD.Stat:update()
+	local temp_amount = self:getAmount()
+	if self.amount ~= temp_amount then
+		if temp_amount and self.amount then
+			self.diff = temp_amount - self.amount
+		end
+		self.amount = temp_amount
+		if self.amount == nil then
+			self.sprite = nil
+		else
+			self.sprite = self:getSprite()
 		end
 	end
-	return deep_check
+	if self.type == coopHUD.Stat.ANGEL then
+
+	end
 end
-function coopHUD.calculateDeal()
+function coopHUD.Stat.calculateDeal()
 	local lvl = Game():GetLevel()
 	local room = lvl:GetCurrentRoom()
 	local deal = 0.0
 	local angel = 0.0
 	local devil = 0.0
-	local banned_stages = { [1] = true, [9] = true, [10] = true, [11] = true, [12] = true, [12] = true }
-	if angel_seen == nil then angel_seen = false end
+	local banned_stages = {[1] = true, [9] = true, [10] = true, [11] = true, [12] = true, [12] = true}
 	-- door chance
 	if banned_stages[Game():GetLevel():GetStage()] == nil and
 			Game():GetLevel():GetCurseName() ~= "Curse of the Labyrinth!" or Game().Difficulty > 1 then
@@ -755,14 +1212,14 @@ function coopHUD.calculateDeal()
 	end
 	-- angel components
 	local comp = {
-		rosary_bead   = { false, 0.5 },
-		key_piece_1   = { false, 0.75 },
-		key_piece_2   = { false, 0.75 },
-		virtouses     = { false, 0.75 },
-		bum_killed    = { false, 0.75 },
-		bum_left      = { false, 0.9 },
-		dead_bum_left = { false, 1.1 },
-		donation      = { false, 0.5 },
+		rosary_bead = {false, 0.5},
+		key_piece_1 = {false, 0.75},
+		key_piece_2 = {false, 0.75},
+		virtouses = {false, 0.75},
+		bum_killed = {false, 0.75},
+		bum_left = {false, 0.9},
+		dead_bum_left = {false, 1.1},
+		donation = {false, 0.5},
 	}
 	-- check collectibles
 	local duality = false
@@ -810,12 +1267,13 @@ function coopHUD.calculateDeal()
 		comp.donation[1] = true
 	end
 	-- Check after boss battle angel door spawned
-	if room:GetType(RoomType.ROOM_BOSS) and room:IsClear() then
+	if room:GetType(RoomType.ROOM_BOSS) and room:IsClear() and coopHUD.angel_seen == false then
 		for i = 0, 7, 1 do
 			local door = room:GetDoor(i)
 			if door ~= nil then
 				if door.TargetRoomType == 15 then
 					coopHUD.angel_seen = true
+					coopHUD.save_options()
 				end
 			end
 		end
@@ -847,10 +1305,377 @@ function coopHUD.calculateDeal()
 	end
 	devil = deal * (1.0 - angel)
 	angel = deal * angel
-	return { devil       = { devil * 100, 0 },
-	         angel       = { angel * 100, 0 },
-	         planetarium = { lvl:GetPlanetariumChance() * 100, 0 },
-	         duality     = duality }
+	return {devil = devil * 100,
+	        angel = angel * 100,
+		--planetarium = { lvl:GetPlanetariumChance() * 100, 0 },
+		    duality = duality}
+end
+function coopHUD.Stat:getOffset(vertical)
+	local offset = Vector(0, 0)
+	if self.sprite then
+		offset.X = offset.X + 16
+		offset.Y = offset.Y + 16
+	end
+	if self.amount then
+		local amount_string = string.format("%.2f", self.amount)
+		offset.X = offset.X + coopHUD.HUD.fonts.lua_mini:GetStringWidth(amount_string)
+		offset.Y = math.max(offset.Y, coopHUD.HUD.fonts.lua_mini:GetBaselineHeight())
+		if self.diff then
+			local dif_string = string.format("%.1f", self.diff)
+			if self:getAttitude() then
+				dif_string = '+' .. dif_string
+			end
+			if vertical then
+				offset.Y = offset.Y + coopHUD.HUD.fonts.lua_mini:GetBaselineHeight() / 2
+			else
+				--offset.X = offset.X + coopHUD.HUD.fonts.lua_mini:GetStringWidth(dif_string)
+			end
+		end
+	end
+	return offset
+end
+---coopHUD.Stat:getAttitude -- checks stat 'attitude' if its in growth or in shrink :D
+---@return boolean true if self.diff is positive and false if engative
+function coopHUD.Stat:getAttitude()
+	if self.diff > 0 then
+		--
+		return true
+	elseif self.diff == 0 then
+		return true
+	else
+	end
+end
+--
+coopHUD.PlayerHead = {}
+coopHUD.PlayerHead.__index = coopHUD.PlayerHead
+setmetatable(coopHUD.PlayerHead, {
+	__call = function(cls, ...)
+		return cls.new(...)
+	end,
+})
+function coopHUD.PlayerHead.new(parent)
+	local self = setmetatable({}, coopHUD.PlayerHead)
+	self.parent = parent
+	self.name = 'P' .. tostring(self.parent.game_index - coopHUD.essau_no + 1)
+	self.sprite = self:getSprite()
+	return self
+end
+function coopHUD.PlayerHead:getSprite()
+	local player_type = self.parent.entPlayer:GetPlayerType()
+	if self.parent.entPlayer.Variant == 1 then
+		return nil
+	end -- prevents when old coop ghost
+	if player_type == 40 then
+		player_type = 36
+	end
+	if 0 <= player_type and player_type <= 37 then
+		local sprite = Sprite()
+		sprite:Load(coopHUD.GLOBALS.player_head_anim_path, true)
+		sprite:SetFrame('Main', player_type + 1)
+		sprite:ReplaceSpritesheet(1, "/gfx/ui/blank.png")
+		sprite:LoadGraphics()
+		return sprite
+	else
+		return nil
+	end
+end
+function coopHUD.PlayerHead:render(anchor, mirrored, scale, down_anchor)
+	local offset = Vector(0, 0)
+	if self.sprite then
+		local temp_pos = Vector(anchor.X, anchor.Y)
+		local text_pos = Vector(anchor.X, anchor.Y)
+		local sprite_scale = scale
+		--
+		if sprite_scale == nil then
+			sprite_scale = Vector(1, 1)
+		end
+		--
+		if mirrored then
+			temp_pos.X = temp_pos.X - (8 * sprite_scale.X)
+			text_pos.X = text_pos.X - (8 * sprite_scale.X)
+			offset.X = (-16 * 1.5) * sprite_scale.X
+		else
+			temp_pos.X = temp_pos.X + (8 * sprite_scale.X)
+			text_pos.X = text_pos.X + (8 * sprite_scale.X)
+			offset.X = (18 * sprite_scale.X)
+		end
+		--
+		if down_anchor then
+			--FIXME: wrong offset return
+			temp_pos.Y = temp_pos.Y - (coopHUD.HUD.fonts.lua_mini:GetBaselineHeight())
+			text_pos.Y = text_pos.Y - (coopHUD.HUD.fonts.lua_mini:GetBaselineHeight())
+			offset.Y = (-16 * sprite_scale.Y) - coopHUD.HUD.fonts.lua_mini:GetBaselineHeight()
+		else
+			temp_pos.Y = temp_pos.Y + (coopHUD.HUD.fonts.lua_mini:GetBaselineHeight())
+			text_pos.Y = text_pos.Y + (16 * sprite_scale.Y)
+			offset.Y = (16 * sprite_scale.Y) + coopHUD.HUD.fonts.lua_mini:GetBaselineHeight()
+		end
+		--
+		self.sprite.Scale = sprite_scale
+		self.sprite:Render(temp_pos)
+		coopHUD.HUD.fonts.lua_mini:DrawString(self.name,
+		                                      text_pos.X, text_pos.Y,
+		                                      self.parent.font_color, 1, true)
+	end
+	return offset
+end
+--
+coopHUD.Collectibles = {}
+setmetatable(coopHUD.Collectibles, {
+	__call = function(cls, ...)
+		return cls.trigger(...)
+	end,
+})
+coopHUD.Collectibles.sprite = Sprite()
+coopHUD.Collectibles.sprite:Load(coopHUD.GLOBALS.pause_screen_anim_path, true)
+coopHUD.Collectibles.sprite:SetFrame('Dissapear', 13) -- sets to last frame to not trigger on run
+coopHUD.Collectibles.item_table = {}
+coopHUD.Collectibles.mirrored = false -- if mirrored stuff page anchors near right side else on left
+coopHUD.Collectibles.signal = false
+coopHUD.Collectibles.color = Color(1, 1, 1)
+function coopHUD.Collectibles.render()
+	local sprite_pos = Vector(Isaac.GetScreenWidth() / 2 + 60, Isaac.GetScreenHeight() / 2 - 30)
+	if coopHUD.Collectibles.mirrored then
+		sprite_pos.X = Isaac.GetScreenWidth() + 30
+	end
+	if coopHUD.Collectibles.sprite:GetFrame() > 11 and coopHUD.Collectibles.signal then
+		if coopHUD.Collectibles.signal + 15 < Game():GetFrameCount() then
+			coopHUD.Collectibles.signal = false -- resets signals and lets continue to render sprite
+			coopHUD.Collectibles.sprite:Play('Dissapear', 0)
+		end
+	else
+		coopHUD.Collectibles.sprite:Update() -- update sprite frame
+	end
+	if coopHUD.Collectibles.sprite:IsPlaying('Dissapear') then
+		coopHUD.Collectibles.sprite:Update()
+	end
+	coopHUD.Collectibles.sprite:Update() -- update sprite frame
+
+	coopHUD.Collectibles.sprite:RenderLayer(3, sprite_pos)
+	-- collectibles table render
+	local item_pos = Vector(0 + 76, Isaac.GetScreenHeight() / 2 - 32)
+	if coopHUD.Collectibles.mirrored then
+		item_pos.X = Isaac.GetScreenWidth() - 194
+	end
+	local temp_counter = 1
+	local collectibles_stop = 1
+	if #coopHUD.Collectibles.item_table > 136 then
+		collectibles_stop = #coopHUD.Collectibles.item_table - 135
+	end
+	for i = #coopHUD.Collectibles.item_table, collectibles_stop, -1 do
+		local scale = Vector(1, 1)
+		local rows_no = 5
+		if #coopHUD.Collectibles.item_table > 10 then
+			scale = Vector(0.7, 0.7)
+			rows_no = 7
+		end
+		if #coopHUD.Collectibles.item_table > 20 then
+			scale = Vector(0.6, 0.6)
+			rows_no = 8
+		end
+		if #coopHUD.Collectibles.item_table > 32 then
+			scale = Vector(0.5, 0.5)
+			rows_no = 10
+		end
+		if #coopHUD.Collectibles.item_table > 42 then
+			scale = Vector(0.5, 0.5)
+			rows_no = 10
+		end
+		if #coopHUD.Collectibles.item_table > 50 then
+			scale = Vector(0.4, 0.4)
+			rows_no = 13
+		end
+		if #coopHUD.Collectibles.item_table > 78 then
+			scale = Vector(0.3, 0.3)
+			rows_no = 17
+		end
+		local off = coopHUD.Collectibles.item_table[i]:render(item_pos, false, scale, false)
+		item_pos.X = item_pos.X + off.X / 1.5
+		if temp_counter % rows_no == 0 then
+			item_pos.Y = item_pos.Y + off.Y
+			item_pos.X = 0 + 72
+			if coopHUD.Collectibles.mirrored then
+				item_pos.X = Isaac.GetScreenWidth() - 194
+			end
+		end
+		temp_counter = temp_counter + 1
+	end
+	if coopHUD.Collectibles.sprite:IsPlaying('Dissapear') then coopHUD.Collectibles.item_table = {} end
+	--
+end
+function coopHUD.Collectibles.trigger(Player)
+	coopHUD.Collectibles.signal = Game():GetFrameCount() -- sets streak signal as current frame num
+	if coopHUD.Collectibles.sprite:IsFinished('Dissapear') then
+		-- if Collectibles is finished play animation
+		coopHUD.Collectibles.sprite.Color = Color(Player.font_color.Red, Player.font_color.Green,
+		                                          Player.font_color.Blue)
+		coopHUD.Collectibles.mirrored = coopHUD.players_config.small[Player.game_index].mirrored
+		coopHUD.Collectibles.item_table = Player.collectibles
+		coopHUD.Collectibles.sprite:Play("Appear", true)
+	end
+end
+--
+coopHUD.Streak = {}
+-- STREAK TYPES
+coopHUD.Streak.FLOOR = 0
+coopHUD.Streak.PICKUP = 1
+coopHUD.Streak.font_color = KColor(1, 1, 1, 1)
+setmetatable(coopHUD.Streak, {
+	__call = function(cls, ...)
+		return cls.trigger(...)
+	end,
+})
+function coopHUD.Streak.getSprite()
+	local sprite = Sprite()
+	sprite:Load(coopHUD.GLOBALS.streak_anim_path, true)
+	sprite:SetFrame('Text', 0)
+	return sprite
+end
+coopHUD.Streak.sprite = coopHUD.Streak.getSprite() -- inits streak sprite
+coopHUD.Streak.signal = false -- trigger signal
+function coopHUD.Streak.render()
+	--TODO: when type ITEM and colorful hud option draw colored strings with player color
+	if coopHUD.Streak.sprite and coopHUD.Streak.first_line and coopHUD.Streak.first_line ~= '' and not coopHUD.Streak.sprite:IsFinished() then
+		-- prevents from no sprite loaded error and rendering when no passed first line or empty
+		local cur_frame = coopHUD.Streak.sprite:GetFrame()
+		if cur_frame > 16 and coopHUD.Streak.signal then
+			-- controls enter animation and that sprite stays on screen
+			local streak_span = 30 -- controls how long streak will be rendered after signal = nil
+			if coopHUD.Streak.signal + streak_span < Game():GetFrameCount() then
+				coopHUD.Streak.signal = false -- resets signals and lets continue to render sprite
+			end
+		else
+			coopHUD.Streak.sprite:Update() -- update sprite frame
+		end
+		local temp_pos = Vector(Isaac.GetScreenWidth() / 2, 48) -- defines  with vertical anchor up
+		if coopHUD.Streak.down_anchor then
+			-- if triggered with true down_anchor
+			temp_pos.Y = Isaac.GetScreenHeight() - 48 -- changes vertical anchor down
+		end
+		if coopHUD.Streak.first_line then
+			coopHUD.Streak.sprite:RenderLayer(0, temp_pos)
+		end
+		if cur_frame > 4 and cur_frame < 65 then
+			-- prevents from showing text when sprite on in/out state
+			if coopHUD.Streak.first_line then
+				local f_color = coopHUD.Streak.font_color
+				if coopHUD.Streak.type == coopHUD.Streak.FLOOR then
+					f_color = KColor(1, 1, 1, 1)
+				end
+				coopHUD.HUD.fonts.upheaval:DrawString(coopHUD.Streak.first_line,
+				                                      temp_pos.X,
+				                                      temp_pos.Y - coopHUD.HUD.fonts.upheaval:GetBaselineHeight() * 0.75,
+				                                      f_color, 1, true)
+			end
+			if coopHUD.Streak.second_line and coopHUD.Streak.second_line ~= '' then
+				local line_off = Vector(0, 12)
+				local f_color = coopHUD.Streak.font_color
+				local font = coopHUD.HUD.fonts.pft
+				if coopHUD.Streak.type == coopHUD.Streak.FLOOR then
+					coopHUD.Streak.sprite:RenderLayer(1, temp_pos)
+					line_off.Y = 19
+					f_color = KColor(0, 0, 0, 1)
+					font = coopHUD.HUD.fonts.team_meat_10
+				end
+				font:DrawString(coopHUD.Streak.second_line,
+				                temp_pos.X, temp_pos.Y + line_off.Y,
+				                f_color, 1, true)
+			end
+		end
+	end
+end
+function coopHUD.Streak.trigger(down_anchor, type, first_line, second_line, force_reset, font_color)
+	coopHUD.Streak.signal = Game():GetFrameCount() -- sets streak signal as current frame num
+	if coopHUD.Streak.sprite:IsFinished() or force_reset then
+		-- if streak is finished play animation
+		coopHUD.Streak.sprite:Play("Text", true)
+		coopHUD.Streak.type = type
+		coopHUD.Streak.down_anchor = down_anchor -- defines if streak will render down screen or top screen
+		coopHUD.Streak.first_line = first_line -- gets line string from passed parameters
+		coopHUD.Streak.second_line = second_line
+		if font_color then
+			coopHUD.Streak.font_color = font_color
+		else
+			coopHUD.Streak.font_color = KColor(1, 1, 1, 1)
+		end
+		if type == coopHUD.Streak.FLOOR then
+			-- in case of floor streak ignore passed strings
+			coopHUD.Streak.first_line = Game():GetLevel():GetName() -- and get floor specs
+			coopHUD.Streak.second_line = Game():GetLevel():GetCurseName()
+		end
+	end
+end
+--
+function coopHUD.getMinimapOffset()
+	local minimap_offset = Vector(Isaac.GetScreenWidth(), 0)
+	if MinimapAPI ~= nil then
+		-- Modified function from minimAPI by Wolfsauge
+		local screen_size = Vector(Isaac.GetScreenWidth(), 0)
+		local is_large = MinimapAPI:IsLarge()
+		if not is_large and MinimapAPI:GetConfig("DisplayMode") == 2 then
+			-- BOUNDED MAP
+			minimap_offset = Vector(screen_size.X - MinimapAPI:GetConfig("MapFrameWidth") - MinimapAPI:GetConfig("PositionX") - 4,
+			                        2)
+		elseif not is_large and MinimapAPI:GetConfig("DisplayMode") == 4
+				or Game():GetLevel():GetCurses() == LevelCurse.CURSE_OF_THE_LOST then
+			-- NO MAP or cure of the lost active
+			minimap_offset = Vector(screen_size.X - 4, 2)
+		else
+			-- LARGE
+			local minx = screen_size.X
+			for i, v in ipairs(MinimapAPI:GetLevel()) do
+				if v ~= nil then
+					if v:GetDisplayFlags() > 0 then
+						if v.RenderOffset ~= nil then
+							minx = math.min(minx, v.RenderOffset.X)
+						end
+					end
+				end
+
+			end
+			minimap_offset = Vector(minx - 4, 2) -- Small
+		end
+		if MinimapAPI:GetConfig("Disable") or MinimapAPI.Disable then
+			minimap_offset = Vector(screen_size.X - 4,
+			                        2) end
+		local r = MinimapAPI:GetCurrentRoom()
+		if r ~= nil then
+			if MinimapAPI:GetConfig("HideInCombat") == 2 then
+				if not r:IsClear() and r:GetType() == RoomType.ROOM_BOSS then
+					minimap_offset = Vector(screen_size.X - 0, 2)
+				end
+			elseif MinimapAPI:GetConfig("HideInCombat") == 3 then
+				if r ~= nil then
+					if not r:IsClear() then
+						minimap_offset = Vector(screen_size.X - 0, 2)
+					end
+				end
+			end
+		end
+	end
+	return minimap_offset
+end
+function coopHUD.updateAnchors()
+	local offset = 0
+	if SHExists then
+		offset = ScreenHelper.GetOffset()
+	end
+	offset = offset + Options.HUDOffset * 10
+	if coopHUD.anchors.top_left ~= Vector.Zero + Vector(offset * 2, offset * 1.2) then
+		coopHUD.anchors.top_left = Vector.Zero + Vector(offset * 2, offset * 1.2)
+	end
+	if coopHUD.anchors.bot_left ~= Vector(0, Isaac.GetScreenHeight()) + Vector(offset * 2.2, -offset * 1.6) then
+		coopHUD.anchors.bot_left = Vector(0, Isaac.GetScreenHeight()) + Vector(offset * 2.2, -offset * 1.6)
+	end
+	if coopHUD.anchors.top_right ~= Vector(coopHUD.getMinimapOffset().X, 0) + Vector(-offset * 2.2,
+	                                                                                 offset * 1.2) then
+		coopHUD.anchors.top_right = Vector(coopHUD.getMinimapOffset().X, 0) + Vector(-offset * 2.2, offset * 1.2)
+	end
+	if coopHUD.anchors.bot_right ~= Vector(Isaac.GetScreenWidth(), Isaac.GetScreenHeight()) + Vector(-offset * 2.2,
+	                                                                                                 -offset * 1.6) then
+		coopHUD.anchors.bot_right = Vector(Isaac.GetScreenWidth(), Isaac.GetScreenHeight()) + Vector(-offset * 2.2,
+		                                                                                             -offset * 1.6)
+	end
 end
 function coopHUD.getPlayerNumByControllerIndex(controller_index)
 	-- Function returns player number searching coopHUD.player table for matching controller index

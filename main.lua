@@ -2,10 +2,11 @@ coopHUD = RegisterMod("Coop HUD", 1)
 
 ---
 include("coopHUD_globals.lua")
+include("coopHUD_langAPI.lua")
 include("coopHUD_mcm.lua")
+include('coopHUD_player.lua')
 include("coopHUD_sprites.lua")
-include("coopHUD_player_table_updates.lua")
-include("coopHUD_table_callbacks.lua")
-include("coopHUD_render.lua")
+include('coopHUD_hud.lua')
+include("coopHUD_callbacks.lua")
 --
 print('CoopHUD v.'..tostring(coopHUD.VERSION)..' successfully!')
