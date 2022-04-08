@@ -438,7 +438,7 @@ if ModConfigMenu then
 		})
 	end
 	--
-	ModConfigMenu.AddTitle(mod_name, "Positions", '2 players HUD')
+	ModConfigMenu.AddTitle(mod_name, "Positions", 'Big HUD  positions:')
 	ModConfigMenu.AddSetting(mod_name, "Positions", {
 		Type = ModConfigMenu.OptionType.BOOLEAN,
 		CurrentSetting = function()
@@ -451,34 +451,30 @@ if ModConfigMenu then
 			else
 				anchor_string = "right side"
 			end
-			return "Player 1 anchor: " .. anchor_string
+			return "Player 1: " .. anchor_string
 		end,
 		OnChange = function(currentBool)
 			if currentBool then
 				coopHUD.players_config.small[0].anchor_top = coopHUD.players_config.default[0].anchor_top
 				coopHUD.players_config.small[0].anchor_bot = coopHUD.players_config.default[0].anchor_bot
 				coopHUD.players_config.small[0].mirrored_big = coopHUD.players_config.default[0].mirrored_big
-				--coopHUD.players_config.small[0].down_anchor = coopHUD.players_config.default[0].down_anchor
 				--
 				coopHUD.players_config.small[1].anchor_top = coopHUD.players_config.default[1].anchor_top
 				coopHUD.players_config.small[1].anchor_bot = coopHUD.players_config.default[1].anchor_bot
 				coopHUD.players_config.small[1].mirrored_big = coopHUD.players_config.default[1].mirrored_big
-				--coopHUD.players_config.small[1].down_anchor = coopHUD.players_config.default[1].down_anchor
 			else
 				coopHUD.players_config.small[0].anchor_top = coopHUD.players_config.default[1].anchor_top
 				coopHUD.players_config.small[0].anchor_bot = coopHUD.players_config.default[1].anchor_bot
 				coopHUD.players_config.small[0].mirrored_big = coopHUD.players_config.default[1].mirrored_big
-				--coopHUD.players_config.small[0].down_anchor = coopHUD.players_config.default[1].down_anchor
 				--
 				coopHUD.players_config.small[1].anchor_top = coopHUD.players_config.default[0].anchor_top
 				coopHUD.players_config.small[1].anchor_bot = coopHUD.players_config.default[0].anchor_bot
 				coopHUD.players_config.small[1].mirrored_big = coopHUD.players_config.default[0].mirrored_big
-				--coopHUD.players_config.small[1].down_anchor = coopHUD.players_config.default[0].down_anchor
 			end
-			--coopHUD.save_options()
+			coopHUD.save_options()
 		end,
 		Info = function()
-			return "Big hud 1st player position"
+			return "Sets player position on big hud"
 		end
 	})
 	ModConfigMenu.AddSetting(mod_name, "Positions", {
@@ -493,7 +489,7 @@ if ModConfigMenu then
 			else
 				anchor_string = "right side"
 			end
-			return "Player 2 anchor: " .. anchor_string
+			return "Player 2: " .. anchor_string
 		end,
 		OnChange = function(currentBool)
 			if currentBool then
@@ -513,12 +509,35 @@ if ModConfigMenu then
 				coopHUD.players_config.small[1].anchor_bot = coopHUD.players_config.default[0].anchor_bot
 				coopHUD.players_config.small[1].mirrored_big = coopHUD.players_config.default[0].mirrored_big
 			end
+			coopHUD.save_options()
+		end,
+		Info = function()
+			return "Sets player position on big hud"
+		end
+	})
+	--[[ModConfigMenu.AddTitle(mod_name, "Positions", 'Small HUD positions')
+	ModConfigMenu.AddSetting(mod_name, "Positions", {
+		Type = ModConfigMenu.OptionType.NUMBER,
+		CurrentSetting = function()
+			print(coopHUD.anchors[coopHUD.players_config.small[0].anchor .. '_id'])
+			return coopHUD.anchors[coopHUD.players_config.small[0].anchor .. '_id']
+		end,
+		Minimum = 0,
+		Maximum = 3,
+		Display = function()
+			return "Player 1: " .. coopHUD.anchors[coopHUD.players_config.small[0].anchor .. '_name']
+		end,
+		OnChange = function(currentNum)
+			--print(currentNum)
+			coopHUD.players_config.small[0].anchor = coopHUD.players_config.default[currentNum].anchor
+			coopHUD.players_config.small[0].mirrored = coopHUD.players_config.default[currentNum].mirrored
+			coopHUD.players_config.small[0].down_anchor = coopHUD.players_config.default[currentNum].down_anchor
 			--coopHUD.save_options()
 		end,
 		Info = function()
-			return "Big hud 1st player position"
+			return "Sets player position on small hud"
 		end
-	})
+	})]]
 end
 -- Overrides External item description mod setting to better fit with HUD
 if EID then

@@ -2,8 +2,8 @@ coopHUD.VERSION = '0.5.5-PROD' --DEBUG: test name for in game recognition
 coopHUD.showExtraInfo = false
 coopHUD.HUD_table = {}
 coopHUD.signals = {
-	map = nil,-- emits true when map btn hold - global signal
-	is_joining = false,-- to maintain back button when joining
+	map = nil, -- emits true when map btn hold - global signal
+	is_joining = false, -- to maintain back button when joining
 	on_battle = false,
 }
 coopHUD.players = {}
@@ -48,7 +48,7 @@ coopHUD.angel_seen = false -- holds run info, if angel room was seen, used in de
 coopHUD.jar_of_wisp_charge = 0 -- holds run info, charge of jar of wisp
 coopHUD.players_config = {
 	small = {
-		scale = Vector(1,1),
+		scale = Vector(1, 1),
 		[0] = {
 			anchor = 'top_left',
 			anchor_top = 'top_left',
@@ -112,7 +112,7 @@ coopHUD.players_config = {
 			stat_anchor = 'bot_right'
 		},
 		[2] = {
-			name = 'Bottom left corner',
+			name = 'bottom left',
 			anchor = 'bot_left',
 			anchor_bot = 'bot_left',
 			mirrored = false,
@@ -120,7 +120,7 @@ coopHUD.players_config = {
 			stat_anchor = 'bot_left'
 		},
 		[3] = {
-			name = 'Bottom right corner',
+			name = 'bottom right',
 			anchor = 'bot_right',
 			anchor_bot = 'bot_right',
 			mirrored = true,
@@ -134,17 +134,25 @@ coopHUD.anchors = {
 	bot_left = Vector(0, 0),
 	top_right = Vector(0, 0),
 	bot_right = Vector(0, 0),
+	top_left_id = 0,
+	bot_left_id = 1,
+	top_right_id = 2,
+	bot_right_id = 3,
+	top_left_name = 'top left',
+	bot_left_name = 'bottom left',
+	top_right_name = 'top right',
+	bot_right_name = 'bottom right',
 }
 coopHUD.colors = {
-	{ name = "Tomato",color = Color(1, 0.39, 0.28) },
-	{ name = "GreenYellow",color = Color(0.68, 1, 0.18) },
-	{ name = "DeepSkyBlue",color = Color(0, 0.75, 1) },
-	{ name = "Pink",color = Color(1, 0, 1) },
-	{ name = "Yellow",color = Color(1, 1, 0) },
-	{ name = "RoyalBlue",color = Color(0.25, 0.41, 1) },
-	{ name = "White",color = Color(1, 1, 1) },
-	{ name = "Aqua",color = Color(0, 1, 1) },
-	{ name = "Orange",color = Color(1, 0.5, 0) },
+	{name = "Tomato", color = Color(1, 0.39, 0.28)},
+	{name = "GreenYellow", color = Color(0.68, 1, 0.18)},
+	{name = "DeepSkyBlue", color = Color(0, 0.75, 1)},
+	{name = "Pink", color = Color(1, 0, 1)},
+	{name = "Yellow", color = Color(1, 1, 0)},
+	{name = "RoyalBlue", color = Color(0.25, 0.41, 1)},
+	{name = "White", color = Color(1, 1, 1)},
+	{name = "Aqua", color = Color(0, 1, 1)},
+	{name = "Orange", color = Color(1, 0.5, 0)},
 }
 coopHUD.PlayerForm = {}
 coopHUD.PlayerForm[PlayerForm.PLAYERFORM_GUPPY] = "Guppy!"
@@ -155,10 +163,10 @@ coopHUD.PlayerForm[PlayerForm.PLAYERFORM_BOB] = "Bob!"
 coopHUD.PlayerForm[PlayerForm.PLAYERFORM_DRUGS] = "Spun!"
 coopHUD.PlayerForm[PlayerForm.PLAYERFORM_MOM] = "Yes mother?!"
 coopHUD.PlayerForm[PlayerForm.PLAYERFORM_BABY] = "Conjoined!"
-coopHUD.PlayerForm[PlayerForm.PLAYERFORM_EVIL_ANGEL] ="Leviathan!"
+coopHUD.PlayerForm[PlayerForm.PLAYERFORM_EVIL_ANGEL] = "Leviathan!"
 coopHUD.PlayerForm[PlayerForm.PLAYERFORM_POOP] = "Oh crap!"
-coopHUD.PlayerForm[PlayerForm.PLAYERFORM_BOOK_WORM] ="Book Worm!"
+coopHUD.PlayerForm[PlayerForm.PLAYERFORM_BOOK_WORM] = "Book Worm!"
 coopHUD.PlayerForm[PlayerForm.PLAYERFORM_ADULTHOOD] = "Adult!"
-coopHUD.PlayerForm[PlayerForm.PLAYERFORM_SPIDERBABY] ="Spider Baby!"
+coopHUD.PlayerForm[PlayerForm.PLAYERFORM_SPIDERBABY] = "Spider Baby!"
 coopHUD.PlayerForm[PlayerForm.PLAYERFORM_STOMPY] = "Stompy!"
 coopHUD.PlayerForm[PlayerForm.PLAYERFORM_FLIGHT] = "Flight!"
