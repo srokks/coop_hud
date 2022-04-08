@@ -394,7 +394,7 @@ if ModConfigMenu then
 		end
 	})
 	-- colorful stuff page
-	ModConfigMenu.AddSetting(mod_name, "Colors", {
+	--[[ModConfigMenu.AddSetting(mod_name, "Colors", {
 		Type = ModConfigMenu.OptionType.BOOLEAN,
 		CurrentSetting = function()
 			return coopHUD.options.colorful_stuff_page
@@ -416,7 +416,7 @@ if ModConfigMenu then
 		Info = function()
 			return "Colors stuff page"
 		end
-	})
+	})]]
 	-- player config - players colors
 	ModConfigMenu.AddTitle(mod_name, "Colors", 'Player colors')
 	for i = 0, 3 do
