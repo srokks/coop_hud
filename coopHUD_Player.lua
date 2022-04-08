@@ -339,9 +339,13 @@ function coopHUD.Player:renderExtras(pos, mirrored, scale, down_anchor)
 			local mantle_pos = Vector(temp_pos.X + 4, temp_pos.Y + 12)
 			if down_anchor then
 				mantle_pos.Y = mantle_pos.Y - 16
+
 			end
 			if mirrored then
+				temp_pos.X = temp_pos.X - 8
 				mantle_pos.X = mantle_pos.X - 12
+			else
+				temp_pos.X = temp_pos.X + 12
 			end
 			coopHUD.Mantle:Render(mantle_pos)
 		end
