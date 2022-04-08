@@ -464,7 +464,7 @@ function coopHUD.Pocket:update()
 		self.item = self:getItem()
 		self.name, self.desc = self:getName()
 		if self.slot == 0 and self.parent.entPlayer:IsHoldingItem() and self.type == coopHUD.Pocket.CARD then
-			coopHUD.Streak(false,coopHUD.Streak.ITEM,self.name,self.desc,true)
+			coopHUD.Streak(false,coopHUD.Streak.ITEM,self.name,self.desc,true,self.parent.font_color)
 		end
 	end
 end
@@ -1521,6 +1521,7 @@ coopHUD.Streak = {}
 -- STREAK TYPES
 coopHUD.Streak.FLOOR = 0
 coopHUD.Streak.PICKUP = 1
+coopHUD.Streak.font_color = KColor(1,1,1,1)
 setmetatable(coopHUD.Streak, {
 	__call = function(cls, ...)
 		return cls.trigger(...)
@@ -1559,14 +1560,18 @@ function coopHUD.Streak.render()
 		if cur_frame > 4 and cur_frame < 65 then
 			-- prevents from showing text when sprite on in/out state
 			if coopHUD.Streak.first_line then
+				local f_color = coopHUD.Streak.font_color
+				if coopHUD.Streak.type == coopHUD.Streak.FLOOR then
+					f_color = KColor(1,1,1,1)
+				end
 				coopHUD.HUD.fonts.upheaval:DrawString(coopHUD.Streak.first_line,
 				                                      temp_pos.X,
 				                                      temp_pos.Y - coopHUD.HUD.fonts.upheaval:GetBaselineHeight() * 0.75,
-				                                      KColor(1, 1, 1, 1), 1, true)
+				                                      f_color, 1, true)
 			end
 			if coopHUD.Streak.second_line and coopHUD.Streak.second_line ~= '' then
 				local line_off = Vector(0, 12)
-				local f_color = KColor(1, 1, 1, 1)
+				local f_color = coopHUD.Streak.font_color
 				local font = coopHUD.HUD.fonts.pft
 				if coopHUD.Streak.type == coopHUD.Streak.FLOOR then
 					coopHUD.Streak.sprite:RenderLayer(1, temp_pos)
@@ -1581,7 +1586,7 @@ function coopHUD.Streak.render()
 		end
 	end
 end
-function coopHUD.Streak.trigger(down_anchor, type, first_line, second_line, force_reset)
+function coopHUD.Streak.trigger(down_anchor, type, first_line, second_line, force_reset,font_color)
 	coopHUD.Streak.signal = Game():GetFrameCount() -- sets streak signal as current frame num
 	if coopHUD.Streak.sprite:IsFinished() or force_reset then
 		-- if streak is finished play animation
@@ -1590,6 +1595,11 @@ function coopHUD.Streak.trigger(down_anchor, type, first_line, second_line, forc
 		coopHUD.Streak.down_anchor = down_anchor -- defines if streak will render down screen or top screen
 		coopHUD.Streak.first_line = first_line -- gets line string from passed parameters
 		coopHUD.Streak.second_line = second_line
+		if font_color then
+			coopHUD.Streak.font_color = font_color
+		else
+			coopHUD.Streak.font_color = KColor(1,1,1,1)
+		end
 		if type == coopHUD.Streak.FLOOR then
 			-- in case of floor streak ignore passed strings
 			coopHUD.Streak.first_line = Game():GetLevel():GetName() -- and get floor specs

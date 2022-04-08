@@ -76,7 +76,7 @@ function coopHUD.Player.new(player_no)
 				if coopHUD.langAPI then
 					local streak_main_line = coopHUD.langAPI.getItemName(string.sub(item_queue.Item.Name, 2))
 					local streak_sec_line = coopHUD.langAPI.getItemName(string.sub(item_queue.Item.Description, 2))
-					coopHUD.Streak(false, coopHUD.Streak.ITEM, streak_main_line, streak_sec_line, true)
+					coopHUD.Streak(false, coopHUD.Streak.ITEM, streak_main_line, streak_sec_line, true,self.font_color)
 				end
 			end
 			if not entPlayer:IsHoldingItem() and self.temp_item then
@@ -89,7 +89,7 @@ function coopHUD.Player.new(player_no)
 			end
 			for i = 0, PlayerForm.NUM_PLAYER_FORMS - 1 do
 				if self.transformations[i] ~= self.entPlayer:HasPlayerForm(i) then
-					coopHUD.Streak(false,coopHUD.Streak.ITEM,coopHUD.PlayerForm[i],nil,true)
+					coopHUD.Streak(false,coopHUD.Streak.ITEM,coopHUD.PlayerForm[i],nil,true,self.font_color)
 					self.transformations[i] = self.entPlayer:HasPlayerForm(i)
 				end
 			end
@@ -100,7 +100,7 @@ function coopHUD.Player.new(player_no)
 		if self.entPlayer.Index == entPlayer.Index then
 			local pill_sys_name = Isaac.GetItemConfig():GetPillEffect(effect_no).Name
 			pill_sys_name = string.sub(pill_sys_name, 2) --  get rid of # on front of
-			coopHUD.Streak(false, coopHUD.Streak.ITEM, coopHUD.langAPI.getPocketName(pill_sys_name), nil, true)
+			coopHUD.Streak(false, coopHUD.Streak.ITEM, coopHUD.langAPI.getPocketName(pill_sys_name), nil, true,self.font_color)
 
 		end
 	end)
