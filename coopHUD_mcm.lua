@@ -1,7 +1,7 @@
 local json = require("json")
 if coopHUD:HasData() then
 	local save = json.decode(coopHUD:LoadData())
-	if coopHUD.VERSION == save.version then
+	if false then
 		coopHUD.players_config.small[0] = save.players_config.small['0']
 		coopHUD.players_config.small[1] = save.players_config.small['1']
 		coopHUD.players_config.small[2] = save.players_config.small['2']
@@ -442,70 +442,83 @@ if ModConfigMenu then
 	ModConfigMenu.AddSetting(mod_name, "Positions", {
 		Type = ModConfigMenu.OptionType.BOOLEAN,
 		CurrentSetting = function()
-			return coopHUD.players_config.small[0].anchor == 'top_left'
+			return coopHUD.players_config.small[0].anchor_top == 'top_left'
 		end,
 		Display = function()
 			local anchor_string = ""
-			if coopHUD.players_config.small[0].anchor == 'top_left' then
-				anchor_string = coopHUD.players_config.default[0].name
+			if coopHUD.players_config.small[0].anchor_top == 'top_left' then
+				anchor_string = "left side"
 			else
-				anchor_string = coopHUD.players_config.default[1].name
+				anchor_string = "right side"
 			end
 			return "Player 1 anchor: " .. anchor_string
 		end,
 		OnChange = function(currentBool)
 			if currentBool then
-				coopHUD.players_config.small[0].anchor = coopHUD.players_config.default[0].anchor
+				coopHUD.players_config.small[0].anchor_top = coopHUD.players_config.default[0].anchor_top
 				coopHUD.players_config.small[0].anchor_bot = coopHUD.players_config.default[0].anchor_bot
-				coopHUD.players_config.small[0].mirrored = coopHUD.players_config.default[0].mirrored
-				coopHUD.players_config.small[0].mirrored = coopHUD.players_config.default[0].mirrored
-				coopHUD.players_config.small[0].down_anchor = coopHUD.players_config.default[0].down_anchor
+				coopHUD.players_config.small[0].mirrored_big = coopHUD.players_config.default[0].mirrored_big
+				--coopHUD.players_config.small[0].down_anchor = coopHUD.players_config.default[0].down_anchor
+				--
+				coopHUD.players_config.small[1].anchor_top = coopHUD.players_config.default[1].anchor_top
+				coopHUD.players_config.small[1].anchor_bot = coopHUD.players_config.default[1].anchor_bot
+				coopHUD.players_config.small[1].mirrored_big = coopHUD.players_config.default[1].mirrored_big
+				--coopHUD.players_config.small[1].down_anchor = coopHUD.players_config.default[1].down_anchor
 			else
-				coopHUD.players_config.small[0].anchor = coopHUD.players_config.default[1].anchor
+				coopHUD.players_config.small[0].anchor_top = coopHUD.players_config.default[1].anchor_top
 				coopHUD.players_config.small[0].anchor_bot = coopHUD.players_config.default[1].anchor_bot
-				coopHUD.players_config.small[0].mirrored = coopHUD.players_config.default[1].mirrored
-				coopHUD.players_config.small[0].down_anchor = coopHUD.players_config.default[1].down_anchor
+				coopHUD.players_config.small[0].mirrored_big = coopHUD.players_config.default[1].mirrored_big
+				--coopHUD.players_config.small[0].down_anchor = coopHUD.players_config.default[1].down_anchor
+				--
+				coopHUD.players_config.small[1].anchor_top = coopHUD.players_config.default[0].anchor_top
+				coopHUD.players_config.small[1].anchor_bot = coopHUD.players_config.default[0].anchor_bot
+				coopHUD.players_config.small[1].mirrored_big = coopHUD.players_config.default[0].mirrored_big
+				--coopHUD.players_config.small[1].down_anchor = coopHUD.players_config.default[0].down_anchor
 			end
 			--coopHUD.save_options()
 		end,
 		Info = function()
-			return "Change side where renders HUD on big mode"
+			return "Big hud 1st player position"
 		end
 	})
-	--[[ModConfigMenu.AddSetting(mod_name, "Positions", {
-		Type           = ModConfigMenu.OptionType.BOOLEAN,
+	ModConfigMenu.AddSetting(mod_name, "Positions", {
+		Type = ModConfigMenu.OptionType.BOOLEAN,
 		CurrentSetting = function()
-			return coopHUD.players_config[1].anchor_top == 'top_left'
+			return coopHUD.players_config.small[1].anchor_top == 'top_right'
 		end,
-		Display        = function()
-			local pos = "right"
-			if coopHUD.players_config[1].anchor_top == 'top_left' then
-				pos = "left"
-			end
-			return "Player 2 anchor: " .. pos
-		end,
-		OnChange       = function(currentBool)
-			if currentBool then
-				coopHUD.players_config[0].anchor_top = 'top_right'
-				coopHUD.players_config[0].anchor_bot = 'bot_right'
-				coopHUD.players_config[0].mirrored = true
-				coopHUD.players_config[1].anchor_top = 'top_left'
-				coopHUD.players_config[1].anchor_bot = 'bot_left'
-				coopHUD.players_config[1].mirrored = false
+		Display = function()
+			local anchor_string = ""
+			if coopHUD.players_config.small[1].anchor_top == 'top_left' then
+				anchor_string = "left side"
 			else
-				coopHUD.players_config[0].anchor_top = 'top_left'
-				coopHUD.players_config[0].anchor_bot = 'bot_left'
-				coopHUD.players_config[0].mirrored = false
-				coopHUD.players_config[1].anchor_top = 'top_right'
-				coopHUD.players_config[1].anchor_bot = 'bot_right'
-				coopHUD.players_config[1].mirrored = true
+				anchor_string = "right side"
 			end
-			coopHUD.save_options()
+			return "Player 2 anchor: " .. anchor_string
 		end,
-		Info           = function()
-			return "Change side where renders HUD on big mode"
+		OnChange = function(currentBool)
+			if currentBool then
+				coopHUD.players_config.small[0].anchor_top = coopHUD.players_config.default[0].anchor_top
+				coopHUD.players_config.small[0].anchor_bot = coopHUD.players_config.default[0].anchor_bot
+				coopHUD.players_config.small[0].mirrored_big = coopHUD.players_config.default[0].mirrored_big
+				--
+				coopHUD.players_config.small[1].anchor_top = coopHUD.players_config.default[1].anchor_top
+				coopHUD.players_config.small[1].anchor_bot = coopHUD.players_config.default[1].anchor_bot
+				coopHUD.players_config.small[1].mirrored_big = coopHUD.players_config.default[1].mirrored_big
+			else
+				coopHUD.players_config.small[0].anchor_top = coopHUD.players_config.default[1].anchor_top
+				coopHUD.players_config.small[0].anchor_bot = coopHUD.players_config.default[1].anchor_bot
+				coopHUD.players_config.small[0].mirrored_big = coopHUD.players_config.default[1].mirrored_big
+				--
+				coopHUD.players_config.small[1].anchor_top = coopHUD.players_config.default[0].anchor_top
+				coopHUD.players_config.small[1].anchor_bot = coopHUD.players_config.default[0].anchor_bot
+				coopHUD.players_config.small[1].mirrored_big = coopHUD.players_config.default[0].mirrored_big
+			end
+			--coopHUD.save_options()
+		end,
+		Info = function()
+			return "Big hud 1st player position"
 		end
-	})]]
+	})
 end
 -- Overrides External item description mod setting to better fit with HUD
 if EID then

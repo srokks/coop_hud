@@ -212,6 +212,11 @@ function coopHUD.Player:render()
 	local mirrored = coopHUD.players_config.small[self.game_index].mirrored
 	local scale = coopHUD.players_config.small.scale
 	local down_anchor = coopHUD.players_config.small[self.game_index].down_anchor
+	if #coopHUD.players < 3 and not coopHUD.options.force_small_hud then
+		anchor = Vector(coopHUD.anchors[coopHUD.players_config.small[self.game_index].anchor_top].X,
+		                coopHUD.anchors[coopHUD.players_config.small[self.game_index].anchor_top].Y)
+		mirrored = coopHUD.players_config.small[self.game_index].mirrored_big
+	end
 	--
 	local info_off = Vector(0, 0)
 	local active_off = Vector(0, 0)
@@ -288,7 +293,7 @@ function coopHUD.Player:render()
 			if coopHUD.options.stats.colorful then
 				font_color = self.font_color
 			end
-			local temp_stat_pos = Vector(anchor_bot.X, 100)
+			local temp_stat_pos = Vector(anchor.X, 100)
 			local off = Vector(0, 14) -- static offset for stats
 			if self.game_index == 2 or self.game_index == 3 then
 				-- checks if player is 3rd or 4th
