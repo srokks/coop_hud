@@ -76,7 +76,7 @@ function coopHUD.Player.new(player_no)
 				if coopHUD.langAPI then
 					local streak_main_line = coopHUD.langAPI.getItemName(string.sub(item_queue.Item.Name, 2))
 					local streak_sec_line = coopHUD.langAPI.getItemName(string.sub(item_queue.Item.Description, 2))
-					coopHUD.Streak(false, coopHUD.Streak.ITEM, streak_main_line, streak_sec_line, true,self.font_color)
+					coopHUD.Streak(false, coopHUD.Streak.ITEM, streak_main_line, streak_sec_line, true, self.font_color)
 				end
 			end
 			if not entPlayer:IsHoldingItem() and self.temp_item then
@@ -89,7 +89,7 @@ function coopHUD.Player.new(player_no)
 			end
 			for i = 0, PlayerForm.NUM_PLAYER_FORMS - 1 do
 				if self.transformations[i] ~= self.entPlayer:HasPlayerForm(i) then
-					coopHUD.Streak(false,coopHUD.Streak.ITEM,coopHUD.PlayerForm[i],nil,true,self.font_color)
+					coopHUD.Streak(false, coopHUD.Streak.ITEM, coopHUD.PlayerForm[i], nil, true, self.font_color)
 					self.transformations[i] = self.entPlayer:HasPlayerForm(i)
 				end
 			end
@@ -100,7 +100,8 @@ function coopHUD.Player.new(player_no)
 		if self.entPlayer.Index == entPlayer.Index then
 			local pill_sys_name = Isaac.GetItemConfig():GetPillEffect(effect_no).Name
 			pill_sys_name = string.sub(pill_sys_name, 2) --  get rid of # on front of
-			coopHUD.Streak(false, coopHUD.Streak.ITEM, coopHUD.langAPI.getPocketName(pill_sys_name), nil, true,self.font_color)
+			coopHUD.Streak(false, coopHUD.Streak.ITEM, coopHUD.langAPI.getPocketName(pill_sys_name), nil, true,
+			               self.font_color)
 
 		end
 	end)
@@ -274,8 +275,9 @@ function coopHUD.Player:render()
 		col.B = self.font_color.Blue
 	end
 	self.entPlayer:SetColor(col, 2, 100, false, false)
+	--Player name on screen
 	if coopHUD.options.show_player_names then
-		local position = Isaac.WorldToRenderPosition(self.entPlayer.Position)
+		local position = Isaac.WorldToScreen(self.entPlayer.Position)
 		coopHUD.HUD.fonts.pft:DrawString(self.player_head.name, position.X - 5, position.Y, self.font_color)
 	end
 	if coopHUD.options.stats.show then
@@ -339,26 +341,27 @@ function coopHUD.Player:renderExtras(pos, mirrored, scale, down_anchor)
 			coopHUD.Mantle:Render(mantle_pos)
 		end
 		if self.entPlayer:GetExtraLives() > 0 then
-		local offset = Vector(0, 8 * sprite_scale.X)
-		if down_anchor then
-			temp_pos.Y = temp_pos.Y - (16 * sprite_scale.Y)
-			offset.Y = -8 * 1.25 * sprite_scale.Y
+			local offset = Vector(0, 8 * sprite_scale.X)
+			if down_anchor then
+				temp_pos.Y = temp_pos.Y - (16 * sprite_scale.Y)
+				offset.Y = -8 * 1.25 * sprite_scale.Y
+			end
+			local text = string.format('x%d', self.entPlayer:GetExtraLives())
+			if self.entPlayer:HasCollectible(CollectibleType.COLLECTIBLE_GUPPYS_COLLAR) then
+				text = text .. "?"
+			end
+			local align = 0
+			if mirrored then
+				temp_pos.X = temp_pos.X - (16 * sprite_scale.Y)
+				align = 1
+			end
+			coopHUD.HUD.fonts.pft:DrawStringScaled(text, temp_pos.X, temp_pos.Y, sprite_scale.X * 1.2,
+			                                       sprite_scale.Y * 1.2,
+			                                       self.font_color, align, true)
+			temp_pos.X = pos.X + offset.X
+			temp_pos.Y = pos.Y + offset.Y
 		end
-		local text = string.format('x%d', self.entPlayer:GetExtraLives())
-		if self.entPlayer:HasCollectible(CollectibleType.COLLECTIBLE_GUPPYS_COLLAR) then
-			text = text .. "?"
-		end
-		local align = 0
-		if mirrored then
-			temp_pos.X = temp_pos.X - (16 * sprite_scale.Y)
-			align = 1
-		end
-		coopHUD.HUD.fonts.pft:DrawStringScaled(text, temp_pos.X, temp_pos.Y, sprite_scale.X * 1.2,
-		                                       sprite_scale.Y * 1.2,
-		                                       self.font_color, align, true)
-		temp_pos.X = pos.X + offset.X
-		temp_pos.Y = pos.Y + offset.Y
 	end
-	end
+
 	--Todo: Extra protection charge indicator
 end
