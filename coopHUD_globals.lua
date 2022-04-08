@@ -85,6 +85,40 @@ coopHUD.players_config = {
 			color = 4,
 			stat_anchor = 'bot_right'
 		},
+	},
+	default = {
+		[0] = {
+			name = 'top left',
+			anchor = 'top_left',
+			anchor_bot = 'bot_left',
+			mirrored = false,
+			down_anchor = false,
+			stat_anchor = 'bot_left',
+		},
+		[1] = {
+			name = "Top right corner",
+			anchor = 'top_right',
+			anchor_bot = 'bot_right',
+			mirrored = true,
+			down_anchor = false,
+			stat_anchor = 'bot_right'
+		},
+		[2] = {
+			name = 'Bottom left corner',
+			anchor = 'bot_left',
+			anchor_bot = 'bot_left',
+			mirrored = false,
+			down_anchor = true,
+			stat_anchor = 'bot_left'
+		},
+		[3] = {
+			name = 'Bottom right corner',
+			anchor = 'bot_right',
+			anchor_bot = 'bot_right',
+			mirrored = true,
+			down_anchor = true,
+			stat_anchor = 'bot_right'
+		},
 	}
 }
 coopHUD.anchors = {
