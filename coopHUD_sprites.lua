@@ -464,7 +464,7 @@ function coopHUD.Pocket:update()
 		self.item = self:getItem()
 		self.name, self.desc = self:getName()
 		if self.slot == 0 and self.parent.entPlayer:IsHoldingItem() and self.type == coopHUD.Pocket.CARD then
-			coopHUD.Streak(false,coopHUD.Streak.ITEM,self.name,self.desc,true,self.parent.font_color)
+			coopHUD.Streak(false, coopHUD.Streak.ITEM, self.name, self.desc, true, self.parent.font_color)
 		end
 	end
 end
@@ -547,17 +547,9 @@ function coopHUD.Heart:getType()
 			heart_type = 'CurseHeart'
 			return heart_type, overlay
 		end
+	elseif player_type == 10 or player_type == 31 then
+		return nil, nil
 	else
-		if player_type == 10 or player_type == 31 then
-			if self.pos == 0 then
-				-- only returns for first pos
-				-- checks if Holy Mantle is loaded
-				if player:GetEffects():GetCollectibleEffectNum(CollectibleType.COLLECTIBLE_HOLY_MANTLE) ~= 0 then
-					heart_type = 'HolyMantle'
-					return heart_type, overlay
-				end
-			end
-		end
 		eternal = false
 		golden = false
 		local total_hearts = math.ceil((player:GetEffectiveMaxHearts() + player:GetSoulHearts()) / 2)
@@ -740,6 +732,9 @@ function coopHUD.Heart:render(pos, scale)
 	end
 	return offset
 end
+coopHUD.Mantle = Sprite()
+coopHUD.Mantle:Load(coopHUD.GLOBALS.hearts_anim_path, true)
+coopHUD.Mantle:SetFrame('HolyMantle', 0)
 --
 coopHUD.HeartTable = {}
 coopHUD.HeartTable.__index = coopHUD.HeartTable
@@ -1437,7 +1432,7 @@ coopHUD.Collectibles.sprite:SetFrame('Dissapear', 13) -- sets to last frame to n
 coopHUD.Collectibles.item_table = {}
 coopHUD.Collectibles.mirrored = false -- if mirrored stuff page anchors near right side else on left
 coopHUD.Collectibles.signal = false
-coopHUD.Collectibles.color = Color(1,1,1)
+coopHUD.Collectibles.color = Color(1, 1, 1)
 function coopHUD.Collectibles.render()
 	local sprite_pos = Vector(Isaac.GetScreenWidth() / 2 + 60, Isaac.GetScreenHeight() / 2 - 30)
 	if coopHUD.Collectibles.mirrored then
@@ -1512,7 +1507,8 @@ function coopHUD.Collectibles.trigger(Player)
 	coopHUD.Collectibles.signal = Game():GetFrameCount() -- sets streak signal as current frame num
 	if coopHUD.Collectibles.sprite:IsFinished('Dissapear') then
 		-- if Collectibles is finished play animation
-		coopHUD.Collectibles.sprite.Color = Color(Player.font_color.Red,Player.font_color.Green,Player.font_color.Blue)
+		coopHUD.Collectibles.sprite.Color = Color(Player.font_color.Red, Player.font_color.Green,
+		                                          Player.font_color.Blue)
 		coopHUD.Collectibles.mirrored = coopHUD.players_config.small[Player.game_index].mirrored
 		coopHUD.Collectibles.item_table = Player.collectibles
 		coopHUD.Collectibles.sprite:Play("Appear", true)
@@ -1523,7 +1519,7 @@ coopHUD.Streak = {}
 -- STREAK TYPES
 coopHUD.Streak.FLOOR = 0
 coopHUD.Streak.PICKUP = 1
-coopHUD.Streak.font_color = KColor(1,1,1,1)
+coopHUD.Streak.font_color = KColor(1, 1, 1, 1)
 setmetatable(coopHUD.Streak, {
 	__call = function(cls, ...)
 		return cls.trigger(...)
@@ -1564,7 +1560,7 @@ function coopHUD.Streak.render()
 			if coopHUD.Streak.first_line then
 				local f_color = coopHUD.Streak.font_color
 				if coopHUD.Streak.type == coopHUD.Streak.FLOOR then
-					f_color = KColor(1,1,1,1)
+					f_color = KColor(1, 1, 1, 1)
 				end
 				coopHUD.HUD.fonts.upheaval:DrawString(coopHUD.Streak.first_line,
 				                                      temp_pos.X,
@@ -1588,7 +1584,7 @@ function coopHUD.Streak.render()
 		end
 	end
 end
-function coopHUD.Streak.trigger(down_anchor, type, first_line, second_line, force_reset,font_color)
+function coopHUD.Streak.trigger(down_anchor, type, first_line, second_line, force_reset, font_color)
 	coopHUD.Streak.signal = Game():GetFrameCount() -- sets streak signal as current frame num
 	if coopHUD.Streak.sprite:IsFinished() or force_reset then
 		-- if streak is finished play animation
@@ -1600,7 +1596,7 @@ function coopHUD.Streak.trigger(down_anchor, type, first_line, second_line, forc
 		if font_color then
 			coopHUD.Streak.font_color = font_color
 		else
-			coopHUD.Streak.font_color = KColor(1,1,1,1)
+			coopHUD.Streak.font_color = KColor(1, 1, 1, 1)
 		end
 		if type == coopHUD.Streak.FLOOR then
 			-- in case of floor streak ignore passed strings

@@ -328,6 +328,16 @@ function coopHUD.Player:renderExtras(pos, mirrored, scale, down_anchor)
 	if sprite_scale == nil then sprite_scale = Vector(1, 1) end -- sets def sprite_scale
 	-- Render extra extra_lives
 	if Game():GetLevel():GetCurses() ~= LevelCurse.CURSE_OF_THE_UNKNOWN then
+		if self.entPlayer:GetEffects():GetCollectibleEffectNum(CollectibleType.COLLECTIBLE_HOLY_MANTLE) ~= 0 then
+			local mantle_pos = Vector(temp_pos.X + 4, temp_pos.Y + 12)
+			if down_anchor then
+				mantle_pos.Y = mantle_pos.Y - 16
+			end
+			if mirrored then
+				mantle_pos.X = mantle_pos.X - 12
+			end
+			coopHUD.Mantle:Render(mantle_pos)
+		end
 		if self.entPlayer:GetExtraLives() > 0 then
 		local offset = Vector(0, 8 * sprite_scale.X)
 		if down_anchor then
