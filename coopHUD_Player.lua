@@ -65,43 +65,46 @@ function coopHUD.Player.new(player_no)
 	}
 	--
 	self.font_color = KColor(1, 1, 1, 1)
-	--
-	coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, function(_, entPlayer)
-		if self.entPlayer.Index == entPlayer.Index then
-			self:update()
-			local item_queue = entPlayer.QueuedItem
-			if item_queue and item_queue.Item and item_queue.Item ~= nil and self.temp_item == nil then
-				self.temp_item = item_queue.Item -- saves as temp item
-				--____ Flashes triggers streak text with picked up name
-				if coopHUD.langAPI then
-					local streak_main_line = coopHUD.langAPI.getItemName(string.sub(item_queue.Item.Name, 2))
-					local streak_sec_line = coopHUD.langAPI.getItemName(string.sub(item_queue.Item.Description, 2))
-					coopHUD.Streak(false, coopHUD.Streak.ITEM, streak_main_line, streak_sec_line, true, self.font_color)
+	if not self.sub then
+		--MC_POST_PLAYER_UPDATE
+		coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, function(_, entPlayer)
+			if self.entPlayer and self.entPlayer.Index == entPlayer.Index then
+				self:update()
+				local item_queue = entPlayer.QueuedItem
+				if item_queue and item_queue.Item and item_queue.Item ~= nil and self.temp_item == nil then
+					self.temp_item = item_queue.Item -- saves as temp item
+					--____ Flashes triggers streak text with picked up name
+					if coopHUD.langAPI then
+						local streak_main_line = coopHUD.langAPI.getItemName(string.sub(item_queue.Item.Name, 2))
+						local streak_sec_line = coopHUD.langAPI.getItemName(string.sub(item_queue.Item.Description, 2))
+						coopHUD.Streak(false, coopHUD.Streak.ITEM, streak_main_line, streak_sec_line, true,
+						               self.font_color)
+					end
+				end
+				if not entPlayer:IsHoldingItem() and self.temp_item then
+					if self.temp_item.Type == ItemType.ITEM_ACTIVE then
+					elseif self.temp_item.Type == ItemType.ITEM_TRINKET then
+					else
+						table.insert(self.collectibles, coopHUD.Item(nil, -1, self.temp_item.ID))
+					end
+					self.temp_item = nil
+				end
+				for i = 0, PlayerForm.NUM_PLAYER_FORMS - 1 do
+					if self.transformations[i] ~= self.entPlayer:HasPlayerForm(i) then
+						coopHUD.Streak(false, coopHUD.Streak.ITEM, coopHUD.PlayerForm[i], nil, true, self.font_color)
+						self.transformations[i] = self.entPlayer:HasPlayerForm(i)
+					end
 				end
 			end
-			if not entPlayer:IsHoldingItem() and self.temp_item then
-				if self.temp_item.Type == ItemType.ITEM_ACTIVE then
-				elseif self.temp_item.Type == ItemType.ITEM_TRINKET then
-				else
-					table.insert(self.collectibles, coopHUD.Item(nil, -1, self.temp_item.ID))
-				end
-				self.temp_item = nil
-			end
-			for i = 0, PlayerForm.NUM_PLAYER_FORMS - 1 do
-				if self.transformations[i] ~= self.entPlayer:HasPlayerForm(i) then
-					coopHUD.Streak(false, coopHUD.Streak.ITEM, coopHUD.PlayerForm[i], nil, true, self.font_color)
-					self.transformations[i] = self.entPlayer:HasPlayerForm(i)
-				end
-			end
-		end
-	end)
-	--
-	coopHUD:AddCallback(ModCallbacks.MC_USE_PILL, function(_, effect_no, entPlayer)
-		if self.entPlayer.Index == entPlayer.Index then
-			local pill_sys_name = Isaac.GetItemConfig():GetPillEffect(effect_no).Name
-			pill_sys_name = string.sub(pill_sys_name, 2) --  get rid of # on front of
-			coopHUD.Streak(false, coopHUD.Streak.ITEM, coopHUD.langAPI.getPocketName(pill_sys_name), nil, true,
-			               self.font_color)
+		end)
+		--MC_USE_PILL
+		-- triggers streak with pill name on use
+		coopHUD:AddCallback(ModCallbacks.MC_USE_PILL, function(_, effect_no, entPlayer)
+			if self.entPlayer.Index == entPlayer.Index then
+				local pill_sys_name = Isaac.GetItemConfig():GetPillEffect(effect_no).Name
+				pill_sys_name = string.sub(pill_sys_name, 2) --  get rid of # on front of
+				coopHUD.Streak(false, coopHUD.Streak.ITEM, coopHUD.langAPI.getPocketName(pill_sys_name), nil, true,
+				               self.font_color)
 
 		end
 	end)
@@ -170,7 +173,8 @@ function coopHUD.Player.new(player_no)
 			                    end
 		                    end
 
-	                    end, CollectibleType.COLLECTIBLE_JAR_OF_WISPS)
+		                    end, CollectibleType.COLLECTIBLE_JAR_OF_WISPS)
+	end
 	return self
 end
 function coopHUD.Player:update()
