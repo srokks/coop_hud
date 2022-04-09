@@ -77,6 +77,7 @@ function coopHUD.Player.new(player_no, entPlayer)
 		coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, function(_, entPlayer)
 			if self.entPlayer and self.entPlayer.Index == entPlayer.Index then
 				self:update()
+				if self.essau then self.essau:update() end -- updates Essau 
 				local item_queue = entPlayer.QueuedItem
 				if item_queue and item_queue.Item and item_queue.Item ~= nil and self.temp_item == nil then
 					self.temp_item = item_queue.Item -- saves as temp item
