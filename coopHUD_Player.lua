@@ -17,7 +17,6 @@ function coopHUD.Player.new(player_no, entPlayer)
 	end
 	self.game_index = player_no - coopHUD.essau_no
 	self.controller_index = self.entPlayer.ControllerIndex
-	self.game_index = player_no - coopHUD.essau_no
 	self.player_head = coopHUD.PlayerHead(self)
 	-- Active items
 	self.active_item = coopHUD.Item(self.entPlayer, ActiveSlot.SLOT_PRIMARY)
@@ -38,10 +37,8 @@ function coopHUD.Player.new(player_no, entPlayer)
 	self.collectibles = {} -- item
 	self.gulped_trinkets = {} -- trinket
 	-- HEARTS
-	self.max_health_cap = 12
-	self.total_hearts = math.ceil((self.entPlayer:GetEffectiveMaxHearts() + self.entPlayer:GetSoulHearts()) / 2)
 	self.extra_lives = self.entPlayer:GetExtraLives()
-	self.hearts = coopHUD.HeartTable(self)
+	self.hearts = coopHUD.HeartTable(self.entPlayer)
 	-- SUB PLAYER
 	if self.entPlayer:GetPlayerType() == PlayerType.PLAYER_THEFORGOTTEN or self.entPlayer:GetPlayerType() == PlayerType.PLAYER_THEFORGOTTEN then
 	end

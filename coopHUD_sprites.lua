@@ -248,7 +248,7 @@ function coopHUD.Item:renderChargeBar(pos, mirrored, scale, down_anchor)
 	end
 	return offset
 end
-function coopHUD.Item:render(pos, mirrored, scale, down_anchor)
+function coopHUD.Item:render(pos, mirrored, scale, down_anchor, dim)
 	self:updateCharge()
 	local temp_pos = Vector(pos.X, pos.Y)
 	local sprite_scale = scale
@@ -743,30 +743,32 @@ setmetatable(coopHUD.HeartTable, {
 		return cls.new(...)
 	end,
 })
-function coopHUD.HeartTable.new(parent)
+function coopHUD.HeartTable.new(entPlayer)
 	local self = setmetatable({}, coopHUD.HeartTable)
-	self.parent = parent
-	for i = 0, self.parent.max_health_cap do
-		self[i] = coopHUD.Heart(self.parent, i)
+	self.entPlayer = entPlayer
+	self.max_health_cap = 12
+	self.total_hearts = math.ceil((self.entPlayer:GetEffectiveMaxHearts() + self.entPlayer:GetSoulHearts()) / 2)
+	for i = 0, self.max_health_cap do
+		self[i] = coopHUD.Heart(self, i)
 	end
 	return self
 end
 function coopHUD.HeartTable:render(pos, mirrored, scale, down_anchor)
 	local temp_off = Vector(0, 0)
-	if self.parent.entPlayer and self.parent.entPlayer:IsCoopGhost() then return temp_off end -- if player is coop ghost skips render
+	if self.entPlayer and self.entPlayer:IsCoopGhost() then return temp_off end -- if player is coop ghost skips render
 	local init_pos = Vector(pos.X, pos.Y)
 	--
 	local hearts_span
-	if self.parent.total_hearts >= 6 then
+	if self.total_hearts >= 6 then
 		-- Determines how many columns will be
 		hearts_span = 6
 	else
-		hearts_span = self.parent.total_hearts % 6
+		hearts_span = self.total_hearts % 6
 	end
-	local rows = math.ceil(self.parent.total_hearts / 6)
+	local rows = math.ceil(self.total_hearts / 6)
 	local cols = 6
-	if self.parent.total_hearts < 6 then
-		cols = math.ceil(self.parent.total_hearts % 6)
+	if self.total_hearts < 6 then
+		cols = math.ceil(self.total_hearts % 6)
 	end
 	if self[0] and self[0].type == 'CurseHeart' then
 		cols = 1
@@ -781,7 +783,7 @@ function coopHUD.HeartTable:render(pos, mirrored, scale, down_anchor)
 		rows = rows * -1.5
 	end
 	-- RENDER
-	for i = 0, self.parent.max_health_cap do
+	for i = 0, self.max_health_cap do
 		local temp_pos = Vector(init_pos.X + temp_off.X, init_pos.Y + temp_off.Y)
 		temp_off = self[i]:render(temp_pos, scale)
 	end
@@ -789,11 +791,11 @@ function coopHUD.HeartTable:render(pos, mirrored, scale, down_anchor)
 	return Vector(12 * scale.X * cols, 12 * scale.Y * rows)
 end
 function coopHUD.HeartTable:update()
-	local temp_total_hearts = math.ceil((self.parent.entPlayer:GetEffectiveMaxHearts() + self.parent.entPlayer:GetSoulHearts()) / 2)
-	if self.parent.total_hearts ~= temp_total_hearts then
-		self.parent.total_hearts = temp_total_hearts
+	local temp_total_hearts = math.ceil((self.entPlayer:GetEffectiveMaxHearts() + self.entPlayer:GetSoulHearts()) / 2)
+	if self.total_hearts ~= temp_total_hearts then
+		self.total_hearts = temp_total_hearts
 	end
-	for i = 0, self.parent.total_hearts do
+	for i = 0, self.total_hearts do
 		self[i]:update()
 	end
 end
