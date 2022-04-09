@@ -275,6 +275,15 @@ function coopHUD.Item:render(pos, mirrored, scale, down_anchor, dim)
 			temp_pos.X = temp_pos.X - 8
 			temp_pos.Y = temp_pos.Y - 8
 		end
+		if dim then
+			local color = Color(0.3, 0.3, 0.3, 1)
+			color:SetColorize(0, 0, 0, 0)
+			self.sprite.Color = color
+		else
+			local color = Color(1, 1, 1, 1)
+			color:SetColorize(0, 0, 0, 0)
+			self.sprite.Color = color
+		end
 		self.sprite.Scale = sprite_scale
 		self.sprite:Render(temp_pos)
 	end

@@ -243,19 +243,24 @@ function coopHUD.Player:render()
 	if coopHUD.options.render_player_info then
 		info_off = self.player_head:render(anchor, mirrored, scale, down_anchor)
 	end
-	self.schoolbag_item:render(Vector(anchor.X + info_off.X, anchor.Y), mirrored, scale, down_anchor)
-	active_off = self.active_item:render(Vector(anchor.X + info_off.X, anchor.Y), mirrored, scale, down_anchor)
+	local dim = false -- holds if active items needed to be dimmed before redner, default false
+	if self.essau then -- if playing as jacob sets dim according to pressed drop button
+		dim = Input.IsActionPressed(ButtonAction.ACTION_DROP, self.controller_index)
+	end
+	self.schoolbag_item:render(Vector(anchor.X + info_off.X, anchor.Y), mirrored, scale, down_anchor,dim)
+	active_off = self.active_item:render(Vector(anchor.X + info_off.X, anchor.Y), mirrored, scale, down_anchor,dim)
 	active_off.X = active_off.X + info_off.X
 	hearts_off = self.hearts:render(Vector(anchor.X + active_off.X, anchor.Y), mirrored, scale, down_anchor)
 	self:renderExtras(Vector(anchor.X + active_off.X + hearts_off.X, anchor.Y), mirrored, scale, down_anchor)
 	if self.essau then
 		local sub_anchor = Vector(anchor.X, anchor.Y)
 		sub_anchor.Y = sub_anchor.Y + math.max(info_off.Y, active_off.Y, hearts_off.Y)
-		self.essau.schoolbag_item:render(Vector(sub_anchor.X, sub_anchor.Y), mirrored, scale, down_anchor)
+		self.essau.schoolbag_item:render(Vector(sub_anchor.X, sub_anchor.Y), mirrored, scale, down_anchor,dim)
 		local sub_active_off = self.essau.active_item:render(Vector(sub_anchor.X, sub_anchor.Y), mirrored, scale,
-		                                                     down_anchor)
+		                                                     down_anchor,dim)
 		local sub_hearts_off = self.essau.hearts:render(Vector(sub_anchor.X + sub_active_off.X, sub_anchor.Y), mirrored,
 		                                                scale, down_anchor)
+		active_off.Y = active_off.Y + math.max(sub_active_off.Y, sub_hearts_off.Y)
 	end
 	-- <Second  top line render> --
 	if #coopHUD.players < 3 and not coopHUD.options.force_small_hud then
@@ -313,7 +318,7 @@ function coopHUD.Player:render()
 			if coopHUD.options.stats.colorful then
 				font_color = self.font_color
 			end
-			local temp_stat_pos = Vector(anchor.X, 100)
+			local temp_stat_pos = Vector(anchor.X, 82)
 			local off = Vector(0, 14) -- static offset for stats
 			if self.game_index == 2 or self.game_index == 3 then
 				-- checks if player is 3rd or 4th
