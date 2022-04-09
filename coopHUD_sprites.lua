@@ -147,7 +147,7 @@ function coopHUD.Item:getFrameNum()
 			end
 		else
 			-- Sets overlay/charges state frame --
-			local max_charges = Isaac.GetItemConfig():GetCollectible(self.id).MaxCharges -- gets max charges
+			local max_charges = Isaac.GetItemConfig():GetCollectible(self.id).MaxCharges or 0-- gets max charges
 			if max_charges == 0 then
 				-- checks id item has any charges
 				frame_num = 0 -- set frame to unloaded
@@ -336,6 +336,7 @@ function coopHUD.Trinket:render(pos, mirrored, scale, down_anchor)
 	local temp_pos = Vector(pos.X, pos.Y)
 	local sprite_scale = scale
 	local offset = Vector(0, 0)
+	if self.entPlayer and self.entPlayer:IsCoopGhost() then return offset end -- if player is coop ghost skips render
 	--
 	if sprite_scale == nil then sprite_scale = Vector(1, 1) end -- sets def sprite_scale
 	--
@@ -350,13 +351,12 @@ function coopHUD.Trinket:render(pos, mirrored, scale, down_anchor)
 		--
 		if down_anchor then
 			temp_pos.Y = temp_pos.Y - (16 * sprite_scale.Y)
-			offset.Y = -32 * sprite_scale.Y
+			offset.Y = -24 * sprite_scale.Y
 		else
 			temp_pos.Y = temp_pos.Y + (16 * sprite_scale.Y)
 			offset.Y = 24 * sprite_scale.Y
 		end
 		--
-		if self.entPlayer and self.entPlayer:IsCoopGhost() then return offset end -- if player is coop ghost skips render
 		self.sprite.Scale = sprite_scale
 		self.sprite:Render(temp_pos)
 	end
@@ -477,7 +477,7 @@ function coopHUD.Pocket:update()
 		end
 	end
 end
-function coopHUD.Pocket:render(pos, mirrored, scale, down_anchor)
+function coopHUD.Pocket:render(pos, mirrored, scale, down_anchor, dim)
 	local temp_pos = Vector(pos.X, pos.Y)
 	local sprite_scale = scale
 	local offset = Vector(0, 0)
@@ -504,6 +504,15 @@ function coopHUD.Pocket:render(pos, mirrored, scale, down_anchor)
 	if self.parent.entPlayer and self.parent.entPlayer:IsCoopGhost() then return offset end -- if player is coop ghost skips render
 	--
 	if self.sprite then
+		if dim then
+			local color = Color(0.3, 0.3, 0.3, 1)
+			color:SetColorize(0, 0, 0, 0)
+			self.sprite.Color = color
+		else
+			local color = Color(1, 1, 1, 1)
+			color:SetColorize(0, 0, 0, 0)
+			self.sprite.Color = color
+		end
 		self.sprite.Scale = sprite_scale
 		self.sprite:Render(temp_pos)
 	elseif self.item then
