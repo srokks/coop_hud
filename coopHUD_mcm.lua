@@ -18,7 +18,7 @@ function coopHUD.save_options()
 		['angel_seen'] = coopHUD.angel_seen,
 	}
 	--
-	if coopHUD.jar_of_wisp_charge > 0 then
+	if coopHUD.jar_of_wisp_charge and coopHUD.jar_of_wisp_charge > 0 then
 		save.run['jar_of_wisp_use'] = coopHUD.jar_of_wisp_charge
 	end
 	--
