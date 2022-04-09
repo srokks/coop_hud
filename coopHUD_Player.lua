@@ -77,7 +77,7 @@ function coopHUD.Player.new(player_no, entPlayer)
 		coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, function(_, entPlayer)
 			if self.entPlayer and self.entPlayer.Index == entPlayer.Index then
 				self:update()
-				if self.essau then self.essau:update() end -- updates Essau 
+				if self.essau then self.essau:update() end -- updates Essau
 				local item_queue = entPlayer.QueuedItem
 				if item_queue and item_queue.Item and item_queue.Item ~= nil and self.temp_item == nil then
 					self.temp_item = item_queue.Item -- saves as temp item
@@ -114,72 +114,72 @@ function coopHUD.Player.new(player_no, entPlayer)
 				coopHUD.Streak(false, coopHUD.Streak.ITEM, coopHUD.langAPI.getPocketName(pill_sys_name), nil, true,
 				               self.font_color)
 
-		end
-	end)
-	-- CollectibleType.COLLECTIBLE_SMELTER
-	-- connect to MC_PRE_USE_ITEM to handle gulping trinkets even when they are currently in entityPlayer.Queue
-	coopHUD:AddCallback(ModCallbacks.MC_PRE_USE_ITEM,
-	                    function(_, collectible_type, rng, entPlayer, use_flags, slot, var_data)
-		                    -- checks if player currently holding trinket over head
-		                    if self.entPlayer.Index == entPlayer.Index then
-			                    if entPlayer.QueuedItem.Item and entPlayer.QueuedItem.Item:IsTrinket() then
-				                    table.insert(self.collectibles,
-				                                 coopHUD.Trinket(nil, -1, entPlayer.QueuedItem.Item.ID))
-			                    end
-			                    -- checks if player has first trinket
-			                    if self.first_trinket.id > 0 then
-				                    -- add to collectibles table
-				                    table.insert(self.collectibles, coopHUD.Trinket(nil, -1, self.first_trinket.id))
-				                    -- checks if player has first secont trinket
-				                    if self.second_trinket.id > 0 then
-					                    -- add to collectibles table
+			end
+		end)
+		-- CollectibleType.COLLECTIBLE_SMELTER
+		-- connect to MC_PRE_USE_ITEM to handle gulping trinkets even when they are currently in entityPlayer.Queue
+		coopHUD:AddCallback(ModCallbacks.MC_PRE_USE_ITEM,
+		                    function(_, collectible_type, rng, entPlayer, use_flags, slot, var_data)
+			                    -- checks if player currently holding trinket over head
+			                    if self.entPlayer.Index == entPlayer.Index then
+				                    if entPlayer.QueuedItem.Item and entPlayer.QueuedItem.Item:IsTrinket() then
 					                    table.insert(self.collectibles,
-					                                 coopHUD.Trinket(nil, -1, self.second_trinket.id))
+					                                 coopHUD.Trinket(nil, -1, entPlayer.QueuedItem.Item.ID))
 				                    end
-			                    end
-		                    end
-	                    end, CollectibleType.COLLECTIBLE_SMELTER)
-	-- CollectibleType.COLLECTIBLE_D4
-	-- connect to MC_USE_ITEM to handle roll of collectibles
-	-- Isaac uses use signal of D4 to roll in Dice Room and other occasions
-	coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
-	                    function(_, collectible_type, rng, entPlayer, use_flags, slot, var_data)
-		                    if self.entPlayer.Index == entPlayer.Index then
-			                    local trinkets = {}
-			                    -- saves trinkets into temp table - gulped trinkets do not roll
-			                    for i = 1, #self.collectibles do
-				                    if self.collectibles[i].type == PickupVariant.PICKUP_TRINKET then
-					                    table.insert(trinkets, self.collectibles[i])
-				                    end
-			                    end
-			                    self.collectibles = {} -- resets players collectible table
-			                    for i = 1, Isaac.GetItemConfig():GetCollectibles().Size - 1 do
-				                    -- check if player has collectible
-				                    if self.entPlayer:HasCollectible(i) then
-					                    -- skips active items
-					                    if Isaac.GetItemConfig():GetCollectible(i).Type ~= ItemType.ITEM_ACTIVE then
-						                    table.insert(self.collectibles, coopHUD.Item(nil, -1, i))
+				                    -- checks if player has first trinket
+				                    if self.first_trinket.id > 0 then
+					                    -- add to collectibles table
+					                    table.insert(self.collectibles, coopHUD.Trinket(nil, -1, self.first_trinket.id))
+					                    -- checks if player has first secont trinket
+					                    if self.second_trinket.id > 0 then
+						                    -- add to collectibles table
+						                    table.insert(self.collectibles,
+						                                 coopHUD.Trinket(nil, -1, self.second_trinket.id))
 					                    end
 				                    end
 			                    end
-			                    -- adds saved trinkets on top of collectibles table
-			                    for i = 1, #trinkets do
-				                    table.insert(self.collectibles, trinkets[i])
+		                    end, CollectibleType.COLLECTIBLE_SMELTER)
+		-- CollectibleType.COLLECTIBLE_D4
+		-- connect to MC_USE_ITEM to handle roll of collectibles
+		-- Isaac uses use signal of D4 to roll in Dice Room and other occasions
+		coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
+		                    function(_, collectible_type, rng, entPlayer, use_flags, slot, var_data)
+			                    if self.entPlayer.Index == entPlayer.Index then
+				                    local trinkets = {}
+				                    -- saves trinkets into temp table - gulped trinkets do not roll
+				                    for i = 1, #self.collectibles do
+					                    if self.collectibles[i].type == PickupVariant.PICKUP_TRINKET then
+						                    table.insert(trinkets, self.collectibles[i])
+					                    end
+				                    end
+				                    self.collectibles = {} -- resets players collectible table
+				                    for i = 1, Isaac.GetItemConfig():GetCollectibles().Size - 1 do
+					                    -- check if player has collectible
+					                    if self.entPlayer:HasCollectible(i) then
+						                    -- skips active items
+						                    if Isaac.GetItemConfig():GetCollectible(i).Type ~= ItemType.ITEM_ACTIVE then
+							                    table.insert(self.collectibles, coopHUD.Item(nil, -1, i))
+						                    end
+					                    end
+				                    end
+				                    -- adds saved trinkets on top of collectibles table
+				                    for i = 1, #trinkets do
+					                    table.insert(self.collectibles, trinkets[i])
+				                    end
 			                    end
-		                    end
-	                    end, CollectibleType.COLLECTIBLE_D4)
-	-- CollectibleType.COLLECTIBLE_JAR_OF_WISPS
-	-- connect to MC_USE_ITEM to handle jar of wisp since no possibility to get var var_data
-	-- on use will increase global jar_of_wisp use variable
-	-- FIXME: no charges for multiples jar of wisp instances in one run
-	coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
-	                    function(_, collectible_type, rng, entPlayer, use_flags, slot, var_data)
-		                    if self.entPlayer.Index == entPlayer.Index then
-			                    if coopHUD.jar_of_wisp_charge < 11 then
-				                    -- max charge 12
-				                    coopHUD.jar_of_wisp_charge = coopHUD.jar_of_wisp_charge + 1 --increase charge
+		                    end, CollectibleType.COLLECTIBLE_D4)
+		-- CollectibleType.COLLECTIBLE_JAR_OF_WISPS
+		-- connect to MC_USE_ITEM to handle jar of wisp since no possibility to get var var_data
+		-- on use will increase global jar_of_wisp use variable
+		-- FIXME: no charges for multiples jar of wisp instances in one run
+		coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
+		                    function(_, collectible_type, rng, entPlayer, use_flags, slot, var_data)
+			                    if self.entPlayer.Index == entPlayer.Index then
+				                    if coopHUD.jar_of_wisp_charge < 11 then
+					                    -- max charge 12
+					                    coopHUD.jar_of_wisp_charge = coopHUD.jar_of_wisp_charge + 1 --increase charge
+				                    end
 			                    end
-		                    end
 
 		                    end, CollectibleType.COLLECTIBLE_JAR_OF_WISPS)
 	end
@@ -246,23 +246,30 @@ function coopHUD.Player:render()
 	local dim = false -- holds if active items needed to be dimmed before redner, default false
 	if self.essau then -- if playing as jacob sets dim according to pressed drop button
 		dim = Input.IsActionPressed(ButtonAction.ACTION_DROP, self.controller_index)
+		scale = Vector(1,1)
+		if dim then scale = Vector(0.7,0.7) end -- shrinks inactive sprites
 	end
 	self.schoolbag_item:render(Vector(anchor.X + info_off.X, anchor.Y), mirrored, scale, down_anchor,dim)
 	active_off = self.active_item:render(Vector(anchor.X + info_off.X, anchor.Y), mirrored, scale, down_anchor,dim)
 	active_off.X = active_off.X + info_off.X
+	scale = coopHUD.players_config.small.scale -- resets scale if essau logic changes it
 	hearts_off = self.hearts:render(Vector(anchor.X + active_off.X, anchor.Y), mirrored, scale, down_anchor)
 	self:renderExtras(Vector(anchor.X + active_off.X + hearts_off.X, anchor.Y), mirrored, scale, down_anchor)
 	if self.essau then
 		local sub_anchor = Vector(anchor.X, anchor.Y)
+		if dim then scale = Vector(0.7,0.7) end
 		sub_anchor.Y = sub_anchor.Y + math.max(info_off.Y, active_off.Y, hearts_off.Y)
 		self.essau.schoolbag_item:render(Vector(sub_anchor.X, sub_anchor.Y), mirrored, scale, down_anchor,dim)
 		local sub_active_off = self.essau.active_item:render(Vector(sub_anchor.X, sub_anchor.Y), mirrored, scale,
 		                                                     down_anchor,dim)
+		scale = coopHUD.players_config.small.scale -- resets scale if essau logic changes it
 		local sub_hearts_off = self.essau.hearts:render(Vector(sub_anchor.X + sub_active_off.X, sub_anchor.Y), mirrored,
 		                                                scale, down_anchor)
 		active_off.Y = active_off.Y + math.max(sub_active_off.Y, sub_hearts_off.Y)
+		scale = coopHUD.players_config.small.scale -- resets scale if essau logic changes it
 	end
 	-- <Second  top line render> --
+
 	if #coopHUD.players < 3 and not coopHUD.options.force_small_hud then
 		-- special version of hud when only when <2 players and not forced in options
 		anchor.X = anchor_bot.X
@@ -285,9 +292,15 @@ function coopHUD.Player:render()
 	self.second_trinket:render(Vector(anchor.X, anchor.Y + first_line_offset.Y + trinket_off.Y), mirrored, scale,
 	                           down_anchor)
 	--
+	local dim = true -- holds if active items needed to be dimmed before redner, default false
+	if self.essau then -- if playing as jacob sets dim according to pressed drop button
+		dim = not Input.IsActionPressed(ButtonAction.ACTION_DROP, self.controller_index)
+		scale = Vector(1,1)
+		if dim then scale = Vector(0.7,0.7) end -- shrinks inactive sprites
+	end
 	pocket_off = self.first_pocket:render(Vector(anchor.X + trinket_off.X, anchor.Y + first_line_offset.Y), mirrored,
 	                                      scale,
-	                                      down_anchor)
+	                                      down_anchor,dim)
 	second_pocket_off = self.second_pocket:render(Vector(anchor.X + trinket_off.X + pocket_off.X,
 	                                                     anchor.Y + first_line_offset.Y + pocket_desc_off.Y), mirrored,
 	                                              Vector(0.5 * scale.X, 0.5 * scale.Y),
