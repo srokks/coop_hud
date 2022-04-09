@@ -1,17 +1,20 @@
 -- __________ On start
 function coopHUD.on_start(_, cont)
+	--Resets tables
 	coopHUD.players = {}
+	coopHUD.essau_no = 0 -- resets essau_no
+	coopHUD.on_player_init() -- inits players
+	--
+	coopHUD.angel_seen = false -- resets angel seen state on restart
+	coopHUD.jar_of_wisp_charge = false -- resets wisp charge  on restart
 	if cont then
 		local json = require("json")
 		-- Logic when game is continued
-		if coopHUD.players[0] == nil then
-			coopHUD.on_player_init()
-		end
-		--
 		local save = json.decode(coopHUD:LoadData())
 		if coopHUD.VERSION == save.version then
 			coopHUD.essau_no = save.run.essau_no
 			coopHUD.angel_seen = save.run.angel_seen
+			--TODO: jar of wisp charge load from save
 			-- Loads player data from save
 			for player_no, player_save in pairs(save.run.players) do
 				--` load collectibles
@@ -27,11 +30,6 @@ function coopHUD.on_start(_, cont)
 			end
 			--
 		end
-	else
-		-- Logic when started new game/ restart thought dbg console
-		coopHUD.on_player_init()
-		--
-		coopHUD.angel_seen = false -- resets angel seen state on restart
 	end
 	coopHUD.HUD.init()
 end
