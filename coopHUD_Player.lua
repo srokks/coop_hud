@@ -36,11 +36,14 @@ function coopHUD.Player.new(player_no)
 	self.extra_lives = self.entPlayer:GetExtraLives()
 	self.hearts = coopHUD.HeartTable(self)
 	-- SUB PLAYER
-	has_sub = false -- Determines if player has sub as Forgotten/Soul
-	has_twin = false -- Determines if player has twin as Jacob/Essau
-	is_ghost = self.entPlayer:IsCoopGhost() -- Determines if player is old style coop ghost
-	sub_heart_types = {}
-	twin = {}
+	if self.entPlayer:GetPlayerType() == PlayerType.PLAYER_THEFORGOTTEN or self.entPlayer:GetPlayerType() == PlayerType.PLAYER_THEFORGOTTEN then
+	end
+	if self.entPlayer:GetPlayerType() == PlayerType.PLAYER_JACOB then
+		self.essau = coopHUD.Player(self.game_index, self.entPlayer:GetOtherTwin())
+	end
+	if self.entPlayer:GetPlayerType() == PlayerType.PLAYER_ESAU then
+		self.sub = true
+	end
 	-- STATS
 	-- Inits stats as coopHUD.Stat class
 	self.speed = coopHUD.Stat(self, coopHUD.Stat.SPEED, self.game_index == 0 or self.game_index == 1)
@@ -240,7 +243,15 @@ function coopHUD.Player:render()
 	active_off.X = active_off.X + info_off.X
 	hearts_off = self.hearts:render(Vector(anchor.X + active_off.X, anchor.Y), mirrored, scale, down_anchor)
 	self:renderExtras(Vector(anchor.X + active_off.X + hearts_off.X, anchor.Y), mirrored, scale, down_anchor)
-	--self.active_item:render(Vector(anchor.X + active_off.X + hearts_off.X, anchor.Y), mirrored, scale, down_anchor)
+	if self.essau then
+		local sub_anchor = Vector(anchor.X, anchor.Y)
+		sub_anchor.Y = sub_anchor.Y + math.max(info_off.Y, active_off.Y, hearts_off.Y)
+		self.essau.schoolbag_item:render(Vector(sub_anchor.X, sub_anchor.Y), mirrored, scale, down_anchor)
+		local sub_active_off = self.essau.active_item:render(Vector(sub_anchor.X, sub_anchor.Y), mirrored, scale,
+		                                                     down_anchor)
+		local sub_hearts_off = self.essau.hearts:render(Vector(sub_anchor.X + sub_active_off.X, sub_anchor.Y), mirrored,
+		                                                scale, down_anchor)
+	end
 	-- <Second  top line render> --
 	if #coopHUD.players < 3 and not coopHUD.options.force_small_hud then
 		-- special version of hud when only when <2 players and not forced in options
