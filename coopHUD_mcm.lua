@@ -1,13 +1,11 @@
 local json = require("json")
 if coopHUD:HasData() then
 	local save = json.decode(coopHUD:LoadData())
-	if false then
-		coopHUD.players_config.small[0] = save.players_config.small['0']
-		coopHUD.players_config.small[1] = save.players_config.small['1']
-		coopHUD.players_config.small[2] = save.players_config.small['2']
-		coopHUD.players_config.small[3] = save.players_config.small['3']
-		coopHUD.options = save.options
-	end
+	coopHUD.players_config.small[0] = save.players_config.small['0']
+	coopHUD.players_config.small[1] = save.players_config.small['1']
+	coopHUD.players_config.small[2] = save.players_config.small['2']
+	coopHUD.players_config.small[3] = save.players_config.small['3']
+	coopHUD.options = save.options
 end
 function coopHUD.save_options()
 	local save = {}
