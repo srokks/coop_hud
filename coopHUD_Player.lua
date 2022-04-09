@@ -5,10 +5,17 @@ setmetatable(coopHUD.Player, {
 		return cls.new(...)
 	end,
 })
-function coopHUD.Player.new(player_no)
+---@param player_no number player ,used for main
+---@param entPlayer userdata accepts EntityPlayer, if passed ignore passed player number and creates Player according to passed entity
+---used for sub player such as essau
+function coopHUD.Player.new(player_no, entPlayer)
 	local self = setmetatable({}, coopHUD.Player)
 	--
 	self.entPlayer = Isaac.GetPlayer(player_no)
+	if entPlayer then
+		self.entPlayer = entPlayer
+	end
+	self.game_index = player_no - coopHUD.essau_no
 	self.controller_index = self.entPlayer.ControllerIndex
 	self.game_index = player_no - coopHUD.essau_no
 	self.player_head = coopHUD.PlayerHead(self)
