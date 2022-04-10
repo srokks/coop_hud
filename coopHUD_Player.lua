@@ -156,7 +156,11 @@ function coopHUD.Player:render()
 		local sub_anchor = Vector(anchor.X, anchor.Y)
 		if dim then scale = Vector(0.9 * coopHUD.players_config.small.scale.X,
 		                           0.9 * coopHUD.players_config.small.scale.Y) end -- shrinks inactive sprites
-		sub_anchor.Y = sub_anchor.Y + math.max(info_off.Y, active_off.Y, hearts_off.Y)
+		if down_anchor then
+			sub_anchor.Y = sub_anchor.Y + math.min(info_off.Y, active_off.Y, hearts_off.Y) * 0.75
+		else
+			sub_anchor.Y = sub_anchor.Y + math.max(info_off.Y, active_off.Y, hearts_off.Y)
+		end
 		self.essau.schoolbag_item:render(Vector(sub_anchor.X, sub_anchor.Y), mirrored, scale, down_anchor, dim)
 		local sub_active_off = self.essau.active_item:render(Vector(sub_anchor.X, sub_anchor.Y), mirrored, scale,
 		                                                     down_anchor, dim)
@@ -213,15 +217,15 @@ function coopHUD.Player:render()
 	                                                   anchor.Y + first_line_offset.Y + pocket_desc_off.Y), mirrored,
 	                                            Vector(0.5 * scale.X, 0.5 * scale.Y),
 	                                            down_anchor, dim)
+	if down_anchor then
+		first_line_offset.Y = first_line_offset.Y + math.min(pocket_off.Y,trinket_off.Y)
+	else
+		first_line_offset.Y = first_line_offset.Y + math.max(pocket_off.Y,trinket_off.Y)
+	end
 	--
 	if self.essau then -- RENDERS ESSAU TRINKETS/POCKETS
 		scale = coopHUD.players_config.small.scale -- resets scale if essau logic changes it
 		local sub_trinket_pos = Vector(anchor.X, anchor.Y + first_line_offset.Y)
-		if down_anchor then
-			sub_trinket_pos.Y = sub_trinket_pos.Y + math.min(pocket_off.Y, trinket_off.Y)
-		else
-			sub_trinket_pos.Y = sub_trinket_pos.Y + math.max(pocket_off.Y, trinket_off.Y)
-		end
 		local sub_trinket_off = self.essau.first_trinket:render(Vector(sub_trinket_pos.X, sub_trinket_pos.Y), mirrored,
 		                                                        scale,
 		                                                        down_anchor)
@@ -244,6 +248,11 @@ function coopHUD.Player:render()
 		                                                            mirrored,
 		                                                            Vector(0.5 * scale.X, 0.5 * scale.Y),
 		                                                            down_anchor, dim)
+		if down_anchor then
+			first_line_offset.Y = first_line_offset.Y + math.min(sub_pocket_off.Y,sub_trinket_off.Y)
+		else
+			first_line_offset.Y = first_line_offset.Y + math.max(sub_pocket_off.Y,sub_trinket_off.Y)
+		end
 	end
 	-- PLAYER COLOR SET
 	local col = Color(1, 1, 1, 1)
@@ -296,6 +305,8 @@ function coopHUD.Player:render()
 			end
 		end
 	end
+	--debug
+	self.active_item:render(Vector(anchor.X,anchor.Y+first_line_offset.Y),mirrored,Vector(1,1),down_anchor,true)
 	if self.signals.map_btn then
 		-- TODO: stuff page render of button signal
 	end

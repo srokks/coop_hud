@@ -736,7 +736,7 @@ function coopHUD.Heart:update()
 		self.sprite = self:getSprite()
 	end
 end
-function coopHUD.Heart:render(pos, scale,dim)
+function coopHUD.Heart:render(pos, scale, dim)
 	local offset = Vector(0, 0)
 	local sprite_scale = scale
 	if sprite_scale == nil then sprite_scale = Vector(1, 1) end
@@ -806,7 +806,7 @@ function coopHUD.HeartTable:render(pos, mirrored, scale, down_anchor, dim)
 		cols = cols * -1
 	end
 	if down_anchor then
-		init_pos.Y = pos.Y + (-16 * scale.Y) * math.ceil(self.parent.total_hearts / 6)
+		init_pos.Y = pos.Y + (-16 * scale.Y) * math.ceil(self.total_hearts / 6)
 		rows = rows * -1.5
 	end
 	-- RENDER
@@ -823,7 +823,7 @@ function coopHUD.HeartTable:update()
 		self.total_hearts = temp_total_hearts
 	end
 	for i = 0, self.total_hearts do
-		self[i]:update()
+			self[i]:update()
 	end
 end
 --

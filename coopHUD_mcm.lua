@@ -44,6 +44,7 @@ function coopHUD.save_options()
 	end
 	save.run.players = players
 	coopHUD:SaveData(json.encode(save))
+	coopHUD.players = {}
 end
 coopHUD:AddCallback(ModCallbacks.MC_PRE_GAME_EXIT, coopHUD.save_options)
 if ModConfigMenu then
@@ -513,11 +514,10 @@ if ModConfigMenu then
 			return "Sets player position on big hud"
 		end
 	})
-	--[[ModConfigMenu.AddTitle(mod_name, "Positions", 'Small HUD positions')
+	ModConfigMenu.AddTitle(mod_name, "Positions", 'Small HUD positions')
 	ModConfigMenu.AddSetting(mod_name, "Positions", {
 		Type = ModConfigMenu.OptionType.NUMBER,
 		CurrentSetting = function()
-			print(coopHUD.anchors[coopHUD.players_config.small[0].anchor .. '_id'])
 			return coopHUD.anchors[coopHUD.players_config.small[0].anchor .. '_id']
 		end,
 		Minimum = 0,
@@ -526,16 +526,15 @@ if ModConfigMenu then
 			return "Player 1: " .. coopHUD.anchors[coopHUD.players_config.small[0].anchor .. '_name']
 		end,
 		OnChange = function(currentNum)
-			--print(currentNum)
 			coopHUD.players_config.small[0].anchor = coopHUD.players_config.default[currentNum].anchor
 			coopHUD.players_config.small[0].mirrored = coopHUD.players_config.default[currentNum].mirrored
 			coopHUD.players_config.small[0].down_anchor = coopHUD.players_config.default[currentNum].down_anchor
-			--coopHUD.save_options()
+			coopHUD.save_options()
 		end,
 		Info = function()
 			return "Sets player position on small hud"
 		end
-	})]]
+	})
 end
 -- Overrides External item description mod setting to better fit with HUD
 if EID then
