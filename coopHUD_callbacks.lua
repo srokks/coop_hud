@@ -91,6 +91,115 @@ end)
 coopHUD:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function()
 	coopHUD.Streak(false, coopHUD.Streak.FLOOR)
 end)
+--  MC_POST_PLAYER_UPDATE
+coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, function(_, entPlayer)
+	if self.entPlayer and self.entPlayer.Index == entPlayer.Index then
+		self:update()
+		if self.essau then self.essau:update() end -- updates Essau
+		local item_queue = entPlayer.QueuedItem
+		if item_queue and item_queue.Item and item_queue.Item ~= nil and self.temp_item == nil then
+			self.temp_item = item_queue.Item -- saves as temp item
+			--____ Flashes triggers streak text with picked up name
+			if coopHUD.langAPI then
+				local streak_main_line = coopHUD.langAPI.getItemName(string.sub(item_queue.Item.Name, 2))
+				local streak_sec_line = coopHUD.langAPI.getItemName(string.sub(item_queue.Item.Description, 2))
+				coopHUD.Streak(false, coopHUD.Streak.ITEM, streak_main_line, streak_sec_line, true,
+				               self.font_color)
+			end
+		end
+		if not entPlayer:IsHoldingItem() and self.temp_item then
+			if self.temp_item.Type == ItemType.ITEM_ACTIVE then
+			elseif self.temp_item.Type == ItemType.ITEM_TRINKET then
+			else
+				table.insert(self.collectibles, coopHUD.Item(nil, -1, self.temp_item.ID))
+			end
+			self.temp_item = nil
+		end
+		for i = 0, PlayerForm.NUM_PLAYER_FORMS - 1 do
+			if self.transformations[i] ~= self.entPlayer:HasPlayerForm(i) then
+				coopHUD.Streak(false, coopHUD.Streak.ITEM, coopHUD.PlayerForm[i], nil, true, self.font_color)
+				self.transformations[i] = self.entPlayer:HasPlayerForm(i)
+			end
+		end
+	end
+end)
+-- MC_USE_PILL
+-- triggers streak with pill name on use
+coopHUD:AddCallback(ModCallbacks.MC_USE_PILL, function(_, effect_no, entPlayer)
+	if self.entPlayer.Index == entPlayer.Index then
+		local pill_sys_name = Isaac.GetItemConfig():GetPillEffect(effect_no).Name
+		pill_sys_name = string.sub(pill_sys_name, 2) --  get rid of # on front of
+		coopHUD.Streak(false, coopHUD.Streak.ITEM, coopHUD.langAPI.getPocketName(pill_sys_name), nil, true,
+		               self.font_color)
+
+	end
+end)
+-- CollectibleType.COLLECTIBLE_SMELTER
+-- connect to MC_PRE_USE_ITEM to handle gulping trinkets even when they are currently in entityPlayer.Queue
+coopHUD:AddCallback(ModCallbacks.MC_PRE_USE_ITEM,
+                    function(_, collectible_type, rng, entPlayer, use_flags, slot, var_data)
+	                    -- checks if player currently holding trinket over head
+	                    if self.entPlayer.Index == entPlayer.Index then
+		                    if entPlayer.QueuedItem.Item and entPlayer.QueuedItem.Item:IsTrinket() then
+			                    table.insert(self.collectibles,
+			                                 coopHUD.Trinket(nil, -1, entPlayer.QueuedItem.Item.ID))
+		                    end
+		                    -- checks if player has first trinket
+		                    if self.first_trinket.id > 0 then
+			                    -- add to collectibles table
+			                    table.insert(self.collectibles, coopHUD.Trinket(nil, -1, self.first_trinket.id))
+			                    -- checks if player has first secont trinket
+			                    if self.second_trinket.id > 0 then
+				                    -- add to collectibles table
+				                    table.insert(self.collectibles,
+				                                 coopHUD.Trinket(nil, -1, self.second_trinket.id))
+			                    end
+		                    end
+	                    end
+                    end, CollectibleType.COLLECTIBLE_SMELTER)
+-- CollectibleType.COLLECTIBLE_D4
+-- connect to MC_USE_ITEM to handle roll of collectibles
+-- Isaac uses use signal of D4 to roll in Dice Room and other occasions
+coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
+                    function(_, collectible_type, rng, entPlayer, use_flags, slot, var_data)
+	                    if self.entPlayer.Index == entPlayer.Index then
+		                    local trinkets = {}
+		                    -- saves trinkets into temp table - gulped trinkets do not roll
+		                    for i = 1, #self.collectibles do
+			                    if self.collectibles[i].type == PickupVariant.PICKUP_TRINKET then
+				                    table.insert(trinkets, self.collectibles[i])
+			                    end
+		                    end
+		                    self.collectibles = {} -- resets players collectible table
+		                    for i = 1, Isaac.GetItemConfig():GetCollectibles().Size - 1 do
+			                    -- check if player has collectible
+			                    if self.entPlayer:HasCollectible(i) then
+				                    -- skips active items
+				                    if Isaac.GetItemConfig():GetCollectible(i).Type ~= ItemType.ITEM_ACTIVE then
+					                    table.insert(self.collectibles, coopHUD.Item(nil, -1, i))
+				                    end
+			                    end
+		                    end
+		                    -- adds saved trinkets on top of collectibles table
+		                    for i = 1, #trinkets do
+			                    table.insert(self.collectibles, trinkets[i])
+		                    end
+	                    end
+                    end, CollectibleType.COLLECTIBLE_D4)
+-- CollectibleType.COLLECTIBLE_JAR_OF_WISPS
+-- connect to MC_USE_ITEM to handle jar of wisp since no possibility to get var var_data
+-- on use will increase global jar_of_wisp use variable
+-- FIXME: no charges for multiples jar of wisp instances in one run
+coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
+                    function(_, collectible_type, rng, entPlayer, use_flags, slot, var_data)
+	                    if self.entPlayer.Index == entPlayer.Index then
+		                    if coopHUD.jar_of_wisp_charge < 11 then
+			                    -- max charge 12
+			                    coopHUD.jar_of_wisp_charge = coopHUD.jar_of_wisp_charge + 1 --increase charge
+		                    end
+	                    end
+
+                    end, CollectibleType.COLLECTIBLE_JAR_OF_WISPS)
 -- INPUT TRIGGERS
 local btn_held = 0
 function coopHUD.inputs_signals()
