@@ -40,7 +40,8 @@ function coopHUD.Player.new(player_no, entPlayer)
 	self.extra_lives = self.entPlayer:GetExtraLives()
 	self.hearts = coopHUD.HeartTable(self.entPlayer)
 	-- SUB PLAYER
-	if self.entPlayer:GetPlayerType() == PlayerType.PLAYER_THEFORGOTTEN or self.entPlayer:GetPlayerType() == PlayerType.PLAYER_THEFORGOTTEN then
+	if self.entPlayer:GetPlayerType() == PlayerType.PLAYER_THEFORGOTTEN then
+		self.sub_hearts = coopHUD.HeartTable(self.entPlayer:GetSubPlayer())
 	end
 	if self.entPlayer:GetPlayerType() == PlayerType.PLAYER_JACOB then
 		self.essau = coopHUD.Player(self.game_index, self.entPlayer:GetOtherTwin())
@@ -146,8 +147,12 @@ function coopHUD.Player:render()
 	active_off.X = active_off.X + info_off.X
 	scale = coopHUD.players_config.small.scale -- resets scale if essau logic changes it
 	hearts_off = self.hearts:render(Vector(anchor.X + active_off.X, anchor.Y), mirrored, scale, down_anchor)
+	if self.sub_hearts then -- RENDERS SUB PLAYER (Forgotten/Soul) hearts
+		hearts_off.X = hearts_off.X + (self.sub_hearts:render(Vector(anchor.X + active_off.X, anchor.Y + hearts_off.Y),
+		                                                      mirrored, scale, down_anchor, true)).X
+	end
 	self:renderExtras(Vector(anchor.X + active_off.X + hearts_off.X, anchor.Y), mirrored, scale, down_anchor)
-	if self.essau then
+	if self.essau then -- RENDERS ESSAU ACTIVE ITEMS
 		local sub_anchor = Vector(anchor.X, anchor.Y)
 		if dim then scale = Vector(0.9 * coopHUD.players_config.small.scale.X,
 		                           0.9 * coopHUD.players_config.small.scale.Y) end -- shrinks inactive sprites
@@ -161,7 +166,7 @@ function coopHUD.Player:render()
 		active_off.Y = active_off.Y + sub_active_off.Y
 		hearts_off.Y = hearts_off.Y + sub_hearts_off.Y
 		scale = coopHUD.players_config.small.scale -- resets scale if essau logic changes it
-	end
+	end -- RENDERS ESSAU -
 	-- <Second  top line render> --
 	if #coopHUD.players < 3 and not coopHUD.options.force_small_hud then
 		-- special version of hud when only when <2 players and not forced in options
@@ -209,7 +214,7 @@ function coopHUD.Player:render()
 	                                            Vector(0.5 * scale.X, 0.5 * scale.Y),
 	                                            down_anchor, dim)
 	--
-	if self.essau then
+	if self.essau then -- RENDERS ESSAU TRINKETS/POCKETS
 		scale = coopHUD.players_config.small.scale -- resets scale if essau logic changes it
 		local sub_trinket_pos = Vector(anchor.X, anchor.Y + first_line_offset.Y)
 		if down_anchor then

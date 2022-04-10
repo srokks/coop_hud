@@ -147,7 +147,7 @@ function coopHUD.Item:getFrameNum()
 			end
 		else
 			-- Sets overlay/charges state frame --
-			local max_charges = Isaac.GetItemConfig():GetCollectible(self.id).MaxCharges or 0-- gets max charges
+			local max_charges = Isaac.GetItemConfig():GetCollectible(self.id).MaxCharges-- gets max charges
 			if max_charges == 0 then
 				-- checks id item has any charges
 				frame_num = 0 -- set frame to unloaded
@@ -736,13 +736,22 @@ function coopHUD.Heart:update()
 		self.sprite = self:getSprite()
 	end
 end
-function coopHUD.Heart:render(pos, scale)
+function coopHUD.Heart:render(pos, scale,dim)
 	local offset = Vector(0, 0)
 	local sprite_scale = scale
 	if sprite_scale == nil then sprite_scale = Vector(1, 1) end
 	local temp_pos = Vector(pos.X + (8 * sprite_scale.X), pos.Y + (8 * sprite_scale.Y))
 	--
 	if self.sprite then
+		if dim then
+			local color = Color(0.3, 0.3, 0.3, 1)
+			color:SetColorize(0, 0, 0, 0)
+			self.sprite.Color = color
+		else
+			local color = Color(1, 1, 1, 1)
+			color:SetColorize(0, 0, 0, 0)
+			self.sprite.Color = color
+		end
 		self.sprite.Scale = sprite_scale
 		self.sprite:Render(temp_pos)
 		offset.X = 12 * math.ceil((self.pos + 1) % 6) * sprite_scale.X
@@ -771,7 +780,7 @@ function coopHUD.HeartTable.new(entPlayer)
 	end
 	return self
 end
-function coopHUD.HeartTable:render(pos, mirrored, scale, down_anchor)
+function coopHUD.HeartTable:render(pos, mirrored, scale, down_anchor, dim)
 	local temp_off = Vector(0, 0)
 	if self.entPlayer and self.entPlayer:IsCoopGhost() then return temp_off end -- if player is coop ghost skips render
 	local init_pos = Vector(pos.X, pos.Y)
@@ -803,7 +812,7 @@ function coopHUD.HeartTable:render(pos, mirrored, scale, down_anchor)
 	-- RENDER
 	for i = 0, self.max_health_cap do
 		local temp_pos = Vector(init_pos.X + temp_off.X, init_pos.Y + temp_off.Y)
-		temp_off = self[i]:render(temp_pos, scale)
+		temp_off = self[i]:render(temp_pos, scale, dim)
 	end
 	--
 	return Vector(12 * scale.X * cols, 12 * scale.Y * rows)
