@@ -190,20 +190,21 @@ coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
 		                    end
 	                    end
                     end, CollectibleType.COLLECTIBLE_D4)
---[[-- CollectibleType.COLLECTIBLE_JAR_OF_WISPS
+-- CollectibleType.COLLECTIBLE_JAR_OF_WISPS
 -- connect to MC_USE_ITEM to handle jar of wisp since no possibility to get var var_data
 -- on use will increase global jar_of_wisp use variable
 -- FIXME: no charges for multiples jar of wisp instances in one run
 coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
                     function(_, collectible_type, rng, entPlayer, use_flags, slot, var_data)
-	                    if self.entPlayer.Index == entPlayer.Index then
+	                    local player_index = coopHUD.getPlayerNumByControllerIndex(entPlayer.ControllerIndex)
+	                    if player_index >= 0 and coopHUD.players[player_index] then
 		                    if coopHUD.jar_of_wisp_charge < 11 then
 			                    -- max charge 12
 			                    coopHUD.jar_of_wisp_charge = coopHUD.jar_of_wisp_charge + 1 --increase charge
 		                    end
 	                    end
 
-                    end, CollectibleType.COLLECTIBLE_JAR_OF_WISPS)]]
+                    end, CollectibleType.COLLECTIBLE_JAR_OF_WISPS)
 -- INPUT TRIGGERS
 local btn_held = 0
 function coopHUD.inputs_signals()
