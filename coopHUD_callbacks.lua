@@ -113,9 +113,11 @@ coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, function(_, entPlayer)
 			end
 			if coopHUD.players[player_index].temp_item.Type == ItemType.ITEM_ACTIVE then
 			elseif coopHUD.players[player_index].temp_item.Type == ItemType.ITEM_TRINKET then
-			else -- triggers only for passive items and familiars
+			else
+				-- triggers only for passive items and familiars
 				table.insert(coopHUD.players[player_index].collectibles,
-				             coopHUD.Item(nil, -1, coopHUD.players[player_index].temp_item.ID)) -- add picked up item to collectibles
+				             coopHUD.Item(nil, -1,
+				                          coopHUD.players[player_index].temp_item.ID)) -- add picked up item to collectibles
 			end
 		end
 		if not coopHUD.players[player_index].entPlayer:IsHoldingItem() and coopHUD.players[player_index].temp_item then
@@ -134,30 +136,31 @@ coopHUD:AddCallback(ModCallbacks.MC_USE_PILL, function(_, effect_no, entPlayer)
 		               coopHUD.players[player_index].font_color)
 	end
 end)
---[[-- CollectibleType.COLLECTIBLE_SMELTER
+-- CollectibleType.COLLECTIBLE_SMELTER
 -- connect to MC_PRE_USE_ITEM to handle gulping trinkets even when they are currently in entityPlayer.Queue
 coopHUD:AddCallback(ModCallbacks.MC_PRE_USE_ITEM,
                     function(_, collectible_type, rng, entPlayer, use_flags, slot, var_data)
 	                    -- checks if player currently holding trinket over head
-	                    if self.entPlayer.Index == entPlayer.Index then
-		                    if entPlayer.QueuedItem.Item and entPlayer.QueuedItem.Item:IsTrinket() then
-			                    table.insert(self.collectibles,
-			                                 coopHUD.Trinket(nil, -1, entPlayer.QueuedItem.Item.ID))
+	                    local player_index = coopHUD.getPlayerNumByControllerIndex(entPlayer.ControllerIndex)
+	                    if player_index >= 0 and coopHUD.players[player_index] then
+		                    if coopHUD.players[player_index].entPlayer.QueuedItem.Item and coopHUD.players[player_index].entPlayer.QueuedItem.Item:IsTrinket() then
+			                    table.insert(coopHUD.players[player_index].collectibles,
+			                                 coopHUD.Trinket(nil, -1, coopHUD.players[player_index].entPlayer.QueuedItem.Item.ID))
 		                    end
 		                    -- checks if player has first trinket
-		                    if self.first_trinket.id > 0 then
+		                    if coopHUD.players[player_index].first_trinket.id > 0 then
 			                    -- add to collectibles table
-			                    table.insert(self.collectibles, coopHUD.Trinket(nil, -1, self.first_trinket.id))
+			                    table.insert(coopHUD.players[player_index].collectibles, coopHUD.Trinket(nil, -1, coopHUD.players[player_index].first_trinket.id))
 			                    -- checks if player has first secont trinket
-			                    if self.second_trinket.id > 0 then
+			                    if coopHUD.players[player_index].second_trinket.id > 0 then
 				                    -- add to collectibles table
-				                    table.insert(self.collectibles,
-				                                 coopHUD.Trinket(nil, -1, self.second_trinket.id))
+				                    table.insert(coopHUD.players[player_index].collectibles,
+				                                 coopHUD.Trinket(nil, -1, coopHUD.players[player_index].second_trinket.id))
 			                    end
 		                    end
 	                    end
                     end, CollectibleType.COLLECTIBLE_SMELTER)
--- CollectibleType.COLLECTIBLE_D4
+--[[-- CollectibleType.COLLECTIBLE_D4
 -- connect to MC_USE_ITEM to handle roll of collectibles
 -- Isaac uses use signal of D4 to roll in Dice Room and other occasions
 coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
@@ -203,75 +206,79 @@ coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
 -- INPUT TRIGGERS
 local btn_held = 0
 function coopHUD.inputs_signals()
-	-- Trigger for turning on/off coop hud on `H` key
-	if Input.IsButtonTriggered(Keyboard.KEY_H, 0) then
-		if coopHUD.options.onRender then
-			coopHUD.options.onRender = false
-		else
-			coopHUD.options.onRender = true
-		end
-	end
-	-- Trigger for turning on/off timer on `T` key
-	if Input.IsButtonTriggered(Keyboard.KEY_T, 0) then
-		if coopHUD.options.timer_always_on then
-			coopHUD.options.timer_always_on = false
-		else
-			coopHUD.options.timer_always_on = true
-		end
-	end
-	local mapPressed = false
-	for i = 0, Game():GetNumPlayers() - 1 do
-		local controller_index = Isaac.GetPlayer(i).ControllerIndex
-		local player_index = coopHUD.getPlayerNumByControllerIndex(controller_index)
-		if Input.IsActionPressed(ButtonAction.ACTION_MAP, controller_index) then
-			mapPressed = player_index
-		end
-	end
-	-- MAP BUTTON
-	local pressTime = 0.5
-	if mapPressed then
-		btn_held = btn_held + 1 / 60
-		if btn_held > pressTime then
-			coopHUD.signals.map = mapPressed
-			coopHUD.Streak(true, coopHUD.Streak.FLOOR)
-			if btn_held > 0.9 then
-				coopHUD.Collectibles(coopHUD.players[coopHUD.signals.map])
-			end
-			coopHUD.players[mapPressed].signals.map_btn = true
-		end
-	else
-		if coopHUD.signals.map then
-			coopHUD.players[coopHUD.signals.map].signals.map_btn = false
-		end
-		coopHUD.signals.map = false
-		btn_held = 0
-	end
+-- Trigger for turning on/off coop hud on `H` key
+if Input.IsButtonTriggered(Keyboard.KEY_H, 0) then
+if coopHUD.options.onRender then
+coopHUD.options.onRender = false
+else
+coopHUD.options.onRender = true
+end
+end
+-- Trigger for turning on/off timer on `T` key
+if Input.IsButtonTriggered(Keyboard.KEY_T, 0) then
+if coopHUD.options.timer_always_on then
+coopHUD.options.timer_always_on = false
+else
+coopHUD.options.timer_always_on = true
+end
+end
+local mapPressed = false
+for i = 0, Game():GetNumPlayers() - 1 do
+local controller_index = Isaac.GetPlayer(i).ControllerIndex
+local player_index = coopHUD.getPlayerNumByControllerIndex(controller_index)
+if Input.IsActionPressed(ButtonAction.ACTION_MAP, controller_index) then
+mapPressed = player_index
+end
+end
+-- MAP BUTTON
+local pressTime = 0.5
+if mapPressed then
+btn_held = btn_held + 1 / 60
+if btn_held > pressTime then
+coopHUD.signals.map = mapPressed
+coopHUD.Streak(true, coopHUD.Streak.FLOOR)
+if btn_held > 0.9 then
+coopHUD.Collectibles(coopHUD.players[coopHUD.signals.map])
+end
+coopHUD.players[mapPressed].signals.map_btn = true
+end
+else
+if coopHUD.signals.map then
+coopHUD.players[coopHUD.signals.map].signals.map_btn = false
+end
+coopHUD.signals.map = false
+btn_held = 0
+end
 end
 -- MAIN RENDER
 function coopHUD.render()
-	coopHUD.updateAnchors()
-	coopHUD.inputs_signals()
-	if #coopHUD.players > 4 then
-		-- prevents to render if more than 4 players for now
-		coopHUD.options.onRender = false
-	end
-	-- _____ Main render function
-	local paused = Game():IsPaused()
-	for i = 1, #coopHUD.players do
-		if coopHUD.players[i] then
-			coopHUD.on_player_init()
-			--if paused then coopHUD.options.onRender = false end
-			--if coopHUD.options.onRender and not paused and not coopHUD.signals.is_joining then
-			--print(coopHUD.options.onRender and not paused)
-			if coopHUD.options.onRender and not paused and not coopHUD.signals.is_joining then
-				if Game():GetHUD():IsVisible() then Game():GetHUD():SetVisible(false) end
-				coopHUD.players[i]:render()
-				coopHUD.HUD.render()
-			end
-			if not coopHUD.options.onRender or coopHUD.signals.is_joining then
-				if not Game():GetHUD():IsVisible() then Game():GetHUD():SetVisible(true) end
-			end
-		end
-	end
+coopHUD.updateAnchors()
+coopHUD.inputs_signals()
+if #coopHUD.players > 4 then
+-- prevents to render if more than 4 players for now
+coopHUD.options.onRender = false
+end
+-- _____ Main render function
+local paused = Game():IsPaused()
+for i = 1, #coopHUD.players do
+if coopHUD.players[i] then
+coopHUD.on_player_init()
+--if paused then coopHUD.options.onRender = false end
+--if coopHUD.options.onRender and not paused and not coopHUD.signals.is_joining then
+--print(coopHUD.options.onRender and not paused)
+if coopHUD.options.onRender and not paused and not coopHUD.signals.is_joining then
+if Game():GetHUD():IsVisible() then
+Game():GetHUD():SetVisible(false)
+end
+coopHUD.players[i]:render()
+coopHUD.HUD.render()
+end
+if not coopHUD.options.onRender or coopHUD.signals.is_joining then
+if not Game():GetHUD():IsVisible() then
+Game():GetHUD():SetVisible(true)
+end
+end
+end
+end
 end
 coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.render)
