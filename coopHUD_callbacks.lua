@@ -160,36 +160,37 @@ coopHUD:AddCallback(ModCallbacks.MC_PRE_USE_ITEM,
 		                    end
 	                    end
                     end, CollectibleType.COLLECTIBLE_SMELTER)
---[[-- CollectibleType.COLLECTIBLE_D4
+-- CollectibleType.COLLECTIBLE_D4
 -- connect to MC_USE_ITEM to handle roll of collectibles
 -- Isaac uses use signal of D4 to roll in Dice Room and other occasions
 coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
                     function(_, collectible_type, rng, entPlayer, use_flags, slot, var_data)
-	                    if self.entPlayer.Index == entPlayer.Index then
+	                    local player_index = coopHUD.getPlayerNumByControllerIndex(entPlayer.ControllerIndex)
+	                    if player_index >= 0 and coopHUD.players[player_index] then
 		                    local trinkets = {}
 		                    -- saves trinkets into temp table - gulped trinkets do not roll
-		                    for i = 1, #self.collectibles do
-			                    if self.collectibles[i].type == PickupVariant.PICKUP_TRINKET then
-				                    table.insert(trinkets, self.collectibles[i])
+		                    for i = 1, #coopHUD.players[player_index].collectibles do
+			                    if coopHUD.players[player_index].collectibles[i].type == PickupVariant.PICKUP_TRINKET then
+				                    table.insert(trinkets, coopHUD.players[player_index].collectibles[i])
 			                    end
 		                    end
-		                    self.collectibles = {} -- resets players collectible table
+		                    coopHUD.players[player_index].collectibles = {} -- resets players collectible table
 		                    for i = 1, Isaac.GetItemConfig():GetCollectibles().Size - 1 do
 			                    -- check if player has collectible
-			                    if self.entPlayer:HasCollectible(i) then
+			                    if coopHUD.players[player_index].entPlayer:HasCollectible(i) then
 				                    -- skips active items
 				                    if Isaac.GetItemConfig():GetCollectible(i).Type ~= ItemType.ITEM_ACTIVE then
-					                    table.insert(self.collectibles, coopHUD.Item(nil, -1, i))
+					                    table.insert(coopHUD.players[player_index].collectibles, coopHUD.Item(nil, -1, i))
 				                    end
 			                    end
 		                    end
 		                    -- adds saved trinkets on top of collectibles table
 		                    for i = 1, #trinkets do
-			                    table.insert(self.collectibles, trinkets[i])
+			                    table.insert(coopHUD.players[player_index].collectibles, trinkets[i])
 		                    end
 	                    end
                     end, CollectibleType.COLLECTIBLE_D4)
--- CollectibleType.COLLECTIBLE_JAR_OF_WISPS
+--[[-- CollectibleType.COLLECTIBLE_JAR_OF_WISPS
 -- connect to MC_USE_ITEM to handle jar of wisp since no possibility to get var var_data
 -- on use will increase global jar_of_wisp use variable
 -- FIXME: no charges for multiples jar of wisp instances in one run
