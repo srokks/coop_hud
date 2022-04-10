@@ -158,7 +158,8 @@ function coopHUD.Player:render()
 		scale = coopHUD.players_config.small.scale -- resets scale if essau logic changes it
 		local sub_hearts_off = self.essau.hearts:render(Vector(sub_anchor.X + sub_active_off.X, sub_anchor.Y), mirrored,
 		                                                scale, down_anchor)
-		active_off.Y = active_off.Y + math.max(sub_active_off.Y, sub_hearts_off.Y)
+		active_off.Y = active_off.Y + sub_active_off.Y
+		hearts_off.Y = hearts_off.Y + sub_hearts_off.Y
 		scale = coopHUD.players_config.small.scale -- resets scale if essau logic changes it
 	end
 	-- <Second  top line render> --

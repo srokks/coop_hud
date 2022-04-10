@@ -98,6 +98,7 @@ coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, function(_, entPlayer)
 	local player_index = coopHUD.getPlayerNumByControllerIndex(entPlayer.ControllerIndex)
 	if player_index >= 0 and coopHUD.players[player_index] then
 		coopHUD.players[player_index]:update()
+		if coopHUD.players[player_index].essau then coopHUD.players[player_index].essau:update() end
 		local item_queue = coopHUD.players[player_index].entPlayer.QueuedItem
 		if item_queue and item_queue.Item and item_queue.Item ~= nil and coopHUD.players[player_index].temp_item == nil then
 			-- enters only if isaac is holding item in queue and temp item in table
