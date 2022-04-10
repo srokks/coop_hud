@@ -123,18 +123,18 @@ coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, function(_, entPlayer)
 		end
 	end
 end)
---[[-- MC_USE_PILL
+-- MC_USE_PILL
 -- triggers streak with pill name on use
 coopHUD:AddCallback(ModCallbacks.MC_USE_PILL, function(_, effect_no, entPlayer)
-	if self.entPlayer.Index == entPlayer.Index then
+	local player_index = coopHUD.getPlayerNumByControllerIndex(entPlayer.ControllerIndex)
+	if player_index >= 0 and coopHUD.players[player_index] then
 		local pill_sys_name = Isaac.GetItemConfig():GetPillEffect(effect_no).Name
 		pill_sys_name = string.sub(pill_sys_name, 2) --  get rid of # on front of
 		coopHUD.Streak(false, coopHUD.Streak.ITEM, coopHUD.langAPI.getPocketName(pill_sys_name), nil, true,
-		               self.font_color)
-
+		               coopHUD.players[player_index].font_color)
 	end
 end)
--- CollectibleType.COLLECTIBLE_SMELTER
+--[[-- CollectibleType.COLLECTIBLE_SMELTER
 -- connect to MC_PRE_USE_ITEM to handle gulping trinkets even when they are currently in entityPlayer.Queue
 coopHUD:AddCallback(ModCallbacks.MC_PRE_USE_ITEM,
                     function(_, collectible_type, rng, entPlayer, use_flags, slot, var_data)
