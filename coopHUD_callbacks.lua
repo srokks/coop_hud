@@ -91,39 +91,39 @@ end)
 coopHUD:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function()
 	coopHUD.Streak(false, coopHUD.Streak.FLOOR)
 end)
---  MC_POST_PLAYER_UPDATE
+--  MC_POST_PLAYER_UPDATE -- responsible for update of player
+-- triggers streak text on item pickup based on QueuedItem
+-- adds items to collectibles based on QueuedItem
 coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, function(_, entPlayer)
-	if self.entPlayer and self.entPlayer.Index == entPlayer.Index then
-		self:update()
-		if self.essau then self.essau:update() end -- updates Essau
-		local item_queue = entPlayer.QueuedItem
-		if item_queue and item_queue.Item and item_queue.Item ~= nil and self.temp_item == nil then
-			self.temp_item = item_queue.Item -- saves as temp item
+	local player_index = coopHUD.getPlayerNumByControllerIndex(entPlayer.ControllerIndex)
+	if player_index >= 0 and coopHUD.players[player_index] then
+		coopHUD.players[player_index]:update()
+		local item_queue = coopHUD.players[player_index].entPlayer.QueuedItem
+		if item_queue and item_queue.Item and item_queue.Item ~= nil and coopHUD.players[player_index].temp_item == nil then
+			-- enters only if isaac is holding item in queue and temp item in table
+			coopHUD.players[player_index].temp_item = item_queue.Item -- saves as temp item
 			--____ Flashes triggers streak text with picked up name
 			if coopHUD.langAPI then
+				-- checks if langAPI loaded
 				local streak_main_line = coopHUD.langAPI.getItemName(string.sub(item_queue.Item.Name, 2))
 				local streak_sec_line = coopHUD.langAPI.getItemName(string.sub(item_queue.Item.Description, 2))
 				coopHUD.Streak(false, coopHUD.Streak.ITEM, streak_main_line, streak_sec_line, true,
-				               self.font_color)
+				               coopHUD.players[player_index].font_color)
+				-- triggers streak on item pickup
+			end
+			if coopHUD.players[player_index].temp_item.Type == ItemType.ITEM_ACTIVE then
+			elseif coopHUD.players[player_index].temp_item.Type == ItemType.ITEM_TRINKET then
+			else -- triggers only for passive items and familiars
+				table.insert(coopHUD.players[player_index].collectibles,
+				             coopHUD.Item(nil, -1, coopHUD.players[player_index].temp_item.ID)) -- add picked up item to collectibles
 			end
 		end
-		if not entPlayer:IsHoldingItem() and self.temp_item then
-			if self.temp_item.Type == ItemType.ITEM_ACTIVE then
-			elseif self.temp_item.Type == ItemType.ITEM_TRINKET then
-			else
-				table.insert(self.collectibles, coopHUD.Item(nil, -1, self.temp_item.ID))
-			end
-			self.temp_item = nil
-		end
-		for i = 0, PlayerForm.NUM_PLAYER_FORMS - 1 do
-			if self.transformations[i] ~= self.entPlayer:HasPlayerForm(i) then
-				coopHUD.Streak(false, coopHUD.Streak.ITEM, coopHUD.PlayerForm[i], nil, true, self.font_color)
-				self.transformations[i] = self.entPlayer:HasPlayerForm(i)
-			end
+		if not coopHUD.players[player_index].entPlayer:IsHoldingItem() and coopHUD.players[player_index].temp_item then
+			coopHUD.players[player_index].temp_item = nil -- resets temp item
 		end
 	end
 end)
--- MC_USE_PILL
+--[[-- MC_USE_PILL
 -- triggers streak with pill name on use
 coopHUD:AddCallback(ModCallbacks.MC_USE_PILL, function(_, effect_no, entPlayer)
 	if self.entPlayer.Index == entPlayer.Index then
@@ -199,7 +199,7 @@ coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
 		                    end
 	                    end
 
-                    end, CollectibleType.COLLECTIBLE_JAR_OF_WISPS)
+                    end, CollectibleType.COLLECTIBLE_JAR_OF_WISPS)]]
 -- INPUT TRIGGERS
 local btn_held = 0
 function coopHUD.inputs_signals()
