@@ -262,10 +262,19 @@ function coopHUD.Player:render()
 		col.B = self.font_color.Blue
 	end
 	self.entPlayer:SetColor(col, 2, 100, false, false)
+	if self.essau then
+		-- colors essau sprite
+		self.essau.entPlayer:SetColor(col, 2, 100, false, false)
+	end
 	--Player name on screen
 	if coopHUD.options.show_player_names then
 		local position = Isaac.WorldToScreen(self.entPlayer.Position)
 		coopHUD.HUD.fonts.pft:DrawString(self.player_head.name, position.X - 5, position.Y, self.font_color)
+		if self.essau then
+			-- colors essau name
+			position = Isaac.WorldToScreen(self.essau.entPlayer.Position)
+			coopHUD.HUD.fonts.pft:DrawString(self.player_head.name, position.X - 5, position.Y, self.font_color)
+		end
 	end
 	if coopHUD.options.stats.show then
 		-- when options.stats.show on
