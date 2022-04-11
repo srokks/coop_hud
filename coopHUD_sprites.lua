@@ -1114,7 +1114,7 @@ function coopHUD.Stat:getSprite()
 		return nil
 	end
 end
-function coopHUD.Stat:render(pos, mirrored, vertical)
+function coopHUD.Stat:render(pos, mirrored, vertical,only_num)
 	self:update()
 	local init_pos = (Vector(pos.X, pos.Y))
 	if vertical then
@@ -1129,7 +1129,7 @@ function coopHUD.Stat:render(pos, mirrored, vertical)
 			color_alpha = 0.5
 		end
 	end
-	if self.icon and self.sprite then
+	if self.icon and self.sprite and not only_num then
 		-- Icon render
 		if mirrored then
 			init_pos.X = init_pos.X - 16

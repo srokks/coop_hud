@@ -104,6 +104,7 @@ function coopHUD.Player:update()
 	self.second_pocket:update()
 	self.third_pocket:update()
 	self.hearts:update()
+	self.big_hud = #coopHUD.players < 3 and not coopHUD.options.force_small_hud
 end
 function coopHUD.Player:render()
 	--
@@ -114,7 +115,7 @@ function coopHUD.Player:render()
 	local mirrored = coopHUD.players_config.small[self.game_index].mirrored
 	local scale = coopHUD.players_config.small.scale
 	local down_anchor = coopHUD.players_config.small[self.game_index].down_anchor
-	if #coopHUD.players < 3 and not coopHUD.options.force_small_hud then
+	if self.big_hud then
 		anchor = Vector(coopHUD.anchors[coopHUD.players_config.small[self.game_index].anchor_top].X,
 		                coopHUD.anchors[coopHUD.players_config.small[self.game_index].anchor_top].Y)
 		mirrored = coopHUD.players_config.small[self.game_index].mirrored_big
@@ -177,7 +178,7 @@ function coopHUD.Player:render()
 		                        scale, down_anchor)
 	end -- RENDERS ESSAU -
 	-- <Second  top line render> --
-	if #coopHUD.players < 3 and not coopHUD.options.force_small_hud then
+	if self.big_hud then
 		-- special version of hud when only when <2 players and not forced in options
 		anchor.X = anchor_bot.X
 		anchor.Y = anchor_bot.Y
@@ -286,43 +287,22 @@ function coopHUD.Player:render()
 	if coopHUD.options.stats.show then
 		-- when options.stats.show on
 		if not (coopHUD.options.stats.hide_in_battle and coopHUD.signals.on_battle) then
-			--when options.stats.hide_in_battle on and battle signal
-			local font_color = KColor(1, 1, 1, 1)
-			if coopHUD.options.stats.colorful then
-				font_color = self.font_color
-			end
-			local temp_stat_pos = Vector(anchor.X, 82)
-			local off = Vector(0, 14) -- static offset for stats
-			if self.game_index == 2 or self.game_index == 3 then
-				-- checks if player is 3rd or 4th
-				if mirrored then
-					temp_stat_pos.X = temp_stat_pos.X - 16 * 1.25 -- changes horizontal base position
-					temp_stat_pos.Y = temp_stat_pos.Y + 7  -- changes  vertical base position
-				else
-					temp_stat_pos.X = temp_stat_pos.X + 16 -- changes horizontal base position
-					temp_stat_pos.Y = temp_stat_pos.Y + 7 -- changes  vertical base position
+			if self.big_hud then
+				-- renders main stat and essau stats on same time
+				if self.essau then
+					self.essau:renderStats(mirrored)
 				end
+				self:renderStats(mirrored)
+			else
+				-- renders essau stats on drop pressed
+				if self.essau and Input.IsActionPressed(ButtonAction.ACTION_DROP,self.controller_index)then
+				self.essau:renderStats(mirrored)
+			else
+				self:renderStats(mirrored)
 			end
-			self.speed:render(temp_stat_pos, mirrored) -- renders object with player mirrored spec
-			temp_stat_pos.Y = temp_stat_pos.Y + off.Y -- increments position with static offset vertical
-			self.tears_delay:render(temp_stat_pos, mirrored)
-			temp_stat_pos.Y = temp_stat_pos.Y + off.Y
-			self.damage:render(temp_stat_pos, mirrored)
-			temp_stat_pos.Y = temp_stat_pos.Y + off.Y
-			self.range:render(temp_stat_pos, mirrored)
-			temp_stat_pos.Y = temp_stat_pos.Y + off.Y
-			self.shot_speed:render(temp_stat_pos, mirrored)
-			temp_stat_pos.Y = temp_stat_pos.Y + off.Y
-			self.luck:render(temp_stat_pos, mirrored)
-			temp_stat_pos.Y = temp_stat_pos.Y + off.Y
-			if self.game_index == 0 then
-				-- saves pos under stats for other hud modules to access like deals stats
-				coopHUD.HUD.stat_anchor = temp_stat_pos
 			end
+
 		end
-	end
-	if self.signals.map_btn then
-		-- TODO: stuff page render of button signal
 	end
 end
 function coopHUD.Player:renderExtras(pos, mirrored, scale, down_anchor)
@@ -368,5 +348,53 @@ function coopHUD.Player:renderExtras(pos, mirrored, scale, down_anchor)
 			temp_pos.X = pos.X + offset.X
 			temp_pos.Y = pos.Y + offset.Y
 		end
+	end
+end
+function coopHUD.Player:renderStats(mirrored)
+	--when options.stats.hide_in_battle on and battle signal
+	local font_color = KColor(1, 1, 1, 1)
+	if coopHUD.options.stats.colorful then
+		font_color = self.font_color
+	end
+	local temp_stat_pos = Vector(0, 82)
+	if mirrored then
+		temp_stat_pos.X = coopHUD.anchors.bot_right.X
+	else
+		temp_stat_pos.X = coopHUD.anchors.bot_left.X
+	end
+	local off = Vector(0, 14) -- static offset for stats
+	if self.game_index == 2 or self.game_index == 3 then
+		-- checks if player is 3rd or 4th
+		if mirrored then
+			temp_stat_pos.X = temp_stat_pos.X - 16 * 1.25 -- changes horizontal base position
+			temp_stat_pos.Y = temp_stat_pos.Y + 7  -- changes  vertical base position
+		else
+			temp_stat_pos.X = temp_stat_pos.X + 16 -- changes horizontal base position
+			temp_stat_pos.Y = temp_stat_pos.Y + 7 -- changes  vertical base position
+		end
+	end
+	local only_num = false
+	if self.entPlayer:GetPlayerType() == PlayerType.PLAYER_ESAU then
+		if self.big_hud then
+			temp_stat_pos.X = temp_stat_pos.X + 16 -- changes horizontal base position
+			temp_stat_pos.Y = temp_stat_pos.Y + 7 -- changes  vertical base position
+			only_num = true
+		end
+	end
+	self.speed:render(temp_stat_pos, mirrored,false,only_num) -- renders object with player mirrored spec
+	temp_stat_pos.Y = temp_stat_pos.Y + off.Y -- increments position with static offset vertical
+	self.tears_delay:render(temp_stat_pos, mirrored,false,only_num)
+	temp_stat_pos.Y = temp_stat_pos.Y + off.Y
+	self.damage:render(temp_stat_pos, mirrored,false,only_num)
+	temp_stat_pos.Y = temp_stat_pos.Y + off.Y
+	self.range:render(temp_stat_pos, mirrored,false,only_num)
+	temp_stat_pos.Y = temp_stat_pos.Y + off.Y
+	self.shot_speed:render(temp_stat_pos, mirrored,false,only_num)
+	temp_stat_pos.Y = temp_stat_pos.Y + off.Y
+	self.luck:render(temp_stat_pos, mirrored,false,only_num)
+	temp_stat_pos.Y = temp_stat_pos.Y + off.Y
+	if self.game_index == 0 and not(self.entPlayer:GetPlayerType() == PlayerType.PLAYER_ESAU)then
+		-- saves pos under stats for other hud modules to access like deals stats
+		coopHUD.HUD.stat_anchor = temp_stat_pos
 	end
 end
