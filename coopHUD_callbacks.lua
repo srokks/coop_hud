@@ -219,6 +219,24 @@ coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
 	                    end
 
                     end, CollectibleType.COLLECTIBLE_JAR_OF_WISPS)
+--CollectibleType.COLLECTIBLE_HOLD
+--connect to MC_USE_ITEM to handle hold current spell, cannot get from Isaac API
+coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
+                    function(_, collectible_type, rng, entPlayer, use_flags, slot, var_data)
+	                    local player_index = coopHUD.getPlayerNumByControllerIndex(entPlayer.ControllerIndex)
+	                    if player_index >= 0 and coopHUD.players[player_index]
+			                    and (coopHUD.players[player_index].poops.poop_mana > 0) then
+		                    if coopHUD.players[player_index].hold_spell == 0 then
+			                    coopHUD.players[player_index].hold_spell = coopHUD.players[player_index].poops.poops[0].spell_type
+		                    else
+			                    coopHUD.players[player_index].hold_spell = 0
+		                    end
+	                    end
+	                    if coopHUD.players[player_index].poops.poop_mana == 0 then -- resets frame if no mana
+		                    coopHUD.players[player_index].hold_spell = 0
+	                    end
+	                    coopHUD.players[player_index].first_pocket:update()
+                    end, CollectibleType.COLLECTIBLE_HOLD)
 -- INPUT TRIGGERS
 local btn_held = 0
 function coopHUD.inputs_signals()

@@ -18,9 +18,15 @@ function coopHUD.Player.new(player_no, entPlayer)
 	self.game_index = player_no - coopHUD.essau_no
 	self.controller_index = self.entPlayer.ControllerIndex
 	self.player_head = coopHUD.PlayerHead(self)
+	--- T ??? - specifics
+	self.hold_spell = nil -- current spell stashed in hold (int)
+	if self.entPlayer:GetPlayerType() == PlayerType.PLAYER_BLUEBABY_B then
+		self.hold_spell = 0 --inits
+		self.poops = coopHUD.PoopsTable(self.entPlayer)
+	end
 	-- Active items
-	self.active_item = coopHUD.Item(self.entPlayer, ActiveSlot.SLOT_PRIMARY)
-	self.schoolbag_item = coopHUD.Item(self.entPlayer, ActiveSlot.SLOT_SECONDARY)
+	self.active_item = coopHUD.Item(self, ActiveSlot.SLOT_PRIMARY)
+	self.schoolbag_item = coopHUD.Item(self, ActiveSlot.SLOT_SECONDARY)
 	-- Trinkets
 	self.first_trinket = coopHUD.Trinket(self.entPlayer, 0)
 	self.second_trinket = coopHUD.Trinket(self.entPlayer, 1)
@@ -62,11 +68,6 @@ function coopHUD.Player.new(player_no, entPlayer)
 	-- T.Cain - specifics
 	self.bag_of_crafting = nil
 	self.crafting_result = nil
-	--- T ??? - specifics
-	if self.entPlayer:GetPlayerType() == PlayerType.PLAYER_BLUEBABY_B then
-		self.hold_spell = 0 -- current spell stashed in hold (int)
-		self.poops = coopHUD.PoopsTable(self.entPlayer)
-	end
 	--
 	self.signals = {
 		map_btn = false,

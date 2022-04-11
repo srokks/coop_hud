@@ -8,7 +8,8 @@ setmetatable(coopHUD.Item, {
 })
 function coopHUD.Item.new(player, slot, item_id)
 	local self = setmetatable({}, coopHUD.Item)
-	self.entPlayer = player
+	self.parent = player
+	self.entPlayer = self.parent.entPlayer
 	self.slot = slot
 	if slot >= 0 then
 		self.id = self.entPlayer:GetActiveItem(self.slot)
@@ -116,6 +117,11 @@ function coopHUD.Item:getSprite()
 		end
 	end
 	--
+	if self.id == CollectibleType.COLLECTIBLE_HOLD then
+		anim_name = 'Hold'
+		sprite:ReplaceSpritesheet(3, 'gfx/ui/ui_poops.png')
+	end
+	--
 	sprite:SetFrame(anim_name, self.frame_num)
 	sprite:LoadGraphics()
 	--
@@ -145,6 +151,8 @@ function coopHUD.Item:getFrameNum()
 				-- checks if urn is open
 				frame_num = 22 -- opened urn frame no
 			end
+		elseif self.id == CollectibleType.COLLECTIBLE_HOLD then
+			frame_num = self.parent.hold_spell
 		else
 			-- Sets overlay/charges state frame --
 			local max_charges = Isaac.GetItemConfig():GetCollectible(self.id).MaxCharges-- gets max charges
@@ -428,7 +436,7 @@ function coopHUD.Pocket:getSprite()
 end
 function coopHUD.Pocket:getItem()
 	if self.type ~= 3 then return nil end
-	return coopHUD.Item(self.parent.entPlayer, 2)
+	return coopHUD.Item(self.parent, 2)
 end
 function coopHUD.Pocket:getName()
 	local name = nil
@@ -475,6 +483,9 @@ function coopHUD.Pocket:update()
 			coopHUD.Streak(false, coopHUD.Streak.ITEM, self.name, self.desc, true, self.parent.font_color)
 		end
 	end
+	if self.item then
+		self.item:update()
+	end
 end
 function coopHUD.Pocket:render(pos, mirrored, scale, down_anchor, dim)
 	local temp_pos = Vector(pos.X, pos.Y)
@@ -519,7 +530,8 @@ function coopHUD.Pocket:render(pos, mirrored, scale, down_anchor, dim)
 	end
 	if (self.name or self.desc) and self.slot == 0 then
 		if self.item and self.item.id == CollectibleType.COLLECTIBLE_HOLD and self.parent.poops then
-			offset.X = offset.X + self.parent.poops:render(Vector(pos.X+ offset.X,pos.Y),mirrored,scale,down_anchor).X
+			offset.X = offset.X + self.parent.poops:render(Vector(pos.X + offset.X, pos.Y), mirrored, scale,
+			                                               down_anchor).X
 		else
 			local text = self.name
 			if Input.IsActionPressed(ButtonAction.ACTION_MAP, self.parent.controller_index) then
@@ -938,6 +950,9 @@ function coopHUD.PoopsTable:render(pos, mirrored, scale, down_anchor)
 	return offset
 end
 function coopHUD.PoopsTable:update()
+	if self.poop_mana ~= self.entPlayer:GetPoopMana() then
+		self.poop_mana = self.entPlayer:GetPoopMana()
+	end
 	for i = 0, PoopSpellType.SPELL_QUEUE_SIZE - 1, 1 do
 		self.poops[i]:update()
 	end
