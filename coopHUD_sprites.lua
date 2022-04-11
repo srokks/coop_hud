@@ -827,6 +827,67 @@ function coopHUD.HeartTable:update()
 	end
 end
 --
+coopHUD.Poop = {}
+coopHUD.Poop.__index = coopHUD.Poop
+setmetatable(coopHUD.Poop, {
+	__call = function(cls, ...)
+		return cls.new(...)
+	end,
+})
+function coopHUD.Poop.new(entPlayer, slot)
+	local self = setmetatable({}, coopHUD.Poop)
+	self.entPlayer = entPlayer
+	self.slot = slot
+	self.sprite = self:getSprite()
+	return self
+end
+function coopHUD.Poop:getSprite()
+	local spell_type = 0
+	if self.entPlayer then
+		local layer_name = 'IdleSmall'
+		if self.entPlayer then spell_type = self.entPlayer:GetPoopSpell(self.slot) end
+		if self.slot == 0 then layer_name = 'Idle' end
+		if spell_type ~= 0 then
+			local sprite = Sprite()
+			sprite:Load(coopHUD.GLOBALS.poop_anim_path, true)
+			sprite:SetFrame(layer_name, spell_type)
+			if self.slot >= self.entPlayer:GetPoopMana() then
+				local col = Color(1, 1, 1, 1)
+				col:SetColorize(1, 1, 1, 1)
+				sprite.Color = Color(0.3, 0.3, 0.3, 0.3)
+			end
+			return sprite
+		else
+			return nil
+		end
+	end
+end
+function coopHUD.Poop:render(pos, mirrored, scale, down_anchor)
+	local poop_pos = Vector(pos.X, pos.Y)
+	local offset = Vector(0,0)
+	local sprite_scale = scale
+	if sprite_scale == nil then sprite_scale = Vector(1,1) end
+	if mirrored then
+		poop_pos = poop_pos + Vector(-12*sprite_scale.X,0)
+		offset.X = -22 * scale.X
+	else
+		poop_pos = poop_pos + Vector(12*sprite_scale.X,0)
+		offset.X = 22 * scale.X
+	end
+	if down_anchor then
+		poop_pos = poop_pos + Vector(0,-12*sprite_scale.Y)
+		offset.Y = -22 * scale.Y
+	else
+		poop_pos = poop_pos + Vector(0,12*sprite_scale.Y)
+		offset.Y = 22 * scale.Y
+	end
+	if self.sprite then
+		self.sprite.Scale = sprite_scale
+		self.sprite:Render(poop_pos)
+	end
+	return offset
+end
+--
 coopHUD.RunInfo = {}
 coopHUD.RunInfo.__index = coopHUD.RunInfo
 setmetatable(coopHUD.RunInfo, {
