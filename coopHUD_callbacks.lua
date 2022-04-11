@@ -27,6 +27,7 @@ function coopHUD.on_start(_, cont)
 						table.insert(coopHUD.players[player_no].collectibles, coopHUD.Trinket(nil, -1, id))
 					end
 				end
+				coopHUD.players[player_no].hold_spell = player_save.hold_spell
 			end
 			--
 		end
