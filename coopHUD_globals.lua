@@ -1,4 +1,4 @@
-coopHUD.VERSION = '0.5-TWINS' --DEBUG: test name for in game recognition
+coopHUD.VERSION = '0.5-STEAM' --DEBUG: test name for in game recognition
 coopHUD.showExtraInfo = false
 coopHUD.HUD_table = {}
 coopHUD.signals = {
@@ -23,7 +23,7 @@ coopHUD.options = {
 	},
 	deals = {
 		show = true,
-		hide_in_battle = true,
+		hide_in_battle = false,
 		show_planetarium = true,
 		vanilla_position = false -- defines if deals show under stats (true) or on down_screen (false)
 	}

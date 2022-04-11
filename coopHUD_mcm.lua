@@ -46,7 +46,10 @@ function coopHUD.save_options()
 	coopHUD:SaveData(json.encode(save))
 	--coopHUD.players = {}
 end
-coopHUD:AddCallback(ModCallbacks.MC_PRE_GAME_EXIT, coopHUD.save_options)
+coopHUD:AddCallback(ModCallbacks.MC_PRE_GAME_EXIT, function()
+	coopHUD.save_options()
+	coopHUD.players = {}
+end)
 if ModConfigMenu then
 	local mod_name = "Coop HUD"
 	--= Used to reset the config, remove on retail.
