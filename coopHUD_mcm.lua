@@ -44,7 +44,7 @@ function coopHUD.save_options()
 	end
 	save.run.players = players
 	coopHUD:SaveData(json.encode(save))
-	coopHUD.players = {}
+	--coopHUD.players = {}
 end
 coopHUD:AddCallback(ModCallbacks.MC_PRE_GAME_EXIT, coopHUD.save_options)
 if ModConfigMenu then
@@ -514,7 +514,9 @@ if ModConfigMenu then
 			return "Sets player position on big hud"
 		end
 	})
-	ModConfigMenu.AddTitle(mod_name, "Positions", 'Small HUD positions')
+	-- TODO: uptade other anchors on change
+	-- DEBUG: until finished only for debuging
+	--[[ModConfigMenu.AddTitle(mod_name, "Positions", 'Small HUD positions')
 	ModConfigMenu.AddSetting(mod_name, "Positions", {
 		Type = ModConfigMenu.OptionType.NUMBER,
 		CurrentSetting = function()
@@ -534,7 +536,7 @@ if ModConfigMenu then
 		Info = function()
 			return "Sets player position on small hud"
 		end
-	})
+	})]]
 end
 -- Overrides External item description mod setting to better fit with HUD
 if EID then
