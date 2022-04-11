@@ -291,7 +291,6 @@ function coopHUD.Item:render(pos, mirrored, scale, down_anchor, dim)
 		local charge_off = self:renderChargeBar(Vector(pos.X + offset.X, pos.Y), mirrored, scale, down_anchor)
 		offset.X = offset.X + charge_off.X
 	end
-
 	return offset
 end
 --
@@ -519,18 +518,22 @@ function coopHUD.Pocket:render(pos, mirrored, scale, down_anchor, dim)
 		offset = self.item:render(pos, mirrored, scale, down_anchor)
 	end
 	if (self.name or self.desc) and self.slot == 0 then
-		local text = self.name
-		if Input.IsActionPressed(ButtonAction.ACTION_MAP, self.parent.controller_index) then
-			text = self.desc
+		if self.item and self.item.id == CollectibleType.COLLECTIBLE_HOLD and self.parent.poops then
+			offset.X = offset.X + self.parent.poops:render(Vector(pos.X+ offset.X,pos.Y),mirrored,scale,down_anchor).X
+		else
+			local text = self.name
+			if Input.IsActionPressed(ButtonAction.ACTION_MAP, self.parent.controller_index) then
+				text = self.desc
+			end
+			local font_height = coopHUD.HUD.fonts.pft:GetLineHeight()
+			temp_pos = Vector(pos.X + offset.X, pos.Y + offset.Y - font_height)
+			if mirrored then temp_pos.X = temp_pos.X - string.len(text) * (6 * sprite_scale.X) end
+			if down_anchor then
+				temp_pos.Y = temp_pos.Y - offset.Y
+			end
+			coopHUD.HUD.fonts.pft:DrawStringScaled(text, temp_pos.X, temp_pos.Y, sprite_scale.X, sprite_scale.Y,
+			                                       self.parent.font_color, 0, true)
 		end
-		local font_height = coopHUD.HUD.fonts.pft:GetLineHeight()
-		temp_pos = Vector(pos.X + offset.X, pos.Y + offset.Y - font_height)
-		if mirrored then temp_pos.X = temp_pos.X - string.len(text) * (6 * sprite_scale.X) end
-		if down_anchor then
-			temp_pos.Y = temp_pos.Y - offset.Y
-		end
-		coopHUD.HUD.fonts.pft:DrawStringScaled(text, temp_pos.X, temp_pos.Y, sprite_scale.X, sprite_scale.Y,
-		                                       self.parent.font_color, 0, true)
 	end
 	return offset
 end
@@ -858,27 +861,27 @@ function coopHUD.Poop:getSprite()
 end
 function coopHUD.Poop:render(pos, mirrored, scale, down_anchor)
 	local poop_pos = Vector(pos.X, pos.Y)
-	local offset = Vector(0,0)
+	local offset = Vector(0, 0)
 	local sprite_scale = scale
-	local pivot = Vector(4,4)
-	local offset_pivot = Vector(12,12)
+	local pivot = Vector(4, 4)
+	local offset_pivot = Vector(12, 12)
 	if self.sprite:GetAnimation() == 'Idle' then
-		pivot = Vector(12,12)
-		offset_pivot = Vector(22,22)
+		pivot = Vector(12, 12)
+		offset_pivot = Vector(22, 22)
 	end
-	if sprite_scale == nil then sprite_scale = Vector(1,1) end
+	if sprite_scale == nil then sprite_scale = Vector(1, 1) end
 	if mirrored then
-		poop_pos = poop_pos + Vector(-pivot.X*sprite_scale.X,0)
+		poop_pos = poop_pos + Vector(-pivot.X * sprite_scale.X, 0)
 		offset.X = -offset_pivot.X * scale.X
 	else
-		poop_pos = poop_pos + Vector(pivot.X*sprite_scale.X,0)
+		poop_pos = poop_pos + Vector(pivot.X * sprite_scale.X, 0)
 		offset.X = offset_pivot.X * scale.X
 	end
 	if down_anchor then
-		poop_pos = poop_pos + Vector(0,-pivot.Y*sprite_scale.Y)
+		poop_pos = poop_pos + Vector(0, -pivot.Y * sprite_scale.Y)
 		offset.Y = -offset_pivot.Y * scale.Y
 	else
-		poop_pos = poop_pos + Vector(0,pivot.Y*sprite_scale.Y)
+		poop_pos = poop_pos + Vector(0, pivot.Y * sprite_scale.Y)
 		offset.Y = offset_pivot.Y * scale.Y
 	end
 	if self.sprite then
@@ -918,7 +921,7 @@ end
 function coopHUD.PoopsTable:render(pos, mirrored, scale, down_anchor)
 	local init_pos = Vector(pos.X, pos.Y)
 	local off = Vector(0, 0)
-	local offset = Vector(0,0)
+	local offset = Vector(0, 0)
 	for i = 0, PoopSpellType.SPELL_QUEUE_SIZE - 1, 1 do
 		if i == 1 then
 			if down_anchor then
@@ -931,7 +934,7 @@ function coopHUD.PoopsTable:render(pos, mirrored, scale, down_anchor)
 		if i == 0 then offset.Y = offset.Y + off.Y end
 		init_pos.X = init_pos.X + off.X
 	end
-	offset.X =  init_pos.X - pos.X
+	offset.X = init_pos.X - pos.X
 	return offset
 end
 function coopHUD.PoopsTable:update()
