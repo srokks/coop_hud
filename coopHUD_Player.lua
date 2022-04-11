@@ -131,6 +131,9 @@ function coopHUD.Player:render()
 	local extra_charge_off = Vector(0, 0)
 	local poop_spell_off = Vector(0, 0)
 	--
+	local sub_active_off = Vector(0, 0)
+	local sub_hearts_off = Vector(0, 0)
+	--
 	if coopHUD.options.render_player_info then
 		info_off = self.player_head:render(anchor, mirrored, scale, down_anchor)
 	end
@@ -164,15 +167,14 @@ function coopHUD.Player:render()
 			sub_anchor.Y = sub_anchor.Y + math.max(info_off.Y, active_off.Y, hearts_off.Y)
 		end
 		self.essau.schoolbag_item:render(Vector(sub_anchor.X, sub_anchor.Y), mirrored, scale, down_anchor, dim)
-		local sub_active_off = self.essau.active_item:render(Vector(sub_anchor.X, sub_anchor.Y), mirrored, scale,
-		                                                     down_anchor, dim)
+		sub_active_off = self.essau.active_item:render(Vector(sub_anchor.X, sub_anchor.Y), mirrored, scale,
+		                                               down_anchor, dim)
 		scale = coopHUD.players_config.small.scale -- resets scale if essau logic changes it
-		local sub_hearts_off = self.essau.hearts:render(Vector(sub_anchor.X + sub_active_off.X, sub_anchor.Y), mirrored,
-		                                                scale, down_anchor)
-		active_off.Y = active_off.Y + sub_active_off.Y
-		hearts_off.Y = hearts_off.Y + sub_hearts_off.Y
+		sub_hearts_off = self.essau.hearts:render(Vector(sub_anchor.X + sub_active_off.X, sub_anchor.Y), mirrored,
+		                                          scale, down_anchor)
 		scale = coopHUD.players_config.small.scale -- resets scale if essau logic changes it
-		self.essau:renderExtras(Vector(sub_anchor.X + sub_active_off.X + sub_hearts_off.X, sub_anchor.Y), mirrored, scale, down_anchor)
+		self.essau:renderExtras(Vector(sub_anchor.X + sub_active_off.X + sub_hearts_off.X, sub_anchor.Y), mirrored,
+		                        scale, down_anchor)
 	end -- RENDERS ESSAU -
 	-- <Second  top line render> --
 	if #coopHUD.players < 3 and not coopHUD.options.force_small_hud then
@@ -190,7 +192,8 @@ function coopHUD.Player:render()
 		end
 		pocket_desc_off.Y = -8
 	else
-		first_line_offset.Y = math.max(info_off.Y, active_off.Y, hearts_off.Y)
+		first_line_offset.Y = math.max(info_off.Y, active_off.Y, hearts_off.Y) + math.max(sub_active_off.Y,
+		                                                                                  sub_hearts_off.Y)
 	end
 	local trinket_pos = Vector(anchor.X, anchor.Y + first_line_offset.Y)
 	trinket_off = self.first_trinket:render(Vector(trinket_pos.X, trinket_pos.Y), mirrored, scale,
@@ -318,8 +321,6 @@ function coopHUD.Player:render()
 			end
 		end
 	end
-	--debug
-	self.active_item:render(Vector(anchor.X,anchor.Y+first_line_offset.Y),mirrored,Vector(1,1),down_anchor,true)
 	if self.signals.map_btn then
 		-- TODO: stuff page render of button signal
 	end
