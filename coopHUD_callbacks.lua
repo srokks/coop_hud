@@ -106,6 +106,8 @@ coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, function(_, entPlayer)
 		if coopHUD.players[player_index].essau then coopHUD.players[player_index].essau:update() end
 		-- triggers sub player hearts update
 		if coopHUD.players[player_index].sub_hearts then coopHUD.players[player_index].sub_hearts:update() end
+		-- triggers poops update
+		if coopHUD.players[player_index].poops then coopHUD.players[player_index].poops:update() end
 		local item_queue = coopHUD.players[player_index].entPlayer.QueuedItem
 		if item_queue and item_queue.Item and item_queue.Item ~= nil and coopHUD.players[player_index].temp_item == nil then
 			-- enters only if isaac is holding item in queue and temp item in table
