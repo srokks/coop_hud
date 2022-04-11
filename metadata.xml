@@ -5,8 +5,8 @@
 	<id>2731267631</id>
 	<description>[h1]Coop HUD - proper HUD for coop[/h1]
 		Mod renders player items/trinkets/stats and more for up to 4 coop players.
-		[h3]Recently due performance issues mod has been rewritten. It is less laggy and
-		Check what this mod do to check whats working[/h3]
+		[h3]Recently due performance issues mod has been hidden in workshop and rewritten.
+		It is less laggy and buggy right now. Check what is already working in description[/h3]
 
 		[h3] [b] MOD IS STILL DEVELOPED PLEASE SUBMIT ANY WEIR BEHAVIOUR ( weird positions/ console errors/ log files)
 		in Bugs topic[/b] [/h3]
@@ -58,13 +58,11 @@
 		[/list]
 		[h2] What this mod lack of[/h2]
 		[list]
-		[*] Boss bars – I won’t be messing with. I suggest using
-		[url=https://steamcommunity.com/sharedfiles/filedetails/?id=2635267643] [Rep] Enhanced Boss Bars [/url] from
-		[url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge[/url]
+		[*] For menu options use [url=https://steamcommunity.com/workshop/filedetails/?id=2487535818]Mod Config Menu - Continued[/url]
+		[*] Boss bars – I won’t be messing with. I suggest using[url=https://steamcommunity.com/sharedfiles/filedetails/?id=2635267643] [Rep] Enhanced Boss Bars [/url] from[url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge[/url]
 		My mod should override Boss bars settings in case bar covers coopHUD check options. If boss bar covers items
 		change it padding in settings.
-		[*] Minimap – Same as boss bars – Use [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1978904635]
-		MiniMAPI[/url] from [url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge[/url]
+		[*] Minimap – Same as boss bars – Use [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1978904635]MiniMAPI[/url] from [url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge[/url]
 		My mod should override MiniMAPI settings.
 		Options should be:
 		General -> Display on No HUD seed - On
