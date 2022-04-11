@@ -5,12 +5,18 @@ setmetatable(coopHUD.Player, {
 		return cls.new(...)
 	end,
 })
-function coopHUD.Player.new(player_no)
+---@param player_no number player ,used for main
+---@param entPlayer userdata accepts EntityPlayer, if passed ignore passed player number and creates Player according to passed entity
+---used for sub player such as essau
+function coopHUD.Player.new(player_no, entPlayer)
 	local self = setmetatable({}, coopHUD.Player)
 	--
 	self.entPlayer = Isaac.GetPlayer(player_no)
-	self.controller_index = self.entPlayer.ControllerIndex
+	if entPlayer then
+		self.entPlayer = entPlayer
+	end
 	self.game_index = player_no - coopHUD.essau_no
+	self.controller_index = self.entPlayer.ControllerIndex
 	self.player_head = coopHUD.PlayerHead(self)
 	-- Active items
 	self.active_item = coopHUD.Item(self.entPlayer, ActiveSlot.SLOT_PRIMARY)
@@ -31,16 +37,18 @@ function coopHUD.Player.new(player_no)
 	self.collectibles = {} -- item
 	self.gulped_trinkets = {} -- trinket
 	-- HEARTS
-	self.max_health_cap = 12
-	self.total_hearts = math.ceil((self.entPlayer:GetEffectiveMaxHearts() + self.entPlayer:GetSoulHearts()) / 2)
 	self.extra_lives = self.entPlayer:GetExtraLives()
-	self.hearts = coopHUD.HeartTable(self)
+	self.hearts = coopHUD.HeartTable(self.entPlayer)
 	-- SUB PLAYER
-	has_sub = false -- Determines if player has sub as Forgotten/Soul
-	has_twin = false -- Determines if player has twin as Jacob/Essau
-	is_ghost = self.entPlayer:IsCoopGhost() -- Determines if player is old style coop ghost
-	sub_heart_types = {}
-	twin = {}
+	if self.entPlayer:GetPlayerType() == PlayerType.PLAYER_THEFORGOTTEN then
+		self.sub_hearts = coopHUD.HeartTable(self.entPlayer:GetSubPlayer())
+	end
+	if self.entPlayer:GetPlayerType() == PlayerType.PLAYER_JACOB then
+		self.essau = coopHUD.Player(self.game_index, self.entPlayer:GetOtherTwin())
+	end
+	if self.entPlayer:GetPlayerType() == PlayerType.PLAYER_ESAU then
+		self.sub = true
+	end
 	-- STATS
 	-- Inits stats as coopHUD.Stat class
 	self.speed = coopHUD.Stat(self, coopHUD.Stat.SPEED, self.game_index == 0 or self.game_index == 1)
@@ -65,112 +73,6 @@ function coopHUD.Player.new(player_no)
 	}
 	--
 	self.font_color = KColor(1, 1, 1, 1)
-	--
-	coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, function(_, entPlayer)
-		if self.entPlayer.Index == entPlayer.Index then
-			self:update()
-			local item_queue = entPlayer.QueuedItem
-			if item_queue and item_queue.Item and item_queue.Item ~= nil and self.temp_item == nil then
-				self.temp_item = item_queue.Item -- saves as temp item
-				--____ Flashes triggers streak text with picked up name
-				if coopHUD.langAPI then
-					local streak_main_line = coopHUD.langAPI.getItemName(string.sub(item_queue.Item.Name, 2))
-					local streak_sec_line = coopHUD.langAPI.getItemName(string.sub(item_queue.Item.Description, 2))
-					coopHUD.Streak(false, coopHUD.Streak.ITEM, streak_main_line, streak_sec_line, true, self.font_color)
-				end
-			end
-			if not entPlayer:IsHoldingItem() and self.temp_item then
-				if self.temp_item.Type == ItemType.ITEM_ACTIVE then
-				elseif self.temp_item.Type == ItemType.ITEM_TRINKET then
-				else
-					table.insert(self.collectibles, coopHUD.Item(nil, -1, self.temp_item.ID))
-				end
-				self.temp_item = nil
-			end
-			for i = 0, PlayerForm.NUM_PLAYER_FORMS - 1 do
-				if self.transformations[i] ~= self.entPlayer:HasPlayerForm(i) then
-					coopHUD.Streak(false, coopHUD.Streak.ITEM, coopHUD.PlayerForm[i], nil, true, self.font_color)
-					self.transformations[i] = self.entPlayer:HasPlayerForm(i)
-				end
-			end
-		end
-	end)
-	--
-	coopHUD:AddCallback(ModCallbacks.MC_USE_PILL, function(_, effect_no, entPlayer)
-		if self.entPlayer.Index == entPlayer.Index then
-			local pill_sys_name = Isaac.GetItemConfig():GetPillEffect(effect_no).Name
-			pill_sys_name = string.sub(pill_sys_name, 2) --  get rid of # on front of
-			coopHUD.Streak(false, coopHUD.Streak.ITEM, coopHUD.langAPI.getPocketName(pill_sys_name), nil, true,
-			               self.font_color)
-
-		end
-	end)
-	-- CollectibleType.COLLECTIBLE_SMELTER
-	-- connect to MC_PRE_USE_ITEM to handle gulping trinkets even when they are currently in entityPlayer.Queue
-	coopHUD:AddCallback(ModCallbacks.MC_PRE_USE_ITEM,
-	                    function(_, collectible_type, rng, entPlayer, use_flags, slot, var_data)
-		                    -- checks if player currently holding trinket over head
-		                    if self.entPlayer.Index == entPlayer.Index then
-			                    if entPlayer.QueuedItem.Item and entPlayer.QueuedItem.Item:IsTrinket() then
-				                    table.insert(self.collectibles,
-				                                 coopHUD.Trinket(nil, -1, entPlayer.QueuedItem.Item.ID))
-			                    end
-			                    -- checks if player has first trinket
-			                    if self.first_trinket.id > 0 then
-				                    -- add to collectibles table
-				                    table.insert(self.collectibles, coopHUD.Trinket(nil, -1, self.first_trinket.id))
-				                    -- checks if player has first secont trinket
-				                    if self.second_trinket.id > 0 then
-					                    -- add to collectibles table
-					                    table.insert(self.collectibles,
-					                                 coopHUD.Trinket(nil, -1, self.second_trinket.id))
-				                    end
-			                    end
-		                    end
-	                    end, CollectibleType.COLLECTIBLE_SMELTER)
-	-- CollectibleType.COLLECTIBLE_D4
-	-- connect to MC_USE_ITEM to handle roll of collectibles
-	-- Isaac uses use signal of D4 to roll in Dice Room and other occasions
-	coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
-	                    function(_, collectible_type, rng, entPlayer, use_flags, slot, var_data)
-		                    if self.entPlayer.Index == entPlayer.Index then
-			                    local trinkets = {}
-			                    -- saves trinkets into temp table - gulped trinkets do not roll
-			                    for i = 1, #self.collectibles do
-				                    if self.collectibles[i].type == PickupVariant.PICKUP_TRINKET then
-					                    table.insert(trinkets, self.collectibles[i])
-				                    end
-			                    end
-			                    self.collectibles = {} -- resets players collectible table
-			                    for i = 1, Isaac.GetItemConfig():GetCollectibles().Size - 1 do
-				                    -- check if player has collectible
-				                    if self.entPlayer:HasCollectible(i) then
-					                    -- skips active items
-					                    if Isaac.GetItemConfig():GetCollectible(i).Type ~= ItemType.ITEM_ACTIVE then
-						                    table.insert(self.collectibles, coopHUD.Item(nil, -1, i))
-					                    end
-				                    end
-			                    end
-			                    -- adds saved trinkets on top of collectibles table
-			                    for i = 1, #trinkets do
-				                    table.insert(self.collectibles, trinkets[i])
-			                    end
-		                    end
-	                    end, CollectibleType.COLLECTIBLE_D4)
-	-- CollectibleType.COLLECTIBLE_JAR_OF_WISPS
-	-- connect to MC_USE_ITEM to handle jar of wisp since no possibility to get var var_data
-	-- on use will increase global jar_of_wisp use variable
-	-- FIXME: no charges for multiples jar of wisp instances in one run
-	coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
-	                    function(_, collectible_type, rng, entPlayer, use_flags, slot, var_data)
-		                    if self.entPlayer.Index == entPlayer.Index then
-			                    if coopHUD.jar_of_wisp_charge < 11 then
-				                    -- max charge 12
-				                    coopHUD.jar_of_wisp_charge = coopHUD.jar_of_wisp_charge + 1 --increase charge
-			                    end
-		                    end
-
-	                    end, CollectibleType.COLLECTIBLE_JAR_OF_WISPS)
 	return self
 end
 function coopHUD.Player:update()
@@ -202,6 +104,7 @@ function coopHUD.Player:update()
 	self.second_pocket:update()
 	self.third_pocket:update()
 	self.hearts:update()
+	self.big_hud = #coopHUD.players < 3 and not coopHUD.options.force_small_hud
 end
 function coopHUD.Player:render()
 	--
@@ -212,7 +115,7 @@ function coopHUD.Player:render()
 	local mirrored = coopHUD.players_config.small[self.game_index].mirrored
 	local scale = coopHUD.players_config.small.scale
 	local down_anchor = coopHUD.players_config.small[self.game_index].down_anchor
-	if #coopHUD.players < 3 and not coopHUD.options.force_small_hud then
+	if self.big_hud then
 		anchor = Vector(coopHUD.anchors[coopHUD.players_config.small[self.game_index].anchor_top].X,
 		                coopHUD.anchors[coopHUD.players_config.small[self.game_index].anchor_top].Y)
 		mirrored = coopHUD.players_config.small[self.game_index].mirrored_big
@@ -224,21 +127,58 @@ function coopHUD.Player:render()
 	local exl_liv_off = Vector(0, 0)
 	local pocket_off = Vector(0, 0)
 	local second_pocket_off = Vector(0, 0)
+	local third_pocket_off = Vector(0, 0)
 	local trinket_off = Vector(0, 0)
 	local extra_charge_off = Vector(0, 0)
 	local poop_spell_off = Vector(0, 0)
 	--
+	local sub_active_off = Vector(0, 0)
+	local sub_hearts_off = Vector(0, 0)
+	--
 	if coopHUD.options.render_player_info then
 		info_off = self.player_head:render(anchor, mirrored, scale, down_anchor)
 	end
-	self.schoolbag_item:render(Vector(anchor.X + info_off.X, anchor.Y), mirrored, scale, down_anchor)
-	active_off = self.active_item:render(Vector(anchor.X + info_off.X, anchor.Y), mirrored, scale, down_anchor)
+	local dim = false -- holds if active items needed to be dimmed before redner, default false
+	if self.essau then
+		-- if playing as jacob sets dim according to pressed drop button
+		dim = Input.IsActionPressed(ButtonAction.ACTION_DROP, self.controller_index)
+		scale = coopHUD.players_config.small.scale -- resets scale if essau logic changes it
+		if dim then scale = Vector(0.9 * coopHUD.players_config.small.scale.X,
+		                           0.9 * coopHUD.players_config.small.scale.Y) end -- shrinks inactive sprites
+	end
+	self.schoolbag_item:render(Vector(anchor.X + info_off.X, anchor.Y), mirrored, scale, down_anchor, dim)
+	active_off = self.active_item:render(Vector(anchor.X + info_off.X, anchor.Y), mirrored, scale, down_anchor, dim)
 	active_off.X = active_off.X + info_off.X
+	scale = coopHUD.players_config.small.scale -- resets scale if essau logic changes it
 	hearts_off = self.hearts:render(Vector(anchor.X + active_off.X, anchor.Y), mirrored, scale, down_anchor)
+	if self.sub_hearts then
+		-- RENDERS SUB PLAYER (Forgotten/Soul) hearts
+		hearts_off.X = hearts_off.X + (self.sub_hearts:render(Vector(anchor.X + active_off.X, anchor.Y + hearts_off.Y),
+		                                                      mirrored, scale, down_anchor, true)).X
+	end
 	self:renderExtras(Vector(anchor.X + active_off.X + hearts_off.X, anchor.Y), mirrored, scale, down_anchor)
-	--self.active_item:render(Vector(anchor.X + active_off.X + hearts_off.X, anchor.Y), mirrored, scale, down_anchor)
+	if self.essau then
+		-- RENDERS ESSAU ACTIVE ITEMS
+		local sub_anchor = Vector(anchor.X, anchor.Y)
+		if dim then scale = Vector(0.9 * coopHUD.players_config.small.scale.X,
+		                           0.9 * coopHUD.players_config.small.scale.Y) end -- shrinks inactive sprites
+		if down_anchor then
+			sub_anchor.Y = sub_anchor.Y + math.min(info_off.Y, active_off.Y, hearts_off.Y) * 0.75
+		else
+			sub_anchor.Y = sub_anchor.Y + math.max(info_off.Y, active_off.Y, hearts_off.Y)
+		end
+		self.essau.schoolbag_item:render(Vector(sub_anchor.X, sub_anchor.Y), mirrored, scale, down_anchor, dim)
+		sub_active_off = self.essau.active_item:render(Vector(sub_anchor.X, sub_anchor.Y), mirrored, scale,
+		                                               down_anchor, dim)
+		scale = coopHUD.players_config.small.scale -- resets scale if essau logic changes it
+		sub_hearts_off = self.essau.hearts:render(Vector(sub_anchor.X + sub_active_off.X, sub_anchor.Y), mirrored,
+		                                          scale, down_anchor)
+		scale = coopHUD.players_config.small.scale -- resets scale if essau logic changes it
+		self.essau:renderExtras(Vector(sub_anchor.X + sub_active_off.X + sub_hearts_off.X, sub_anchor.Y), mirrored,
+		                        scale, down_anchor)
+	end -- RENDERS ESSAU -
 	-- <Second  top line render> --
-	if #coopHUD.players < 3 and not coopHUD.options.force_small_hud then
+	if self.big_hud then
 		-- special version of hud when only when <2 players and not forced in options
 		anchor.X = anchor_bot.X
 		anchor.Y = anchor_bot.Y
@@ -253,25 +193,75 @@ function coopHUD.Player:render()
 		end
 		pocket_desc_off.Y = -8
 	else
-		first_line_offset.Y = math.max(info_off.Y, active_off.Y, hearts_off.Y)
+		first_line_offset.Y = math.max(info_off.Y, active_off.Y, hearts_off.Y) + math.max(sub_active_off.Y,
+		                                                                                  sub_hearts_off.Y)
 	end
-	trinket_off = self.first_trinket:render(Vector(anchor.X, anchor.Y + first_line_offset.Y), mirrored, scale,
+	local trinket_pos = Vector(anchor.X, anchor.Y + first_line_offset.Y)
+	trinket_off = self.first_trinket:render(Vector(trinket_pos.X, trinket_pos.Y), mirrored, scale,
 	                                        down_anchor)
-	self.second_trinket:render(Vector(anchor.X, anchor.Y + first_line_offset.Y + trinket_off.Y), mirrored, scale,
-	                           down_anchor)
+	local temp_off = self.second_trinket:render(Vector(trinket_pos.X + trinket_off.X, trinket_pos.Y),
+	                                            mirrored, scale,
+	                                            down_anchor)
+	trinket_off.X = trinket_off.X + temp_off.X
+	dim = false -- holds if active items needed to be dimmed before redner, default false
+	if self.essau then
+		-- if playing as jacob sets dim according to pressed drop button
+		dim = not Input.IsActionPressed(ButtonAction.ACTION_DROP, self.controller_index)
+		scale = coopHUD.players_config.small.scale -- resets scale if essau logic changes it
+		if dim then scale = Vector(0.9 * coopHUD.players_config.small.scale.X,
+		                           0.9 * coopHUD.players_config.small.scale.Y) end -- shrinks inactive sprites
+	end
 	--
 	pocket_off = self.first_pocket:render(Vector(anchor.X + trinket_off.X, anchor.Y + first_line_offset.Y), mirrored,
 	                                      scale,
-	                                      down_anchor)
+	                                      down_anchor, dim)
 	second_pocket_off = self.second_pocket:render(Vector(anchor.X + trinket_off.X + pocket_off.X,
 	                                                     anchor.Y + first_line_offset.Y + pocket_desc_off.Y), mirrored,
 	                                              Vector(0.5 * scale.X, 0.5 * scale.Y),
-	                                              down_anchor)
+	                                              down_anchor, dim)
 
-	self.third_pocket:render(Vector(anchor.X + trinket_off.X + pocket_off.X + second_pocket_off.X,
-	                                anchor.Y + first_line_offset.Y + pocket_desc_off.Y), mirrored,
-	                         Vector(0.5 * scale.X, 0.5 * scale.Y),
-	                         down_anchor)
+	third_pocket_off = self.third_pocket:render(Vector(anchor.X + trinket_off.X + pocket_off.X + second_pocket_off.X,
+	                                                   anchor.Y + first_line_offset.Y + pocket_desc_off.Y), mirrored,
+	                                            Vector(0.5 * scale.X, 0.5 * scale.Y),
+	                                            down_anchor, dim)
+	if down_anchor then
+		first_line_offset.Y = first_line_offset.Y + math.min(pocket_off.Y, trinket_off.Y)
+	else
+		first_line_offset.Y = first_line_offset.Y + math.max(pocket_off.Y, trinket_off.Y)
+	end
+	--
+	if self.essau then
+		-- RENDERS ESSAU TRINKETS/POCKETS
+		scale = coopHUD.players_config.small.scale -- resets scale if essau logic changes it
+		local sub_trinket_pos = Vector(anchor.X, anchor.Y + first_line_offset.Y)
+		local sub_trinket_off = self.essau.first_trinket:render(Vector(sub_trinket_pos.X, sub_trinket_pos.Y), mirrored,
+		                                                        scale,
+		                                                        down_anchor)
+		sub_trinket_off = sub_trinket_off + self.essau.second_trinket:render(Vector(sub_trinket_pos.X + sub_trinket_off.X,
+		                                                                            sub_trinket_pos.Y),
+		                                                                     mirrored, scale,
+		                                                                     down_anchor, dim)
+		local sub_pocket_pos = Vector(sub_trinket_pos.X + sub_trinket_off.X, sub_trinket_pos.Y)
+		local sub_pocket_off = self.essau.first_pocket:render(sub_pocket_pos,
+		                                                      mirrored,
+		                                                      scale,
+		                                                      down_anchor, dim)
+		sub_pocket_pos.X = sub_pocket_pos.X + sub_pocket_off.X
+		sub_pocket_off = self.essau.second_pocket:render(sub_pocket_pos,
+		                                                 mirrored,
+		                                                 Vector(0.5 * scale.X, 0.5 * scale.Y),
+		                                                 down_anchor, dim)
+		sub_pocket_pos.X = sub_pocket_pos.X + sub_pocket_off.X
+		local sub_third_pocket_off = self.essau.third_pocket:render(sub_pocket_pos,
+		                                                            mirrored,
+		                                                            Vector(0.5 * scale.X, 0.5 * scale.Y),
+		                                                            down_anchor, dim)
+		if down_anchor then
+			first_line_offset.Y = first_line_offset.Y + math.min(sub_pocket_off.Y, sub_trinket_off.Y)
+		else
+			first_line_offset.Y = first_line_offset.Y + math.max(sub_pocket_off.Y, sub_trinket_off.Y)
+		end
+	end
 	-- PLAYER COLOR SET
 	local col = Color(1, 1, 1, 1)
 	if coopHUD.options.colorful_players then
@@ -280,51 +270,39 @@ function coopHUD.Player:render()
 		col.B = self.font_color.Blue
 	end
 	self.entPlayer:SetColor(col, 2, 100, false, false)
+	if self.essau then
+		-- colors essau sprite
+		self.essau.entPlayer:SetColor(col, 2, 100, false, false)
+	end
 	--Player name on screen
 	if coopHUD.options.show_player_names then
 		local position = Isaac.WorldToScreen(self.entPlayer.Position)
 		coopHUD.HUD.fonts.pft:DrawString(self.player_head.name, position.X - 5, position.Y, self.font_color)
+		if self.essau then
+			-- colors essau name
+			position = Isaac.WorldToScreen(self.essau.entPlayer.Position)
+			coopHUD.HUD.fonts.pft:DrawString(self.player_head.name, position.X - 5, position.Y, self.font_color)
+		end
 	end
 	if coopHUD.options.stats.show then
 		-- when options.stats.show on
 		if not (coopHUD.options.stats.hide_in_battle and coopHUD.signals.on_battle) then
-			--when options.stats.hide_in_battle on and battle signal
-			local font_color = KColor(1, 1, 1, 1)
-			if coopHUD.options.stats.colorful then
-				font_color = self.font_color
-			end
-			local temp_stat_pos = Vector(anchor.X, 100)
-			local off = Vector(0, 14) -- static offset for stats
-			if self.game_index == 2 or self.game_index == 3 then
-				-- checks if player is 3rd or 4th
-				if mirrored then
-					temp_stat_pos.X = temp_stat_pos.X - 16 * 1.25 -- changes horizontal base position
-					temp_stat_pos.Y = temp_stat_pos.Y + 7  -- changes  vertical base position
-				else
-					temp_stat_pos.X = temp_stat_pos.X + 16 -- changes horizontal base position
-					temp_stat_pos.Y = temp_stat_pos.Y + 7 -- changes  vertical base position
+			if self.big_hud then
+				-- renders main stat and essau stats on same time
+				if self.essau then
+					self.essau:renderStats(mirrored)
 				end
+				self:renderStats(mirrored)
+			else
+				-- renders essau stats on drop pressed
+				if self.essau and Input.IsActionPressed(ButtonAction.ACTION_DROP,self.controller_index)then
+				self.essau:renderStats(mirrored)
+			else
+				self:renderStats(mirrored)
 			end
-			self.speed:render(temp_stat_pos, mirrored) -- renders object with player mirrored spec
-			temp_stat_pos.Y = temp_stat_pos.Y + off.Y -- increments position with static offset vertical
-			self.tears_delay:render(temp_stat_pos, mirrored)
-			temp_stat_pos.Y = temp_stat_pos.Y + off.Y
-			self.damage:render(temp_stat_pos, mirrored)
-			temp_stat_pos.Y = temp_stat_pos.Y + off.Y
-			self.range:render(temp_stat_pos, mirrored)
-			temp_stat_pos.Y = temp_stat_pos.Y + off.Y
-			self.shot_speed:render(temp_stat_pos, mirrored)
-			temp_stat_pos.Y = temp_stat_pos.Y + off.Y
-			self.luck:render(temp_stat_pos, mirrored)
-			temp_stat_pos.Y = temp_stat_pos.Y + off.Y
-			if self.game_index == 0 then
-				-- saves pos under stats for other hud modules to access like deals stats
-				coopHUD.HUD.stat_anchor = temp_stat_pos
 			end
+
 		end
-	end
-	if self.signals.map_btn then
-		-- TODO: stuff page render of button signal
 	end
 end
 function coopHUD.Player:renderExtras(pos, mirrored, scale, down_anchor)
@@ -371,6 +349,52 @@ function coopHUD.Player:renderExtras(pos, mirrored, scale, down_anchor)
 			temp_pos.Y = pos.Y + offset.Y
 		end
 	end
-
-	--Todo: Extra protection charge indicator
+end
+function coopHUD.Player:renderStats(mirrored)
+	--when options.stats.hide_in_battle on and battle signal
+	local font_color = KColor(1, 1, 1, 1)
+	if coopHUD.options.stats.colorful then
+		font_color = self.font_color
+	end
+	local temp_stat_pos = Vector(0, 82)
+	if mirrored then
+		temp_stat_pos.X = coopHUD.anchors.bot_right.X
+	else
+		temp_stat_pos.X = coopHUD.anchors.bot_left.X
+	end
+	local off = Vector(0, 14) -- static offset for stats
+	if self.game_index == 2 or self.game_index == 3 then
+		-- checks if player is 3rd or 4th
+		if mirrored then
+			temp_stat_pos.X = temp_stat_pos.X - 16 * 1.25 -- changes horizontal base position
+			temp_stat_pos.Y = temp_stat_pos.Y + 7  -- changes  vertical base position
+		else
+			temp_stat_pos.X = temp_stat_pos.X + 16 -- changes horizontal base position
+			temp_stat_pos.Y = temp_stat_pos.Y + 7 -- changes  vertical base position
+		end
+	end
+	local only_num = false
+	if self.entPlayer:GetPlayerType() == PlayerType.PLAYER_ESAU then
+		if self.big_hud then
+			temp_stat_pos.X = temp_stat_pos.X + 16 -- changes horizontal base position
+			temp_stat_pos.Y = temp_stat_pos.Y + 7 -- changes  vertical base position
+			only_num = true
+		end
+	end
+	self.speed:render(temp_stat_pos, mirrored,false,only_num) -- renders object with player mirrored spec
+	temp_stat_pos.Y = temp_stat_pos.Y + off.Y -- increments position with static offset vertical
+	self.tears_delay:render(temp_stat_pos, mirrored,false,only_num)
+	temp_stat_pos.Y = temp_stat_pos.Y + off.Y
+	self.damage:render(temp_stat_pos, mirrored,false,only_num)
+	temp_stat_pos.Y = temp_stat_pos.Y + off.Y
+	self.range:render(temp_stat_pos, mirrored,false,only_num)
+	temp_stat_pos.Y = temp_stat_pos.Y + off.Y
+	self.shot_speed:render(temp_stat_pos, mirrored,false,only_num)
+	temp_stat_pos.Y = temp_stat_pos.Y + off.Y
+	self.luck:render(temp_stat_pos, mirrored,false,only_num)
+	temp_stat_pos.Y = temp_stat_pos.Y + off.Y
+	if self.game_index == 0 and not(self.entPlayer:GetPlayerType() == PlayerType.PLAYER_ESAU)then
+		-- saves pos under stats for other hud modules to access like deals stats
+		coopHUD.HUD.stat_anchor = temp_stat_pos
+	end
 end

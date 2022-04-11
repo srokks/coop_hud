@@ -5,8 +5,8 @@
 	<id>2731267631</id>
 	<description>[h1]Coop HUD - proper HUD for coop[/h1]
 		Mod renders player items/trinkets/stats and more for up to 4 coop players.
-		[h3]Recently due performance issues mod has been rewritten.
-		Check what this mod do to check whats working[/h3]
+		[h3]Recently due performance issues mod has been hidden in workshop and rewritten.
+		It is less laggy and buggy right now. Check what is already working in description[/h3]
 
 		[h3] [b] MOD IS STILL DEVELOPED PLEASE SUBMIT ANY WEIR BEHAVIOUR ( weird positions/ console errors/ log files)
 		in Bugs topic[/b] [/h3]
@@ -17,6 +17,15 @@
 		[*] Colorful players and HUD info - can turn off
 		[*] Shows pockets/pills/card names
 		[*] Bethany charges/ colored charge bar
+		[*] Jacob/Essau: full support for up to 4 Jacob/Essau pairs on screen:
+		[list]
+			[*] Shows full and clear Jacob & Essau active items/trinkets/pockets on screen
+			[*] Shows Essau stats:
+			[list]
+				[*] When more than 2 players: on drop button - switched with main
+				[*] With less then 2 players: under main character stats
+			[/list]
+		[/list]
 		[*] Vanilla like prompts (using cards/ pills/ active items/ transformations ) with color of player
 		[*] Stats - just like vanilla FoundHUD stat display:
 			[list]
@@ -36,9 +45,9 @@
 		[/list]
 		[h2] Planned features/ not implemented yet[/h2]
 		[list]
+			[*] Jacob and Essau - show Essau passive items
 			[*] Gideon/Greed Wave Counter
 			[*] Destination icons
-			[*] Jacob and Essau - show both players inventory
 			[*] Small HUD - customizable positions
 			[*] Forgotten - Lost -
 			[*] Tainted Isaac - inventory
@@ -49,13 +58,11 @@
 		[/list]
 		[h2] What this mod lack of[/h2]
 		[list]
-		[*] Boss bars – I won’t be messing with. I suggest using
-		[url=https://steamcommunity.com/sharedfiles/filedetails/?id=2635267643] [Rep] Enhanced Boss Bars [/url] from
-		[url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge[/url]
+		[*] For menu options use [url=https://steamcommunity.com/workshop/filedetails/?id=2487535818]Mod Config Menu - Continued[/url]
+		[*] Boss bars – I won’t be messing with. I suggest using[url=https://steamcommunity.com/sharedfiles/filedetails/?id=2635267643] [Rep] Enhanced Boss Bars [/url] from[url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge[/url]
 		My mod should override Boss bars settings in case bar covers coopHUD check options. If boss bar covers items
 		change it padding in settings.
-		[*] Minimap – Same as boss bars – Use [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1978904635]
-		MiniMAPI[/url] from [url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge[/url]
+		[*] Minimap – Same as boss bars – Use [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1978904635]MiniMAPI[/url] from [url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge[/url]
 		My mod should override MiniMAPI settings.
 		Options should be:
 		General -> Display on No HUD seed - On
@@ -71,16 +78,11 @@
 		[/list]
 		[h2] Mods Compatibility[/h2]
 		[list]
-		[*] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2635267643] [Rep] Enhanced Boss Bars [/url] from
-		[url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge
-		[*] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1978904635] MiniMAPI[/url] from
-		[url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge
-		[*] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=836319872] [AB+|Rep] External item
-		descriptions[/url] from [url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900]
-		Wofsauge[/url]
+		[*] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2635267643] [Rep] Enhanced Boss Bars [/url] from [url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge
+		[*] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1978904635] MiniMAPI[/url] from [url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge
+		[*] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=836319872] [AB+|Rep] External item descriptions[/url] from [url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900]Wofsauge[/url]
 		For right now you must set EID position manually
-		[*] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2376005362] Encyclopedia - An In-Game Wiki[/url]
-		from [url=https://steamcommunity.com/id/AgentCucco/myworkshopfiles/?appid=250900] AgentCucco[/url]
+		[*] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2376005362] Encyclopedia - An In-Game Wiki[/url]from [url=https://steamcommunity.com/id/AgentCucco/myworkshopfiles/?appid=250900] AgentCucco[/url]
 		[/list]
 		[h2] Thanks to![/h2]
 		[list]
@@ -89,7 +91,7 @@
 		[/list]
 
 	</description>
-	<version>0.5.2</version>
+	<version>0.5</version>
 	<visibility>Public</visibility>
 	<tag id="Lua"/>
 	<tag id="Tweaks"/>

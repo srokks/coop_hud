@@ -147,7 +147,7 @@ function coopHUD.Item:getFrameNum()
 			end
 		else
 			-- Sets overlay/charges state frame --
-			local max_charges = Isaac.GetItemConfig():GetCollectible(self.id).MaxCharges -- gets max charges
+			local max_charges = Isaac.GetItemConfig():GetCollectible(self.id).MaxCharges-- gets max charges
 			if max_charges == 0 then
 				-- checks id item has any charges
 				frame_num = 0 -- set frame to unloaded
@@ -248,7 +248,7 @@ function coopHUD.Item:renderChargeBar(pos, mirrored, scale, down_anchor)
 	end
 	return offset
 end
-function coopHUD.Item:render(pos, mirrored, scale, down_anchor)
+function coopHUD.Item:render(pos, mirrored, scale, down_anchor, dim)
 	self:updateCharge()
 	local temp_pos = Vector(pos.X, pos.Y)
 	local sprite_scale = scale
@@ -274,6 +274,15 @@ function coopHUD.Item:render(pos, mirrored, scale, down_anchor)
 			sprite_scale = Vector(sprite_scale.X * 0.5, sprite_scale.Y * 0.5)
 			temp_pos.X = temp_pos.X - 8
 			temp_pos.Y = temp_pos.Y - 8
+		end
+		if dim then
+			local color = Color(0.3, 0.3, 0.3, 1)
+			color:SetColorize(0, 0, 0, 0)
+			self.sprite.Color = color
+		else
+			local color = Color(1, 1, 1, 1)
+			color:SetColorize(0, 0, 0, 0)
+			self.sprite.Color = color
 		end
 		self.sprite.Scale = sprite_scale
 		self.sprite:Render(temp_pos)
@@ -327,6 +336,7 @@ function coopHUD.Trinket:render(pos, mirrored, scale, down_anchor)
 	local temp_pos = Vector(pos.X, pos.Y)
 	local sprite_scale = scale
 	local offset = Vector(0, 0)
+	if self.entPlayer and self.entPlayer:IsCoopGhost() then return offset end -- if player is coop ghost skips render
 	--
 	if sprite_scale == nil then sprite_scale = Vector(1, 1) end -- sets def sprite_scale
 	--
@@ -341,13 +351,12 @@ function coopHUD.Trinket:render(pos, mirrored, scale, down_anchor)
 		--
 		if down_anchor then
 			temp_pos.Y = temp_pos.Y - (16 * sprite_scale.Y)
-			offset.Y = -32 * sprite_scale.Y
+			offset.Y = -24 * sprite_scale.Y
 		else
 			temp_pos.Y = temp_pos.Y + (16 * sprite_scale.Y)
 			offset.Y = 24 * sprite_scale.Y
 		end
 		--
-		if self.entPlayer and self.entPlayer:IsCoopGhost() then return offset end -- if player is coop ghost skips render
 		self.sprite.Scale = sprite_scale
 		self.sprite:Render(temp_pos)
 	end
@@ -468,7 +477,7 @@ function coopHUD.Pocket:update()
 		end
 	end
 end
-function coopHUD.Pocket:render(pos, mirrored, scale, down_anchor)
+function coopHUD.Pocket:render(pos, mirrored, scale, down_anchor, dim)
 	local temp_pos = Vector(pos.X, pos.Y)
 	local sprite_scale = scale
 	local offset = Vector(0, 0)
@@ -495,6 +504,15 @@ function coopHUD.Pocket:render(pos, mirrored, scale, down_anchor)
 	if self.parent.entPlayer and self.parent.entPlayer:IsCoopGhost() then return offset end -- if player is coop ghost skips render
 	--
 	if self.sprite then
+		if dim then
+			local color = Color(0.3, 0.3, 0.3, 1)
+			color:SetColorize(0, 0, 0, 0)
+			self.sprite.Color = color
+		else
+			local color = Color(1, 1, 1, 1)
+			color:SetColorize(0, 0, 0, 0)
+			self.sprite.Color = color
+		end
 		self.sprite.Scale = sprite_scale
 		self.sprite:Render(temp_pos)
 	elseif self.item then
@@ -718,13 +736,22 @@ function coopHUD.Heart:update()
 		self.sprite = self:getSprite()
 	end
 end
-function coopHUD.Heart:render(pos, scale)
+function coopHUD.Heart:render(pos, scale, dim)
 	local offset = Vector(0, 0)
 	local sprite_scale = scale
 	if sprite_scale == nil then sprite_scale = Vector(1, 1) end
 	local temp_pos = Vector(pos.X + (8 * sprite_scale.X), pos.Y + (8 * sprite_scale.Y))
 	--
 	if self.sprite then
+		if dim then
+			local color = Color(0.3, 0.3, 0.3, 1)
+			color:SetColorize(0, 0, 0, 0)
+			self.sprite.Color = color
+		else
+			local color = Color(1, 1, 1, 1)
+			color:SetColorize(0, 0, 0, 0)
+			self.sprite.Color = color
+		end
 		self.sprite.Scale = sprite_scale
 		self.sprite:Render(temp_pos)
 		offset.X = 12 * math.ceil((self.pos + 1) % 6) * sprite_scale.X
@@ -743,30 +770,32 @@ setmetatable(coopHUD.HeartTable, {
 		return cls.new(...)
 	end,
 })
-function coopHUD.HeartTable.new(parent)
+function coopHUD.HeartTable.new(entPlayer)
 	local self = setmetatable({}, coopHUD.HeartTable)
-	self.parent = parent
-	for i = 0, self.parent.max_health_cap do
-		self[i] = coopHUD.Heart(self.parent, i)
+	self.entPlayer = entPlayer
+	self.max_health_cap = 12
+	self.total_hearts = math.ceil((self.entPlayer:GetEffectiveMaxHearts() + self.entPlayer:GetSoulHearts()) / 2)
+	for i = 0, self.max_health_cap do
+		self[i] = coopHUD.Heart(self, i)
 	end
 	return self
 end
-function coopHUD.HeartTable:render(pos, mirrored, scale, down_anchor)
+function coopHUD.HeartTable:render(pos, mirrored, scale, down_anchor, dim)
 	local temp_off = Vector(0, 0)
-	if self.parent.entPlayer and self.parent.entPlayer:IsCoopGhost() then return temp_off end -- if player is coop ghost skips render
+	if self.entPlayer and self.entPlayer:IsCoopGhost() then return temp_off end -- if player is coop ghost skips render
 	local init_pos = Vector(pos.X, pos.Y)
 	--
 	local hearts_span
-	if self.parent.total_hearts >= 6 then
+	if self.total_hearts >= 6 then
 		-- Determines how many columns will be
 		hearts_span = 6
 	else
-		hearts_span = self.parent.total_hearts % 6
+		hearts_span = self.total_hearts % 6
 	end
-	local rows = math.ceil(self.parent.total_hearts / 6)
+	local rows = math.ceil(self.total_hearts / 6)
 	local cols = 6
-	if self.parent.total_hearts < 6 then
-		cols = math.ceil(self.parent.total_hearts % 6)
+	if self.total_hearts < 6 then
+		cols = math.ceil(self.total_hearts % 6)
 	end
 	if self[0] and self[0].type == 'CurseHeart' then
 		cols = 1
@@ -777,24 +806,24 @@ function coopHUD.HeartTable:render(pos, mirrored, scale, down_anchor)
 		cols = cols * -1
 	end
 	if down_anchor then
-		init_pos.Y = pos.Y + (-16 * scale.Y) * math.ceil(self.parent.total_hearts / 6)
+		init_pos.Y = pos.Y + (-16 * scale.Y) * math.ceil(self.total_hearts / 6)
 		rows = rows * -1.5
 	end
 	-- RENDER
-	for i = 0, self.parent.max_health_cap do
+	for i = 0, self.max_health_cap do
 		local temp_pos = Vector(init_pos.X + temp_off.X, init_pos.Y + temp_off.Y)
-		temp_off = self[i]:render(temp_pos, scale)
+		temp_off = self[i]:render(temp_pos, scale, dim)
 	end
 	--
 	return Vector(12 * scale.X * cols, 12 * scale.Y * rows)
 end
 function coopHUD.HeartTable:update()
-	local temp_total_hearts = math.ceil((self.parent.entPlayer:GetEffectiveMaxHearts() + self.parent.entPlayer:GetSoulHearts()) / 2)
-	if self.parent.total_hearts ~= temp_total_hearts then
-		self.parent.total_hearts = temp_total_hearts
+	local temp_total_hearts = math.ceil((self.entPlayer:GetEffectiveMaxHearts() + self.entPlayer:GetSoulHearts()) / 2)
+	if self.total_hearts ~= temp_total_hearts then
+		self.total_hearts = temp_total_hearts
 	end
-	for i = 0, self.parent.total_hearts do
-		self[i]:update()
+	for i = 0, self.total_hearts do
+			self[i]:update()
 	end
 end
 --
@@ -1085,7 +1114,7 @@ function coopHUD.Stat:getSprite()
 		return nil
 	end
 end
-function coopHUD.Stat:render(pos, mirrored, vertical)
+function coopHUD.Stat:render(pos, mirrored, vertical,only_num)
 	self:update()
 	local init_pos = (Vector(pos.X, pos.Y))
 	if vertical then
@@ -1100,7 +1129,7 @@ function coopHUD.Stat:render(pos, mirrored, vertical)
 			color_alpha = 0.5
 		end
 	end
-	if self.icon and self.sprite then
+	if self.icon and self.sprite and not only_num then
 		-- Icon render
 		if mirrored then
 			init_pos.X = init_pos.X - 16

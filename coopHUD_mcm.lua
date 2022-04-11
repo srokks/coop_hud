@@ -1,13 +1,11 @@
 local json = require("json")
 if coopHUD:HasData() then
 	local save = json.decode(coopHUD:LoadData())
-	if false then
-		coopHUD.players_config.small[0] = save.players_config.small['0']
-		coopHUD.players_config.small[1] = save.players_config.small['1']
-		coopHUD.players_config.small[2] = save.players_config.small['2']
-		coopHUD.players_config.small[3] = save.players_config.small['3']
-		coopHUD.options = save.options
-	end
+	coopHUD.players_config.small[0] = save.players_config.small['0']
+	coopHUD.players_config.small[1] = save.players_config.small['1']
+	coopHUD.players_config.small[2] = save.players_config.small['2']
+	coopHUD.players_config.small[3] = save.players_config.small['3']
+	coopHUD.options = save.options
 end
 function coopHUD.save_options()
 	local save = {}
@@ -20,7 +18,7 @@ function coopHUD.save_options()
 		['angel_seen'] = coopHUD.angel_seen,
 	}
 	--
-	if coopHUD.jar_of_wisp_charge > 0 then
+	if coopHUD.jar_of_wisp_charge and coopHUD.jar_of_wisp_charge > 0 then
 		save.run['jar_of_wisp_use'] = coopHUD.jar_of_wisp_charge
 	end
 	--
@@ -46,6 +44,7 @@ function coopHUD.save_options()
 	end
 	save.run.players = players
 	coopHUD:SaveData(json.encode(save))
+	--coopHUD.players = {}
 end
 coopHUD:AddCallback(ModCallbacks.MC_PRE_GAME_EXIT, coopHUD.save_options)
 if ModConfigMenu then
@@ -515,11 +514,12 @@ if ModConfigMenu then
 			return "Sets player position on big hud"
 		end
 	})
+	-- TODO: uptade other anchors on change
+	-- DEBUG: until finished only for debuging
 	--[[ModConfigMenu.AddTitle(mod_name, "Positions", 'Small HUD positions')
 	ModConfigMenu.AddSetting(mod_name, "Positions", {
 		Type = ModConfigMenu.OptionType.NUMBER,
 		CurrentSetting = function()
-			print(coopHUD.anchors[coopHUD.players_config.small[0].anchor .. '_id'])
 			return coopHUD.anchors[coopHUD.players_config.small[0].anchor .. '_id']
 		end,
 		Minimum = 0,
@@ -528,11 +528,10 @@ if ModConfigMenu then
 			return "Player 1: " .. coopHUD.anchors[coopHUD.players_config.small[0].anchor .. '_name']
 		end,
 		OnChange = function(currentNum)
-			--print(currentNum)
 			coopHUD.players_config.small[0].anchor = coopHUD.players_config.default[currentNum].anchor
 			coopHUD.players_config.small[0].mirrored = coopHUD.players_config.default[currentNum].mirrored
 			coopHUD.players_config.small[0].down_anchor = coopHUD.players_config.default[currentNum].down_anchor
-			--coopHUD.save_options()
+			coopHUD.save_options()
 		end,
 		Info = function()
 			return "Sets player position on small hud"
