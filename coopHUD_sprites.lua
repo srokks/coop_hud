@@ -9,6 +9,7 @@ setmetatable(coopHUD.Item, {
 function coopHUD.Item.new(player, slot, item_id)
 	local self = setmetatable({}, coopHUD.Item)
 	self.parent = player
+	if self.parent == nil then return nil end
 	self.entPlayer = self.parent.entPlayer
 	self.slot = slot
 	if slot >= 0 then
@@ -1672,6 +1673,65 @@ function coopHUD.Collectibles.trigger(Player)
 		coopHUD.Collectibles.mirrored = coopHUD.players_config.small[Player.game_index].mirrored
 		coopHUD.Collectibles.item_table = Player.collectibles
 		coopHUD.Collectibles.sprite:Play("Appear", true)
+	end
+end
+--
+coopHUD.Inventory = {}
+coopHUD.Inventory.__index = coopHUD.Inventory
+setmetatable(coopHUD.Inventory, {
+	__call = function(cls, ...)
+		return cls.new(...)
+	end,
+})
+function coopHUD.Inventory.new(parent)
+	local self = setmetatable({}, coopHUD.Inventory)
+	self.parent = parent
+	self.max_collectibles = 8
+	self.sprite = Sprite()
+	self.sprite:Load(coopHUD.GLOBALS.inventory_anim_path, true)
+	self.sprite:SetFrame('Idle', 0)
+	return self
+end
+function coopHUD.Inventory:render(pos, mirrored, down_anchor)
+	local temp_pos = Vector(pos.X, pos.Y)
+	local sprite_pivot = Vector(8, 8)
+	--
+	if self.parent.entPlayer:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
+		self.max_collectibles = 12
+	else
+		self.max_collectibles = 8
+	end
+
+	--
+	if mirrored then
+		sprite_pivot.X = sprite_pivot.X * -1
+	end
+	if down_anchor then
+		temp_pos.Y = temp_pos.Y - 16
+		sprite_pivot.Y = sprite_pivot.Y * -1
+	end
+	for i = 1, self.max_collectibles do
+		if i == 1 then
+			self.sprite.Color = Color(1, 1, 1, 1)
+			self.sprite:RenderLayer(1, temp_pos + sprite_pivot)
+		end
+		local off
+		if coopHUD.players[1].collectibles[i] then
+			off = self.parent.collectibles[i]:render(Vector(temp_pos.X, temp_pos.Y), mirrored,
+			                                                Vector(0.5, 0.5), down_anchor)
+			temp_pos.X = temp_pos.X + off.X * 0.75
+		else
+			self.sprite.Color = Color(1, 1, 1, 0.5)
+			self.sprite:RenderLayer(0, temp_pos + sprite_pivot)
+			temp_pos.X = temp_pos.X + 12
+		end
+		if self.max_collectibles / i == 2 then
+			temp_pos = Vector(pos.X, pos.Y)
+			if down_anchor then
+				temp_pos.Y = temp_pos.Y - 16
+			end
+			temp_pos.Y = temp_pos.Y + 16
+		end
 	end
 end
 --
