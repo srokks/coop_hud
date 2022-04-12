@@ -26,6 +26,7 @@ function coopHUD.HUD.init()
 	coopHUD.HUD.angel = coopHUD.Stat(coopHUD.HUD, coopHUD.Stat.ANGEL, true)
 	coopHUD.HUD.devil = coopHUD.Stat(coopHUD.HUD, coopHUD.Stat.DEVIL, true)
 	coopHUD.HUD.planetarium = coopHUD.Stat(coopHUD.HUD, coopHUD.Stat.PLANETARIUM, true)
+	coopHUD.Collectibles.sprite:SetFrame('Dissapear', 13)
 end
 
 --coopHUD.HUD.poop = coopHUD.RunInfo(coopHUD.RunInfo.POOP)
