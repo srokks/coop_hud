@@ -41,6 +41,7 @@ coopHUD.GLOBALS = {
 	hud_stats_anim_path = "gfx/ui/hudstats2.anm2",
 	pause_screen_anim_path = "gfx/ui/pausescreen.anm2",
 	crating_anim_path = "gfx/ui/ui_crafting.anm2",
+	inventory_anim_path = "gfx/ui/ui_inventory.anm2",
 }
 coopHUD.players = {} -- main players table, holds coopHUD.Player instances
 coopHUD.essau_no = 0 -- holds run info about extra players in game (Essau,Lost from T.Forgotten)

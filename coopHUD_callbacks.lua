@@ -22,9 +22,11 @@ function coopHUD.on_start(_, cont)
 					local type, id = item_id[1], item_id[2]
 					--print(type,id,coopHUD.players[player_no])
 					if type == PickupVariant.PICKUP_COLLECTIBLE then
-						table.insert(coopHUD.players[player_no].collectibles, coopHUD.Item(nil, -1, id))
+						table.insert(coopHUD.players[player_no].collectibles,
+						             coopHUD.Item(coopHUD.players[player_no], -1, id))
 					elseif type == PickupVariant.PICKUP_TRINKET then
-						table.insert(coopHUD.players[player_no].collectibles, coopHUD.Trinket(nil, -1, id))
+						table.insert(coopHUD.players[player_no].collectibles,
+						             coopHUD.Trinket(coopHUD.players[player_no], -1, id))
 					end
 				end
 				coopHUD.players[player_no].hold_spell = player_save.hold_spell
@@ -109,6 +111,7 @@ coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, function(_, entPlayer)
 		if coopHUD.players[player_index].sub_hearts then coopHUD.players[player_index].sub_hearts:update() end
 		-- triggers poops update
 		if coopHUD.players[player_index].poops then coopHUD.players[player_index].poops:update() end
+		--
 		local item_queue = coopHUD.players[player_index].entPlayer.QueuedItem
 		if item_queue and item_queue.Item and item_queue.Item ~= nil and coopHUD.players[player_index].temp_item == nil then
 			-- enters only if isaac is holding item in queue and temp item in table
@@ -126,9 +129,25 @@ coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, function(_, entPlayer)
 			elseif coopHUD.players[player_index].temp_item.Type == ItemType.ITEM_TRINKET then
 			else
 				-- triggers only for passive items and familiars
-				table.insert(coopHUD.players[player_index].collectibles,
-				             coopHUD.Item(nil, -1,
-				                          coopHUD.players[player_index].temp_item.ID)) -- add picked up item to collectibles
+				if coopHUD.players[player_index].entPlayer:GetPlayerType() == PlayerType.PLAYER_ISAAC_B then
+					local max_collectibles = 8
+					if coopHUD.players[player_index].entPlayer:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
+						max_collectibles = 12
+						end
+					if #coopHUD.players[player_index].collectibles == max_collectibles then
+						coopHUD.players[player_index].collectibles[1] = coopHUD.Item(coopHUD.players[player_index], -1,
+						                          coopHUD.players[player_index].temp_item.ID)
+					else
+						table.insert(coopHUD.players[player_index].collectibles,
+						             coopHUD.Item(coopHUD.players[player_index], -1,
+						                          coopHUD.players[player_index].temp_item.ID)) -- add picked up item to collectibles
+					end
+				else
+					-- normal characters add collectible
+					table.insert(coopHUD.players[player_index].collectibles,
+					             coopHUD.Item(coopHUD.players[player_index], -1,
+					                          coopHUD.players[player_index].temp_item.ID)) -- add picked up item to collectibles
+				end
 			end
 		end
 		if not coopHUD.players[player_index].entPlayer:IsHoldingItem() and coopHUD.players[player_index].temp_item then
@@ -233,7 +252,8 @@ coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
 			                    coopHUD.players[player_index].hold_spell = 0
 		                    end
 	                    end
-	                    if coopHUD.players[player_index].poops.poop_mana == 0 then -- resets frame if no mana
+	                    if coopHUD.players[player_index].poops.poop_mana == 0 then
+		                    -- resets frame if no mana
 		                    coopHUD.players[player_index].hold_spell = 0
 	                    end
 	                    coopHUD.players[player_index].first_pocket:update()
@@ -263,6 +283,19 @@ function coopHUD.inputs_signals()
 		local player_index = coopHUD.getPlayerNumByControllerIndex(controller_index)
 		if Input.IsActionPressed(ButtonAction.ACTION_MAP, controller_index) then
 			mapPressed = player_index
+		end
+		-- DROP ACTION
+		if Input.IsActionTriggered(ButtonAction.ACTION_DROP, controller_index) then
+			if coopHUD.players[player_index].entPlayer:GetPlayerType() == PlayerType.PLAYER_ISAAC_B then
+				if coopHUD.players[player_index].collectibles ~= nil then
+					local collectibles = {}
+					for i = 2, #coopHUD.players[player_index].collectibles do
+						table.insert(collectibles, coopHUD.players[player_index].collectibles[i])
+					end
+					table.insert(collectibles, coopHUD.players[player_index].collectibles[1])
+					coopHUD.players[player_index].collectibles = collectibles
+				end
+			end
 		end
 	end
 	-- MAP BUTTON
