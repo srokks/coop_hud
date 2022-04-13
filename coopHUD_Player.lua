@@ -219,6 +219,48 @@ function coopHUD.Player:render()
 	if self.essau then
 		second_line_off.Y = second_line_off.Y self.essau:renderPockets(anchor + first_line_off+second_line_off, mirrored, scale, down_anchor)
 	end
+	-- PLAYER COLOR SET
+	local col = Color(1, 1, 1, 1)
+	if coopHUD.options.colorful_players then
+		col.R = self.font_color.Red
+		col.G = self.font_color.Green
+		col.B = self.font_color.Blue
+	end
+	self.entPlayer:SetColor(col, 2, 100, false, false)
+	if self.essau then
+		-- colors essau sprite
+		self.essau.entPlayer:SetColor(col, 2, 100, false, false)
+	end
+	--Player name on screen
+	if coopHUD.options.show_player_names then
+		local position = Isaac.WorldToScreen(self.entPlayer.Position)
+		coopHUD.HUD.fonts.pft:DrawString(self.player_head.name, position.X - 5, position.Y, self.font_color)
+		if self.essau then
+			-- colors essau name
+			position = Isaac.WorldToScreen(self.essau.entPlayer.Position)
+			coopHUD.HUD.fonts.pft:DrawString(self.player_head.name, position.X - 5, position.Y, self.font_color)
+		end
+	end
+	if coopHUD.options.stats.show then
+		-- when options.stats.show on
+		if not (coopHUD.options.stats.hide_in_battle and coopHUD.signals.on_battle) then
+			if self.big_hud then
+				-- renders main stat and essau stats on same time
+				if self.essau then
+					self.essau:renderStats(mirrored)
+				end
+				self:renderStats(mirrored)
+			else
+				-- renders essau stats on drop pressed
+				if self.essau and Input.IsActionPressed(ButtonAction.ACTION_DROP,self.controller_index)then
+				self.essau:renderStats(mirrored)
+			else
+				self:renderStats(mirrored)
+			end
+			end
+
+		end
+	end
 end
 
 function coopHUD.Player:renderExtras(pos, mirrored, scale, down_anchor)
