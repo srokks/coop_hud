@@ -1733,6 +1733,11 @@ function coopHUD.Inventory:render(pos, mirrored, down_anchor)
 			temp_pos.Y = temp_pos.Y + 16
 		end
 	end
+	--
+	local offset = Vector(12*self.max_collectibles,32)
+	--if mirrored then offset.X = offset.X * -1 end
+	if down_anchor then offset.Y= offset.Y * -1 end
+	return offset
 end
 --
 coopHUD.Streak = {}
