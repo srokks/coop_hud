@@ -107,8 +107,98 @@ function coopHUD.Player:update()
 	self.hearts:update()
 	self.big_hud = #coopHUD.players < 3 and not coopHUD.options.force_small_hud
 end
-function coopHUD.Player:render()
+function coopHUD.Player:renderMain(pos, mirrored, scl, down_anchor)
+	local temp_pos = Vector(pos.X, pos.Y)
+	local scale = scl
+	-- Renders player info (head and name)
+	local info_off = Vector(0, 0)
+	if coopHUD.options.render_player_info then
+		info_off = self.player_head:render(temp_pos, mirrored, scale, down_anchor)
+	end
+	-- DIM CONTROL - for dim active item sprite on PLAYER_JACOB or PLAYER_ESAU
+	local dim = false -- holds if active items needed to be dimmed before redner, default false
+	if self.entPlayer:GetPlayerType() == PlayerType.PLAYER_JACOB or self.entPlayer:GetPlayerType() == PlayerType.PLAYER_ESAU then
+		-- if playing as jacob sets dim according to pressed drop button
+		dim = Input.IsActionPressed(ButtonAction.ACTION_DROP, self.controller_index)
+		scale = coopHUD.players_config.small.scale -- resets scale if essau logic changes it
+		if dim then scale = Vector(0.9 * coopHUD.players_config.small.scale.X,
+		                           0.9 * coopHUD.players_config.small.scale.Y) end -- shrinks inactive sprites
+	end
+	-- ACTIVE/SCHOOLBAG ITEM RENDER
+	local active_off = Vector(0, 0)
+	temp_pos.X = temp_pos.X + info_off.X
+	self.schoolbag_item:render(temp_pos, mirrored, scale, down_anchor, dim)
+	active_off = self.active_item:render(temp_pos, mirrored, scale, down_anchor, dim)
+	scale = scl -- resets scale if essau logic changes it
+	-- HEARTS RENDER
+	local hearts_off = Vector(0, 0)
+	temp_pos.X = temp_pos.X + active_off.X
+	hearts_off = self.hearts:render(temp_pos, mirrored, scale, down_anchor)
+	-- RENDERS SUB PLAYER (Forgotten/Soul) hearts
+	local sub_hearts_off = Vector(0, 0)
+	if self.sub_hearts then
+		sub_hearts_off = self.sub_hearts:render(Vector(temp_pos.X, temp_pos.Y + hearts_off.Y),
+		                                        mirrored, scale, down_anchor, true)
+	end
+	--EXTRAS RENDER - mantle charge/extra lives
+	if mirrored then
+		temp_pos.X = temp_pos.X + math.min(hearts_off.X, sub_hearts_off.X)
+	else
+		temp_pos.X = temp_pos.X + math.max(hearts_off.X, sub_hearts_off.X)
+	end
+	local extras_off = self:renderExtras(temp_pos, mirrored, scale, down_anchor)
+	-- FINAL OFFSET
+	local offset = Vector(0, 0)
+	if down_anchor then
+		offset.Y = offset.Y + math.min(info_off.Y, active_off.Y, hearts_off.Y, extras_off.Y)
+	else
+		offset.Y = offset.Y + math.max(info_off.Y, active_off.Y, hearts_off.Y, extras_off.Y)
+	end
+	return offset
+end
+function coopHUD.Player:renderPockets(pos, mirrored, scl, down_anchor)
+	local temp_pos = Vector(pos.X, pos.Y)
+	local scale = Vector(scl.X, scl.Y)
+	-- DIM CONTROL - for dim active item sprite on PLAYER_JACOB or PLAYER_ESAU
+	local dim = false -- holds if active items needed to be dimmed before redner, default false
+	if self.entPlayer:GetPlayerType() == PlayerType.PLAYER_JACOB or self.entPlayer:GetPlayerType() == PlayerType.PLAYER_ESAU then
+		-- if playing as jacob sets dim according to pressed drop button
+		dim = not Input.IsActionPressed(ButtonAction.ACTION_DROP, self.controller_index)
+		scale = coopHUD.players_config.small.scale -- resets scale if essau logic changes it
+		if dim then scale = Vector(0.9 * coopHUD.players_config.small.scale.X,
+		                           0.9 * coopHUD.players_config.small.scale.Y) end -- shrinks inactive sprites
+	end
+	--FIRST POCKET RENDER
+	local trinket_off = Vector(0, 0)
+	trinket_off = self.first_trinket:render(temp_pos, mirrored, scl,
+	                                        down_anchor)
+	temp_pos.X = temp_pos.X + trinket_off.X
+	trinket_off.X = trinket_off.X + self.second_trinket:render(temp_pos, mirrored, scl,
+	                                                           down_anchor).X
 	--
+	local pocket_off = Vector(0, 0)
+	temp_pos = Vector(pos.X + trinket_off.X, pos.Y)
+	pocket_off = self.second_pocket:render(temp_pos, mirrored,
+	                                       Vector(0.5 * scale.X, 0.5 * scale.Y),
+	                                       down_anchor, dim)
+	self.third_pocket:render(Vector(temp_pos.X, temp_pos.Y + pocket_off.Y), mirrored,
+	                         Vector(0.5 * scale.X, 0.5 * scale.Y),
+	                         down_anchor, dim)
+	--
+	temp_pos.X = temp_pos.X + pocket_off.X
+	pocket_off = self.first_pocket:render(temp_pos, mirrored,
+	                                      scale,
+	                                      down_anchor, dim)
+	--
+	local offset = Vector(0, 0)
+	if down_anchor then
+		offset.Y = math.min(trinket_off.Y, pocket_off.Y)
+	else
+		offset.Y = math.max(trinket_off.Y, pocket_off.Y)
+	end
+	return offset
+end
+function coopHUD.Player:render()
 	local anchor = Vector(coopHUD.anchors[coopHUD.players_config.small[self.game_index].anchor].X,
 	                      coopHUD.anchors[coopHUD.players_config.small[self.game_index].anchor].Y)
 	local anchor_bot = Vector(coopHUD.anchors[coopHUD.players_config.small[self.game_index].anchor_bot].X,
@@ -121,147 +211,25 @@ function coopHUD.Player:render()
 		                coopHUD.anchors[coopHUD.players_config.small[self.game_index].anchor_top].Y)
 		mirrored = coopHUD.players_config.small[self.game_index].mirrored_big
 	end
-	--
-	local info_off = Vector(0, 0)
-	local active_off = Vector(0, 0)
-	local hearts_off = Vector(0, 0)
-	local exl_liv_off = Vector(0, 0)
-	local pocket_off = Vector(0, 0)
-	local second_pocket_off = Vector(0, 0)
-	local third_pocket_off = Vector(0, 0)
-	local trinket_off = Vector(0, 0)
-	local extra_charge_off = Vector(0, 0)
-	local poop_spell_off = Vector(0, 0)
-	--
-	local sub_active_off = Vector(0, 0)
-	local sub_hearts_off = Vector(0, 0)
-	--
-	if coopHUD.options.render_player_info then
-		info_off = self.player_head:render(anchor, mirrored, scale, down_anchor)
-	end
-	local dim = false -- holds if active items needed to be dimmed before redner, default false
+	-- ITEMS/HEARTS/EXTRAS RENDER
+	local first_line_off = self:renderMain(anchor, mirrored, scale, down_anchor)
 	if self.essau then
-		-- if playing as jacob sets dim according to pressed drop button
-		dim = Input.IsActionPressed(ButtonAction.ACTION_DROP, self.controller_index)
-		scale = coopHUD.players_config.small.scale -- resets scale if essau logic changes it
-		if dim then scale = Vector(0.9 * coopHUD.players_config.small.scale.X,
-		                           0.9 * coopHUD.players_config.small.scale.Y) end -- shrinks inactive sprites
+		first_line_off.Y = first_line_off.Y + self.essau:renderMain(anchor + first_line_off, mirrored, scale,
+		                                                            down_anchor).Y
 	end
-	self.schoolbag_item:render(Vector(anchor.X + info_off.X, anchor.Y), mirrored, scale, down_anchor, dim)
-	active_off = self.active_item:render(Vector(anchor.X + info_off.X, anchor.Y), mirrored, scale, down_anchor, dim)
-	active_off.X = active_off.X + info_off.X
-	scale = coopHUD.players_config.small.scale -- resets scale if essau logic changes it
-	hearts_off = self.hearts:render(Vector(anchor.X + active_off.X, anchor.Y), mirrored, scale, down_anchor)
-	if self.sub_hearts then
-		-- RENDERS SUB PLAYER (Forgotten/Soul) hearts
-		hearts_off.X = hearts_off.X + (self.sub_hearts:render(Vector(anchor.X + active_off.X, anchor.Y + hearts_off.Y),
-		                                                      mirrored, scale, down_anchor, true)).X
-	end
-	self:renderExtras(Vector(anchor.X + active_off.X + hearts_off.X, anchor.Y), mirrored, scale, down_anchor)
-	if self.essau then
-		-- RENDERS ESSAU ACTIVE ITEMS
-		local sub_anchor = Vector(anchor.X, anchor.Y)
-		if dim then scale = Vector(0.9 * coopHUD.players_config.small.scale.X,
-		                           0.9 * coopHUD.players_config.small.scale.Y) end -- shrinks inactive sprites
-		if down_anchor then
-			sub_anchor.Y = sub_anchor.Y + math.min(info_off.Y, active_off.Y, hearts_off.Y) * 0.75
-		else
-			sub_anchor.Y = sub_anchor.Y + math.max(info_off.Y, active_off.Y, hearts_off.Y)
-		end
-		self.essau.schoolbag_item:render(Vector(sub_anchor.X, sub_anchor.Y), mirrored, scale, down_anchor, dim)
-		sub_active_off = self.essau.active_item:render(Vector(sub_anchor.X, sub_anchor.Y), mirrored, scale,
-		                                               down_anchor, dim)
-		scale = coopHUD.players_config.small.scale -- resets scale if essau logic changes it
-		sub_hearts_off = self.essau.hearts:render(Vector(sub_anchor.X + sub_active_off.X, sub_anchor.Y), mirrored,
-		                                          scale, down_anchor)
-		scale = coopHUD.players_config.small.scale -- resets scale if essau logic changes it
-		self.essau:renderExtras(Vector(sub_anchor.X + sub_active_off.X + sub_hearts_off.X, sub_anchor.Y), mirrored,
-		                        scale, down_anchor)
-	end -- RENDERS ESSAU -
-	-- <Second  top line render> --
+	-- TRINKETS/POCKETS RENDER
+	local second_line_pos = Vector(anchor.X, anchor.Y + first_line_off.Y)
 	if self.big_hud then
 		-- special version of hud when only when <2 players and not forced in options
-		anchor.X = anchor_bot.X
-		anchor.Y = anchor_bot.Y
+		second_line_pos = Vector(coopHUD.anchors[coopHUD.players_config.small[self.game_index].anchor_bot].X,
+		                         coopHUD.anchors[coopHUD.players_config.small[self.game_index].anchor_bot].Y)
 		down_anchor = true
 	end
-	local first_line_offset = Vector(0, 0)
-	local pocket_desc_off = Vector(0, 0)
-	if down_anchor then
-		first_line_offset.Y = math.min(info_off.Y, active_off.Y, hearts_off.Y)
-		if #coopHUD.players < 3 and not coopHUD.options.force_small_hud then
-			first_line_offset.Y = 0
-		end
-		pocket_desc_off.Y = -8
-	else
-		first_line_offset.Y = math.max(info_off.Y, active_off.Y, hearts_off.Y) + math.max(sub_active_off.Y,
-		                                                                                  sub_hearts_off.Y)
-	end
-	local trinket_pos = Vector(anchor.X, anchor.Y + first_line_offset.Y)
-	trinket_off = self.first_trinket:render(Vector(trinket_pos.X, trinket_pos.Y), mirrored, scale,
-	                                        down_anchor)
-	local temp_off = self.second_trinket:render(Vector(trinket_pos.X + trinket_off.X, trinket_pos.Y),
-	                                            mirrored, scale,
-	                                            down_anchor)
-	trinket_off.X = trinket_off.X + temp_off.X
-	dim = false -- holds if active items needed to be dimmed before redner, default false
+	local second_line_off = self:renderPockets(second_line_pos, mirrored, scale,
+	                                           down_anchor)
 	if self.essau then
-		-- if playing as jacob sets dim according to pressed drop button
-		dim = not Input.IsActionPressed(ButtonAction.ACTION_DROP, self.controller_index)
-		scale = coopHUD.players_config.small.scale -- resets scale if essau logic changes it
-		if dim then scale = Vector(0.9 * coopHUD.players_config.small.scale.X,
-		                           0.9 * coopHUD.players_config.small.scale.Y) end -- shrinks inactive sprites
-	end
-	--
-	pocket_off = self.first_pocket:render(Vector(anchor.X + trinket_off.X, anchor.Y + first_line_offset.Y), mirrored,
-	                                      scale,
-	                                      down_anchor, dim)
-	second_pocket_off = self.second_pocket:render(Vector(anchor.X + trinket_off.X + pocket_off.X,
-	                                                     anchor.Y + first_line_offset.Y + pocket_desc_off.Y), mirrored,
-	                                              Vector(0.5 * scale.X, 0.5 * scale.Y),
-	                                              down_anchor, dim)
-
-	third_pocket_off = self.third_pocket:render(Vector(anchor.X + trinket_off.X + pocket_off.X + second_pocket_off.X,
-	                                                   anchor.Y + first_line_offset.Y + pocket_desc_off.Y), mirrored,
-	                                            Vector(0.5 * scale.X, 0.5 * scale.Y),
-	                                            down_anchor, dim)
-	if down_anchor then
-		first_line_offset.Y = first_line_offset.Y + math.min(pocket_off.Y, trinket_off.Y)
-	else
-		first_line_offset.Y = first_line_offset.Y + math.max(pocket_off.Y, trinket_off.Y)
-	end
-	--
-	if self.essau then
-		-- RENDERS ESSAU TRINKETS/POCKETS
-		scale = coopHUD.players_config.small.scale -- resets scale if essau logic changes it
-		local sub_trinket_pos = Vector(anchor.X, anchor.Y + first_line_offset.Y)
-		local sub_trinket_off = self.essau.first_trinket:render(Vector(sub_trinket_pos.X, sub_trinket_pos.Y), mirrored,
-		                                                        scale,
-		                                                        down_anchor)
-		sub_trinket_off = sub_trinket_off + self.essau.second_trinket:render(Vector(sub_trinket_pos.X + sub_trinket_off.X,
-		                                                                            sub_trinket_pos.Y),
-		                                                                     mirrored, scale,
-		                                                                     down_anchor, dim)
-		local sub_pocket_pos = Vector(sub_trinket_pos.X + sub_trinket_off.X, sub_trinket_pos.Y)
-		local sub_pocket_off = self.essau.first_pocket:render(sub_pocket_pos,
-		                                                      mirrored,
-		                                                      scale,
-		                                                      down_anchor, dim)
-		sub_pocket_pos.X = sub_pocket_pos.X + sub_pocket_off.X
-		sub_pocket_off = self.essau.second_pocket:render(sub_pocket_pos,
-		                                                 mirrored,
-		                                                 Vector(0.5 * scale.X, 0.5 * scale.Y),
-		                                                 down_anchor, dim)
-		sub_pocket_pos.X = sub_pocket_pos.X + sub_pocket_off.X
-		local sub_third_pocket_off = self.essau.third_pocket:render(sub_pocket_pos,
-		                                                            mirrored,
-		                                                            Vector(0.5 * scale.X, 0.5 * scale.Y),
-		                                                            down_anchor, dim)
-		if down_anchor then
-			first_line_offset.Y = first_line_offset.Y + math.min(sub_pocket_off.Y, sub_trinket_off.Y)
-		else
-			first_line_offset.Y = first_line_offset.Y + math.max(sub_pocket_off.Y, sub_trinket_off.Y)
-		end
+		second_line_off.Y = second_line_off.Y + self.essau:renderPockets(second_line_pos + second_line_off,
+		                                                                 mirrored, scale, down_anchor).Y
 	end
 	-- PLAYER COLOR SET
 	local col = Color(1, 1, 1, 1)
@@ -302,7 +270,6 @@ function coopHUD.Player:render()
 					self:renderStats(mirrored)
 				end
 			end
-
 		end
 	end
 end
@@ -340,7 +307,7 @@ function coopHUD.Player:renderExtras(pos, mirrored, scale, down_anchor)
 			end
 			local align = 0
 			if mirrored then
-				temp_pos.X = temp_pos.X - (16 * sprite_scale.Y)
+				temp_pos.X = temp_pos.X - (20 * sprite_scale.Y)
 				align = 1
 			end
 			coopHUD.HUD.fonts.pft:DrawStringScaled(text, temp_pos.X, temp_pos.Y, sprite_scale.X * 1.2,
@@ -350,6 +317,7 @@ function coopHUD.Player:renderExtras(pos, mirrored, scale, down_anchor)
 			temp_pos.Y = pos.Y + offset.Y
 		end
 	end
+	return final_offset
 end
 function coopHUD.Player:renderStats(mirrored)
 	--when options.stats.hide_in_battle on and battle signal
