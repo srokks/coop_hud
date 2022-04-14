@@ -65,6 +65,10 @@ function coopHUD.Player.new(player_no, entPlayer)
 	self.luck = coopHUD.Stat(self, coopHUD.Stat.LUCK, self.game_index == 0 or self.game_index == 1)
 	-- Extra charges
 	wisp_jar_use = 0 -- holds info about used jar of wisp
+	-- T.Isaac - specifics
+	if self.entPlayer:GetPlayerType() == PlayerType.PLAYER_ISAAC_B then
+		self.inventory = coopHUD.Inventory(self)
+	end
 	-- T.Cain - specifics
 	self.bag_of_crafting = nil
 	self.crafting_result = nil
@@ -190,11 +194,16 @@ function coopHUD.Player:renderPockets(pos, mirrored, scl, down_anchor)
 	                                      scale,
 	                                      down_anchor, dim)
 	--
+	local inv_off = Vector(0, 0)
+	if self.inventory then
+		temp_pos = Vector(pos.X, pos.Y + pocket_off.Y )
+		inv_off = self.inventory:render(temp_pos, mirrored, down_anchor)
+	end
 	local offset = Vector(0, 0)
 	if down_anchor then
-		offset.Y = math.min(trinket_off.Y, pocket_off.Y)
+		offset.Y = math.min(trinket_off.Y, pocket_off.Y,inv_off.Y)
 	else
-		offset.Y = math.max(trinket_off.Y, pocket_off.Y)
+		offset.Y = math.max(trinket_off.Y, pocket_off.Y,inv_off.Y)
 	end
 	return offset
 end
