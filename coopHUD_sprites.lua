@@ -1068,7 +1068,7 @@ function coopHUD.RunInfo:render(pos, mirrored, scale, down_anchor)
 	if sprite_scale == nil then sprite_scale = Vector(1, 1) end
 	--
 	local temp_pos = Vector(pos.X, pos.Y - 1)
-	local text_pos = Vector(pos.X + 16, pos.Y)
+	local text_pos = Vector(pos.X + 16, pos.Y -1)
 	local offset = Vector(0, 0)
 	if self.sprite then
 		--
@@ -1148,7 +1148,7 @@ function coopHUD.RunInfo:getText()
 		if self.type == coopHUD.RunInfo.GREEDIER then
 			max_waves = 11
 		end
-		text = string.format("%d/%2.d", current_wave, max_waves)
+		text = string.format(" %d/%2.d", current_wave, max_waves)
 	end
 	return text
 end

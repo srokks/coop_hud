@@ -13,7 +13,7 @@ coopHUD.HUD.fonts.team_meat_12:Load("font/teammeatfont12.fnt")
 coopHUD.HUD.fonts.upheaval = Font()
 coopHUD.HUD.fonts.upheaval:Load("font/upheaval.fnt")
 coopHUD.HUD.font_color = KColor(1, 1, 1, 1) -- holds hud font color
-coopHUD.HUD.stat_anchor = Vector(0,0)
+coopHUD.HUD.stat_anchor = Vector(0, 0)
 function coopHUD.HUD.init()
 	coopHUD.HUD.coins = coopHUD.RunInfo(coopHUD.RunInfo.COIN)
 	coopHUD.HUD.bombs = coopHUD.RunInfo(coopHUD.RunInfo.BOMB)
@@ -28,8 +28,6 @@ function coopHUD.HUD.init()
 	coopHUD.HUD.planetarium = coopHUD.Stat(coopHUD.HUD, coopHUD.Stat.PLANETARIUM, true)
 	coopHUD.Collectibles.sprite:SetFrame('Dissapear', 13)
 end
-
---coopHUD.HUD.poop = coopHUD.RunInfo(coopHUD.RunInfo.POOP)
 ---coopHUD.HUD.render - renders specifics to the game like no of coins/keys/bombs
 ---Todo: based on options.show_dest_info - show info about run destination
 ---Todo: based on options.show_difficulty
@@ -63,18 +61,18 @@ function coopHUD.HUD.render()
 			if not (coopHUD.options.deals.hide_in_battle and coopHUD.signals.on_battle) then
 				--when options.stats.hide_in_battle on and battle signal
 				if coopHUD.options.deals.vanilla_position then
-					local deals_pos = Vector(coopHUD.HUD.stat_anchor.X,coopHUD.HUD.stat_anchor.Y)
+					local deals_pos = Vector(coopHUD.HUD.stat_anchor.X, coopHUD.HUD.stat_anchor.Y)
 					coopHUD.HUD.font_color = coopHUD.players[1].font_color
 					coopHUD.HUD.devil:render(deals_pos, false, false)
 					deals_pos.Y = deals_pos.Y + 14
 					coopHUD.HUD.angel:render(deals_pos, false, false)
 					deals_pos.Y = deals_pos.Y + 14
 					if coopHUD.options.deals.show_planetarium then
-						coopHUD.HUD.planetarium:render(deals_pos,false, false)
+						coopHUD.HUD.planetarium:render(deals_pos, false, false)
 					end
 				else
 					local deals_pos = Vector(middle_bot_anchor.X, middle_bot_anchor.Y + 4)
-					coopHUD.HUD.font_color = KColor(1,1,1,1)
+					coopHUD.HUD.font_color = KColor(1, 1, 1, 1)
 					deals_pos.X = deals_pos.X - coopHUD.HUD.angel:getOffset().X
 					if not coopHUD.options.deals.show_planetarium then
 						deals_pos.X = deals_pos.X + coopHUD.HUD.angel:getOffset().X / 2
@@ -107,10 +105,11 @@ function coopHUD.HUD.render()
 		local time_string = string.format('Time: %.2i:%.2i:%.2i', hours, mins, secs) -- formats
 		local f_col = KColor(0.5, 0.5, 0.5, 1) -- Default font color font color with 0.5 alpha
 		if coopHUD.options.timer_always_on or coopHUD.signals.map then
-			coopHUD.HUD.fonts.team_meat_10:DrawString(time_string,
-			                                          middle_bot_anchor.X, 0,
-			                                          f_col, 1, true)
-			timer_offset.Y = coopHUD.HUD.fonts.team_meat_10:GetBaselineHeight()
+			coopHUD.HUD.fonts.pft:DrawStringScaled(time_string,
+			                                       middle_bot_anchor.X, 0,
+			                                       1, 1,
+			                                       f_col, 1, true)
+			timer_offset.Y = coopHUD.HUD.fonts.upheaval:GetBaselineHeight()
 		end
 		if not coopHUD.signals.on_battle then
 			coopHUD.Streak:render()
