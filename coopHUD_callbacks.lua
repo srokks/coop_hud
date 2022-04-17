@@ -147,6 +147,7 @@ coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, function(_, entPlayer)
 					table.insert(coopHUD.players[player_index].collectibles,
 					             coopHUD.Item(coopHUD.players[player_index], -1,
 					                          coopHUD.players[player_index].temp_item.ID)) -- add picked up item to collectibles
+
 				end
 			end
 		end
@@ -181,12 +182,12 @@ coopHUD:AddCallback(ModCallbacks.MC_PRE_USE_ITEM,
 		                    -- checks if player has first trinket
 		                    if coopHUD.players[player_index].first_trinket.id > 0 then
 			                    -- add to collectibles table
-			                    table.insert(coopHUD.players[player_index].collectibles,
+			                    table.insert(coopHUD.players[player_index].gulped_trinkets,
 			                                 coopHUD.Trinket(nil, -1, coopHUD.players[player_index].first_trinket.id))
 			                    -- checks if player has first secont trinket
 			                    if coopHUD.players[player_index].second_trinket.id > 0 then
 				                    -- add to collectibles table
-				                    table.insert(coopHUD.players[player_index].collectibles,
+				                    table.insert(coopHUD.players[player_index].gulped_trinkets,
 				                                 coopHUD.Trinket(nil, -1,
 				                                                 coopHUD.players[player_index].second_trinket.id))
 			                    end
@@ -201,12 +202,13 @@ coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
 	                    local player_index = coopHUD.getPlayerNumByControllerIndex(entPlayer.ControllerIndex)
 	                    if player_index >= 0 and coopHUD.players[player_index] then
 		                    local trinkets = {}
+		                    --[[FIXME: rework trinkets in gulped_trinkets
 		                    -- saves trinkets into temp table - gulped trinkets do not roll
 		                    for i = 1, #coopHUD.players[player_index].collectibles do
 			                    if coopHUD.players[player_index].collectibles[i].type == PickupVariant.PICKUP_TRINKET then
 				                    table.insert(trinkets, coopHUD.players[player_index].collectibles[i])
 			                    end
-		                    end
+		                    end]]
 		                    coopHUD.players[player_index].collectibles = {} -- resets players collectible table
 		                    for i = 1, Isaac.GetItemConfig():GetCollectibles().Size - 1 do
 			                    -- check if player has collectible
@@ -214,14 +216,14 @@ coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
 				                    -- skips active items
 				                    if Isaac.GetItemConfig():GetCollectible(i).Type ~= ItemType.ITEM_ACTIVE then
 					                    table.insert(coopHUD.players[player_index].collectibles,
-					                                 coopHUD.Item(nil, -1, i))
+					                                 coopHUD.Item(coopHUD.players[player_index], -1, i))
 				                    end
 			                    end
 		                    end
 		                    -- adds saved trinkets on top of collectibles table
-		                    for i = 1, #trinkets do
+		                    --[[for i = 1, #trinkets do
 			                    table.insert(coopHUD.players[player_index].collectibles, trinkets[i])
-		                    end
+		                    end]]
 	                    end
                     end, CollectibleType.COLLECTIBLE_D4)
 -- CollectibleType.COLLECTIBLE_JAR_OF_WISPS
