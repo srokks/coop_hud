@@ -866,9 +866,9 @@ function coopHUD.Poop:getSprite()
 	sprite:Load(coopHUD.GLOBALS.poop_anim_path, true)
 	sprite:SetFrame(layer_name, self.spell_type)
 	if self.dim then
-		local col = Color(1, 1, 1, 1)
-		col:SetColorize(1, 1, 1, 1)
-		sprite.Color = Color(0.3, 0.3, 0.3, 0.3)
+		local col = Color(0.3, 0.3, 0.3, 1)
+		col:SetColorize(1, 1, 1, 0.4)
+		sprite.Color = col
 	end
 	return sprite
 end
