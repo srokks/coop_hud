@@ -117,14 +117,23 @@ coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, function(_, entPlayer)
 			-- enters only if isaac is holding item in queue and temp item in table
 			coopHUD.players[player_index].temp_item = item_queue.Item -- saves as temp item
 			--____ Flashes triggers streak text with picked up name
+			local streak_main_line = item_queue.Item.Name
+			local streak_sec_line = item_queue.Item.Description
 			if coopHUD.langAPI then
 				-- checks if langAPI loaded
-				local streak_main_line = coopHUD.langAPI.getItemName(string.sub(item_queue.Item.Name, 2))
-				local streak_sec_line = coopHUD.langAPI.getItemName(string.sub(item_queue.Item.Description, 2))
-				coopHUD.Streak(false, coopHUD.Streak.ITEM, streak_main_line, streak_sec_line, true,
-				               coopHUD.players[player_index].font_color)
-				-- triggers streak on item pickup
+				if string.sub(streak_main_line, 0, 1) == "#" then
+					-- if begins with # get name from api
+					streak_main_line = coopHUD.langAPI.getItemName(string.sub(streak_main_line, 2))
+				end
+				if string.sub(streak_sec_line, 0, 1) == "#" then
+					-- if begins with # get desc from api
+					streak_sec_line = coopHUD.langAPI.getItemName(string.sub(streak_sec_line, 2))
+				end
 			end
+			-- triggers streak on item pickup
+			coopHUD.Streak(false, coopHUD.Streak.ITEM, streak_main_line, streak_sec_line, true,
+			               coopHUD.players[player_index].font_color)
+			--
 			if coopHUD.players[player_index].temp_item.Type == ItemType.ITEM_ACTIVE then
 			elseif coopHUD.players[player_index].temp_item.Type == ItemType.ITEM_TRINKET then
 			else
@@ -133,10 +142,10 @@ coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, function(_, entPlayer)
 					local max_collectibles = 8
 					if coopHUD.players[player_index].entPlayer:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
 						max_collectibles = 12
-						end
+					end
 					if #coopHUD.players[player_index].collectibles == max_collectibles then
 						coopHUD.players[player_index].collectibles[1] = coopHUD.Item(coopHUD.players[player_index], -1,
-						                          coopHUD.players[player_index].temp_item.ID)
+						                                                             coopHUD.players[player_index].temp_item.ID)
 					else
 						table.insert(coopHUD.players[player_index].collectibles,
 						             coopHUD.Item(coopHUD.players[player_index], -1,
