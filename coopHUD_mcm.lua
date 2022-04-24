@@ -129,6 +129,30 @@ if ModConfigMenu then
 			return 'Force small (compacted) player HUD in < 2 players'
 		end
 	})
+	-- show my stuff page
+	ModConfigMenu.AddSetting(mod_name, "General", {
+		Type = ModConfigMenu.OptionType.BOOLEAN,
+		CurrentSetting = function()
+			return coopHUD.options.show_my_stuff
+		end,
+		Default = coopHUD.options.show_my_stuff,
+
+		Display = function()
+			local onOff = "Off"
+			if coopHUD.options.show_my_stuff then
+				onOff = "On"
+			end
+
+			return "Show my stuff page: " .. onOff
+		end,
+		OnChange = function(currentBool)
+			coopHUD.options.show_my_stuff = currentBool
+			coopHUD.save_options()
+		end,
+		Info = function()
+			return 'Shows player items on long map button push'
+		end
+	})
 	-- PLAYERS NAME/HEAD
 	ModConfigMenu.AddSetting(mod_name, "General", {
 		Type = ModConfigMenu.OptionType.BOOLEAN,

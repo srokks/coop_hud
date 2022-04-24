@@ -16,6 +16,7 @@ coopHUD.options = {
 	colorful_players = true,
 	colorful_stuff_page = true,
 	show_player_names = true,
+	show_my_stuff = true,
 	stats = {
 		show = true,
 		hide_in_battle = true,
