@@ -1,4 +1,4 @@
-coopHUD.VERSION = '0.5-STEAM' --DEBUG: test name for in game recognition
+coopHUD.VERSION = '0.5.5-POOPS' --DEBUG: test name for in game recognition
 coopHUD.showExtraInfo = false
 coopHUD.HUD_table = {}
 coopHUD.signals = {
@@ -16,6 +16,7 @@ coopHUD.options = {
 	colorful_players = true,
 	colorful_stuff_page = true,
 	show_player_names = true,
+	show_my_stuff = true,
 	stats = {
 		show = true,
 		hide_in_battle = true,
@@ -41,6 +42,7 @@ coopHUD.GLOBALS = {
 	hud_stats_anim_path = "gfx/ui/hudstats2.anm2",
 	pause_screen_anim_path = "gfx/ui/pausescreen.anm2",
 	crating_anim_path = "gfx/ui/ui_crafting.anm2",
+	inventory_anim_path = "gfx/ui/ui_inventory.anm2",
 }
 coopHUD.players = {} -- main players table, holds coopHUD.Player instances
 coopHUD.essau_no = 0 -- holds run info about extra players in game (Essau,Lost from T.Forgotten)

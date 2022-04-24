@@ -18,9 +18,15 @@ function coopHUD.Player.new(player_no, entPlayer)
 	self.game_index = player_no - coopHUD.essau_no
 	self.controller_index = self.entPlayer.ControllerIndex
 	self.player_head = coopHUD.PlayerHead(self)
+	--- T ??? - specifics
+	self.hold_spell = nil -- current spell stashed in hold (int)
+	if self.entPlayer:GetPlayerType() == PlayerType.PLAYER_BLUEBABY_B then
+		self.hold_spell = 0 --inits
+		self.poops = coopHUD.PoopsTable(self.entPlayer)
+	end
 	-- Active items
-	self.active_item = coopHUD.Item(self.entPlayer, ActiveSlot.SLOT_PRIMARY)
-	self.schoolbag_item = coopHUD.Item(self.entPlayer, ActiveSlot.SLOT_SECONDARY)
+	self.active_item = coopHUD.Item(self, ActiveSlot.SLOT_PRIMARY)
+	self.schoolbag_item = coopHUD.Item(self, ActiveSlot.SLOT_SECONDARY)
 	-- Trinkets
 	self.first_trinket = coopHUD.Trinket(self.entPlayer, 0)
 	self.second_trinket = coopHUD.Trinket(self.entPlayer, 1)
@@ -59,14 +65,13 @@ function coopHUD.Player.new(player_no, entPlayer)
 	self.luck = coopHUD.Stat(self, coopHUD.Stat.LUCK, self.game_index == 0 or self.game_index == 1)
 	-- Extra charges
 	wisp_jar_use = 0 -- holds info about used jar of wisp
+	-- T.Isaac - specifics
+	if self.entPlayer:GetPlayerType() == PlayerType.PLAYER_ISAAC_B then
+		self.inventory = coopHUD.Inventory(self)
+	end
 	-- T.Cain - specifics
 	self.bag_of_crafting = nil
 	self.crafting_result = nil
-	--- T ??? - specifics
-	self.poop_mana = nil -- current mana (int)
-	self.max_poop_mana = nil -- max cap of mana that player holds (int)
-	self.poops = nil -- table of
-	self.hold_spell = nil -- current spell stashed in hold (int)
 	--
 	self.signals = {
 		map_btn = false,
@@ -157,6 +162,7 @@ function coopHUD.Player:renderMain(pos, mirrored, scl, down_anchor)
 end
 function coopHUD.Player:renderPockets(pos, mirrored, scl, down_anchor)
 	local temp_pos = Vector(pos.X, pos.Y)
+	local scale = Vector(scl.X, scl.Y)
 	-- DIM CONTROL - for dim active item sprite on PLAYER_JACOB or PLAYER_ESAU
 	local dim = false -- holds if active items needed to be dimmed before redner, default false
 	if self.entPlayer:GetPlayerType() == PlayerType.PLAYER_JACOB or self.entPlayer:GetPlayerType() == PlayerType.PLAYER_ESAU then
@@ -168,7 +174,7 @@ function coopHUD.Player:renderPockets(pos, mirrored, scl, down_anchor)
 	end
 	--FIRST POCKET RENDER
 	local trinket_off = Vector(0, 0)
-	trinket_off = self.first_trinket:render(temp_pos, mirrored, scale,
+	trinket_off = self.first_trinket:render(temp_pos, mirrored, scl,
 	                                        down_anchor)
 	temp_pos.X = temp_pos.X + trinket_off.X
 	trinket_off.X = trinket_off.X + self.second_trinket:render(temp_pos, mirrored, scl,
@@ -177,22 +183,32 @@ function coopHUD.Player:renderPockets(pos, mirrored, scl, down_anchor)
 	local pocket_off = Vector(0, 0)
 	temp_pos = Vector(pos.X + trinket_off.X, pos.Y)
 	pocket_off = self.second_pocket:render(temp_pos, mirrored,
-	                          Vector(0.5 * scl.X, 0.5 * scl.Y),
-	                          down_anchor, dim)
-	self.third_pocket:render(Vector(temp_pos.X,temp_pos.Y + pocket_off.Y), mirrored,
-	                          Vector(0.5 * scl.X, 0.5 * scl.Y),
-	                          down_anchor, dim)
+	                                       Vector(0.5 * scale.X, 0.5 * scale.Y),
+	                                       down_anchor, dim)
+	self.third_pocket:render(Vector(temp_pos.X, temp_pos.Y + pocket_off.Y), mirrored,
+	                         Vector(0.5 * scale.X, 0.5 * scale.Y),
+	                         down_anchor, dim)
 	--
 	temp_pos.X = temp_pos.X + pocket_off.X
 	pocket_off = self.first_pocket:render(temp_pos, mirrored,
-	                                      scl,
+	                                      scale,
 	                                      down_anchor, dim)
+	local inv_off = Vector(0, 0)
+	if self.inventory then
+		temp_pos = Vector(pos.X, pos.Y )
+		if down_anchor then
+			temp_pos.Y = temp_pos.Y + math.min(trinket_off.Y, pocket_off.Y)
+		else
+			temp_pos.Y = temp_pos.Y + math.max(trinket_off.Y, pocket_off.Y)
+		end
+		inv_off = self.inventory:render(temp_pos, mirrored, down_anchor)
+	end
 	--
-	local offset = Vector(0,0)
+	local offset = Vector(0, 0)
 	if down_anchor then
-		offset.Y = math.min(trinket_off.Y,pocket_off.Y)
+		offset.Y = math.min(trinket_off.Y, pocket_off.Y,inv_off.Y)
 	else
-		offset.Y = math.max(trinket_off.Y,pocket_off.Y)
+		offset.Y = math.max(trinket_off.Y, pocket_off.Y,inv_off.Y)
 	end
 	return offset
 end
@@ -204,20 +220,30 @@ function coopHUD.Player:render()
 	local mirrored = coopHUD.players_config.small[self.game_index].mirrored
 	local scale = coopHUD.players_config.small.scale
 	local down_anchor = coopHUD.players_config.small[self.game_index].down_anchor
-	-- ITEMS/HEARTS/EXTRAS RENDER
 	if self.big_hud then
 		anchor = Vector(coopHUD.anchors[coopHUD.players_config.small[self.game_index].anchor_top].X,
 		                coopHUD.anchors[coopHUD.players_config.small[self.game_index].anchor_top].Y)
 		mirrored = coopHUD.players_config.small[self.game_index].mirrored_big
 	end
+	-- ITEMS/HEARTS/EXTRAS RENDER
 	local first_line_off = self:renderMain(anchor, mirrored, scale, down_anchor)
 	if self.essau then
-		first_line_off.Y = first_line_off.Y + self.essau:renderMain(anchor + first_line_off, mirrored, scale, down_anchor).Y
+		first_line_off.Y = first_line_off.Y + self.essau:renderMain(anchor + first_line_off, mirrored, scale,
+		                                                            down_anchor).Y
 	end
 	-- TRINKETS/POCKETS RENDER
-	local second_line_off = self:renderPockets(Vector(anchor.X, anchor.Y + first_line_off.Y), mirrored, scale, down_anchor)
+	local second_line_pos = Vector(anchor.X, anchor.Y + first_line_off.Y)
+	if self.big_hud then
+		-- special version of hud when only when <2 players and not forced in options
+		second_line_pos = Vector(coopHUD.anchors[coopHUD.players_config.small[self.game_index].anchor_bot].X,
+		                         coopHUD.anchors[coopHUD.players_config.small[self.game_index].anchor_bot].Y)
+		down_anchor = true
+	end
+	local second_line_off = self:renderPockets(second_line_pos, mirrored, scale,
+	                                           down_anchor)
 	if self.essau then
-		second_line_off.Y = second_line_off.Y self.essau:renderPockets(anchor + first_line_off+second_line_off, mirrored, scale, down_anchor)
+		second_line_off.Y = second_line_off.Y + self.essau:renderPockets(second_line_pos + second_line_off,
+		                                                                 mirrored, scale, down_anchor).Y
 	end
 	-- PLAYER COLOR SET
 	local col = Color(1, 1, 1, 1)
@@ -252,17 +278,15 @@ function coopHUD.Player:render()
 				self:renderStats(mirrored)
 			else
 				-- renders essau stats on drop pressed
-				if self.essau and Input.IsActionPressed(ButtonAction.ACTION_DROP,self.controller_index)then
-				self.essau:renderStats(mirrored)
-			else
-				self:renderStats(mirrored)
+				if self.essau and Input.IsActionPressed(ButtonAction.ACTION_DROP, self.controller_index) then
+					self.essau:renderStats(mirrored)
+				else
+					self:renderStats(mirrored)
+				end
 			end
-			end
-
 		end
 	end
 end
-
 function coopHUD.Player:renderExtras(pos, mirrored, scale, down_anchor)
 	local final_offset = Vector(0, 0)
 	local temp_pos = Vector(pos.X + 4, pos.Y)
@@ -284,8 +308,6 @@ function coopHUD.Player:renderExtras(pos, mirrored, scale, down_anchor)
 				temp_pos.X = temp_pos.X + 12
 			end
 			coopHUD.Mantle:Render(mantle_pos)
-			final_offset.Y = 16
-			if down_anchor then final_offset.Y = final_offset.Y * -1 end
 		end
 		if self.entPlayer:GetExtraLives() > 0 then
 			local offset = Vector(0, 8 * sprite_scale.X)
@@ -299,7 +321,7 @@ function coopHUD.Player:renderExtras(pos, mirrored, scale, down_anchor)
 			end
 			local align = 0
 			if mirrored then
-				temp_pos.X = temp_pos.X - (16 * sprite_scale.Y)
+				temp_pos.X = temp_pos.X - (20 * sprite_scale.Y)
 				align = 1
 			end
 			coopHUD.HUD.fonts.pft:DrawStringScaled(text, temp_pos.X, temp_pos.Y, sprite_scale.X * 1.2,

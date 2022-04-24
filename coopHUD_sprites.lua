@@ -8,7 +8,9 @@ setmetatable(coopHUD.Item, {
 })
 function coopHUD.Item.new(player, slot, item_id)
 	local self = setmetatable({}, coopHUD.Item)
-	self.entPlayer = player
+	self.parent = player
+	if self.parent == nil then return nil end
+	self.entPlayer = self.parent.entPlayer
 	self.slot = slot
 	if slot >= 0 then
 		self.id = self.entPlayer:GetActiveItem(self.slot)
@@ -116,6 +118,11 @@ function coopHUD.Item:getSprite()
 		end
 	end
 	--
+	if self.id == CollectibleType.COLLECTIBLE_HOLD then
+		anim_name = 'Hold'
+		sprite:ReplaceSpritesheet(3, 'gfx/ui/ui_poops.png')
+	end
+	--
 	sprite:SetFrame(anim_name, self.frame_num)
 	sprite:LoadGraphics()
 	--
@@ -145,6 +152,8 @@ function coopHUD.Item:getFrameNum()
 				-- checks if urn is open
 				frame_num = 22 -- opened urn frame no
 			end
+		elseif self.id == CollectibleType.COLLECTIBLE_HOLD then
+			frame_num = self.parent.hold_spell
 		else
 			-- Sets overlay/charges state frame --
 			local max_charges = Isaac.GetItemConfig():GetCollectible(self.id).MaxCharges-- gets max charges
@@ -291,7 +300,6 @@ function coopHUD.Item:render(pos, mirrored, scale, down_anchor, dim)
 		local charge_off = self:renderChargeBar(Vector(pos.X + offset.X, pos.Y), mirrored, scale, down_anchor)
 		offset.X = offset.X + charge_off.X
 	end
-
 	return offset
 end
 --
@@ -429,7 +437,7 @@ function coopHUD.Pocket:getSprite()
 end
 function coopHUD.Pocket:getItem()
 	if self.type ~= 3 then return nil end
-	return coopHUD.Item(self.parent.entPlayer, 2)
+	return coopHUD.Item(self.parent, 2)
 end
 function coopHUD.Pocket:getName()
 	local name = nil
@@ -476,6 +484,9 @@ function coopHUD.Pocket:update()
 			coopHUD.Streak(false, coopHUD.Streak.ITEM, self.name, self.desc, true, self.parent.font_color)
 		end
 	end
+	if self.item then
+		self.item:update()
+	end
 end
 function coopHUD.Pocket:render(pos, mirrored, scale, down_anchor, dim)
 	local temp_pos = Vector(pos.X, pos.Y)
@@ -519,18 +530,23 @@ function coopHUD.Pocket:render(pos, mirrored, scale, down_anchor, dim)
 		offset = self.item:render(pos, mirrored, scale, down_anchor)
 	end
 	if (self.name or self.desc) and self.slot == 0 then
-		local text = self.name
-		if Input.IsActionPressed(ButtonAction.ACTION_MAP, self.parent.controller_index) then
-			text = self.desc
+		if self.item and self.item.id == CollectibleType.COLLECTIBLE_HOLD and self.parent.poops then
+			offset.X = offset.X + self.parent.poops:render(Vector(pos.X + offset.X, pos.Y), mirrored, scale,
+			                                               down_anchor).X
+		else
+			local text = self.name
+			if Input.IsActionPressed(ButtonAction.ACTION_MAP, self.parent.controller_index) then
+				text = self.desc
+			end
+			local font_height = coopHUD.HUD.fonts.pft:GetLineHeight()
+			temp_pos = Vector(pos.X + offset.X, pos.Y + offset.Y - font_height)
+			if mirrored then temp_pos.X = temp_pos.X - string.len(text) * (6 * sprite_scale.X) end
+			if down_anchor then
+				temp_pos.Y = temp_pos.Y - offset.Y
+			end
+			coopHUD.HUD.fonts.pft:DrawStringScaled(text, temp_pos.X, temp_pos.Y, sprite_scale.X, sprite_scale.Y,
+			                                       self.parent.font_color, 0, true)
 		end
-		local font_height = coopHUD.HUD.fonts.pft:GetLineHeight()
-		temp_pos = Vector(pos.X + offset.X, pos.Y + offset.Y - font_height)
-		if mirrored then temp_pos.X = temp_pos.X - string.len(text) * (6 * sprite_scale.X) end
-		if down_anchor then
-			temp_pos.Y = temp_pos.Y - offset.Y
-		end
-		coopHUD.HUD.fonts.pft:DrawStringScaled(text, temp_pos.X, temp_pos.Y, sprite_scale.X, sprite_scale.Y,
-		                                       self.parent.font_color, 0, true)
 	end
 	return offset
 end
@@ -823,7 +839,123 @@ function coopHUD.HeartTable:update()
 		self.total_hearts = temp_total_hearts
 	end
 	for i = 0, self.total_hearts do
-			self[i]:update()
+		self[i]:update()
+	end
+end
+--
+coopHUD.Poop = {}
+coopHUD.Poop.__index = coopHUD.Poop
+setmetatable(coopHUD.Poop, {
+	__call = function(cls, ...)
+		return cls.new(...)
+	end,
+})
+function coopHUD.Poop.new(entPlayer, slot)
+	local self = setmetatable({}, coopHUD.Poop)
+	self.entPlayer = entPlayer
+	self.slot = slot
+	self.spell_type = self.entPlayer:GetPoopSpell(self.slot)
+	self.sprite = self:getSprite()
+	self.dim = (self.slot < self.entPlayer:GetPoopMana())
+	return self
+end
+function coopHUD.Poop:getSprite()
+	local layer_name = 'IdleSmall'
+	if self.slot == 0 then layer_name = 'Idle' end
+	local sprite = Sprite()
+	sprite:Load(coopHUD.GLOBALS.poop_anim_path, true)
+	sprite:SetFrame(layer_name, self.spell_type)
+	if self.dim then
+		local col = Color(0.3, 0.3, 0.3, 1)
+		col:SetColorize(1, 1, 1, 0.4)
+		sprite.Color = col
+	end
+	return sprite
+end
+function coopHUD.Poop:render(pos, mirrored, scale, down_anchor)
+	local poop_pos = Vector(pos.X, pos.Y)
+	local offset = Vector(0, 0)
+	local sprite_scale = scale
+	local pivot = Vector(4, 4)
+	local offset_pivot = Vector(12, 12)
+	if self.sprite:GetAnimation() == 'Idle' then
+		pivot = Vector(12, 12)
+		offset_pivot = Vector(22, 22)
+	end
+	if sprite_scale == nil then sprite_scale = Vector(1, 1) end
+	if mirrored then
+		poop_pos = poop_pos + Vector(-pivot.X * sprite_scale.X, 0)
+		offset.X = -offset_pivot.X * scale.X
+	else
+		poop_pos = poop_pos + Vector(pivot.X * sprite_scale.X, 0)
+		offset.X = offset_pivot.X * scale.X
+	end
+	if down_anchor then
+		poop_pos = poop_pos + Vector(0, -pivot.Y * sprite_scale.Y)
+		offset.Y = -offset_pivot.Y * scale.Y
+	else
+		poop_pos = poop_pos + Vector(0, pivot.Y * sprite_scale.Y)
+		offset.Y = offset_pivot.Y * scale.Y
+	end
+	if self.sprite then
+		self.sprite.Scale = sprite_scale
+		self.sprite:Render(poop_pos)
+	end
+	return offset
+end
+function coopHUD.Poop:update()
+	if self.dim ~= (self.slot >= self.entPlayer:GetPoopMana()) then
+		self.dim = (self.slot >= self.entPlayer:GetPoopMana())
+		self.sprite = self:getSprite()
+	end
+	if self.spell_type ~= self.entPlayer:GetPoopSpell(self.slot) then
+		self.spell_type = self.entPlayer:GetPoopSpell(self.slot)
+		self.sprite = self:getSprite()
+	end
+end
+--
+coopHUD.PoopsTable = {}
+coopHUD.PoopsTable.__index = coopHUD.PoopsTable
+setmetatable(coopHUD.PoopsTable, {
+	__call = function(cls, ...)
+		return cls.new(...)
+	end,
+})
+function coopHUD.PoopsTable.new(entPlayer)
+	local self = setmetatable({}, coopHUD.PoopsTable)
+	self.entPlayer = entPlayer
+	self.poop_mana = self.entPlayer:GetPoopMana()
+	self.poops = {}
+	for i = 0, PoopSpellType.SPELL_QUEUE_SIZE - 1, 1 do
+		self.poops[i] = coopHUD.Poop(entPlayer, i)
+	end
+	return self
+end
+function coopHUD.PoopsTable:render(pos, mirrored, scale, down_anchor)
+	local init_pos = Vector(pos.X, pos.Y)
+	local off = Vector(0, 0)
+	local offset = Vector(0, 0)
+	for i = 0, PoopSpellType.SPELL_QUEUE_SIZE - 1, 1 do
+		if i == 1 then
+			if down_anchor then
+				init_pos.Y = init_pos.Y - 8
+			else
+				init_pos.Y = init_pos.Y + 8
+			end
+		end
+		off = self.poops[i]:render(Vector(init_pos.X, init_pos.Y), mirrored, scale, down_anchor)
+		if i == 0 then offset.Y = offset.Y + off.Y end
+		init_pos.X = init_pos.X + off.X
+	end
+	offset.X = init_pos.X - pos.X
+	return offset
+end
+function coopHUD.PoopsTable:update()
+	if self.poop_mana ~= self.entPlayer:GetPoopMana() then
+		self.poop_mana = self.entPlayer:GetPoopMana()
+	end
+	for i = 0, PoopSpellType.SPELL_QUEUE_SIZE - 1, 1 do
+		self.poops[i]:update()
 	end
 end
 --
@@ -936,7 +1068,7 @@ function coopHUD.RunInfo:render(pos, mirrored, scale, down_anchor)
 	if sprite_scale == nil then sprite_scale = Vector(1, 1) end
 	--
 	local temp_pos = Vector(pos.X, pos.Y - 1)
-	local text_pos = Vector(pos.X + 16, pos.Y)
+	local text_pos = Vector(pos.X + 16, pos.Y - 1)
 	local offset = Vector(0, 0)
 	if self.sprite then
 		--
@@ -1016,7 +1148,7 @@ function coopHUD.RunInfo:getText()
 		if self.type == coopHUD.RunInfo.GREEDIER then
 			max_waves = 11
 		end
-		text = string.format("%d/%2.d", current_wave, max_waves)
+		text = string.format(" %d/%2.d", current_wave, max_waves)
 	end
 	return text
 end
@@ -1114,7 +1246,7 @@ function coopHUD.Stat:getSprite()
 		return nil
 	end
 end
-function coopHUD.Stat:render(pos, mirrored, vertical,only_num)
+function coopHUD.Stat:render(pos, mirrored, vertical, only_num)
 	self:update()
 	local init_pos = (Vector(pos.X, pos.Y))
 	if vertical then
@@ -1539,9 +1671,84 @@ function coopHUD.Collectibles.trigger(Player)
 		coopHUD.Collectibles.sprite.Color = Color(Player.font_color.Red, Player.font_color.Green,
 		                                          Player.font_color.Blue)
 		coopHUD.Collectibles.mirrored = coopHUD.players_config.small[Player.game_index].mirrored
-		coopHUD.Collectibles.item_table = Player.collectibles
+		for i = 1, #Player.gulped_trinkets do
+			table.insert(coopHUD.Collectibles.item_table, Player.gulped_trinkets[i])
+		end
+		for i = 1, #Player.collectibles do
+			table.insert(coopHUD.Collectibles.item_table, Player.collectibles[i])
+		end
 		coopHUD.Collectibles.sprite:Play("Appear", true)
 	end
+end
+--
+coopHUD.Inventory = {}
+coopHUD.Inventory.__index = coopHUD.Inventory
+setmetatable(coopHUD.Inventory, {
+	__call = function(cls, ...)
+		return cls.new(...)
+	end,
+})
+function coopHUD.Inventory.new(parent)
+	local self = setmetatable({}, coopHUD.Inventory)
+	self.parent = parent
+	self.max_collectibles = 8
+	self.sprite = Sprite()
+	self.sprite:Load(coopHUD.GLOBALS.inventory_anim_path, true)
+	self.sprite:SetFrame('Idle', 0)
+	return self
+end
+function coopHUD.Inventory:render(pos, mirrored, down_anchor)
+	local temp_pos = Vector(pos.X, pos.Y)
+	local sprite_pivot = Vector(8, 8)
+	--
+	if self.parent.entPlayer:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
+		self.max_collectibles = 12
+	else
+		self.max_collectibles = 8
+	end
+
+	--
+	if mirrored then
+		sprite_pivot.X = sprite_pivot.X * -1
+	end
+	if down_anchor then
+		temp_pos.Y = temp_pos.Y - 16
+		sprite_pivot.Y = sprite_pivot.Y * -1
+	else
+		temp_pos.Y = temp_pos.Y + 8
+	end
+	for i = 1, self.max_collectibles do
+		if i == 1 then
+			self.sprite.Color = Color(1, 1, 1, 1)
+			self.sprite:RenderLayer(1, temp_pos + sprite_pivot)
+		end
+		local off
+		if self.parent.collectibles[i] then
+			off = self.parent.collectibles[i]:render(Vector(temp_pos.X, temp_pos.Y), mirrored,
+			                                         Vector(0.5, 0.5), down_anchor)
+			temp_pos.X = temp_pos.X + off.X * 0.75
+		else
+			self.sprite.Color = Color(1, 1, 1, 0.5)
+			self.sprite:RenderLayer(0, temp_pos + sprite_pivot)
+			if mirrored then
+				temp_pos.X = temp_pos.X - 12
+			else
+				temp_pos.X = temp_pos.X + 12
+			end
+		end
+		if self.max_collectibles / i == 2 then
+			temp_pos = Vector(pos.X, pos.Y)
+			if down_anchor then
+				temp_pos.Y = temp_pos.Y - 16
+			end
+			temp_pos.Y = temp_pos.Y + 16
+		end
+	end
+	--
+	local offset = Vector(12 * self.max_collectibles, 32)
+	if mirrored then offset.X = offset.X * -1 end
+	if down_anchor then offset.Y = offset.Y * -1 end
+	return offset
 end
 --
 coopHUD.Streak = {}

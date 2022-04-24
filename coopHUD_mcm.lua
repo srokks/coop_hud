@@ -31,7 +31,14 @@ function coopHUD.save_options()
 				table.insert(collectibles,
 				             {coopHUD.players[i].collectibles[j].type, coopHUD.players[i].collectibles[j].id})
 			end
-			players[i] = {collectibles = collectibles}
+			local gulped_trinkets = {}
+			for j = 1, #coopHUD.players[i].gulped_trinkets do
+				table.insert(gulped_trinkets,
+				             {coopHUD.players[i].gulped_trinkets[j].type, coopHUD.players[i].gulped_trinkets[j].id})
+			end
+			players[i] = {collectibles = collectibles,
+			              gulped_trinkets = gulped_trinkets,
+			              hold_spell = coopHUD.players[i].hold_spell}
 		end
 		-- save player bag of crafting
 		--[[local bag_of_crafting = {}
@@ -120,6 +127,30 @@ if ModConfigMenu then
 		end,
 		Info = function()
 			return 'Force small (compacted) player HUD in < 2 players'
+		end
+	})
+	-- show my stuff page
+	ModConfigMenu.AddSetting(mod_name, "General", {
+		Type = ModConfigMenu.OptionType.BOOLEAN,
+		CurrentSetting = function()
+			return coopHUD.options.show_my_stuff
+		end,
+		Default = coopHUD.options.show_my_stuff,
+
+		Display = function()
+			local onOff = "Off"
+			if coopHUD.options.show_my_stuff then
+				onOff = "On"
+			end
+
+			return "Show my stuff page: " .. onOff
+		end,
+		OnChange = function(currentBool)
+			coopHUD.options.show_my_stuff = currentBool
+			coopHUD.save_options()
+		end,
+		Info = function()
+			return 'Shows player items on long map button push'
 		end
 	})
 	-- PLAYERS NAME/HEAD
