@@ -1671,7 +1671,12 @@ function coopHUD.Collectibles.trigger(Player)
 		coopHUD.Collectibles.sprite.Color = Color(Player.font_color.Red, Player.font_color.Green,
 		                                          Player.font_color.Blue)
 		coopHUD.Collectibles.mirrored = coopHUD.players_config.small[Player.game_index].mirrored
-		coopHUD.Collectibles.item_table = Player.collectibles
+		for i=1,#Player.gulped_trinkets do
+			table.insert(coopHUD.Collectibles.item_table,Player.gulped_trinkets[i])
+		end
+		for i=1,#Player.collectibles do
+			table.insert(coopHUD.Collectibles.item_table,Player.collectibles[i])
+		end
 		coopHUD.Collectibles.sprite:Play("Appear", true)
 	end
 end
