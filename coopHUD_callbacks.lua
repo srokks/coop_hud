@@ -147,6 +147,16 @@ coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, function(_, entPlayer)
 						coopHUD.players[player_index].collectibles[1] = coopHUD.Item(coopHUD.players[player_index], -1,
 						                                                             coopHUD.players[player_index].temp_item.ID)
 					else
+						local non_rollable = {[CollectibleType.COLLECTIBLE_KEY_PIECE_1] = true,
+						                      [CollectibleType.COLLECTIBLE_KEY_PIECE_2] = true,
+						                      [CollectibleType.COLLECTIBLE_MISSING_NO] = true,
+						                      [CollectibleType.COLLECTIBLE_POLAROID] = true,
+						                      [CollectibleType.COLLECTIBLE_NEGATIVE] = true,
+						                      [CollectibleType.COLLECTIBLE_DAMOCLES] = true,
+						                      [CollectibleType.COLLECTIBLE_KNIFE_PIECE_1] = true,
+						                      [CollectibleType.COLLECTIBLE_KNIFE_PIECE_2] = true,
+						                      [CollectibleType.COLLECTIBLE_DOGMA] = true,
+						                      [CollectibleType.COLLECTIBLE_DADS_NOTE] = true, }
 						table.insert(coopHUD.players[player_index].collectibles,
 						             coopHUD.Item(coopHUD.players[player_index], -1,
 						                          coopHUD.players[player_index].temp_item.ID)) -- add picked up item to collectibles
