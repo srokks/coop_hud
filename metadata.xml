@@ -10,7 +10,9 @@
 
 		[h3] [b] MOD IS STILL DEVELOPED PLEASE SUBMIT ANY WEIR BEHAVIOUR ( weird positions/ console errors/ log files)
 		in Bugs topic[/b] [/h3]
-
+		[h2] What new:[/h2]
+		[*] Forgotten - Lost - full support
+		[*] Tainted ??? support - show  spells and Hold up to 4 players
 		[h2] What this mod do[/h2]
 		[list]
 		[*] Renders proper HUD for coop/multiplayer up to 4 players
@@ -49,12 +51,10 @@
 			[*] Gideon/Greed Wave Counter
 			[*] Destination icons
 			[*] Small HUD - customizable positions
-			[*] Forgotten - Lost -
 			[*] Tainted Isaac - inventory
 			[*] Tainted Maggy - pulsing hearts animation
 			[*] Tainted Cain - bag of crafting
 			[*] Bag of crafting for other players
-			[*] Tainted ??? - poop spells
 		[/list]
 		[h2] What this mod lack of[/h2]
 		[list]
@@ -78,6 +78,7 @@
 		[/list]
 		[h2] Mods Compatibility[/h2]
 		[list]
+		[*] It's compatible with modded trinkets and items
 		[*] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2635267643] [Rep] Enhanced Boss Bars [/url] from [url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge
 		[*] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1978904635] MiniMAPI[/url] from [url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge
 		[*] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=836319872] [AB+|Rep] External item descriptions[/url] from [url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900]Wofsauge[/url]
