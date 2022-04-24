@@ -36,7 +36,7 @@ function coopHUD.on_start(_, cont)
 						             coopHUD.Item(coopHUD.players[player_no], -1, id))
 					elseif type == PickupVariant.PICKUP_TRINKET then
 						table.insert(coopHUD.players[player_no].gulped_trinkets,
-						             coopHUD.Trinket(coopHUD.players[player_no], -1, id))
+						             coopHUD.Trinket(coopHUD.players[player_no].entPlayer, -1, id))
 					end
 				end
 				coopHUD.players[player_no].hold_spell = player_save.hold_spell
@@ -234,6 +234,7 @@ coopHUD:AddCallback(ModCallbacks.MC_PRE_USE_ITEM,
 -- CollectibleType.COLLECTIBLE_D4
 -- connect to MC_USE_ITEM to handle roll of collectibles
 -- Isaac uses use signal of D4 to roll in Dice Room and other occasions
+--FIXME: non rollable item id  skipp on roll
 coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
                     function(_, collectible_type, rng, entPlayer, use_flags, slot, var_data)
 	                    local player_index = coopHUD.getPlayerNumByControllerIndex(entPlayer.ControllerIndex)
