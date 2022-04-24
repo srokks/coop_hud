@@ -1068,7 +1068,7 @@ function coopHUD.RunInfo:render(pos, mirrored, scale, down_anchor)
 	if sprite_scale == nil then sprite_scale = Vector(1, 1) end
 	--
 	local temp_pos = Vector(pos.X, pos.Y - 1)
-	local text_pos = Vector(pos.X + 16, pos.Y -1)
+	local text_pos = Vector(pos.X + 16, pos.Y - 1)
 	local offset = Vector(0, 0)
 	if self.sprite then
 		--
@@ -1671,11 +1671,11 @@ function coopHUD.Collectibles.trigger(Player)
 		coopHUD.Collectibles.sprite.Color = Color(Player.font_color.Red, Player.font_color.Green,
 		                                          Player.font_color.Blue)
 		coopHUD.Collectibles.mirrored = coopHUD.players_config.small[Player.game_index].mirrored
-		for i=1,#Player.gulped_trinkets do
-			table.insert(coopHUD.Collectibles.item_table,Player.gulped_trinkets[i])
+		for i = 1, #Player.gulped_trinkets do
+			table.insert(coopHUD.Collectibles.item_table, Player.gulped_trinkets[i])
 		end
-		for i=1,#Player.collectibles do
-			table.insert(coopHUD.Collectibles.item_table,Player.collectibles[i])
+		for i = 1, #Player.collectibles do
+			table.insert(coopHUD.Collectibles.item_table, Player.collectibles[i])
 		end
 		coopHUD.Collectibles.sprite:Play("Appear", true)
 	end
@@ -1714,6 +1714,8 @@ function coopHUD.Inventory:render(pos, mirrored, down_anchor)
 	if down_anchor then
 		temp_pos.Y = temp_pos.Y - 16
 		sprite_pivot.Y = sprite_pivot.Y * -1
+	else
+		temp_pos.Y = temp_pos.Y + 8
 	end
 	for i = 1, self.max_collectibles do
 		if i == 1 then
@@ -1721,14 +1723,18 @@ function coopHUD.Inventory:render(pos, mirrored, down_anchor)
 			self.sprite:RenderLayer(1, temp_pos + sprite_pivot)
 		end
 		local off
-		if coopHUD.players[1].collectibles[i] then
+		if self.parent.collectibles[i] then
 			off = self.parent.collectibles[i]:render(Vector(temp_pos.X, temp_pos.Y), mirrored,
-			                                                Vector(0.5, 0.5), down_anchor)
+			                                         Vector(0.5, 0.5), down_anchor)
 			temp_pos.X = temp_pos.X + off.X * 0.75
 		else
 			self.sprite.Color = Color(1, 1, 1, 0.5)
 			self.sprite:RenderLayer(0, temp_pos + sprite_pivot)
-			temp_pos.X = temp_pos.X + 12
+			if mirrored then
+				temp_pos.X = temp_pos.X - 12
+			else
+				temp_pos.X = temp_pos.X + 12
+			end
 		end
 		if self.max_collectibles / i == 2 then
 			temp_pos = Vector(pos.X, pos.Y)
@@ -1739,9 +1745,9 @@ function coopHUD.Inventory:render(pos, mirrored, down_anchor)
 		end
 	end
 	--
-	local offset = Vector(12*self.max_collectibles,32)
-	--if mirrored then offset.X = offset.X * -1 end
-	if down_anchor then offset.Y= offset.Y * -1 end
+	local offset = Vector(12 * self.max_collectibles, 32)
+	if mirrored then offset.X = offset.X * -1 end
+	if down_anchor then offset.Y = offset.Y * -1 end
 	return offset
 end
 --
