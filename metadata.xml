@@ -2,8 +2,9 @@
 <metadata>
 	<name>Coop HUD *WIP*</name>
 	<directory>coop_hud</directory>
-	<id>2731267631</id>
-	<description>[h1]Coop HUD - proper HUD for coop[/h1]
+	<id></id>
+	<description>
+		[h1]Coop HUD - proper HUD for coop[/h1]
 		Mod renders player items/trinkets/stats and more for up to 4 coop players.
 		[h3]Recently due performance issues mod has been hidden in workshop and rewritten.
 		It is less laggy and buggy right now. Check what is already working in description[/h3]
@@ -93,7 +94,6 @@
 		[*] [url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge[/url] - for TBoI API and
 		his mods which helped in developing this mod
 		[/list]
-
 	</description>
 	<version>0.6</version>
 	<visibility>Public</visibility>
