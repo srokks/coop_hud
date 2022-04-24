@@ -150,19 +150,20 @@ coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, function(_, entPlayer)
 				-- triggers only for passive items and familiars
 				-- holds non roll able items and adds it to gulped_trinkets
 				local non_roll = {[CollectibleType.COLLECTIBLE_KEY_PIECE_1] = true,
-				                      [CollectibleType.COLLECTIBLE_KEY_PIECE_2] = true,
-				                      [CollectibleType.COLLECTIBLE_MISSING_NO] = true,
-				                      [CollectibleType.COLLECTIBLE_POLAROID] = true,
-				                      [CollectibleType.COLLECTIBLE_NEGATIVE] = true,
-				                      [CollectibleType.COLLECTIBLE_DAMOCLES] = true,
-				                      [CollectibleType.COLLECTIBLE_KNIFE_PIECE_1] = true,
-				                      [CollectibleType.COLLECTIBLE_KNIFE_PIECE_2] = true,
-				                      [CollectibleType.COLLECTIBLE_DOGMA] = true,
-				                      [CollectibleType.COLLECTIBLE_DADS_NOTE] = true, }
+				                  [CollectibleType.COLLECTIBLE_KEY_PIECE_2] = true,
+				                  [CollectibleType.COLLECTIBLE_MISSING_NO] = true,
+				                  [CollectibleType.COLLECTIBLE_POLAROID] = true,
+				                  [CollectibleType.COLLECTIBLE_NEGATIVE] = true,
+				                  [CollectibleType.COLLECTIBLE_DAMOCLES] = true,
+				                  [CollectibleType.COLLECTIBLE_KNIFE_PIECE_1] = true,
+				                  [CollectibleType.COLLECTIBLE_KNIFE_PIECE_2] = true,
+				                  [CollectibleType.COLLECTIBLE_DOGMA] = true,
+				                  [CollectibleType.COLLECTIBLE_DADS_NOTE] = true,
+				                  [CollectibleType.COLLECTIBLE_BIRTHRIGHT] = true, }
 				if non_roll[coopHUD.players[player_index].temp_item.ID] then
 					table.insert(coopHUD.players[player_index].gulped_trinkets,
-					             coopHUD.Item(coopHUD.players[player_index],-1,
-					             coopHUD.players[player_index].temp_item.ID))
+					             coopHUD.Item(coopHUD.players[player_index], -1,
+					                          coopHUD.players[player_index].temp_item.ID))
 				else
 					if coopHUD.players[player_index].entPlayer:GetPlayerType() == PlayerType.PLAYER_ISAAC_B then
 						local max_collectibles = 8
@@ -234,27 +235,31 @@ coopHUD:AddCallback(ModCallbacks.MC_PRE_USE_ITEM,
 -- CollectibleType.COLLECTIBLE_D4
 -- connect to MC_USE_ITEM to handle roll of collectibles
 -- Isaac uses use signal of D4 to roll in Dice Room and other occasions
---FIXME: non rollable item id  skipp on roll
 coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
                     function(_, collectible_type, rng, entPlayer, use_flags, slot, var_data)
 	                    local player_index = coopHUD.getPlayerNumByControllerIndex(entPlayer.ControllerIndex)
 	                    if player_index >= 0 and coopHUD.players[player_index] then
-		                    local trinkets = {}
-		                    --[[FIXME: rework trinkets in gulped_trinkets
-		                    -- saves trinkets into temp table - gulped trinkets do not roll
-		                    for i = 1, #coopHUD.players[player_index].collectibles do
-			                    if coopHUD.players[player_index].collectibles[i].type == PickupVariant.PICKUP_TRINKET then
-				                    table.insert(trinkets, coopHUD.players[player_index].collectibles[i])
-			                    end
-		                    end]]
 		                    coopHUD.players[player_index].collectibles = {} -- resets players collectible table
 		                    for i = 1, Isaac.GetItemConfig():GetCollectibles().Size - 1 do
 			                    -- check if player has collectible
 			                    if coopHUD.players[player_index].entPlayer:HasCollectible(i) then
 				                    -- skips active items
 				                    if Isaac.GetItemConfig():GetCollectible(i).Type ~= ItemType.ITEM_ACTIVE then
-					                    table.insert(coopHUD.players[player_index].collectibles,
-					                                 coopHUD.Item(coopHUD.players[player_index], -1, i))
+					                    local non_roll = {[CollectibleType.COLLECTIBLE_KEY_PIECE_1] = true,
+					                                      [CollectibleType.COLLECTIBLE_KEY_PIECE_2] = true,
+					                                      [CollectibleType.COLLECTIBLE_MISSING_NO] = true,
+					                                      [CollectibleType.COLLECTIBLE_POLAROID] = true,
+					                                      [CollectibleType.COLLECTIBLE_NEGATIVE] = true,
+					                                      [CollectibleType.COLLECTIBLE_DAMOCLES] = true,
+					                                      [CollectibleType.COLLECTIBLE_KNIFE_PIECE_1] = true,
+					                                      [CollectibleType.COLLECTIBLE_KNIFE_PIECE_2] = true,
+					                                      [CollectibleType.COLLECTIBLE_DOGMA] = true,
+					                                      [CollectibleType.COLLECTIBLE_DADS_NOTE] = true,
+					                                      [CollectibleType.COLLECTIBLE_BIRTHRIGHT] = true, }
+					                    if not non_roll then
+						                    table.insert(coopHUD.players[player_index].collectibles,
+						                                 coopHUD.Item(coopHUD.players[player_index], -1, i))
+					                    end
 				                    end
 			                    end
 		                    end
