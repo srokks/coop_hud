@@ -20,12 +20,22 @@ function coopHUD.on_start(_, cont)
 				--` load collectibles
 				for _, item_id in pairs(player_save.collectibles) do
 					local type, id = item_id[1], item_id[2]
-					--print(type,id,coopHUD.players[player_no])
 					if type == PickupVariant.PICKUP_COLLECTIBLE then
 						table.insert(coopHUD.players[player_no].collectibles,
 						             coopHUD.Item(coopHUD.players[player_no], -1, id))
 					elseif type == PickupVariant.PICKUP_TRINKET then
 						table.insert(coopHUD.players[player_no].collectibles,
+						             coopHUD.Trinket(coopHUD.players[player_no], -1, id))
+					end
+				end
+				--load gulped_trinkets and un roll able
+				for _, item_id in pairs(player_save.gulped_trinkets) do
+					local type, id = item_id[1], item_id[2]
+					if type == PickupVariant.PICKUP_COLLECTIBLE then
+						table.insert(coopHUD.players[player_no].gulped_trinkets,
+						             coopHUD.Item(coopHUD.players[player_no], -1, id))
+					elseif type == PickupVariant.PICKUP_TRINKET then
+						table.insert(coopHUD.players[player_no].gulped_trinkets,
 						             coopHUD.Trinket(coopHUD.players[player_no], -1, id))
 					end
 				end
