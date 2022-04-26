@@ -303,6 +303,24 @@ coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
 	                    end
 	                    coopHUD.players[player_index].first_pocket:update()
                     end, CollectibleType.COLLECTIBLE_HOLD)
+-- Bag of crafting
+-- _____ Modified EID Wolsauge bag of crafting functions
+-- Debug:changed pickupsOnInit to global:fixme: chage to local
+pickupsOnInit = {} -- holds all items in rooms whick can be collected by bag of crafting
+--- Function triggered when bag of crafting collecting beam is initiated
+--- it colects all pickup entities to maintain BoC collection
+coopHUD:AddCallback(ModCallbacks.MC_POST_KNIFE_INIT, function(_, entity)
+	if entity.Variant ~= 4 then -- prevention from false init
+		return
+	end
+	pickupsOnInit = {} --resets pickup entity table
+	for _, e in ipairs(Isaac.FindByType(EntityType.ENTITY_PICKUP, -1, -1, false, false)) do
+		-- pass all pickup entities
+		if e:GetSprite():GetAnimation() ~= "Collect" then -- checks is not in collect state
+			table.insert(pickupsOnInit, e) -- add them to pickup entity table
+		end
+	end
+end, 4)
 -- INPUT TRIGGERS
 local btn_held = 0
 function coopHUD.inputs_signals()
