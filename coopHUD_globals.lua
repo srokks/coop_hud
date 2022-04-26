@@ -1,4 +1,5 @@
-coopHUD.VERSION = '0.6-STEAM' --DEBUG: test name for in game recognition
+--TODO: realease name
+coopHUD.VERSION = '0.6.1-PROD_BoC' --DEBUG: test name for in game recognition
 coopHUD.showExtraInfo = false
 coopHUD.HUD_table = {}
 coopHUD.signals = {
