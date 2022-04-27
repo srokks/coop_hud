@@ -329,7 +329,7 @@ end, 4)
 ---coopHUD.getCraftingItemId
 ---@param Variant Entity.Variant
 ---@param Variant Entity.SubType
----@return number item value for BoC calculations
+---@return table with ids of BoC components
 function coopHUD.getCraftingItemId(Variant, SubType)
 	local pickupIDLookup = {
 		["10.1"] = {1}, -- Red heart
@@ -396,7 +396,53 @@ function coopHUD.getCraftingItemId(Variant, SubType)
 	end
 	return nil
 end
---
+---@field coopHUD.getItemValue
+---@param item_id table
+---@return number value for BoC calculation
+function coopHUD.getItemValue(item_id)
+	local pickupValues = {
+		0x00000000, -- 0 None
+		-- Hearts
+		0x00000001, -- 1 Red Heart
+		0x00000004, -- 2 Soul Heart
+		0x00000005, -- 3 Black Heart
+		0x00000005, -- 4 Eternal Heart
+		0x00000005, -- 5 Gold Heart
+		0x00000005, -- 6 Bone Heart
+		0x00000001, -- 7 Rotten Heart
+		-- Pennies
+		0x00000001, -- 8 Penny
+		0x00000003, -- 9 Nickel
+		0x00000005, -- 10 Dime
+		0x00000008, -- 11 Lucky Penny
+		-- Keys
+		0x00000002, -- 12 Key
+		0x00000007, -- 13 Golden Key
+		0x00000005, -- 14 Charged Key
+		-- Bombs
+		0x00000002, -- 15 Bomb
+		0x00000007, -- 16 Golden Bomb
+		0x0000000a, -- 17 Giga Bomb
+		-- Batteries
+		0x00000002, -- 18 Micro Battery
+		0x00000004, -- 19 Lil' Battery
+		0x00000008, -- 20 Mega Battery
+		-- Usables
+		0x00000002, -- 21 Card
+		0x00000002, -- 22 Pill
+		0x00000004, -- 23 Rune
+		0x00000004, -- 24 Dice Shard
+		0x00000002, -- 25 Cracked Key
+		-- Added in Update
+		0x00000007, -- 26 Golden Penny
+		0x00000007, -- 27 Golden Pill
+		0x00000007, -- 28 Golden Battery
+		0x00000000, -- 29 Tainted ??? Poop
+
+		0x00000001,
+	}
+	return pickupValues[item_id]
+end
 --- BAG COLLECT LOGIC
 --- Runs through pickupsOnInit and add to player bag of crafting that element
 coopHUD:AddCallback(ModCallbacks.MC_POST_ENTITY_REMOVE, function(_, bag)
