@@ -326,7 +326,10 @@ coopHUD:AddCallback(ModCallbacks.MC_POST_KNIFE_INIT, function(_, entity)
 		end
 	end
 end, 4)
---
+---coopHUD.getCraftingItemId
+---@param Variant Entity.Variant
+---@param Variant Entity.SubType
+---@return number item value for BoC calculations
 function coopHUD.getCraftingItemId(Variant, SubType)
 	local pickupIDLookup = {
 		["10.1"] = {1}, -- Red heart
