@@ -85,6 +85,9 @@ function coopHUD.Item:getSprite()
 	elseif self.id == CollectibleType.COLLECTIBLE_JAR_OF_WISPS then
 		sprite_path = "gfx/ui/hud_jarofwisps.png"
 		anim_name = "WispJar"
+	elseif self.id == CollectibleType.COLLECTIBLE_BAG_OF_CRAFTING then
+		sprite_path = "gfx/ui/hud_bagofcrafting.png"
+		anim_name = "SoulUrn"
 	elseif self.id == CollectibleType.COLLECTIBLE_EVERYTHING_JAR then
 		sprite_path = "gfx/ui/hud_everythingjar.png"
 		anim_name = "EverythingJar"
@@ -143,6 +146,13 @@ function coopHUD.Item:getFrameNum()
 				wisp_charge = 19
 			end
 			frame_num = coopHUD.jar_of_wisp_charge + wisp_charge
+		elseif self.id == CollectibleType.COLLECTIBLE_BAG_OF_CRAFTING then
+			if self.slot < 2 then
+				-- set frame only for active BoC
+				frame_num = #self.parent.bag_of_crafting + 1
+			else -- set frame for T.Cain Pocket BoC
+				frame_num = 0
+			end
 		elseif self.id == CollectibleType.COLLECTIBLE_EVERYTHING_JAR then
 			frame_num = self:getCharge() + 1
 		elseif self.id == CollectibleType.COLLECTIBLE_URN_OF_SOULS then
