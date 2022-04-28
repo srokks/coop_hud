@@ -303,7 +303,17 @@ coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
 	                    end
 	                    coopHUD.players[player_index].first_pocket:update()
                     end, CollectibleType.COLLECTIBLE_HOLD)
--- Bag of crafting
+---CollectibleType.COLLECTIBLE_BAG_OF_CRAFTING
+---connect to MC_USE_ITEM to handle bag of crafting reset when crafted item playing as no T.Cain
+coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
+                    function(_, collectible_type, rng, entPlayer, use_flags, slot, var_data)
+	                    local player_index = coopHUD.getPlayerNumByControllerIndex(entPlayer.ControllerIndex)
+	                    if entPlayer:GetPlayerType() ~= PlayerType.PLAYER_CAIN_B then
+		                    if #coopHUD.players[player_index].bag_of_crafting == 8 then
+			                    coopHUD.players[player_index].bag_of_crafting = {}
+		                    end
+	                    end
+                    end, CollectibleType.COLLECTIBLE_BAG_OF_CRAFTING)
 -- _____ Modified EID Wolsauge bag of crafting functions
 -- Debug:changed pickupsOnInit to global:fixme: chage to local
 pickupsOnInit = {} -- holds all items in rooms whick can be collected by bag of crafting
@@ -320,8 +330,8 @@ coopHUD:AddCallback(ModCallbacks.MC_POST_KNIFE_INIT, function(_, entity)
 		-- pass all pickup entities
 		if e:GetSprite():GetAnimation() ~= "Collect" then
 			-- checks is not in collect state
-			if coopHUD.getCraftingItemId(e.Variant, e.SubType)  ~= nil then
-				table.insert(pickupsOnInit,e)  -- adds it to pickupsOnInit table
+			if coopHUD.getCraftingItemId(e.Variant, e.SubType) ~= nil then
+				table.insert(pickupsOnInit, e)  -- adds it to pickupsOnInit table
 			end
 		end
 	end
