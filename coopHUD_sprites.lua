@@ -172,7 +172,7 @@ function coopHUD.Item:getFrameNum()
 end
 function coopHUD.Item:getCharge()
 	if self.slot >= 0 then
-		local item_charge = self.entPlayer:GetActiveCharge(self.slot)
+		local item_charge = self.entPlayer:GetActiveCharge(self.slot) + self.entPlayer:GetBatteryCharge(self.slot)
 		if self.entPlayer:GetPlayerType() == PlayerType.PLAYER_BETHANY then
 			-- Bethany Soul Charge integration
 			item_charge = item_charge + self.entPlayer:GetSoulCharge()
