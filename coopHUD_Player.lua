@@ -24,6 +24,10 @@ function coopHUD.Player.new(player_no, entPlayer)
 		self.hold_spell = 0 --inits
 		self.poops = coopHUD.PoopsTable(self.entPlayer)
 	end
+	-- Bag of Crafting  - specifics
+	-- need to be init before item, item gets values from it
+	self.bag_of_crafting = {}
+	self.crafting_result = nil
 	-- Active items
 	self.active_item = coopHUD.Item(self, ActiveSlot.SLOT_PRIMARY)
 	self.schoolbag_item = coopHUD.Item(self, ActiveSlot.SLOT_SECONDARY)
@@ -69,9 +73,6 @@ function coopHUD.Player.new(player_no, entPlayer)
 	if self.entPlayer:GetPlayerType() == PlayerType.PLAYER_ISAAC_B then
 		self.inventory = coopHUD.Inventory(self)
 	end
-	-- T.Cain - specifics
-	self.bag_of_crafting = nil
-	self.crafting_result = nil
 	--
 	self.signals = {
 		map_btn = false,
