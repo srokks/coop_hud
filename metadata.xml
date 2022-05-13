@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <metadata>
-	<name>Coop HUD *FIXES*</name>
+	<name>Coop HUD *WIP*</name>
 	<directory>coop_hud</directory>
 	<id>2731267631</id>
 	<description>
@@ -41,6 +41,13 @@
 		[*] Tainted ??? support - show spells and Hold up to 4 players
 		[*] Can now turn off my stuff page if annoying
 		[/list]
+		[*] Tainted Support:
+		[list]
+		[*] Tainted Isaak support - up to 4 players
+		[*] Forgotten - Lost - full support
+		[*] Tainted ??? support - show spells and Hold up to 4 players
+		[*] Can now turn off my stuff page if annoying
+		[/list]
 		[*] Vanilla like prompts (using cards/ pills/ active items/ transformations ) with color of player
 		[*] Stats - just like vanilla FoundHUD stat display:
 		[list]
@@ -52,20 +59,20 @@
 		[/list]
 		[*] ExtraHUD - hold map button to trigger my stuff page:
 		[list]
-			[*] Shows collected passive collectibles and gulped trinkets
-			[*] Colorful page color to recognize from other players
-			[*] Scalable item sprites according to sum of collected items
-			[*] Supports up to 136 collected item - earliest collected items won't be show
+		[*] Shows collected passive collectibles and gulped trinkets
+		[*] Colorful page color to recognize from other players
+		[*] Scalable item sprites according to sum of collected items
+		[*] Supports up to 136 collected item - earliest collected items won't be show
 		[/list]
 		[/list]
 		[h2] Planned features/ not implemented yet[/h2]
 		[list]
-			[*] Jacob and Essau - show Essau passive items
-			[*] Gideon/Greed Wave Counter
-			[*] Destination icons
-			[*] Small HUD - customizable positions
-			[*] Tainted Maggy - pulsing hearts animation
-			[*] Tainted Cain - bag of crafting
+		[*] Jacob and Essau - show Essau passive items
+		[*] Gideon/Greed Wave Counter
+		[*] Destination icons
+		[*] Small HUD - customizable positions
+		[*] Tainted Maggy - pulsing hearts animation
+		[*] Tainted Cain - bag of crafting
 			[*] Bag of crafting for other players
 		[/list]
 		[h2] What this mod lack of[/h2]
