@@ -751,6 +751,7 @@ function coopHUD.Heart:update()
 		self.overlay = overlay
 		self.sprite = self:getSprite()
 	end
+	self.sprite = self:getSprite()
 end
 function coopHUD.Heart:render(pos, scale, dim)
 	local offset = Vector(0, 0)
@@ -789,10 +790,10 @@ setmetatable(coopHUD.HeartTable, {
 function coopHUD.HeartTable.new(entPlayer)
 	local self = setmetatable({}, coopHUD.HeartTable)
 	self.entPlayer = entPlayer
-	self.max_health_cap = 12
 	self.total_hearts = math.ceil((self.entPlayer:GetEffectiveMaxHearts() + self.entPlayer:GetSoulHearts()) / 2)
-	for i = 0, self.max_health_cap do
-		self[i] = coopHUD.Heart(self, i)
+	self.hearts = {}
+	for i = 0, self.total_hearts do
+		self.hearts[i] = coopHUD.Heart(self, i)
 	end
 	return self
 end
@@ -826,9 +827,11 @@ function coopHUD.HeartTable:render(pos, mirrored, scale, down_anchor, dim)
 		rows = rows * -1.5
 	end
 	-- RENDER
-	for i = 0, self.max_health_cap do
-		local temp_pos = Vector(init_pos.X + temp_off.X, init_pos.Y + temp_off.Y)
-		temp_off = self[i]:render(temp_pos, scale, dim)
+	for i = 0, self.total_hearts do
+		if self.hearts[i] then
+			local temp_pos = Vector(init_pos.X + temp_off.X, init_pos.Y + temp_off.Y)
+			temp_off = self.hearts[i]:render(temp_pos, scale, dim)
+		end
 	end
 	--
 	return Vector(12 * scale.X * cols, 12 * scale.Y * rows)
@@ -838,8 +841,9 @@ function coopHUD.HeartTable:update()
 	if self.total_hearts ~= temp_total_hearts then
 		self.total_hearts = temp_total_hearts
 	end
+	--self.hearts = {}
 	for i = 0, self.total_hearts do
-		self[i]:update()
+		self.hearts[i] = coopHUD.Heart(self, i)
 	end
 end
 --
