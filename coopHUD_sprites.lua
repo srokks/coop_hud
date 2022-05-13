@@ -1300,7 +1300,7 @@ function coopHUD.Stat:render(pos, mirrored, vertical, only_num)
 		-- STAT.Diff - render
 		if self.diff then
 			local dif_color = KColor(0, 1, 0, 0.7) -- green
-			local dif_string = string.format("%.1f", self.diff)
+			local dif_string = string.format("%.2f", self.diff)
 			-- Difference Render
 			local attitude = self:getAttitude() -- holds true if difference is positive and false if negative
 			if attitude then
