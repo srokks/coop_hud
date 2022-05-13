@@ -231,6 +231,30 @@ if ModConfigMenu then
 			return "Show  name under player"
 		end
 	})
+	-- h trigger
+	ModConfigMenu.AddSetting(mod_name, "General", {
+		Type = ModConfigMenu.OptionType.BOOLEAN,
+		CurrentSetting = function()
+			return coopHUD.options.h_trigger
+		end,
+		Default = coopHUD.options.h_trigger,
+
+		Display = function()
+			local onOff = "Off"
+			if coopHUD.options.h_trigger then
+				onOff = "On"
+			end
+
+			return "'h' trigger: " .. onOff
+		end,
+		OnChange = function(currentBool)
+			coopHUD.options.h_trigger = currentBool
+			coopHUD.save_options()
+		end,
+		Info = function()
+			return "Toggle 'h' trigger for show HUD"
+		end
+	})
 	-- __ Stats
 	ModConfigMenu.AddTitle(mod_name, 'Stats', 'Stats')
 	-- stats.show
