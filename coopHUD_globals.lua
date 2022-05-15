@@ -1,5 +1,4 @@
---TODO: realease name
-coopHUD.VERSION = '0.6.1-PROD_BoC' --DEBUG: test name for in game recognition
+coopHUD.VERSION = '0.6.2-STEAM' --DEBUG: test name for in game recognition
 coopHUD.showExtraInfo = false
 coopHUD.HUD_table = {}
 coopHUD.signals = {
@@ -18,6 +17,7 @@ coopHUD.options = {
 	colorful_stuff_page = true,
 	show_player_names = true,
 	show_my_stuff = true,
+	h_trigger = false,
 	stats = {
 		show = true,
 		hide_in_battle = true,

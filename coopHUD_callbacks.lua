@@ -407,11 +407,13 @@ end, EntityType.ENTITY_KNIFE)
 local btn_held = 0
 function coopHUD.inputs_signals()
 	-- Trigger for turning on/off coop hud on `H` key
-	if Input.IsButtonTriggered(Keyboard.KEY_H, 0) then
-		if coopHUD.options.onRender then
-			coopHUD.options.onRender = false
-		else
-			coopHUD.options.onRender = true
+	if coopHUD.options.h_trigger then
+		if Input.IsButtonTriggered(Keyboard.KEY_H, 0) then
+			if coopHUD.options.onRender then
+				coopHUD.options.onRender = false
+			else
+				coopHUD.options.onRender = true
+			end
 		end
 	end
 	-- Trigger for turning on/off timer on `T` key

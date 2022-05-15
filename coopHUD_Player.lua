@@ -102,6 +102,9 @@ function coopHUD.Player:update()
 	if self.controller_index ~= self.entPlayer.ControllerIndex then
 		self.controller_index = self.entPlayer.ControllerIndex
 	end
+	if self.entPlayer:GetPlayerType() ~= Isaac.GetPlayer(self.game_index):GetPlayerType() then
+		self.entPlayer = Isaac.GetPlayer(self.game_index)
+	end
 	self.active_item:update()
 	self.schoolbag_item:update()
 	self.first_trinket:update()

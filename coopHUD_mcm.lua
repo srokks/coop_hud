@@ -59,14 +59,13 @@ coopHUD:AddCallback(ModCallbacks.MC_PRE_GAME_EXIT, function()
 end)
 if ModConfigMenu then
 	local mod_name = "Coop HUD"
-	--= Used to reset the config, remove on retail.
+	--= DEBUG: Used to reset the config, remove on retail.
 	local categoryToChange = ModConfigMenu.GetCategoryIDByName(mod_name)
 	if categoryToChange then
 		ModConfigMenu.MenuData[categoryToChange] = {}
 		ModConfigMenu.MenuData[categoryToChange].Name = tostring(mod_name)
 		ModConfigMenu.MenuData[categoryToChange].Subcategories = {}
 	end
-	--/
 	ModConfigMenu.UpdateCategory(mod_name, {
 		Info = {
 			"coopHUD Settings.",
@@ -229,6 +228,30 @@ if ModConfigMenu then
 		end,
 		Info = function()
 			return "Show  name under player"
+		end
+	})
+	-- h trigger
+	ModConfigMenu.AddSetting(mod_name, "General", {
+		Type = ModConfigMenu.OptionType.BOOLEAN,
+		CurrentSetting = function()
+			return coopHUD.options.h_trigger
+		end,
+		Default = coopHUD.options.h_trigger,
+
+		Display = function()
+			local onOff = "Off"
+			if coopHUD.options.h_trigger then
+				onOff = "On"
+			end
+
+			return "'h' trigger: " .. onOff
+		end,
+		OnChange = function(currentBool)
+			coopHUD.options.h_trigger = currentBool
+			coopHUD.save_options()
+		end,
+		Info = function()
+			return "Toggle 'h' trigger for show HUD"
 		end
 	})
 	-- __ Stats

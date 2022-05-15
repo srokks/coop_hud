@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <metadata>
-<!--TODO: realease name-->
-	<name>Coop HUD *PROD_BoC*</name>
+	<name>Coop HUD *WIP*</name>
 	<directory>coop_hud</directory>
-	<id></id>
+	<id>2731267631</id>
 	<description>
 		[h1]Coop HUD - proper HUD for coop[/h1]
 		Mod renders player items/trinkets/stats and more for up to 4 coop players.
@@ -13,12 +12,13 @@
 		[h3] [b] MOD IS STILL DEVELOPED PLEASE SUBMIT ANY WEIR BEHAVIOUR ( weird positions/ console errors/ log files)
 		in Bugs topic[/b] [/h3]
 		[h2] What new:[/h2]
-[list]
-		[*] Forgotten - Lost - full support
-		[*] Tainted ??? support - show  spells and Hold up to 4 players
-		[*] Tainted Izaak support - up to 4 players
-		[*] Can now turn off my stuff page if annoying
-[/list]
+		[list]
+		[*] can now turn off 'H' keyboard trigger
+		[*] fixed Forgotten/Lost broken hearts
+		[*] fixed Maggy + Birthright broken hearts
+		[*] fixed broken item bar when overloaded
+		[*] fixed no refreshing stats on player change (Forgotten/Lost - T.Lazarus + Flip)
+		[/list]
 		[h2] What this mod do[/h2]
 		[list]
 		[*] Renders proper HUD for coop/multiplayer up to 4 players
@@ -27,38 +27,52 @@
 		[*] Bethany charges/ colored charge bar
 		[*] Jacob/Essau: full support for up to 4 Jacob/Essau pairs on screen:
 		[list]
-			[*] Shows full and clear Jacob Essau active items/trinkets/pockets on screen
-			[*] Shows Essau stats:
-			[list]
-				[*] When more than 2 players: on drop button - switched with main
-				[*] With less then 2 players: under main character stats
-			[/list]
+		[*] Shows full and clear Jacob Essau active items/trinkets/pockets on screen
+		[*] Shows Essau stats:
+		[list]
+		[*] When more than 2 players: on drop button - switched with main
+		[*] With less then 2 players: under main character stats
+		[/list]
+		[/list]
+		[*] Tainted Support:
+		[list]
+		[*] Tainted Isaak support - up to 4 players
+		[*] Forgotten - Lost - full support
+		[*] Tainted ??? support - show spells and Hold up to 4 players
+		[*] Can now turn off my stuff page if annoying
+		[/list]
+		[*] Tainted Support:
+		[list]
+		[*] Tainted Isaak support - up to 4 players
+		[*] Forgotten - Lost - full support
+		[*] Tainted ??? support - show spells and Hold up to 4 players
+		[*] Can now turn off my stuff page if annoying
 		[/list]
 		[*] Vanilla like prompts (using cards/ pills/ active items/ transformations ) with color of player
 		[*] Stats - just like vanilla FoundHUD stat display:
-			[list]
-			[*] Show stats up to 4 players
-			[*] Highlight on map button
-			[*] Stats colors - can turn on/off
-			[*] Hide stats on battle - can turn on/off
-			[*] Angel/Devil/Planetarium chances - with customizable positions
-			[/list]
+		[list]
+		[*] Show stats up to 4 players
+		[*] Highlight on map button
+		[*] Stats colors - can turn on/off
+		[*] Hide stats on battle - can turn on/off
+		[*] Angel/Devil/Planetarium chances - with customizable positions
+		[/list]
 		[*] ExtraHUD - hold map button to trigger my stuff page:
 		[list]
-			[*] Shows collected passive collectibles and gulped trinkets
-			[*] Colorful page color to recognize from other players
-			[*] Scalable item sprites according to sum of collected items
-			[*] Supports up to 136 collected item - earliest collected items won't be show
+		[*] Shows collected passive collectibles and gulped trinkets
+		[*] Colorful page color to recognize from other players
+		[*] Scalable item sprites according to sum of collected items
+		[*] Supports up to 136 collected item - earliest collected items won't be show
 		[/list]
 		[/list]
 		[h2] Planned features/ not implemented yet[/h2]
 		[list]
-			[*] Jacob and Essau - show Essau passive items
-			[*] Gideon/Greed Wave Counter
-			[*] Destination icons
-			[*] Small HUD - customizable positions
-			[*] Tainted Maggy - pulsing hearts animation
-			[*] Tainted Cain - bag of crafting
+		[*] Jacob and Essau - show Essau passive items
+		[*] Gideon/Greed Wave Counter
+		[*] Destination icons
+		[*] Small HUD - customizable positions
+		[*] Tainted Maggy - pulsing hearts animation
+		[*] Tainted Cain - bag of crafting
 			[*] Bag of crafting for other players
 		[/list]
 		[h2] What this mod lack of[/h2]
@@ -96,8 +110,7 @@
 		his mods which helped in developing this mod
 		[/list]
 	</description>
-	<!--TODO: realease ver-->
-	<version>0.6.1</version>
+	<version>0.6.2</version>
 	<visibility>Public</visibility>
 	<tag id="Lua"/>
 	<tag id="Tweaks"/>
