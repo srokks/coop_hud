@@ -1,3 +1,16 @@
+include("sprites.Collectibles.lua")
+include("sprites.Hearts.lua")
+include("sprites.Inventory.lua")
+include("sprites.InventoryItem.lua")
+include("sprites.Item.lua")
+include("sprites.PlayerHead.lua")
+include("sprites.Pocket.lua")
+include("sprites.Poops.lua")
+include("sprites.RunInfo.lua")
+include("sprites.Stat.lua")
+include("sprites.Streak.lua")
+include("sprites.Trinket.lua")
+--
 coopHUD.Player = {}
 coopHUD.Player.__index = coopHUD.Player
 setmetatable(coopHUD.Player, {
