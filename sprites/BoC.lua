@@ -1,22 +1,27 @@
-coopHUD.InventoryItem = {}
-coopHUD.InventoryItem.__index = coopHUD.InventoryItem
-setmetatable(coopHUD.InventoryItem, {
+coopHUD.BoC = {}
+coopHUD.BoC.__index = coopHUD.BoC
+coopHUD.BoC.Item = {}
+coopHUD.BoC.Item.__index = coopHUD.BoC.Item
+setmetatable(coopHUD.BoC.Item, {
 	__call = function(cls, ...)
 		return cls.new(...)
 	end,
 })
-function coopHUD.InventoryItem.new(entity)
-	local self = setmetatable({}, coopHUD.InventoryItem)
-	--self.variant = entity.Variant
-	--self.sub_type = entity.SubType
-	print(entity)
+function coopHUD.BoC.Item.new(id)
+	local self = setmetatable({}, coopHUD.BoC.Item)
+	self.id = id
+	if self.id == nil then return nil end
+	self.value = self.getItemValue(self)
+	self.sprite = self.getSprite(self)
+	return self
 end
-
 ---coopHUD.getCraftingItemId
 ---@param Variant Entity.Variant
 ---@param Variant Entity.SubType
 ---@return table with ids of BoC components
-function coopHUD.InventoryItem.getCraftingItemId()
+function coopHUD.BoC.Item.getCraftingItemId(entity)
+	local Variant = entity.Variant
+	local SubType = entity.SubType
 	local pickupIDLookup = {
 		["10.1"] = {1}, -- Red heart
 		["10.2"] = {1}, -- half heart
@@ -81,4 +86,48 @@ function coopHUD.InventoryItem.getCraftingItemId()
 		end
 	end
 	return nil
+end
+function coopHUD.BoC.Item.getItemValue(self)
+	local pickupValues = {
+		0x00000000, -- 0 None
+		-- Hearts
+		0x00000001, -- 1 Red Heart
+		0x00000004, -- 2 Soul Heart
+		0x00000005, -- 3 Black Heart
+		0x00000005, -- 4 Eternal Heart
+		0x00000005, -- 5 Gold Heart
+		0x00000005, -- 6 Bone Heart
+		0x00000001, -- 7 Rotten Heart
+		-- Pennies
+		0x00000001, -- 8 Penny
+		0x00000003, -- 9 Nickel
+		0x00000005, -- 10 Dime
+		0x00000008, -- 11 Lucky Penny
+		-- Keys
+		0x00000002, -- 12 Key
+		0x00000007, -- 13 Golden Key
+		0x00000005, -- 14 Charged Key
+		-- Bombs
+		0x00000002, -- 15 Bomb
+		0x00000007, -- 16 Golden Bomb
+		0x0000000a, -- 17 Giga Bomb
+		-- Batteries
+		0x00000002, -- 18 Micro Battery
+		0x00000004, -- 19 Lil' Battery
+		0x00000008, -- 20 Mega Battery
+		-- Usables
+		0x00000002, -- 21 Card
+		0x00000002, -- 22 Pill
+		0x00000004, -- 23 Rune
+		0x00000004, -- 24 Dice Shard
+		0x00000002, -- 25 Cracked Key
+		-- Added in Update
+		0x00000007, -- 26 Golden Penny
+		0x00000007, -- 27 Golden Pill
+		0x00000007, -- 28 Golden Battery
+		0x00000000, -- 29 Tainted ??? Poop
+
+		0x00000001,
+	}
+	return pickupValues[self.id]
 end
