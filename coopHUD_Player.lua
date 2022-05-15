@@ -1,7 +1,7 @@
 include("sprites.Collectibles.lua")
 include("sprites.Hearts.lua")
 include("sprites.Inventory.lua")
-include("sprites.InventoryItem.lua")
+include("sprites.BoC.lua")
 include("sprites.Item.lua")
 include("sprites.PlayerHead.lua")
 include("sprites.Pocket.lua")
