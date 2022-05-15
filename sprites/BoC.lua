@@ -155,3 +155,33 @@ function coopHUD.BoC.Item:render(pos, mirrored, scale, down_anchor, dim)
 	end
 	return off
 end
+function coopHUD.BoC:render(player, pos, mirrored, down_anchor)
+	local init_pos = Vector(pos.X, pos.Y + 2)
+	if down_anchor then
+		init_pos.Y = init_pos.Y - 22
+	end
+	if mirrored then
+		init_pos.X = init_pos.X - 76
+	end
+	-- renders items
+	local temp_pos = Vector(init_pos.X, init_pos.Y)
+	for i = 1, 8 do
+		if player.bag_of_crafting[i] ~= nil then
+			local off = player.bag_of_crafting[i]:render(temp_pos) -- renders BoC.Item
+			temp_pos.X = temp_pos.X + off.X
+		else
+			local off = coopHUD.BoC.EmptyItem:render(temp_pos) -- renders empty item spot
+			temp_pos.X = temp_pos.X + off.X
+		end
+		if i == 4 then
+			temp_pos = Vector(init_pos.X, init_pos.Y + 10)
+		end
+	end
+	-- renders result box
+	--TODO: dim when no result item
+	temp_pos = Vector(init_pos.X + 60, init_pos.Y + 6)
+	coopHUD.BoC.Result:render(temp_pos)
+end
+coopHUD.BoC.EmptyItem = coopHUD.BoC.Item(0)
+coopHUD.BoC.Result = coopHUD.BoC.Item(0)
+coopHUD.BoC.Result.sprite:SetFrame("Result", 0)

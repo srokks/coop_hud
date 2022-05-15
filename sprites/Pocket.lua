@@ -160,6 +160,9 @@ function coopHUD.Pocket:render(pos, mirrored, scale, down_anchor, dim)
 		if self.item and self.item.id == CollectibleType.COLLECTIBLE_HOLD and self.parent.poops then
 			offset.X = offset.X + self.parent.poops:render(Vector(pos.X + offset.X, pos.Y), mirrored, scale,
 			                                               down_anchor).X
+		elseif self.item and self.item.id == CollectibleType.COLLECTIBLE_BAG_OF_CRAFTING then
+			--TODO: render bag of crafting elements and result
+			coopHUD.BoC:render(self.parent, Vector(pos.X + offset.X, pos.Y), mirrored, down_anchor)
 		else
 			local text = self.name
 			if Input.IsActionPressed(ButtonAction.ACTION_MAP, self.parent.controller_index) then
