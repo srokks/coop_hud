@@ -36,18 +36,19 @@ function coopHUD.save_options()
 				table.insert(gulped_trinkets,
 				             {coopHUD.players[i].gulped_trinkets[j].type, coopHUD.players[i].gulped_trinkets[j].id})
 			end
+			-- save bag of crafting
+			local bag_of_crafting = {}
+			if coopHUD.players[i].bag_of_crafting ~= nil then
+				for j = 1, #coopHUD.players[i].bag_of_crafting do
+					table.insert(bag_of_crafting, coopHUD.players[i].bag_of_crafting[j].id)
+				end
+			end
+			-- save all player infos
 			players[i] = {collectibles = collectibles,
 			              gulped_trinkets = gulped_trinkets,
-			              hold_spell = coopHUD.players[i].hold_spell}
+			              hold_spell = coopHUD.players[i].hold_spell,
+			              bag_of_crafting = bag_of_crafting}
 		end
-		-- save player bag of crafting
-		--[[local bag_of_crafting = {}
-		if coopHUD.players[i].bag_of_crafting ~= nil then
-			for j = 1, #coopHUD.players[i].bag_of_crafting do
-				table.insert(bag_of_crafting, coopHUD.players[i].bag_of_crafting[j].id)
-			end
-		end]]
-		--
 	end
 	save.run.players = players
 	coopHUD:SaveData(json.encode(save))

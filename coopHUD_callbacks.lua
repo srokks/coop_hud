@@ -40,6 +40,10 @@ function coopHUD.on_start(_, cont)
 					end
 				end
 				coopHUD.players[player_no].hold_spell = player_save.hold_spell
+				-- Bag of crafting
+				for _, item_id in pairs(player_save.bag_of_crafting) do
+					table.insert(coopHUD.players[player_no].bag_of_crafting, coopHUD.BoC.Item(item_id))
+				end
 			end
 			--
 		end
