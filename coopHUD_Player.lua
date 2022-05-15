@@ -6,9 +6,7 @@ include("sprites.Item.lua")
 include("sprites.PlayerHead.lua")
 include("sprites.Pocket.lua")
 include("sprites.Poops.lua")
-include("sprites.RunInfo.lua")
 include("sprites.Stat.lua")
-include("sprites.Streak.lua")
 include("sprites.Trinket.lua")
 --
 coopHUD.Player = {}

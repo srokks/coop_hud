@@ -1,3 +1,6 @@
+include("sprites.RunInfo.lua")
+include("sprites.Streak.lua")
+--
 coopHUD.HUD = {}
 coopHUD.HUD.fonts = {}
 coopHUD.HUD.fonts.lua_mini = Font()
