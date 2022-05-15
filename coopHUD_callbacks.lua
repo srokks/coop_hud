@@ -334,9 +334,10 @@ coopHUD:AddCallback(ModCallbacks.MC_POST_KNIFE_INIT, function(_, entity)
 		-- pass all pickup entities
 		if e:GetSprite():GetAnimation() ~= "Collect" then
 			-- checks is not in collect state
-			--if coopHUD.getCraftingItemId(e.Variant, e.SubType) ~= nil then
-			--	table.insert(pickupsOnInit, e)  -- adds it to pickupsOnInit table
-			--end
+			if coopHUD.BoC.Item.getCraftingItemId(e) ~= nil then
+				-- if BoC returns nil means that entity not usable with BoC
+				table.insert(pickupsOnInit, e)  -- adds it to pickupsOnInit table
+			end
 		end
 	end
 end, 4)
@@ -403,7 +404,17 @@ coopHUD:AddCallback(ModCallbacks.MC_POST_ENTITY_REMOVE, function(_, bag)
 		if e:GetSprite():GetAnimation() == "Collect" then
 			local player_index = coopHUD.getPlayerNumByControllerIndex(bag:GetLastParent():ToPlayer().ControllerIndex)
 			local player_bag = coopHUD.players[player_index].bag_of_crafting
-			table.foreach(coopHUD.InventoryItem(e))
+			for i, item_id in ipairs(coopHUD.BoC.Item.getCraftingItemId(e)) do
+				if #player_bag >= 8 then
+					-- if bag is full
+					local new_bag = {}
+					for i = 2, #player_bag do
+						table.insert(new_bag, player_bag[i])
+					end
+					coopHUD.players[player_index].bag_of_crafting = new_bag
+				end
+				table.insert(coopHUD.players[player_index].bag_of_crafting, coopHUD.BoC.Item(item_id))
+			end
 		end
 	end
 end, EntityType.ENTITY_KNIFE)
