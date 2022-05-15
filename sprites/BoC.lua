@@ -1,3 +1,5 @@
+local anim_path = "gfx/ui/ui_crafting.anm2"
+--
 coopHUD.BoC = {}
 coopHUD.BoC.__index = coopHUD.BoC
 coopHUD.BoC.Item = {}
@@ -130,4 +132,26 @@ function coopHUD.BoC.Item.getItemValue(self)
 		0x00000001,
 	}
 	return pickupValues[self.id]
+end
+function coopHUD.BoC.Item.getSprite(self)
+	local sprite = Sprite()
+	sprite:Load(anim_path, true)
+	sprite:SetFrame('Idle', self.id)
+	return sprite
+end
+function coopHUD.BoC.Item:render(pos, mirrored, scale, down_anchor, dim)
+	local temp_pos = Vector(pos.X + 4, pos.Y + 4)
+	local off = Vector(0, 0)
+	local pivot = Vector(10, 10)
+	if mirrored then
+	end
+	if down_anchor then
+		temp_pos.Y = temp_pos.Y - 10
+		pivot.Y = pivot.Y * -1
+	end
+	if self.sprite then
+		off = off + pivot
+		self.sprite:Render(temp_pos)
+	end
+	return off
 end
