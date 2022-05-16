@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <metadata>
-	<name>Coop HUD *WIP*</name>
+	<name>Coop HUD *BoC*</name>
 	<directory>coop_hud</directory>
 	<id>2731267631</id>
 	<description>
@@ -110,7 +110,7 @@
 		his mods which helped in developing this mod
 		[/list]
 	</description>
-	<version>0.6.2</version>
+	<version>0.7</version>
 	<visibility>Public</visibility>
 	<tag id="Lua"/>
 	<tag id="Tweaks"/>
