@@ -153,17 +153,17 @@ coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, function(_, entPlayer)
 			else
 				-- triggers only for passive items and familiars
 				-- holds non roll able items and adds it to gulped_trinkets
-				local non_roll = {[CollectibleType.COLLECTIBLE_KEY_PIECE_1] = true,
-				                  [CollectibleType.COLLECTIBLE_KEY_PIECE_2] = true,
-				                  [CollectibleType.COLLECTIBLE_MISSING_NO] = true,
-				                  [CollectibleType.COLLECTIBLE_POLAROID] = true,
-				                  [CollectibleType.COLLECTIBLE_NEGATIVE] = true,
-				                  [CollectibleType.COLLECTIBLE_DAMOCLES] = true,
-				                  [CollectibleType.COLLECTIBLE_KNIFE_PIECE_1] = true,
-				                  [CollectibleType.COLLECTIBLE_KNIFE_PIECE_2] = true,
-				                  [CollectibleType.COLLECTIBLE_DOGMA] = true,
-				                  [CollectibleType.COLLECTIBLE_DADS_NOTE] = true,
-				                  [CollectibleType.COLLECTIBLE_BIRTHRIGHT] = true, }
+				local non_roll = { [CollectibleType.COLLECTIBLE_KEY_PIECE_1]   = true,
+				                   [CollectibleType.COLLECTIBLE_KEY_PIECE_2]   = true,
+				                   [CollectibleType.COLLECTIBLE_MISSING_NO]    = true,
+				                   [CollectibleType.COLLECTIBLE_POLAROID]      = true,
+				                   [CollectibleType.COLLECTIBLE_NEGATIVE]      = true,
+				                   [CollectibleType.COLLECTIBLE_DAMOCLES]      = true,
+				                   [CollectibleType.COLLECTIBLE_KNIFE_PIECE_1] = true,
+				                   [CollectibleType.COLLECTIBLE_KNIFE_PIECE_2] = true,
+				                   [CollectibleType.COLLECTIBLE_DOGMA]         = true,
+				                   [CollectibleType.COLLECTIBLE_DADS_NOTE]     = true,
+				                   [CollectibleType.COLLECTIBLE_BIRTHRIGHT]    = true, }
 				if non_roll[coopHUD.players[player_index].temp_item.ID] then
 					table.insert(coopHUD.players[player_index].gulped_trinkets,
 					             coopHUD.Item(coopHUD.players[player_index], -1,
@@ -249,17 +249,17 @@ coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
 			                    if coopHUD.players[player_index].entPlayer:HasCollectible(i) then
 				                    -- skips active items
 				                    if Isaac.GetItemConfig():GetCollectible(i).Type ~= ItemType.ITEM_ACTIVE then
-					                    local non_roll = {[CollectibleType.COLLECTIBLE_KEY_PIECE_1] = true,
-					                                      [CollectibleType.COLLECTIBLE_KEY_PIECE_2] = true,
-					                                      [CollectibleType.COLLECTIBLE_MISSING_NO] = true,
-					                                      [CollectibleType.COLLECTIBLE_POLAROID] = true,
-					                                      [CollectibleType.COLLECTIBLE_NEGATIVE] = true,
-					                                      [CollectibleType.COLLECTIBLE_DAMOCLES] = true,
-					                                      [CollectibleType.COLLECTIBLE_KNIFE_PIECE_1] = true,
-					                                      [CollectibleType.COLLECTIBLE_KNIFE_PIECE_2] = true,
-					                                      [CollectibleType.COLLECTIBLE_DOGMA] = true,
-					                                      [CollectibleType.COLLECTIBLE_DADS_NOTE] = true,
-					                                      [CollectibleType.COLLECTIBLE_BIRTHRIGHT] = true, }
+					                    local non_roll = { [CollectibleType.COLLECTIBLE_KEY_PIECE_1]   = true,
+					                                       [CollectibleType.COLLECTIBLE_KEY_PIECE_2]   = true,
+					                                       [CollectibleType.COLLECTIBLE_MISSING_NO]    = true,
+					                                       [CollectibleType.COLLECTIBLE_POLAROID]      = true,
+					                                       [CollectibleType.COLLECTIBLE_NEGATIVE]      = true,
+					                                       [CollectibleType.COLLECTIBLE_DAMOCLES]      = true,
+					                                       [CollectibleType.COLLECTIBLE_KNIFE_PIECE_1] = true,
+					                                       [CollectibleType.COLLECTIBLE_KNIFE_PIECE_2] = true,
+					                                       [CollectibleType.COLLECTIBLE_DOGMA]         = true,
+					                                       [CollectibleType.COLLECTIBLE_DADS_NOTE]     = true,
+					                                       [CollectibleType.COLLECTIBLE_BIRTHRIGHT]    = true, }
 					                    if not non_roll then
 						                    table.insert(coopHUD.players[player_index].collectibles,
 						                                 coopHUD.Item(coopHUD.players[player_index], -1, i))
@@ -318,181 +318,132 @@ coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
 		                    end
 	                    end
                     end, CollectibleType.COLLECTIBLE_BAG_OF_CRAFTING)
+--- BAG COLLECT LOGIC ---
 -- _____ Modified EID Wolsauge bag of crafting functions
--- Debug:changed pickupsOnInit to global:fixme: chage to local
-pickupsOnInit = {} -- holds all items in rooms whick can be collected by bag of crafting
----Function triggered when bag of crafting collecting beam is initiated
----connected to ModCallbacks.MC_POST_KNIFE_INIT
----it collect all pickup entities to maintain BoC collection
-coopHUD:AddCallback(ModCallbacks.MC_POST_KNIFE_INIT, function(_, entity)
-	if entity.Variant ~= 4 then
-		-- prevention from false init
-		return
+local pickups_collected = {} -- table of collected pickup indexes, TODO:reset each room
+local pickups_just_touched = {} -- flags of pickups a player/pickup-collector has touched, so the bag doesn't think it collected it
+coopHUD:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, function(_, pickup, collider, _)
+	if collider.Type == EntityType.ENTITY_PLAYER or collider.Type == EntityType.ENTITY_FAMILIAR or
+			collider.Type == EntityType.ENTITY_BUMBINO or collider.Type == EntityType.ENTITY_ULTRA_GREED then
+		pickups_just_touched[pickup.Index] = true
 	end
-	pickupsOnInit = {} --resets pickup entity table
-	for _, e in ipairs(Isaac.FindByType(EntityType.ENTITY_PICKUP, -1, -1, false, false)) do
-		-- pass all pickup entities
-		if e:GetSprite():GetAnimation() ~= "Collect" then
-			-- checks is not in collect state
-			if coopHUD.BoC.Item.getCraftingItemId(e) ~= nil then
-				-- if BoC returns nil means that entity not usable with BoC
-				table.insert(pickupsOnInit, e)  -- adds it to pickupsOnInit table
-			end
-		end
+end)
+---ModCallbacks.MC_PRE_ENTITY_SPAWN --
+last_bag = nil --holds last used bag of crafting, this is set by removed bag entity (beam) and by triggering to open a bag TODO: change to local, global for debug purposes
+---watches when bag of crafting collecting beam appears and sets last bag local variable to player index in coopHUD.players
+coopHUD:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, function(_, _, Variant, SubType, _, _, Spawner, _)
+	if Variant == 4 and SubType == 4 then
+		last_bag = coopHUD.getPlayerNumByControllerIndex(Spawner:ToPlayer().ControllerIndex)
 	end
-end, 4)
----@field coopHUD.getItemValue
----@param item_id table
----@return number value for BoC calculation
-function coopHUD.getItemValue(item_id)
-	local pickupValues = {
-		0x00000000, -- 0 None
-		-- Hearts
-		0x00000001, -- 1 Red Heart
-		0x00000004, -- 2 Soul Heart
-		0x00000005, -- 3 Black Heart
-		0x00000005, -- 4 Eternal Heart
-		0x00000005, -- 5 Gold Heart
-		0x00000005, -- 6 Bone Heart
-		0x00000001, -- 7 Rotten Heart
-		-- Pennies
-		0x00000001, -- 8 Penny
-		0x00000003, -- 9 Nickel
-		0x00000005, -- 10 Dime
-		0x00000008, -- 11 Lucky Penny
-		-- Keys
-		0x00000002, -- 12 Key
-		0x00000007, -- 13 Golden Key
-		0x00000005, -- 14 Charged Key
-		-- Bombs
-		0x00000002, -- 15 Bomb
-		0x00000007, -- 16 Golden Bomb
-		0x0000000a, -- 17 Giga Bomb
-		-- Batteries
-		0x00000002, -- 18 Micro Battery
-		0x00000004, -- 19 Lil' Battery
-		0x00000008, -- 20 Mega Battery
-		-- Usables
-		0x00000002, -- 21 Card
-		0x00000002, -- 22 Pill
-		0x00000004, -- 23 Rune
-		0x00000004, -- 24 Dice Shard
-		0x00000002, -- 25 Cracked Key
-		-- Added in Update
-		0x00000007, -- 26 Golden Penny
-		0x00000007, -- 27 Golden Pill
-		0x00000007, -- 28 Golden Battery
-		0x00000000, -- 29 Tainted ??? Poop
-
-		0x00000001,
-	}
-	return pickupValues[item_id]
-end
---- BAG COLLECT LOGIC
---- Runs through pickupsOnInit and add to player bag of crafting that element
+end)
+---ModCallbacks.MC_POST_ENTITY_REMOVE
+---watches when Bag of Crafting collecting beam ent is removed and resets las bag value
 coopHUD:AddCallback(ModCallbacks.MC_POST_ENTITY_REMOVE, function(_, bag)
-	if bag.Variant ~= 4 or bag.SubType ~= 4 then
-		return
+	if bag.Variant == 4 and bag.SubType == 4 and last_bag ~= nil then
+		last_bag = nil
 	end
-	--
-	table.sort(pickupsOnInit, function(a, b)
-		return
-		a:GetSprite():GetFrame() > b:GetSprite():GetFrame() or
-				(a:GetSprite():GetFrame() == b:GetSprite():GetFrame() and a.Index < b.Index)
-	end)
-	for _, e in ipairs(pickupsOnInit) do
-		if e:GetSprite():GetAnimation() == "Collect" then
-			local player_index = coopHUD.getPlayerNumByControllerIndex(bag:GetLastParent():ToPlayer().ControllerIndex)
-			local player_bag = coopHUD.players[player_index].bag_of_crafting
-			for i, item_id in ipairs(coopHUD.BoC.Item.getCraftingItemId(e)) do
-				if #player_bag >= 8 then
-					-- if bag is full
-					local new_bag = {}
-					for i = 2, #player_bag do
-						table.insert(new_bag, player_bag[i])
+end)
+---ModCallbacks.MC_POST_PICKUP_UPDATE - bag of crafting collecting logic
+---function runs over all entities in room, check if them are in collect state and add to player bag
+---uses local last_bag variable as player index
+coopHUD:AddCallback(ModCallbacks.MC_POST_PICKUP_UPDATE, function()
+	for _, pickup in ipairs(Isaac.FindByType(EntityType.ENTITY_PICKUP, -1, -1, false, false)) do
+		if pickup:GetSprite():GetAnimation() == "Collect" and not pickups_collected[pickup.Index] then
+			pickups_collected[pickup.Index] = true
+			if not pickups_just_touched[pickup.Index] then
+				-- gets table of crafting items for BoC use
+				local craftingIDs = coopHUD.BoC.Item.getCraftingItemId(pickup)
+				if craftingIDs ~= nil then
+					for _, item_id in ipairs(craftingIDs) do
+						-- checks if bag is full
+						if #coopHUD.players[last_bag].bag_of_crafting >= 8 then
+							table.remove(coopHUD.players[last_bag].bag_of_crafting, 1)
+						end
+						-- inserts ito bag and BoC.Item
+						table.insert(coopHUD.players[last_bag].bag_of_crafting, coopHUD.BoC.Item(item_id))
+						coopHUD.BoC.update(coopHUD.players[last_bag])
 					end
-					coopHUD.players[player_index].bag_of_crafting = new_bag
 				end
-				table.insert(coopHUD.players[player_index].bag_of_crafting, coopHUD.BoC.Item(item_id))
 			end
 		end
+		pickups_just_touched[pickup.Index] = nil -- resets touched room pickups
 	end
-end, EntityType.ENTITY_KNIFE)
+end)
 -- INPUT TRIGGERS
 local btn_held = 0
 function coopHUD.inputs_signals()
-    -- Trigger for turning on/off coop hud on `H` key
-    if coopHUD.options.h_trigger then
-        if Input.IsButtonTriggered(Keyboard.KEY_H, 0) then
-            if coopHUD.options.onRender then
-                coopHUD.options.onRender = false
-            else
-                coopHUD.options.onRender = true
-            end
-        end
-    end
-    -- Trigger for turning on/off timer on `T` key
-    if Input.IsButtonTriggered(Keyboard.KEY_T, 0) then
-        if coopHUD.options.timer_always_on then
-            coopHUD.options.timer_always_on = false
-        else
-            coopHUD.options.timer_always_on = true
-        end
-    end
-    local mapPressed = false
-    for i = 0, Game():GetNumPlayers() - 1 do
-        local controller_index = Isaac.GetPlayer(i).ControllerIndex
-        local player_index = coopHUD.getPlayerNumByControllerIndex(controller_index)
-        if Input.IsActionPressed(ButtonAction.ACTION_MAP, controller_index) then
-            mapPressed = player_index
-        end
-        -- DROP ACTION
-        if Input.IsActionTriggered(ButtonAction.ACTION_DROP, controller_index) then
-            if coopHUD.players[player_index].entPlayer:GetPlayerType() == PlayerType.PLAYER_ISAAC_B then
-                if coopHUD.players[player_index].collectibles ~= nil then
-                    local collectibles = {}
-                    for i = 2, #coopHUD.players[player_index].collectibles do
-                        table.insert(collectibles, coopHUD.players[player_index].collectibles[i])
-                    end
-                    table.insert(collectibles, coopHUD.players[player_index].collectibles[1])
-                    coopHUD.players[player_index].collectibles = collectibles
-                end
-            end
-            if coopHUD.players[player_index].entPlayer:GetPlayerType() == PlayerType.PLAYER_CAIN_B then
-                --shift player bag of crafting if have
-                if coopHUD.players[player_index].bag_of_crafting ~= nil then
-                    local new_bag = {}
-                    for i = 2, #coopHUD.players[player_index].bag_of_crafting do
-                        table.insert(new_bag, coopHUD.players[player_index].bag_of_crafting[i])
-                    end
-                    table.insert(new_bag, coopHUD.players[player_index].bag_of_crafting[1])
-                    coopHUD.players[player_index].bag_of_crafting = new_bag
-                end
+	-- Trigger for turning on/off coop hud on `H` key
+	if coopHUD.options.h_trigger then
+		if Input.IsButtonTriggered(Keyboard.KEY_H, 0) then
+			if coopHUD.options.onRender then
+				coopHUD.options.onRender = false
+			else
+				coopHUD.options.onRender = true
+			end
+		end
+	end
+	-- Trigger for turning on/off timer on `T` key
+	if Input.IsButtonTriggered(Keyboard.KEY_T, 0) then
+		if coopHUD.options.timer_always_on then
+			coopHUD.options.timer_always_on = false
+		else
+			coopHUD.options.timer_always_on = true
+		end
+	end
+	local mapPressed = false
+	for i = 0, Game():GetNumPlayers() - 1 do
+		local controller_index = Isaac.GetPlayer(i).ControllerIndex
+		local player_index = coopHUD.getPlayerNumByControllerIndex(controller_index)
+		if Input.IsActionPressed(ButtonAction.ACTION_MAP, controller_index) then
+			mapPressed = player_index
+		end
+		-- DROP ACTION
+		if Input.IsActionTriggered(ButtonAction.ACTION_DROP, controller_index) then
+			if coopHUD.players[player_index].entPlayer:GetPlayerType() == PlayerType.PLAYER_ISAAC_B then
+				if coopHUD.players[player_index].collectibles ~= nil then
+					local collectibles = {}
+					for i = 2, #coopHUD.players[player_index].collectibles do
+						table.insert(collectibles, coopHUD.players[player_index].collectibles[i])
+					end
+					table.insert(collectibles, coopHUD.players[player_index].collectibles[1])
+					coopHUD.players[player_index].collectibles = collectibles
+				end
+			end
+			if coopHUD.players[player_index].entPlayer:GetPlayerType() == PlayerType.PLAYER_CAIN_B then
+				--shift player bag of crafting if have
+				if coopHUD.players[player_index].bag_of_crafting ~= nil then
+					local new_bag = {}
+					for i = 2, #coopHUD.players[player_index].bag_of_crafting do
+						table.insert(new_bag, coopHUD.players[player_index].bag_of_crafting[i])
+					end
+					table.insert(new_bag, coopHUD.players[player_index].bag_of_crafting[1])
+					coopHUD.players[player_index].bag_of_crafting = new_bag
+				end
 
-            end
-        end
-    end
-    -- MAP BUTTON
-    local pressTime = 0.5
-    if mapPressed then
-        btn_held = btn_held + 1 / 60
-        if btn_held > pressTime then
-            coopHUD.signals.map = mapPressed
-            coopHUD.Streak(true, coopHUD.Streak.FLOOR)
-            if btn_held > 1.5 then
-                if coopHUD.options.show_my_stuff then
-                    coopHUD.Collectibles(coopHUD.players[coopHUD.signals.map])
-                end
-            end
-            coopHUD.players[mapPressed].signals.map_btn = true
-        end
-    else
-        if coopHUD.signals.map then
-            coopHUD.players[coopHUD.signals.map].signals.map_btn = false
-        end
-        coopHUD.signals.map = false
-        btn_held = 0
-    end
+			end
+		end
+	end
+	-- MAP BUTTON
+	local pressTime = 0.5
+	if mapPressed then
+		btn_held = btn_held + 1 / 60
+		if btn_held > pressTime then
+			coopHUD.signals.map = mapPressed
+			coopHUD.Streak(true, coopHUD.Streak.FLOOR)
+			if btn_held > 1.5 then
+				if coopHUD.options.show_my_stuff then
+					coopHUD.Collectibles(coopHUD.players[coopHUD.signals.map])
+				end
+			end
+			coopHUD.players[mapPressed].signals.map_btn = true
+		end
+	else
+		if coopHUD.signals.map then
+			coopHUD.players[coopHUD.signals.map].signals.map_btn = false
+		end
+		coopHUD.signals.map = false
+		btn_held = 0
+	end
 end
 -- MAIN RENDER
 function coopHUD.render()
