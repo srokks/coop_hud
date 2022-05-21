@@ -202,6 +202,8 @@ function coopHUD.BoC.update(player)
 	if #player_bag == 8 then
 		local result = coopHUD.BoC.calculate(player)
 		player.crafting_result = coopHUD.Item(player, -1, result)
+	else
+		player.crafting_result = coopHUD.Item(player, -1, 0)
 	end
 end
 --

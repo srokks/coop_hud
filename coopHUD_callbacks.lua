@@ -329,7 +329,7 @@ coopHUD:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, function(_, pickup, co
 	end
 end)
 ---ModCallbacks.MC_PRE_ENTITY_SPAWN --
-last_bag = nil --holds last used bag of crafting, this is set by removed bag entity (beam) and by triggering to open a bag TODO: change to local, global for debug purposes
+local last_bag = nil --holds last used bag of crafting, this is set by removed bag entity (beam) and by triggering to open a bag
 ---watches when bag of crafting collecting beam appears and sets last bag local variable to player index in coopHUD.players
 coopHUD:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, function(_, _, Variant, SubType, _, _, Spawner, _)
 	if Variant == 4 and SubType == 4 then
@@ -465,10 +465,18 @@ function coopHUD.inputs_signals()
 			if pill_card_pressed and pill_held >= 30 and (string.match(animationName, "Walk")
 					and not string.match(animationName, "Pickup")
 					or (coopHUD.players[pill_card_pressed].entPlayer:GetCollectibleCount() ~= icount)) then
-				coopHUD.players[pill_card_pressed].bag_of_crafting = {}
-				--TODO: add collectible to inventory
-				--____ Flashes triggers streak text with picked up name
+				coopHUD.players[pill_card_pressed].bag_of_crafting = {} -- resets bag of crafting
+				--adds collectible to inventory
 				local item_queue = Isaac.GetItemConfig():GetCollectible(coopHUD.players[pill_card_pressed].crafting_result.id)
+				if item_queue.Type == ItemType.ITEM_ACTIVE then
+				elseif item_queue.Type == ItemType.ITEM_TRINKET then
+				else
+					-- normal characters add collectible
+					table.insert(coopHUD.players[pill_card_pressed].collectibles,
+					             coopHUD.Item(coopHUD.players[pill_card_pressed], -1,
+					                          item_queue.ID)) -- add picked up item to collectibles
+				end
+				--____ Flashes triggers streak text with picked up name
 				local streak_main_line = item_queue.Name
 				local streak_sec_line = item_queue.Description
 				if coopHUD.langAPI then

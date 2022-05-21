@@ -125,6 +125,7 @@ function coopHUD.Player:update()
 	self.third_pocket:update()
 	self.hearts:update()
 	self.big_hud = #coopHUD.players < 3 and not coopHUD.options.force_small_hud
+	coopHUD.BoC.update(self)
 end
 function coopHUD.Player:renderMain(pos, mirrored, scl, down_anchor)
 	local temp_pos = Vector(pos.X, pos.Y)
