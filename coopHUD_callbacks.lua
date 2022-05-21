@@ -371,6 +371,7 @@ coopHUD:AddCallback(ModCallbacks.MC_POST_PICKUP_UPDATE, function()
 end)
 -- INPUT TRIGGERS
 local btn_held = 0
+pill_held = 0 -- TODO: change to local in retail
 function coopHUD.inputs_signals()
 	-- Trigger for turning on/off coop hud on `H` key
 	if coopHUD.options.h_trigger then
@@ -391,6 +392,7 @@ function coopHUD.inputs_signals()
 		end
 	end
 	local mapPressed = false
+	local pill_card_pressed = false
 	for i = 0, Game():GetNumPlayers() - 1 do
 		local controller_index = Isaac.GetPlayer(i).ControllerIndex
 		local player_index = coopHUD.getPlayerNumByControllerIndex(controller_index)
@@ -422,6 +424,10 @@ function coopHUD.inputs_signals()
 
 			end
 		end
+		-- PILL CARD ACTION
+		if Input.IsActionPressed(ButtonAction.ACTION_PILLCARD, controller_index) then
+			pill_card_pressed = player_index
+		end
 	end
 	-- MAP BUTTON
 	local pressTime = 0.5
@@ -443,6 +449,29 @@ function coopHUD.inputs_signals()
 		end
 		coopHUD.signals.map = false
 		btn_held = 0
+	end
+	--
+	local icount = nil
+	-- Bag of crafting - creation item logic -- based on External Item Description mod by Wolsauge
+	if pill_card_pressed and coopHUD.players[pill_card_pressed].bag_of_crafting then
+		local animationName = coopHUD.players[pill_card_pressed].entPlayer:GetSprite():GetAnimation()
+		if pill_card_pressed and string.match(animationName, "PickupWalk")
+				and #coopHUD.players[pill_card_pressed].bag_of_crafting >= 8 then
+			pill_held = pill_held + 1
+			if pill_held < 30 then
+				icount = coopHUD.players[pill_card_pressed].entPlayer:GetCollectibleCount()
+			end
+		else
+			if pill_card_pressed and pill_held >= 30 and (string.match(animationName, "Walk")
+					and not string.match(animationName, "Pickup")
+					or (coopHUD.players[pill_card_pressed].entPlayer:GetCollectibleCount() ~= icount)) then
+				coopHUD.players[pill_card_pressed].bag_of_crafting = {}
+
+				coopHUD.BoC.update(coopHUD.players[pill_card_pressed])
+				pill_held = 0
+			else
+			end
+		end
 	end
 end
 -- MAIN RENDER
