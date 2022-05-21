@@ -466,7 +466,25 @@ function coopHUD.inputs_signals()
 					and not string.match(animationName, "Pickup")
 					or (coopHUD.players[pill_card_pressed].entPlayer:GetCollectibleCount() ~= icount)) then
 				coopHUD.players[pill_card_pressed].bag_of_crafting = {}
-
+				--TODO: add collectible to inventory
+				--____ Flashes triggers streak text with picked up name
+				local item_queue = Isaac.GetItemConfig():GetCollectible(coopHUD.players[pill_card_pressed].crafting_result.id)
+				local streak_main_line = item_queue.Name
+				local streak_sec_line = item_queue.Description
+				if coopHUD.langAPI then
+					--	 checks if langAPI loaded
+					if string.sub(streak_main_line, 0, 1) == "#" then
+						--if begins with # get name from api
+						streak_main_line = coopHUD.langAPI.getItemName(string.sub(streak_main_line, 2))
+					end
+					if string.sub(streak_sec_line, 0, 1) == "#" then
+						--if begins with # get desc from api
+						streak_sec_line = coopHUD.langAPI.getItemName(string.sub(streak_sec_line, 2))
+					end
+				end
+				-- triggers streak on item pickup
+				coopHUD.Streak(false, coopHUD.Streak.ITEM, streak_main_line, streak_sec_line, true,
+				               coopHUD.players[pill_card_pressed].font_color)
 				coopHUD.BoC.update(coopHUD.players[pill_card_pressed])
 				pill_held = 0
 			else
