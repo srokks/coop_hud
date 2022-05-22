@@ -320,7 +320,7 @@ function coopHUD.Item:render(pos, mirrored, scale, down_anchor, dim)
         end
         self.sprite.Scale = sprite_scale
         self.sprite:Render(temp_pos)
-        if self.id == CollectibleType.COLLECTIBLE_BAG_OF_CRAFTING then
+        if self.id == CollectibleType.COLLECTIBLE_BAG_OF_CRAFTING and self.slot == ActiveSlot.SLOT_PRIMARY then
             --renders bag of crafting result item
             if self.parent.crafting_result then
                 temp_pos = Vector(pos.X+5,pos.Y+8)

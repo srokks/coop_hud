@@ -469,7 +469,47 @@ function EID:simulateBagOfCrafting(componentsTable)
 
 	return compTotalWeight, poolString
 end
+local moddedCrafting = false
+function EID.GameStartCrafting()
+	for i=1, EID.XMLMaxItemID do
+		local item = EID.itemConfig:GetCollectible(i)
+		if item ~= nil then
+			CraftingItemQualities[item.ID] = item.Quality
+		end
+	end
+	if not EID:PlayersHaveCollectible(CollectibleType.COLLECTIBLE_TMTRAINER) then
+		-- Check for modded items past the known max item ID on game start (can also support game updates)
+		-- Only works if the new items are at Weight 1.0 in their item pools, but better than nothing
+		if EID.Config["BagOfCraftingModdedRecipes"] and EID.itemConfig:GetCollectible(EID.XMLMaxItemID+1) ~= nil and not moddedCrafting then
+			-- Items past max ID detected
+			CraftingMaxItemID = EID.XMLMaxItemID -- XMLMaxItemID is never modified
+			-- Add new item qualities
+			local coll = EID.itemConfig:GetCollectible(CraftingMaxItemID+1)
+			while coll ~= nil do
+				CraftingMaxItemID = CraftingMaxItemID + 1
+				CraftingItemQualities[coll.ID] = coll.Quality
+				coll = EID.itemConfig:GetCollectible(CraftingMaxItemID+1)
+			end
+			local itemPool = game:GetItemPool()
+			-- Add new items to the crafting item pools, assuming Weight 1.0
+			for poolNum,_ in pairs(poolToIcon) do
+				for i=1,EID.XMLMaxItemID do itemPool:AddRoomBlacklist(i) end
 
+				local collID = itemPool:GetCollectible(poolNum, false, 1, 25)
+				while collID ~= 25 and collID > 0 do
+					table.insert(CraftingItemPools[poolNum+1], {collID, 1.0})
+					itemPool:AddRoomBlacklist(collID)
+					collID = itemPool:GetCollectible(poolNum, false, 1, 25)
+				end
+
+				itemPool:ResetRoomBlacklist()
+			end
+			moddedCrafting = true
+		end
+
+		sortNeeded = true
+	end
+end
 -- The main function that takes 8 ingredients and tells you what collectible you will get in return4
 -- Only pass in a table with 8 valid ingredients!!!
 function EID:calculateBagOfCrafting(componentsTable)
@@ -496,7 +536,7 @@ function EID:calculateBagOfCrafting(componentsTable)
 	end
 
 	-- Count up the ingredients, and shift the RNG based on the components in the bag
-	customRNGSeed = lastSeedUsed
+	customRNGSeed = game:GetSeeds():GetStartSeed()
 	local compTotalWeight = 0
 	local compCounts = {}
 	for i = 1, #componentShifts do
@@ -604,77 +644,4 @@ function EID:calculateBagOfCrafting(componentsTable)
 		end
 	end
 end
-
-local function calcHeldItems()
-	EID.bagOfCraftingInventoryQuery = {}
-	for i = 0, game:GetNumPlayers() - 1 do
-		local player = Isaac.GetPlayer(i)
-		for j = 0, 3 do
-			local card = EID:getBagOfCraftingID(300, player:GetCard(j))
-			local pill = EID:getBagOfCraftingID(70, player:GetPill(j))
-			-- assume the card/pill is only 1 ingredient
-			if card then table.insert(EID.bagOfCraftingInventoryQuery, card[1]) end
-			if pill then table.insert(EID.bagOfCraftingInventoryQuery, pill[1]) end
-		end
-	end
-end
-local function calcFloorItems()
-	EID.bagOfCraftingFloorQuery = {}
-	for _,v in pairs(EID.bagOfCraftingRoomQueries) do
-		for _,v1 in ipairs(v) do
-			table.insert(EID.bagOfCraftingFloorQuery, v1)
-		end
-	end
-end
-local function qualitySort(a, b)
-	if (pickupValues[a+1] == pickupValues[b+1]) then
-		return a > b
-	else
-		return pickupValues[a+1] > pickupValues[b+1]
-	end
-end
-
-local moddedCrafting = false
-local function GameStartCrafting()
-	for i=1, EID.XMLMaxItemID do
-		local item = EID.itemConfig:GetCollectible(i)
-		if item ~= nil then
-			CraftingItemQualities[item.ID] = item.Quality
-		end
-	end
-	if not EID:PlayersHaveCollectible(CollectibleType.COLLECTIBLE_TMTRAINER) then
-		-- Check for modded items past the known max item ID on game start (can also support game updates)
-		-- Only works if the new items are at Weight 1.0 in their item pools, but better than nothing
-		if EID.Config["BagOfCraftingModdedRecipes"] and EID.itemConfig:GetCollectible(EID.XMLMaxItemID+1) ~= nil and not moddedCrafting then
-			-- Items past max ID detected
-			CraftingMaxItemID = EID.XMLMaxItemID -- XMLMaxItemID is never modified
-			-- Add new item qualities
-			local coll = EID.itemConfig:GetCollectible(CraftingMaxItemID+1)
-			while coll ~= nil do
-				CraftingMaxItemID = CraftingMaxItemID + 1
-				CraftingItemQualities[coll.ID] = coll.Quality
-				coll = EID.itemConfig:GetCollectible(CraftingMaxItemID+1)
-			end
-			local itemPool = game:GetItemPool()
-			-- Add new items to the crafting item pools, assuming Weight 1.0
-			for poolNum,_ in pairs(poolToIcon) do
-				for i=1,EID.XMLMaxItemID do itemPool:AddRoomBlacklist(i) end
-
-				local collID = itemPool:GetCollectible(poolNum, false, 1, 25)
-				while collID ~= 25 and collID > 0 do
-					table.insert(CraftingItemPools[poolNum+1], {collID, 1.0})
-					itemPool:AddRoomBlacklist(collID)
-					collID = itemPool:GetCollectible(poolNum, false, 1, 25)
-				end
-
-				itemPool:ResetRoomBlacklist()
-			end
-			moddedCrafting = true
-		end
-
-		sortNeeded = true
-	end
-end
---EID:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, GameStartCrafting)
-GameStartCrafting()
 return EID

@@ -4,6 +4,7 @@ function coopHUD.on_start(_, cont)
     coopHUD.players = {}
     coopHUD.essau_no = 0 -- resets essau_no
     coopHUD.on_player_init() -- inits players
+    coopHUD.EID.GameStartCrafting()
     --
     coopHUD.angel_seen = false -- resets angel seen state on restart
     coopHUD.jar_of_wisp_charge = false -- resets wisp charge  on restart
