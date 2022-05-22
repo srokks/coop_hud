@@ -1,3 +1,4 @@
+--- CODE FROM External Item Descriptions by Wolfsauge - https://steamcommunity.com/sharedfiles/filedetails/?id=836319872
 local EID = {}
 EID.itemConfig = Isaac.GetItemConfig()
 EID.Config = {}
