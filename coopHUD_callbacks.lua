@@ -480,6 +480,7 @@ function coopHUD.inputs_signals()
                 coopHUD.players[pill_card_pressed].bag_of_crafting = {} -- resets bag of crafting
                 --adds collectible to inventory
                 local item_queue = Isaac.GetItemConfig():GetCollectible(coopHUD.players[pill_card_pressed].crafting_result.id)
+                if item_queue == nil then return end
                 if item_queue.Type == ItemType.ITEM_ACTIVE then
                 elseif item_queue.Type == ItemType.ITEM_TRINKET then
                 else
