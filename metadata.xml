@@ -13,11 +13,8 @@
 		in Bugs topic[/b] [/h3]
 		[h2] What new:[/h2]
 		[list]
-		[*] can now turn off 'H' keyboard trigger
-		[*] fixed Forgotten/Lost broken hearts
-		[*] fixed Maggy + Birthright broken hearts
-		[*] fixed broken item bar when overloaded
-		[*] fixed no refreshing stats on player change (Forgotten/Lost - T.Lazarus + Flip)
+			[*] Tainted Cain support - shows Bag of Crafting recipe and crafting result up to 4 players
+			[*] For active item Bag of Crafting - shows crafting result
 		[/list]
 		[h2] What this mod do[/h2]
 		[list]
@@ -43,7 +40,7 @@
 		[/list]
 		[*] Tainted Support:
 		[list]
-		[*] Tainted Isaak support - up to 4 players
+		[*] Tainted Isaac support - up to 4 players
 		[*] Forgotten - Lost - full support
 		[*] Tainted ??? support - show spells and Hold up to 4 players
 		[*] Can now turn off my stuff page if annoying
@@ -72,8 +69,6 @@
 		[*] Destination icons
 		[*] Small HUD - customizable positions
 		[*] Tainted Maggy - pulsing hearts animation
-		[*] Tainted Cain - bag of crafting
-			[*] Bag of crafting for other players
 		[/list]
 		[h2] What this mod lack of[/h2]
 		[list]
