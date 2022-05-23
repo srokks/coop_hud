@@ -77,6 +77,7 @@ function coopHUD.Item:getSprite()
     if self.id == 0 or (self.entPlayer and self.entPlayer.Variant == 1) then
         return nil
     end
+
     -- locals initial
     local sprite = Sprite()
     local sprite_path = Isaac.GetItemConfig():GetCollectible(self.id).GfxFileName

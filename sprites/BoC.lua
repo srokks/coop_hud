@@ -190,12 +190,24 @@ function coopHUD.BoC:render(player, pos, mirrored, down_anchor)
         if down_anchor then
             temp_pos.Y = temp_pos.Y + 32
         end
-        player.crafting_result:render(temp_pos, mirrored, Vector(1, 1), down_anchor)
+        if #player.bag_of_crafting == 8 then
+            if Game():GetLevel():GetCurses() >= LevelCurse.CURSE_OF_BLIND then
+                --TODO:Render unknown item sprite11
+                coopHUD.BoC.Unknown:render(temp_pos, mirrored, Vector(1, 1), down_anchor)
+            else
+                player.crafting_result:render(temp_pos, mirrored, Vector(1, 1), down_anchor)
+            end
+        end
     end
 end
 coopHUD.BoC.EmptyItem = coopHUD.BoC.Item(0)
 coopHUD.BoC.Result = coopHUD.BoC.Item(0)
 coopHUD.BoC.Result.sprite:SetFrame("Result", 0)
+coopHUD.BoC.Unknown = coopHUD.Item({entPlayer=false},-1,1)
+coopHUD.BoC.Unknown.sprite:ReplaceSpritesheet(0, "gfx/items/collectibles/questionmark.png") -- item
+coopHUD.BoC.Unknown.sprite:ReplaceSpritesheet(1, "gfx/items/collectibles/questionmark.png") -- border
+coopHUD.BoC.Unknown.sprite:ReplaceSpritesheet(2, "gfx/items/collectibles/questionmark.png") -- shadow
+coopHUD.BoC.Unknown.sprite:LoadGraphics()
 --
 function coopHUD.BoC.update(player)
     local player_bag = player.bag_of_crafting
