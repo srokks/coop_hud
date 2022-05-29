@@ -1,3 +1,8 @@
+---@class coopHUD.Heart
+---@param parent coopHUD.Player
+---@param heart_pos number heart position [0...n]
+---@return coopHUD.Heart
+---@type fun(parent:coopHUD.Player,heart_pos:number):coopHUD.Heart
 coopHUD.Heart = {}
 coopHUD.Heart.__index = coopHUD.Heart
 setmetatable(coopHUD.Heart, {
@@ -5,6 +10,8 @@ setmetatable(coopHUD.Heart, {
 		return cls.new(...)
 	end,
 })
+---@see coopHUD.Heart
+---@private
 function coopHUD.Heart.new(parent, heart_pos)
 	local self = setmetatable({}, coopHUD.Heart)
 	self.parent = parent
@@ -200,6 +207,11 @@ function coopHUD.Heart:update()
 	end
 	self.sprite = self:getSprite()
 end
+--- Renders heart sprite in current position
+---@param pos Vector position where render sprite
+---@param scale Vector scale of sprite
+---@param dim boolean defines if dim sprite
+---@return Vector offset where render next sprite
 function coopHUD.Heart:render(pos, scale, dim)
 	local offset = Vector(0, 0)
 	local sprite_scale = scale
@@ -226,7 +238,9 @@ end
 coopHUD.Mantle = Sprite()
 coopHUD.Mantle:Load(coopHUD.GLOBALS.hearts_anim_path, true)
 coopHUD.Mantle:SetFrame('HolyMantle', 0)
---
+---@class coopHUD.HeartTable
+---@param entPlayer userdata EntityPlayer
+---@field hearts coopHUD.Heart[]
 coopHUD.HeartTable = {}
 coopHUD.HeartTable.__index = coopHUD.HeartTable
 setmetatable(coopHUD.HeartTable, {
@@ -234,6 +248,8 @@ setmetatable(coopHUD.HeartTable, {
 		return cls.new(...)
 	end,
 })
+---@see coopHUD.HeartTable
+---@private
 function coopHUD.HeartTable.new(entPlayer)
 	local self = setmetatable({}, coopHUD.HeartTable)
 	self.entPlayer = entPlayer
@@ -244,6 +260,13 @@ function coopHUD.HeartTable.new(entPlayer)
 	end
 	return self
 end
+--- Renders heart table in current position
+---@param pos Vector position where render sprite
+---@param mirrored boolean change anchor to right corner
+---@param scale Vector scale of sprite
+---@param down_anchor boolean change anchor to down corner
+---@param dim boolean defines if dim sprite
+---@return Vector offset where render next sprite
 function coopHUD.HeartTable:render(pos, mirrored, scale, down_anchor, dim)
 	local temp_off = Vector(0, 0)
 	if self.entPlayer and self.entPlayer:IsCoopGhost() then return temp_off end -- if player is coop ghost skips render
@@ -283,6 +306,7 @@ function coopHUD.HeartTable:render(pos, mirrored, scale, down_anchor, dim)
 	--
 	return Vector(12 * scale.X * cols, 12 * scale.Y * rows)
 end
+---updates heart table
 function coopHUD.HeartTable:update()
 	local temp_total_hearts = math.ceil((self.entPlayer:GetEffectiveMaxHearts() + self.entPlayer:GetSoulHearts()) / 2)
 	if self.total_hearts ~= temp_total_hearts then

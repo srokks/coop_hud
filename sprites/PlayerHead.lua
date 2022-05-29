@@ -1,3 +1,6 @@
+---@class coopHUD.PlayerHead
+---@type fun(parent:coopHUD.Player):coopHUD.PlayerHead
+---@return coopHUD.PlayerHead
 coopHUD.PlayerHead = {}
 coopHUD.PlayerHead.__index = coopHUD.PlayerHead
 setmetatable(coopHUD.PlayerHead, {
@@ -5,6 +8,8 @@ setmetatable(coopHUD.PlayerHead, {
 		return cls.new(...)
 	end,
 })
+---@see coopHUD.PlayerHead
+---@private
 function coopHUD.PlayerHead.new(parent)
 	local self = setmetatable({}, coopHUD.PlayerHead)
 	self.parent = parent
@@ -31,6 +36,12 @@ function coopHUD.PlayerHead:getSprite()
 		return nil
 	end
 end
+--- Renders item sprite in current position
+---@param pos Vector position where render sprite
+---@param mirrored boolean change anchor to right corner
+---@param scale Vector scale of sprite
+---@param down_anchor boolean change anchor to down corner
+---@return Vector offset where render next sprite
 function coopHUD.PlayerHead:render(anchor, mirrored, scale, down_anchor)
 	local offset = Vector(0, 0)
 	if self.sprite then

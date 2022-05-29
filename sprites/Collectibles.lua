@@ -1,16 +1,25 @@
+--- triggers collectibles to show
+--- sets coopHUD.Collectibles.item_table to proper player table
+--- resets animation and plays it
+---@class coopHUD.Collectibles
+------@param Player coopHUD.Player
+---@type fun(Player:coopHUD.Player):void
 coopHUD.Collectibles = {}
 setmetatable(coopHUD.Collectibles, {
 	__call = function(cls, ...)
 		return cls.trigger(...)
 	end,
 })
-coopHUD.Collectibles.sprite = Sprite()
+coopHUD.Collectibles.sprite = Sprite() -- holds background of page for collectibles
 coopHUD.Collectibles.sprite:Load(coopHUD.GLOBALS.pause_screen_anim_path, true)
 coopHUD.Collectibles.sprite:SetFrame('Dissapear', 13) -- sets to last frame to not trigger on run
+--- holds items for collectibles page, resets on collectibles page animation end
+---@type coopHUD.Item[]
 coopHUD.Collectibles.item_table = {}
 coopHUD.Collectibles.mirrored = false -- if mirrored stuff page anchors near right side else on left
 coopHUD.Collectibles.signal = false
 coopHUD.Collectibles.color = Color(1, 1, 1)
+--- Renders collectibles page
 function coopHUD.Collectibles.render()
 	local sprite_pos = Vector(Isaac.GetScreenWidth() / 2 + 60, Isaac.GetScreenHeight() / 2 - 30)
 	if coopHUD.Collectibles.mirrored then
@@ -81,6 +90,8 @@ function coopHUD.Collectibles.render()
 	if coopHUD.Collectibles.sprite:IsPlaying('Dissapear') then coopHUD.Collectibles.item_table = {} end
 	--
 end
+---@private
+---@see coopHUD.Collectibles
 function coopHUD.Collectibles.trigger(Player)
 	coopHUD.Collectibles.signal = Game():GetFrameCount() -- sets streak signal as current frame num
 	if coopHUD.Collectibles.sprite:IsFinished('Dissapear') then

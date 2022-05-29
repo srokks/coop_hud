@@ -8,7 +8,43 @@ include("sprites.Pocket.lua")
 include("sprites.Poops.lua")
 include("sprites.Stat.lua")
 include("sprites.Trinket.lua")
---
+---@class coopHUD.Player
+---@param player_no number player number used in game
+---@param entPlayer userdata Player Entity
+---@field entPlayer userdata
+---@field game_index number holds game index to get proper PlayerEntity
+---@field controller_index number holds
+---@field player_head coopHUD.PlayerHead
+---@field active_item coopHUD.Item
+---@field schoolbag_item coopHUD.Item
+---@field first_trinket coopHUD.Trinket
+---@field second_trinket coopHUD.Trinket
+---@field first_pocket coopHUD.Pocket
+---@field second_pocket coopHUD.Pocket
+---@field third_pocket coopHUD.Pocket
+---@field hearts coopHUD.HeartTable
+---@field sub_hearts coopHUD.HeartTable sub player hearts ONLY WITH FORGOTTEN/LOST
+---@field essau coopHUD.Player
+---@field sub boolean holds if self is sub player like Essau
+---@field collectibles coopHUD.Item[]
+---@field gulped_trinkets coopHUD.Item[]
+---@field extra_lives string
+---@field speed coopHUD.Stat
+---@field tears_delay coopHUD.Stat
+---@field damage coopHUD.Stat
+---@field range coopHUD.Stat
+---@field shot_speed coopHUD.Stat
+---@field luck coopHUD.Stat
+---@field wisp_jar_use coopHUD.Stat
+---@field inventory nil|coopHUD.Inventory
+---@field bag_of_crafting nil|coopHUD.BoC.Item[]
+---@field crafting_result nil|coopHUD.Item holds BoC crafting result
+---@field hold_spell nil|number holds current hold spell FOR T.???
+---@field poops nil|coopHUD.PoopsTable holds poops FOR T.???
+---@field signals table map_btn;
+---@field font_color KColor holds color used in HUD when option o
+---@return coopHUD.Player
+---@type fun(player_no:number, entPlayer:userdata):coopHUD.Player
 coopHUD.Player = {}
 coopHUD.Player.__index = coopHUD.Player
 setmetatable(coopHUD.Player, {
@@ -16,9 +52,8 @@ setmetatable(coopHUD.Player, {
 		return cls.new(...)
 	end,
 })
----@param player_no number player ,used for main
----@param entPlayer userdata accepts EntityPlayer, if passed ignore passed player number and creates Player according to passed entity
----used for sub player such as essau
+--- Player constructor
+---@private
 function coopHUD.Player.new(player_no, entPlayer)
 	local self = setmetatable({}, coopHUD.Player)
 	--
@@ -78,8 +113,6 @@ function coopHUD.Player.new(player_no, entPlayer)
 	self.range = coopHUD.Stat(self, coopHUD.Stat.RANGE, self.game_index == 0 or self.game_index == 1)
 	self.shot_speed = coopHUD.Stat(self, coopHUD.Stat.SHOT_SPEED, self.game_index == 0 or self.game_index == 1)
 	self.luck = coopHUD.Stat(self, coopHUD.Stat.LUCK, self.game_index == 0 or self.game_index == 1)
-	-- Extra charges
-	wisp_jar_use = 0 -- holds info about used jar of wisp
 	-- T.Isaac - specifics
 	if self.entPlayer:GetPlayerType() == PlayerType.PLAYER_ISAAC_B then
 		self.inventory = coopHUD.Inventory(self)
@@ -127,6 +160,12 @@ function coopHUD.Player:update()
 	self.big_hud = #coopHUD.players < 3 and not coopHUD.options.force_small_hud
 	coopHUD.BoC.update(self)
 end
+--- renders main player hud - active item/hearts
+---@param pos Vector position where render sprite
+---@param mirrored boolean change anchor to right corner
+---@param scl Vector scale of sprite
+---@param down_anchor boolean change anchor to down corner
+---@return Vector offset where render next sprite
 function coopHUD.Player:renderMain(pos, mirrored, scl, down_anchor)
 	local temp_pos = Vector(pos.X, pos.Y)
 	local scale = scl
@@ -176,6 +215,12 @@ function coopHUD.Player:renderMain(pos, mirrored, scl, down_anchor)
 	end
 	return offset
 end
+--- renders secondary player hud - pocket/trinkets
+---@param pos Vector position where render sprite
+---@param mirrored boolean change anchor to right corner
+---@param scl Vector scale of sprite
+---@param down_anchor boolean change anchor to down corner
+---@return Vector offset where render next sprite
 function coopHUD.Player:renderPockets(pos, mirrored, scl, down_anchor)
 	local temp_pos = Vector(pos.X, pos.Y)
 	local scale = Vector(scl.X, scl.Y)
@@ -228,6 +273,7 @@ function coopHUD.Player:renderPockets(pos, mirrored, scl, down_anchor)
 	end
 	return offset
 end
+--- MAIN Player render function
 function coopHUD.Player:render()
 	local anchor = Vector(coopHUD.anchors[coopHUD.players_config.small[self.game_index].anchor].X,
 	                      coopHUD.anchors[coopHUD.players_config.small[self.game_index].anchor].Y)
@@ -303,6 +349,12 @@ function coopHUD.Player:render()
 		end
 	end
 end
+--- renders  player extra hud - mantle charge/extra lives
+---@param pos Vector position where render sprite
+---@param mirrored boolean change anchor to right corner
+---@param scale Vector scale of sprite
+---@param down_anchor boolean change anchor to down corner
+---@return Vector offset where render next sprite
 function coopHUD.Player:renderExtras(pos, mirrored, scale, down_anchor)
 	local final_offset = Vector(0, 0)
 	local temp_pos = Vector(pos.X + 4, pos.Y)
@@ -349,6 +401,9 @@ function coopHUD.Player:renderExtras(pos, mirrored, scale, down_anchor)
 	end
 	return final_offset
 end
+--- renders  players stats
+---@param mirrored boolean change anchor to right corner
+---@return Vector offset where render next sprite
 function coopHUD.Player:renderStats(mirrored)
 	--when options.stats.hide_in_battle on and battle signal
 	local font_color = KColor(1, 1, 1, 1)

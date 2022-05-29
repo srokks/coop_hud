@@ -1,3 +1,9 @@
+---@class coopHUD.Trinket
+---@param player coopHUD.Player
+---@param slot number
+---@param trinket_id number
+---@type fun (player:coopHUD.Player,slot:number,trinket_id:number):coopHUD.Trinket
+---@return
 coopHUD.Trinket = {}
 coopHUD.Trinket.type = PickupVariant.PICKUP_TRINKET
 coopHUD.Trinket.__index = coopHUD.Trinket
@@ -6,6 +12,8 @@ setmetatable(coopHUD.Trinket, {
 		return cls.new(...)
 	end,
 })
+---@see coopHUD.Trinket
+---@private
 function coopHUD.Trinket.new(player, slot, trinket_id)
 	local self = setmetatable({}, coopHUD.Trinket)
 	self.entPlayer = player

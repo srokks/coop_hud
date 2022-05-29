@@ -1,6 +1,10 @@
 local anim_path = "gfx/ui/ui_crafting.anm2"
+---@class coopHUD.BoC
+---@field Item fun(id:number):coopHUD.BoC.Item
+---@type coopHUD.BoC
 coopHUD.BoC = {}
 coopHUD.BoC.__index = coopHUD.BoC
+---@class coopHUD.BoC.Item
 coopHUD.BoC.Item = {}
 coopHUD.BoC.Item.__index = coopHUD.BoC.Item
 setmetatable(coopHUD.BoC.Item, {
@@ -8,6 +12,7 @@ setmetatable(coopHUD.BoC.Item, {
         return cls.new(...)
     end,
 })
+---@private
 function coopHUD.BoC.Item.new(id)
     local self = setmetatable({}, coopHUD.BoC.Item)
     self.id = id
@@ -140,6 +145,13 @@ function coopHUD.BoC.Item.getSprite(self)
     sprite:SetFrame('Idle', self.id)
     return sprite
 end
+--- Renders item sprite in desired position
+---@param pos Vector position where render sprite
+---@param mirrored boolean change anchor to right corner
+---@param scale Vector scale of sprite
+---@param down_anchor boolean change anchor to down corner
+---@param dim boolean defines if dim sprite
+---@return Vector offset where render next sprite
 function coopHUD.BoC.Item:render(pos, mirrored, scale, down_anchor, dim)
     local temp_pos = Vector(pos.X + 4, pos.Y + 4)
     local off = Vector(0, 0)
@@ -156,6 +168,12 @@ function coopHUD.BoC.Item:render(pos, mirrored, scale, down_anchor, dim)
     end
     return off
 end
+--- Renders Bag of Crafting - items + result in desired position
+---@param player coopHUD.Player position where render sprite
+---@param pos Vector position where render sprite
+---@param mirrored boolean change anchor to right corner
+---@param down_anchor boolean change anchor to down corner
+---@return Vector offset where render next sprite
 function coopHUD.BoC:render(player, pos, mirrored, down_anchor)
     local init_pos = Vector(pos.X, pos.Y + 2)
     if down_anchor then
@@ -200,7 +218,9 @@ function coopHUD.BoC:render(player, pos, mirrored, down_anchor)
         end
     end
 end
+-- empty item (dot) sprite object
 coopHUD.BoC.EmptyItem = coopHUD.BoC.Item(0)
+-- result item frame sprite object
 coopHUD.BoC.Result = coopHUD.BoC.Item(0)
 coopHUD.BoC.Result.sprite:SetFrame("Result", 0)
 coopHUD.BoC.Unknown = coopHUD.Item({entPlayer=false},-1,1)
@@ -208,7 +228,8 @@ coopHUD.BoC.Unknown.sprite:ReplaceSpritesheet(0, "gfx/items/collectibles/questio
 coopHUD.BoC.Unknown.sprite:ReplaceSpritesheet(1, "gfx/items/collectibles/questionmark.png") -- border
 coopHUD.BoC.Unknown.sprite:ReplaceSpritesheet(2, "gfx/items/collectibles/questionmark.png") -- shadow
 coopHUD.BoC.Unknown.sprite:LoadGraphics()
---
+--- handles Bag od crafting update
+--- CONNECTED TO: MC_POST_PICKUP_UPDATE
 function coopHUD.BoC.update(player)
     local player_bag = player.bag_of_crafting
     if #player_bag == 8 then
@@ -218,8 +239,11 @@ function coopHUD.BoC.update(player)
         player.crafting_result = coopHUD.Item(player, -1, 0)
     end
 end
---
 coopHUD.EID = include('helpers.BoC_helpers.lua') -- imports needed function from External Item Description by Wolfsauge
+--- handles Bag of Crafting recipe calculation
+--- mod itself imports prepared External Item Descriptions by Wolfsauge functions an use it to calculate result
+---@param player coopHUD.Player
+---@return number item id
 function coopHUD.BoC.calculate(player)
     local bag = {}
     for _, k in pairs(player.bag_of_crafting) do

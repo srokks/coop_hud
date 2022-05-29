@@ -2,10 +2,11 @@ coopHUD.VERSION = '0.7-STEAM' --DEBUG: test name for in game recognition
 coopHUD.showExtraInfo = false
 coopHUD.HUD_table = {}
 coopHUD.signals = {
-	map = nil, -- emits true when map btn hold - global signal
+	map        = nil, -- emits true when map btn hold - global signal
 	is_joining = false, -- to maintain back button when joining
-	on_battle = false,
+	on_battle  = false,
 }
+---@type coopHUD.Player[]
 coopHUD.players = {}
 coopHUD.options = {
 	onRender = true,

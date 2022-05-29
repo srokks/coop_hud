@@ -1,3 +1,8 @@
+---@class coopHUD.Poop
+---@param entPlayer
+---@param slot
+---@type fun(entPlayer:userdata,slot:number):coopHUD.Poop
+---@return coopHUD.Poop
 coopHUD.Poop = {}
 coopHUD.Poop.__index = coopHUD.Poop
 setmetatable(coopHUD.Poop, {
@@ -5,6 +10,8 @@ setmetatable(coopHUD.Poop, {
 		return cls.new(...)
 	end,
 })
+---@see coopHUD.Poop
+---@private
 function coopHUD.Poop.new(entPlayer, slot)
 	local self = setmetatable({}, coopHUD.Poop)
 	self.entPlayer = entPlayer
@@ -68,7 +75,10 @@ function coopHUD.Poop:update()
 		self.sprite = self:getSprite()
 	end
 end
---
+---@class coopHUD.PoopsTable
+---@field poop_mana number holds current mana amount
+---@field poops coopHUD.Poop[]
+---@type fun(entPlayer):coopHUD.PoopsTable
 coopHUD.PoopsTable = {}
 coopHUD.PoopsTable.__index = coopHUD.PoopsTable
 setmetatable(coopHUD.PoopsTable, {
@@ -76,6 +86,8 @@ setmetatable(coopHUD.PoopsTable, {
 		return cls.new(...)
 	end,
 })
+---@see coopHUD.PoopsTable
+---@private
 function coopHUD.PoopsTable.new(entPlayer)
 	local self = setmetatable({}, coopHUD.PoopsTable)
 	self.entPlayer = entPlayer
@@ -86,6 +98,12 @@ function coopHUD.PoopsTable.new(entPlayer)
 	end
 	return self
 end
+--- Renders poops spells  sprites in current position
+---@param pos Vector position where render sprite
+---@param mirrored boolean change anchor to right corner
+---@param scale Vector scale of sprite
+---@param down_anchor boolean change anchor to down corner
+---@return Vector offset where render next sprite
 function coopHUD.PoopsTable:render(pos, mirrored, scale, down_anchor)
 	local init_pos = Vector(pos.X, pos.Y)
 	local off = Vector(0, 0)

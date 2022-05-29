@@ -1,3 +1,9 @@
+---@class coopHUD.Stat
+---@param parent coopHUD.Player parent of stat class
+---@param type number coopHUD.Stat.Type -- type of stat class
+---@param icon boolean if true Stat will be rendered with icon else only number stat with diff if is
+---@type fun(parent:coopHUD.Player,type:number,icon:boolean):coopHUD.Stat
+---@return coopHUD.Stat
 coopHUD.Stat = {}
 coopHUD.Stat.__index = coopHUD.Stat
 setmetatable(coopHUD.Stat, {
@@ -15,9 +21,8 @@ coopHUD.Stat.DEVIL = 6
 coopHUD.Stat.ANGEL = 7
 coopHUD.Stat.PLANETARIUM = 8
 coopHUD.Stat.DUALITY = 10
----@param parent table coopHUD.Player -- parent of stat class
----@param type number coopHUD.Stat.Type -- type of stat class
----@param icon boolean if true Stat will be rendered with icon else only number stat with diff if is
+---@see coopHUD.Stat
+---@private
 function coopHUD.Stat.new(parent, type, icon)
 	local self = setmetatable({}, coopHUD.Stat)
 	self.parent = parent
@@ -81,6 +86,13 @@ function coopHUD.Stat:getSprite()
 		return nil
 	end
 end
+--- Renders stas sprite in current position
+---@param pos Vector position where render sprite
+---@param mirrored boolean change anchor to right corner
+---@param scale Vector scale of sprite
+---@param down_anchor boolean change anchor to down corner
+---@param dim boolean defines if dim sprite
+---@return Vector offset where render next sprite
 function coopHUD.Stat:render(pos, mirrored, vertical, only_num)
 	self:update()
 	local init_pos = (Vector(pos.X, pos.Y))
@@ -191,6 +203,8 @@ function coopHUD.Stat:update()
 
 	end
 end
+--- calculate current devil/angel room chances
+---@return {devil:number,angel:number,duality:boolean}
 function coopHUD.Stat.calculateDeal()
 	local lvl = Game():GetLevel()
 	local room = lvl:GetCurrentRoom()
@@ -208,14 +222,14 @@ function coopHUD.Stat.calculateDeal()
 	end
 	-- angel components
 	local comp = {
-		rosary_bead = {false, 0.5},
-		key_piece_1 = {false, 0.75},
-		key_piece_2 = {false, 0.75},
-		virtouses = {false, 0.75},
-		bum_killed = {false, 0.75},
-		bum_left = {false, 0.9},
+		rosary_bead   = {false, 0.5},
+		key_piece_1   = {false, 0.75},
+		key_piece_2   = {false, 0.75},
+		virtouses     = {false, 0.75},
+		bum_killed    = {false, 0.75},
+		bum_left      = {false, 0.9},
 		dead_bum_left = {false, 1.1},
-		donation = {false, 0.5},
+		donation      = {false, 0.5},
 	}
 	-- check collectibles
 	local duality = false
@@ -301,11 +315,14 @@ function coopHUD.Stat.calculateDeal()
 	end
 	devil = deal * (1.0 - angel)
 	angel = deal * angel
-	return {devil = devil * 100,
-	        angel = angel * 100,
+	return { devil = devil * 100,
+	         angel   = angel * 100,
 		--planetarium = { lvl:GetPlanetariumChance() * 100, 0 },
-		    duality = duality}
+		     duality = duality}
 end
+--- returns offset of stat
+---@param vertical boolean
+---@return Vector
 function coopHUD.Stat:getOffset(vertical)
 	local offset = Vector(0, 0)
 	if self.sprite then

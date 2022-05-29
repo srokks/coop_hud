@@ -1,3 +1,8 @@
+---@class coopHUD.Item
+---@param player coopHUD.Player
+---@param slot number  slot binding -1 - no slot | ActiveSlot enums
+---@param item_id number
+---@type fun (player:coopHUD.Player, slot:number, item_id:number):coopHUD.Item
 coopHUD.Item = {}
 coopHUD.Item.__index = coopHUD.Item
 coopHUD.Item.type = PickupVariant.PICKUP_COLLECTIBLE
@@ -6,6 +11,8 @@ setmetatable(coopHUD.Item, {
         return cls.new(...)
     end,
 })
+---@see coopHUD.Item
+---@private
 function coopHUD.Item.new(player, slot, item_id)
     local self = setmetatable({}, coopHUD.Item)
     self.parent = player
@@ -26,12 +33,15 @@ function coopHUD.Item.new(player, slot, item_id)
     self.temp_item = nil
     return self
 end
+--- return self charge sprite table
+---@param self coopHUD.Item
+---@return table table of charge sprites
 function coopHUD.Item.getChargeSprites(self)
     -- Gets charge of item from  player, slot
     local sprites = {
         beth_charge = Sprite(),
-        charge = Sprite(),
-        overlay = Sprite(),
+        charge      = Sprite(),
+        overlay     = Sprite(),
     }
     if self.id == 0 or self.id == nil or self.slot < 0 then
         return nil
@@ -190,6 +200,7 @@ function coopHUD.Item:getFrameNum()
     end
     return frame_num
 end
+--- Returns current charge of item if not connected to slot return nil
 function coopHUD.Item:getCharge()
     if self.slot >= 0 then
         local item_charge = self.entPlayer:GetActiveCharge(self.slot) + self.entPlayer:GetBatteryCharge(self.slot)
@@ -217,6 +228,7 @@ function coopHUD.Item:update()
         self:updateSprite()
     end
 end
+--- updates item charge bars
 function coopHUD.Item:updateCharge()
     if self.charge ~= self:getCharge() then
         self.charge = self:getCharge()
@@ -232,6 +244,13 @@ function coopHUD.Item:updateSprite()
         end
     end
 end
+--- Renders item charge bars if item has
+---@param pos Vector position where render sprite
+---@param mirrored boolean change anchor to right corner
+---@param scale Vector scale of sprite
+---@param down_anchor boolean change anchor to down corner
+---@param dim boolean defines if dim sprite
+---@return Vector
 function coopHUD.Item:renderChargeBar(pos, mirrored, scale, down_anchor)
     local temp_pos = Vector(pos.X, pos.Y)
     local offset = Vector(0, 0)
@@ -279,6 +298,13 @@ function coopHUD.Item:renderChargeBar(pos, mirrored, scale, down_anchor)
     end
     return offset
 end
+--- Renders item sprite in current position
+---@param pos Vector position where render sprite
+---@param mirrored boolean change anchor to right corner
+---@param scale Vector scale of sprite
+---@param down_anchor boolean change anchor to down corner
+---@param dim boolean defines if dim sprite
+---@return Vector offset where render next sprite
 function coopHUD.Item:render(pos, mirrored, scale, down_anchor, dim)
     self:updateCharge()
     local temp_pos = Vector(pos.X, pos.Y)

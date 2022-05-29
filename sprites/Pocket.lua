@@ -1,3 +1,5 @@
+---@class coopHUD.Pocket
+---@type fun(parent:coopHUD.Player,slot:number):coopHUD.Pocket
 coopHUD.Pocket = {}
 coopHUD.Pocket.NONE = 0
 coopHUD.Pocket.CARD = 1
@@ -9,6 +11,7 @@ setmetatable(coopHUD.Pocket, {
 		return cls.new(...)
 	end,
 })
+---@private
 function coopHUD.Pocket.new(parent, slot)
 	local self = setmetatable({}, coopHUD.Pocket)
 	self.parent = parent
@@ -115,6 +118,13 @@ function coopHUD.Pocket:update()
 		self.item:update()
 	end
 end
+--- Renders pocket sprite in current position
+---@param pos Vector position where render sprite
+---@param mirrored boolean change anchor to right corner
+---@param scale Vector scale of sprite
+---@param down_anchor boolean change anchor to down corner
+---@param dim boolean defines if dim sprite
+---@return Vector offset where render next sprite
 function coopHUD.Pocket:render(pos, mirrored, scale, down_anchor, dim)
 	local temp_pos = Vector(pos.X, pos.Y)
 	local sprite_scale = scale

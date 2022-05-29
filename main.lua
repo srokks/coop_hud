@@ -1,3 +1,4 @@
+---@class coopHUD
 coopHUD = RegisterMod("Coop HUD", 1)
 
 ---

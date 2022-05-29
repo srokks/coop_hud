@@ -1,3 +1,7 @@
+---@class coopHUD.Inventory
+---@param parent coopHUD.Player
+---@type fun(parent:coopHUD.Player):coopHUD.Inventory
+---@return coopHUD.Inventory
 coopHUD.Inventory = {}
 coopHUD.Inventory.__index = coopHUD.Inventory
 setmetatable(coopHUD.Inventory, {
@@ -5,6 +9,8 @@ setmetatable(coopHUD.Inventory, {
 		return cls.new(...)
 	end,
 })
+---@see coopHUD.Inventory
+---@private
 function coopHUD.Inventory.new(parent)
 	local self = setmetatable({}, coopHUD.Inventory)
 	self.parent = parent
@@ -14,6 +20,11 @@ function coopHUD.Inventory.new(parent)
 	self.sprite:SetFrame('Idle', 0)
 	return self
 end
+--- Renders item sprite in current position
+---@param pos Vector position where render sprite
+---@param mirrored boolean change anchor to right corner
+---@param down_anchor boolean change anchor to down corner
+---@return Vector offset where render next sprite
 function coopHUD.Inventory:render(pos, mirrored, down_anchor)
 	local temp_pos = Vector(pos.X, pos.Y)
 	local sprite_pivot = Vector(8, 8)
