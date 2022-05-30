@@ -1,3 +1,5 @@
+local vanilla_anim = "gfx/ui/ui_hearts.anm2"
+local coopHUD_anim = "gfx/ui/ui_hearts_coop.anm2"
 ---@class coopHUD.Heart
 ---@param parent coopHUD.Player
 ---@param heart_pos number heart position [0...n]
@@ -13,6 +15,7 @@ setmetatable(coopHUD.Heart, {
 ---@see coopHUD.Heart
 ---@private
 function coopHUD.Heart.new(parent, heart_pos)
+	---@type coopHUD.Heart
 	local self = setmetatable({}, coopHUD.Heart)
 	self.parent = parent
 	self.pos = heart_pos
@@ -179,8 +182,12 @@ end
 function coopHUD.Heart:getSprite()
 	if self.type ~= nil then
 		local sprite = Sprite()
-		sprite:Load(coopHUD.GLOBALS.hearts_anim_path, true)
+		sprite:Load(vanilla_anim, true)
 		sprite:SetFrame(self.type, 0)
+		if self.pos >= 2 and self.parent.entPlayer:GetPlayerType() == PlayerType.PLAYER_MAGDALENE_B then
+			sprite:Load(coopHUD_anim, true)
+			sprite:Play(self.type, true)
+		end
 		if self.overlay ~= nil then
 			if self.overlay ~= 'GoldWhiteOverlay' then
 				sprite:SetOverlayFrame(self.overlay, 0)
@@ -199,12 +206,14 @@ function coopHUD.Heart:update()
 	local type, overlay = self:getType()
 	if self.type ~= type then
 		self.type = type
-		self.sprite = self:getSprite()
+		self.parent.force_update = true
 	end
 	if self.overlay ~= overlay then
 		self.overlay = overlay
-		self.sprite = self:getSprite()
+		self.parent.force_update = true
 	end
+end
+function coopHUD.Heart:update_sprite()
 	self.sprite = self:getSprite()
 end
 --- Renders heart sprite in current position
@@ -229,6 +238,7 @@ function coopHUD.Heart:render(pos, scale, dim)
 			self.sprite.Color = color
 		end
 		self.sprite.Scale = sprite_scale
+		if self.sprite:IsPlaying(self.type) then self.sprite:Update() end
 		self.sprite:Render(temp_pos)
 		offset.X = 12 * math.ceil((self.pos + 1) % 6) * sprite_scale.X
 		offset.Y = 10 * math.floor((self.pos + 1) / 6) * sprite_scale.Y
@@ -236,11 +246,13 @@ function coopHUD.Heart:render(pos, scale, dim)
 	return offset
 end
 coopHUD.Mantle = Sprite()
-coopHUD.Mantle:Load(coopHUD.GLOBALS.hearts_anim_path, true)
+coopHUD.Mantle:Load(vanilla_anim)
 coopHUD.Mantle:SetFrame('HolyMantle', 0)
 ---@class coopHUD.HeartTable
 ---@param entPlayer userdata EntityPlayer
 ---@field hearts coopHUD.Heart[]
+---@field total_hearts number holds total no of hearts containers
+---@field force_update boolean when true triggers full heart table sprite update to avoid animation desync
 coopHUD.HeartTable = {}
 coopHUD.HeartTable.__index = coopHUD.HeartTable
 setmetatable(coopHUD.HeartTable, {
@@ -255,6 +267,7 @@ function coopHUD.HeartTable.new(entPlayer)
 	self.entPlayer = entPlayer
 	self.total_hearts = math.ceil((self.entPlayer:GetEffectiveMaxHearts() + self.entPlayer:GetSoulHearts()) / 2)
 	self.hearts = {}
+	self.force_update = false -- if true reloads all table
 	for i = 0, self.total_hearts do
 		self.hearts[i] = coopHUD.Heart(self, i)
 	end
@@ -310,10 +323,21 @@ end
 function coopHUD.HeartTable:update()
 	local temp_total_hearts = math.ceil((self.entPlayer:GetEffectiveMaxHearts() + self.entPlayer:GetSoulHearts()) / 2)
 	if self.total_hearts ~= temp_total_hearts then
+		-- update on increasing/decreasing
 		self.total_hearts = temp_total_hearts
+		for i = 0, self.total_hearts do
+			self.hearts[i] = coopHUD.Heart(self, i)
+		end
 	end
-	--self.hearts = {}
-	for i = 0, self.total_hearts do
-		self.hearts[i] = coopHUD.Heart(self, i)
+	if self.force_update then
+		-- full table sprite update to avoid desync of playing animations
+		for i = 0, #self.hearts do
+			self.hearts[i]:update_sprite(self, i)
+		end
+		self.force_update = false -- trigger reset
+	end
+	for i = 0, self.total_hearts - 1 do
+		-- normal call for update for heart, if update needed  child triggers force_update
+		self.hearts[i]:update()
 	end
 end
