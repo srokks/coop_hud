@@ -210,7 +210,6 @@ function coopHUD.BoC:render(player, pos, mirrored, down_anchor)
         end
         if #player.bag_of_crafting == 8 then
             if Game():GetLevel():GetCurses() >= LevelCurse.CURSE_OF_BLIND then
-                --TODO:Render unknown item sprite11
                 coopHUD.BoC.Unknown:render(temp_pos, mirrored, Vector(1, 1), down_anchor)
             else
                 player.crafting_result:render(temp_pos, mirrored, Vector(1, 1), down_anchor)
