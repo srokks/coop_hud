@@ -252,5 +252,9 @@ function coopHUD.BoC.calculate(player)
     local components = { table.unpack(bag) }
     local result = 0
     local id_a, id_b = coopHUD.EID:calculateBagOfCrafting(components)
-    return id_a
+    if coopHUD.EID:isCollectibleUnlockedAnyPool(id_a) then
+        return id_a
+    else
+        return id_b
+    end
 end
