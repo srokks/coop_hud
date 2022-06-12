@@ -13,8 +13,9 @@
 		in Bugs topic[/b] [/h3]
 		[h2] What new:[/h2]
 		[list]
-			[*] Tainted Cain support - shows Bag of Crafting recipe and crafting result up to 4 players
-			[*] For active item Bag of Crafting - shows crafting result
+		[*] Tainted Maggy - shows pulsating heart animation
+		[*] Fixed wrong crafting result when recipe locked
+		[*] Fixed wrong pocket update for Jacob & Essau
 		[/list]
 		[h2] What this mod do[/h2]
 		[list]
@@ -36,6 +37,8 @@
 		[*] Tainted Isaak support - up to 4 players
 		[*] Forgotten - Lost - full support
 		[*] Tainted ??? support - show spells and Hold up to 4 players
+		[*] Tainted Cain support - shows Bag of Crafting recipe and crafting result up to 4 players
+		[list][*] For active item Bag of Crafting - shows crafting result[/list]
 		[*] Can now turn off my stuff page if annoying
 		[/list]
 		[*] Tainted Support:
@@ -105,7 +108,7 @@
 		his mods which helped in developing this mod
 		[/list]
 	</description>
-	<version>0.7</version>
+	<version>0.7.5</version>
 	<visibility>Public</visibility>
 	<tag id="Lua"/>
 	<tag id="Tweaks"/>
