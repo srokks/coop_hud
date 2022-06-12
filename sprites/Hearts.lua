@@ -3,6 +3,9 @@ local coopHUD_anim = "gfx/ui/ui_hearts_coop.anm2"
 ---@class coopHUD.Heart
 ---@param parent coopHUD.Player
 ---@param heart_pos number heart position [0...n]
+---@field sprite Sprite holds heart sprite
+---@field type string heart type
+---@field overlay string heart overlay (eternal or gold)
 ---@return coopHUD.Heart
 ---@type fun(parent:coopHUD.Player,heart_pos:number):coopHUD.Heart
 coopHUD.Heart = {}
