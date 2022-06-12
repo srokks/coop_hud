@@ -185,8 +185,13 @@ function coopHUD.Heart:getSprite()
 		sprite:Load(vanilla_anim, true)
 		sprite:SetFrame(self.type, 0)
 		if self.pos >= 2 and self.parent.entPlayer:GetPlayerType() == PlayerType.PLAYER_MAGDALENE_B then
-			sprite:Load(coopHUD_anim, true)
-			sprite:Play(self.type, true)
+			-- birthright extends non blinking hearts to 3
+			if self.parent.entPlayer:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) and self.pos == 2 then
+
+			else
+				sprite:Load(coopHUD_anim, true)
+				sprite:Play(self.type, true)
+			end
 		end
 		if self.overlay ~= nil then
 			if self.overlay ~= 'GoldWhiteOverlay' then
