@@ -366,3 +366,44 @@ function coopHUD.Item:render(pos, mirrored, scale, down_anchor, dim)
 	end
 	return offset
 end
+--- Renders player collectibles table
+---@param self coopHUD.Item
+---@param pos Vector
+function coopHUD.Item.render_items_table(self)
+	local items_table = self.parent.collectibles -- saves parent collectibles to local temp
+	--
+	local init_pos = Vector(0, 64)
+	if self.parent.big_hud then
+		init_pos = Vector(coopHUD.anchors.bot_right.X - 60, 64)
+	end
+	local temp_pos = Vector(init_pos.X, init_pos.Y)
+	--
+	local down_anchor = false --TODO:from arg
+	-- defines items sprites scale and no of colums based on collected collectibles
+	local scale = Vector(1, 1)
+	local col_no = 2
+	if #items_table > 10 then
+		scale = Vector(0.625, 0.625)
+		col_no = 3
+	end
+	if #items_table > 24 then
+		scale = Vector(0.5, 0.5)
+		col_no = 4
+	end
+	--
+	local temp_index = 1 -- temp index for positioning due we show from latest
+	local collectibles_stop = 1  -- last index of shown item
+	if #items_table > 44 then
+		-- prevention from showing too much items
+		collectibles_stop = #items_table - 51
+	end
+	for i = #items_table, collectibles_stop, -1 do
+		local off = items_table[i]:render(temp_pos, false, scale, down_anchor, false)
+		temp_pos.X = temp_pos.X + off.X / 1.25
+		if temp_index % col_no == 0 then
+			temp_pos.X = init_pos.X
+			temp_pos.Y = temp_pos.Y + off.Y / 1.25
+		end
+		temp_index = temp_index + 1
+	end
+end

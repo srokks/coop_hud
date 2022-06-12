@@ -256,7 +256,7 @@ function coopHUD.Player:renderPockets(pos, mirrored, scl, down_anchor)
 	                                      down_anchor, dim)
 	local inv_off = Vector(0, 0)
 	if self.inventory then
-		temp_pos = Vector(pos.X, pos.Y )
+		temp_pos = Vector(pos.X, pos.Y)
 		if down_anchor then
 			temp_pos.Y = temp_pos.Y + math.min(trinket_off.Y, pocket_off.Y)
 		else
@@ -338,12 +338,27 @@ function coopHUD.Player:render()
 					self.essau:renderStats(mirrored)
 				end
 				self:renderStats(mirrored)
+				-- collectibles render in big hud
 			else
 				-- renders essau stats on drop pressed
 				if self.essau and Input.IsActionPressed(ButtonAction.ACTION_DROP, self.controller_index) then
 					self.essau:renderStats(mirrored)
 				else
-					self:renderStats(mirrored)
+					if not self.signals.map_btn then
+						self:renderStats(mirrored)
+					end
+				end
+			end
+		end
+	end
+	local show_collectibles = true
+	if show_collectibles then
+		if self.collectibles[1] ~= nil then
+			if self.big_hud then
+				self.collectibles[1]:render_items_table()
+			else
+				if self.signals.map_btn then
+					self.collectibles[1]:render_items_table()
 				end
 			end
 		end
