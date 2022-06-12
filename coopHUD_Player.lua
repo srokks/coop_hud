@@ -100,7 +100,7 @@ function coopHUD.Player.new(player_no, entPlayer)
 		self.sub_hearts = coopHUD.HeartTable(self.entPlayer:GetSubPlayer())
 	end
 	if self.entPlayer:GetPlayerType() == PlayerType.PLAYER_JACOB then
-		self.essau = coopHUD.Player(self.game_index, self.entPlayer:GetOtherTwin())
+		self.essau = coopHUD.Player(self.game_index + 1, self.entPlayer:GetOtherTwin())
 	end
 	if self.entPlayer:GetPlayerType() == PlayerType.PLAYER_ESAU then
 		self.sub = true
