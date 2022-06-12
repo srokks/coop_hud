@@ -1,4 +1,3 @@
-include("sprites.Collectibles.lua")
 include("sprites.Hearts.lua")
 include("sprites.Inventory.lua")
 include("sprites.Item.lua")
@@ -11,6 +10,7 @@ include("sprites.Trinket.lua")
 ---@class coopHUD.Player
 ---@param player_no number player number used in game
 ---@param entPlayer userdata Player Entity
+---@field self coopHUD.Player
 ---@field entPlayer userdata
 ---@field game_index number holds game index to get proper PlayerEntity
 ---@field controller_index number holds
@@ -267,9 +267,9 @@ function coopHUD.Player:renderPockets(pos, mirrored, scl, down_anchor)
 	--
 	local offset = Vector(0, 0)
 	if down_anchor then
-		offset.Y = math.min(trinket_off.Y, pocket_off.Y,inv_off.Y)
+		offset.Y = math.min(trinket_off.Y, pocket_off.Y, inv_off.Y)
 	else
-		offset.Y = math.max(trinket_off.Y, pocket_off.Y,inv_off.Y)
+		offset.Y = math.max(trinket_off.Y, pocket_off.Y, inv_off.Y)
 	end
 	return offset
 end
