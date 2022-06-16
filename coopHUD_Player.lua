@@ -362,12 +362,13 @@ function coopHUD.Player.render(self)
 			end
 		end
 	end
+	--COLLECTIBLES RENDER
 	if coopHUD.options.extra_hud then
 		if self.collectibles[1] ~= nil then
 			if self.big_hud and #coopHUD.players == 1 then
 				-- only for 1 player
 				--renders collectibles on right (like vanilla)
-				self.collectibles[1]:render_items_table(true)
+				self.collectibles[1]:render_items_table(not mirrored)
 			else
 				if self.signals.map_btn then
 					self.collectibles[1]:render_items_table(mirrored)

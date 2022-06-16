@@ -131,26 +131,26 @@ if ModConfigMenu then
 	})
 	-- show my stuff page
 	ModConfigMenu.AddSetting(mod_name, "General", {
-		Type = ModConfigMenu.OptionType.BOOLEAN,
+		Type           = ModConfigMenu.OptionType.BOOLEAN,
 		CurrentSetting = function()
-			return coopHUD.options.show_my_stuff
+			return coopHUD.options.extra_hud
 		end,
-		Default = coopHUD.options.show_my_stuff,
+		Default        = coopHUD.options.extra_hud,
 
-		Display = function()
+		Display        = function()
 			local onOff = "Off"
-			if coopHUD.options.show_my_stuff then
+			if coopHUD.options.extra_hud then
 				onOff = "On"
 			end
 
-			return "Show my stuff page: " .. onOff
+			return "Extra HUD: " .. onOff
 		end,
-		OnChange = function(currentBool)
-			coopHUD.options.show_my_stuff = currentBool
+		OnChange       = function(currentBool)
+			coopHUD.options.extra_hud = currentBool
 			coopHUD.save_options()
 		end,
-		Info = function()
-			return 'Shows player items on long map button push'
+		Info           = function()
+			return 'Show collected collectibles'
 		end
 	})
 	-- PLAYERS NAME/HEAD

@@ -1,4 +1,4 @@
-coopHUD.VERSION = '0.7.5-STEAM' --DEBUG: test name for in game recognition
+coopHUD.VERSION = '0.8-DEV' --DEBUG: test name for in game recognition
 coopHUD.showExtraInfo = false
 coopHUD.HUD_table = {}
 coopHUD.signals = {
@@ -9,24 +9,24 @@ coopHUD.signals = {
 ---@type coopHUD.Player[]
 coopHUD.players = {}
 coopHUD.options = {
-	onRender = true,
-	render_player_info = true,
-	player_info_color = true,
-	force_small_hud = false,
-	timer_always_on = false,
-	colorful_players = true,
+	onRender            = true,
+	render_player_info  = true,
+	player_info_color   = true,
+	force_small_hud     = false,
+	timer_always_on     = false,
+	colorful_players    = true,
 	colorful_stuff_page = true,
-	show_player_names = true,
-	show_my_stuff = true,
-	h_trigger = false,
-	stats = {
-		show = true,
+	show_player_names   = true,
+	extra_hud           = true,
+	h_trigger           = false,
+	stats               = {
+		show           = true,
 		hide_in_battle = true,
-		colorful = true,
+		colorful       = true,
 	},
-	deals = {
-		show = true,
-		hide_in_battle = false,
+	deals               = {
+		show             = true,
+		hide_in_battle   = false,
 		show_planetarium = true,
 		vanilla_position = false -- defines if deals show under stats (true) or on down_screen (false)
 	}
