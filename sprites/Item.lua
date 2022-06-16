@@ -373,8 +373,10 @@ function coopHUD.Item.render_items_table(self)
 	local items_table = self.parent.collectibles -- saves parent collectibles to local temp
 	--
 	local init_pos = Vector(0, 64)
-	if self.parent.big_hud then
-		init_pos = Vector(coopHUD.anchors.bot_right.X - 60, 64)
+	if mirrored then
+		init_pos.X = coopHUD.anchors.bot_right.X - 64
+	else
+		init_pos.X = coopHUD.anchors.bot_left.X
 	end
 	local temp_pos = Vector(init_pos.X, init_pos.Y)
 	--

@@ -345,20 +345,27 @@ function coopHUD.Player:render()
 					self.essau:renderStats(mirrored)
 				else
 					if not self.signals.map_btn then
+						-- hides when signal for extra hud (collectibles)
 						self:renderStats(mirrored)
+					else
+						if not coopHUD.options.extra_hud then
+							-- renders in case of turned of extra hud option
+							self:renderStats(mirrored)
+						end
 					end
 				end
 			end
 		end
 	end
-	local show_collectibles = true
-	if show_collectibles then
+	if coopHUD.options.extra_hud then
 		if self.collectibles[1] ~= nil then
-			if self.big_hud then
-				self.collectibles[1]:render_items_table()
+			if self.big_hud and #coopHUD.players == 1 then
+				-- only for 1 player
+				--renders collectibles on right (like vanilla)
+				self.collectibles[1]:render_items_table(true)
 			else
 				if self.signals.map_btn then
-					self.collectibles[1]:render_items_table()
+					self.collectibles[1]:render_items_table(mirrored)
 				end
 			end
 		end
