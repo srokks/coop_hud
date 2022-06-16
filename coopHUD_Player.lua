@@ -9,9 +9,9 @@ include("sprites.Stat.lua")
 include("sprites.Trinket.lua")
 ---@class coopHUD.Player
 ---@param player_no number player number used in game
----@param entPlayer userdata Player Entity
+---@param entPlayer EntityPlayer Player Entity
 ---@field self coopHUD.Player
----@field entPlayer userdata
+---@field entPlayer EntityPlayer
 ---@field game_index number holds game index to get proper PlayerEntity
 ---@field controller_index number holds
 ---@field player_head coopHUD.PlayerHead
@@ -367,8 +367,15 @@ function coopHUD.Player.render(self)
 		if self.collectibles[1] ~= nil then
 			if self.big_hud and #coopHUD.players == 1 then
 				-- only for 1 player
-				--renders collectibles on right (like vanilla)
-				self.collectibles[1]:render_items_table(not mirrored)
+				if self.essau and Input.IsActionPressed(ButtonAction.ACTION_DROP, self.controller_index) then
+					-- renders essau collectibles on drop button pressed
+					if self.essau.collectibles[1] ~= nil then
+						self.essau.collectibles[1]:render_items_table(not mirrored)
+					end
+				else
+					--renders collectibles on right (like vanilla)
+					self.collectibles[1]:render_items_table(not mirrored)
+				end
 			else
 				if self.signals.map_btn then
 					self.collectibles[1]:render_items_table(mirrored)
