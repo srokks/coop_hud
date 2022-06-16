@@ -55,6 +55,7 @@ setmetatable(coopHUD.Player, {
 --- Player constructor
 ---@private
 function coopHUD.Player.new(player_no, entPlayer)
+	---@type coopHUD.Player
 	local self = setmetatable({}, coopHUD.Player)
 	--
 	self.entPlayer = Isaac.GetPlayer(player_no)
@@ -125,7 +126,8 @@ function coopHUD.Player.new(player_no, entPlayer)
 	self.font_color = KColor(1, 1, 1, 1)
 	return self
 end
-function coopHUD.Player:update()
+---@param self  coopHUD.Player
+function coopHUD.Player.update(self)
 	-- Player Color Update
 	if coopHUD.options.player_info_color then
 		local temp_color = coopHUD.colors[coopHUD.players_config.small[self.game_index].color].color
@@ -161,12 +163,13 @@ function coopHUD.Player:update()
 	coopHUD.BoC.update(self)
 end
 --- renders main player hud - active item/hearts
+---@param self  coopHUD.Player
 ---@param pos Vector position where render sprite
 ---@param mirrored boolean change anchor to right corner
 ---@param scl Vector scale of sprite
 ---@param down_anchor boolean change anchor to down corner
 ---@return Vector offset where render next sprite
-function coopHUD.Player:renderMain(pos, mirrored, scl, down_anchor)
+function coopHUD.Player.renderMain(self, pos, mirrored, scl, down_anchor)
 	local temp_pos = Vector(pos.X, pos.Y)
 	local scale = scl
 	-- Renders player info (head and name)
@@ -216,12 +219,13 @@ function coopHUD.Player:renderMain(pos, mirrored, scl, down_anchor)
 	return offset
 end
 --- renders secondary player hud - pocket/trinkets
+---@param self  coopHUD.Player
 ---@param pos Vector position where render sprite
 ---@param mirrored boolean change anchor to right corner
 ---@param scl Vector scale of sprite
 ---@param down_anchor boolean change anchor to down corner
 ---@return Vector offset where render next sprite
-function coopHUD.Player:renderPockets(pos, mirrored, scl, down_anchor)
+function coopHUD.Player.renderPockets(self, pos, mirrored, scl, down_anchor)
 	local temp_pos = Vector(pos.X, pos.Y)
 	local scale = Vector(scl.X, scl.Y)
 	-- DIM CONTROL - for dim active item sprite on PLAYER_JACOB or PLAYER_ESAU
@@ -274,7 +278,8 @@ function coopHUD.Player:renderPockets(pos, mirrored, scl, down_anchor)
 	return offset
 end
 --- MAIN Player render function
-function coopHUD.Player:render()
+---@param self coopHUD.Player
+function coopHUD.Player.render(self)
 	local anchor = Vector(coopHUD.anchors[coopHUD.players_config.small[self.game_index].anchor].X,
 	                      coopHUD.anchors[coopHUD.players_config.small[self.game_index].anchor].Y)
 	local anchor_bot = Vector(coopHUD.anchors[coopHUD.players_config.small[self.game_index].anchor_bot].X,
@@ -372,12 +377,13 @@ function coopHUD.Player:render()
 	end
 end
 --- renders  player extra hud - mantle charge/extra lives
+---@param self  coopHUD.Player
 ---@param pos Vector position where render sprite
 ---@param mirrored boolean change anchor to right corner
 ---@param scale Vector scale of sprite
 ---@param down_anchor boolean change anchor to down corner
 ---@return Vector offset where render next sprite
-function coopHUD.Player:renderExtras(pos, mirrored, scale, down_anchor)
+function coopHUD.Player.renderExtras(self, pos, mirrored, scale, down_anchor)
 	local final_offset = Vector(0, 0)
 	local temp_pos = Vector(pos.X + 4, pos.Y)
 	--
@@ -424,9 +430,10 @@ function coopHUD.Player:renderExtras(pos, mirrored, scale, down_anchor)
 	return final_offset
 end
 --- renders  players stats
+---@param self  coopHUD.Player
 ---@param mirrored boolean change anchor to right corner
 ---@return Vector offset where render next sprite
-function coopHUD.Player:renderStats(mirrored)
+function coopHUD.Player.renderStats(self, mirrored)
 	--when options.stats.hide_in_battle on and battle signal
 	local font_color = KColor(1, 1, 1, 1)
 	if coopHUD.options.stats.colorful then

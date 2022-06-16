@@ -368,8 +368,8 @@ function coopHUD.Item:render(pos, mirrored, scale, down_anchor, dim)
 end
 --- Renders player collectibles table
 ---@param self coopHUD.Item
----@param pos Vector
-function coopHUD.Item.render_items_table(self)
+---@param mirrored boolean defines which side render true - right / false - left
+function coopHUD.Item.render_items_table(self, mirrored)
 	local items_table = self.parent.collectibles -- saves parent collectibles to local temp
 	--
 	local init_pos = Vector(0, 64)
