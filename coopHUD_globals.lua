@@ -32,20 +32,6 @@ coopHUD.options = {
 		vanilla_position = false -- defines if deals show under stats (true) or on down_screen (false)
 	}
 }
-coopHUD.GLOBALS = {
-	item_anim_path         = '/gfx/ui/items_coop.anm2',
-	card_anim_path         = "gfx/ui/hud_card_coop.anm2",
-	pill_anim_path         = "gfx/ui/hud_pills_coop.anm2",
-	charge_anim_path       = "gfx/ui/activechargebar_coop.anm2",
-	poop_anim_path         = "gfx/ui/ui_poops.anm2",
-	player_head_anim_path  = "gfx/ui/coop menu.anm2",
-	hud_el_anim_path       = "gfx/ui/hudpickups.anm2",
-	streak_anim_path       = "gfx/ui/ui_streak.anm2",
-	hud_stats_anim_path    = "gfx/ui/hudstats2.anm2",
-	pause_screen_anim_path = "gfx/ui/pausescreen.anm2",
-	crating_anim_path      = "gfx/ui/ui_crafting.anm2",
-	inventory_anim_path    = "gfx/ui/ui_inventory.anm2",
-}
 coopHUD.players = {} -- main players table, holds coopHUD.Player instances
 coopHUD.essau_no = 0 -- holds run info about extra players in game (Essau,Lost from T.Forgotten)
 coopHUD.angel_seen = false -- holds run info, if angel room was seen, used in deals calculate

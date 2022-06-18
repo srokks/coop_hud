@@ -3,6 +3,7 @@
 ---@return coopHUD.PlayerHead
 coopHUD.PlayerHead = {}
 coopHUD.PlayerHead.__index = coopHUD.PlayerHead
+coopHUD.PlayerHead.anim_path = "gfx/ui/coop menu.anm2"
 setmetatable(coopHUD.PlayerHead, {
 	__call = function(cls, ...)
 		return cls.new(...)
@@ -27,7 +28,7 @@ function coopHUD.PlayerHead:getSprite()
 	end
 	if 0 <= player_type and player_type <= 37 then
 		local sprite = Sprite()
-		sprite:Load(coopHUD.GLOBALS.player_head_anim_path, true)
+		sprite:Load(coopHUD.PlayerHead.anim_path, true)
 		sprite:SetFrame('Main', player_type + 1)
 		sprite:ReplaceSpritesheet(1, "/gfx/ui/blank.png")
 		sprite:LoadGraphics()

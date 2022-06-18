@@ -5,6 +5,8 @@ coopHUD.Pocket.NONE = 0
 coopHUD.Pocket.CARD = 1
 coopHUD.Pocket.PILL = 2
 coopHUD.Pocket.COLLECTIBLE = 3
+coopHUD.Pocket.card_anim_path = "gfx/ui/hud_card_coop.anm2"
+coopHUD.Pocket.pill_anim_path = "gfx/ui/hud_pills_coop.anm2"
 coopHUD.Pocket.__index = coopHUD.Pocket
 setmetatable(coopHUD.Pocket, {
 	__call = function(cls, ...)
@@ -53,12 +55,12 @@ function coopHUD.Pocket:getSprite()
 	local sprite = Sprite()
 	if self.type == coopHUD.Pocket.CARD then
 		-- Card
-		sprite:Load(coopHUD.GLOBALS.card_anim_path, true)
+		sprite:Load(coopHUD.Pocket.card_anim_path, true)
 		sprite:SetFrame("CardFronts", self.id) -- sets card frame
 	elseif self.type == coopHUD.Pocket.PILL then
 		-- Pill
 		if self.id > 2048 then self.id = self.id - 2048 end -- check if its horse pill and change id to normal
-		sprite:Load(coopHUD.GLOBALS.pill_anim_path, true)
+		sprite:Load(coopHUD.Pocket.pill_anim_path, true)
 		sprite:SetFrame("Pills", self.id) --sets frame to pills with correct id
 	else
 		sprite = nil

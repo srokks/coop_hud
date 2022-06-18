@@ -6,6 +6,8 @@
 coopHUD.Item = {}
 coopHUD.Item.__index = coopHUD.Item
 coopHUD.Item.type = PickupVariant.PICKUP_COLLECTIBLE
+coopHUD.Item.anim_path = '/gfx/ui/items_coop.anm2'
+coopHUD.Item.charge_anim_path = "gfx/ui/activechargebar_coop.anm2"
 setmetatable(coopHUD.Item, {
 	__call = function(cls, ...)
 		return cls.new(...)
@@ -53,10 +55,10 @@ function coopHUD.Item.getChargeSprites(self)
 	-- Normal and battery charge
 	local charges = self.entPlayer:GetActiveCharge(self.slot) + self.entPlayer:GetBatteryCharge(self.slot)
 	local step = math.floor((charges / (max_charges * 2)) * 46)
-	sprites.charge:Load(coopHUD.GLOBALS.charge_anim_path, true)
+	sprites.charge:Load(coopHUD.Item.charge_anim_path, true)
 	sprites.charge:SetFrame('ChargeBar', step)
 	-- Overlay sprite
-	sprites.overlay:Load(coopHUD.GLOBALS.charge_anim_path, true)
+	sprites.overlay:Load(coopHUD.Item.charge_anim_path, true)
 	if (max_charges > 1 and max_charges < 5) or max_charges == 6 or max_charges == 12 then
 		sprites.overlay:SetFrame("BarOverlay" .. max_charges, 0)
 	else
@@ -74,7 +76,7 @@ function coopHUD.Item.getChargeSprites(self)
 			beth_charge = self.entPlayer:GetEffectiveBloodCharge()
 			color:SetColorize(1, 0.2, 0.2, 1)
 		end
-		sprites.beth_charge:Load(coopHUD.GLOBALS.charge_anim_path, true)
+		sprites.beth_charge:Load(coopHUD.Item.charge_anim_path, true)
 		sprites.beth_charge.Color = color
 		step = step + math.floor((beth_charge / (max_charges * 2)) * 46) + 1
 		sprites.beth_charge:SetFrame('ChargeBar', step)
@@ -92,7 +94,7 @@ function coopHUD.Item:getSprite()
 	local sprite = Sprite()
 	local sprite_path = Isaac.GetItemConfig():GetCollectible(self.id).GfxFileName
 	local anim_name = "Idle"
-	sprite:Load(coopHUD.GLOBALS.item_anim_path, false)
+	sprite:Load(coopHUD.Item.anim_path, false)
 	--
 	-- Custom sprites set - jars etc.
 	if self.id == CollectibleType.COLLECTIBLE_THE_JAR then

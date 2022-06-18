@@ -29,7 +29,7 @@ end
 function coopHUD.Trinket:getSprite()
 	if self.id == 0 or self.id == nil then return nil end
 	local sprite = Sprite()
-	sprite:Load(coopHUD.GLOBALS.item_anim_path, true)
+	sprite:Load(coopHUD.Item.anim_path, true)
 	local item_sprite = Isaac.GetItemConfig():GetTrinket(self.id).GfxFileName
 	sprite:ReplaceSpritesheet(0, item_sprite) -- item layer
 	sprite:ReplaceSpritesheet(2, item_sprite) -- shadow layer
