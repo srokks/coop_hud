@@ -588,3 +588,15 @@ function coopHUD.Player.getByEntityIndex(entity_index)
 	end
 	return nil
 end
+---Returns player number searching coopHUD.player table for matching controller index
+---@param controller_index number
+---@return number or -1
+function coopHUD.Player.getIndexByControllerIndex(controller_index)
+	local final_index = -1
+	for i, p in pairs(coopHUD.players) do
+		if p.controller_index == controller_index then
+			final_index = i
+		end
+	end
+	return final_index
+end

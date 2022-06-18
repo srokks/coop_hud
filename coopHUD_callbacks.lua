@@ -53,7 +53,7 @@ function coopHUD.on_join_signal()
 	if not Game():IsPaused() then
 		for i = 0, 8 do
 			if Input.IsActionTriggered(ButtonAction.ACTION_JOINMULTIPLAYER, i)
-					and coopHUD.getPlayerNumByControllerIndex(i) < 0 -- checks if player is already in tables
+					and coopHUD.Player.getIndexByControllerIndex(i) < 0 -- checks if player is already in tables
 					and not coopHUD.signals.is_joining
 					and Game():GetRoom():IsFirstVisit() == true -- you can join into coop only on first floor of game
 					and Game():GetLevel():GetAbsoluteStage() == LevelStage.STAGE1_1 -- on first level
@@ -182,7 +182,6 @@ end)
 -- MC_USE_PILL
 -- triggers streak with pill name on use
 coopHUD:AddCallback(ModCallbacks.MC_USE_PILL, function(_, effect_no, entPlayer)
-	local player_index = coopHUD.getPlayerNumByControllerIndex(entPlayer.ControllerIndex)
 	local player = coopHUD.Player.getByEntityIndex(entPlayer.Index)
 	if player then
 		local pill_sys_name = Isaac.GetItemConfig():GetPillEffect(effect_no).Name
@@ -224,7 +223,6 @@ coopHUD:AddCallback(ModCallbacks.MC_PRE_USE_ITEM,
 -- Isaac uses use signal of D4 to roll in Dice Room and other occasions
 coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
                     function(_, collectible_type, rng, entPlayer, use_flags, slot, var_data)
-	                    local player_index = coopHUD.getPlayerNumByControllerIndex(entPlayer.ControllerIndex)
 	                    local player = coopHUD.Player.getByEntityIndex(entPlayer.Index)
 	                    if player then
 		                    player.collectibles = {} -- resets players collectible table
@@ -246,7 +244,7 @@ coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
 -- FIXME: no charges for multiples jar of wisp instances in one run
 coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
                     function(_, collectible_type, rng, entPlayer, use_flags, slot, var_data)
-	                    local player_index = coopHUD.getPlayerNumByControllerIndex(entPlayer.ControllerIndex)
+	                    local player_index = coopHUD.Player.getIndexByControllerIndex(entPlayer.ControllerIndex)
 	                    if player_index >= 0 and coopHUD.players[player_index] then
 		                    if coopHUD.jar_of_wisp_charge < 11 then
 			                    -- max charge 12
@@ -258,7 +256,7 @@ coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
 --connect to MC_USE_ITEM to handle hold current spell, cannot get from Isaac API
 coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
                     function(_, collectible_type, rng, entPlayer, use_flags, slot, var_data)
-	                    local player_index = coopHUD.getPlayerNumByControllerIndex(entPlayer.ControllerIndex)
+	                    local player_index = coopHUD.Player.getIndexByControllerIndex(entPlayer.ControllerIndex)
 	                    if player_index >= 0 and coopHUD.players[player_index]
 			                    and (coopHUD.players[player_index].poops.poop_mana > 0) then
 		                    if coopHUD.players[player_index].hold_spell == 0 then
@@ -277,7 +275,7 @@ coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
 ---connect to MC_USE_ITEM to handle bag of crafting reset when crafted item playing as no T.Cain
 coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
                     function(_, collectible_type, rng, entPlayer, use_flags, slot, var_data)
-	                    local player_index = coopHUD.getPlayerNumByControllerIndex(entPlayer.ControllerIndex)
+	                    local player_index = coopHUD.Player.getIndexByControllerIndex(entPlayer.ControllerIndex)
 	                    if entPlayer:GetPlayerType() ~= PlayerType.PLAYER_CAIN_B then
 		                    if #coopHUD.players[player_index].bag_of_crafting == 8 then
 			                    coopHUD.players[player_index].bag_of_crafting = {}
@@ -301,7 +299,7 @@ coopHUD:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, function(_, _, Variant, Su
 	if Variant == 4 and SubType == 4 then
 		pill_card_pressed = false -- resets signal for creating item if pressed attack buttton
 		pill_held = 0
-		last_bag = coopHUD.getPlayerNumByControllerIndex(Spawner:ToPlayer().ControllerIndex)
+		last_bag = coopHUD.Player.getIndexByControllerIndex(Spawner:ToPlayer().ControllerIndex)
 	end
 end)
 ---ModCallbacks.MC_POST_ENTITY_REMOVE
@@ -368,7 +366,7 @@ function coopHUD.inputs_signals()
 	local pill_card_pressed = false
 	for i = 0, Game():GetNumPlayers() - 1 do
 		local controller_index = Isaac.GetPlayer(i).ControllerIndex
-		local player_index = coopHUD.getPlayerNumByControllerIndex(controller_index)
+		local player_index = coopHUD.Player.getIndexByControllerIndex(controller_index)
 		if Input.IsActionPressed(ButtonAction.ACTION_MAP, controller_index) then
 			mapPressed = player_index
 		end

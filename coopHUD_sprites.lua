@@ -69,13 +69,3 @@ function coopHUD.updateAnchors()
 		                                                                                             -offset * 1.6)
 	end
 end
-function coopHUD.getPlayerNumByControllerIndex(controller_index)
-	-- Function returns player number searching coopHUD.player table for matching controller index
-	local final_index = -1
-	for i, p in pairs(coopHUD.players) do
-		if p.controller_index == controller_index then
-			final_index = i
-		end
-	end
-	return final_index
-end
