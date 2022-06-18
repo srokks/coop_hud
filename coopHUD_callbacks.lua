@@ -18,33 +18,7 @@ function coopHUD.on_start(_, cont)
 			--TODO: jar of wisp charge load from save
 			-- Loads player data from save
 			for player_no, player_save in pairs(save.run.players) do
-				--` load collectibles
-				for _, item_id in pairs(player_save.collectibles) do
-					local type, id = item_id[1], item_id[2]
-					if type == PickupVariant.PICKUP_COLLECTIBLE then
-						table.insert(coopHUD.players[player_no].collectibles,
-						             coopHUD.Item(coopHUD.players[player_no], -1, id))
-					elseif type == PickupVariant.PICKUP_TRINKET then
-						table.insert(coopHUD.players[player_no].collectibles,
-						             coopHUD.Trinket(coopHUD.players[player_no], -1, id))
-					end
-				end
-				--load gulped_trinkets and un roll able
-				for _, item_id in pairs(player_save.gulped_trinkets) do
-					local type, id = item_id[1], item_id[2]
-					if type == PickupVariant.PICKUP_COLLECTIBLE then
-						table.insert(coopHUD.players[player_no].gulped_trinkets,
-						             coopHUD.Item(coopHUD.players[player_no], -1, id))
-					elseif type == PickupVariant.PICKUP_TRINKET then
-						table.insert(coopHUD.players[player_no].gulped_trinkets,
-						             coopHUD.Trinket(coopHUD.players[player_no].entPlayer, -1, id))
-					end
-				end
-				coopHUD.players[player_no].hold_spell = player_save.hold_spell
-				-- Bag of crafting
-				for _, item_id in pairs(player_save.bag_of_crafting) do
-					table.insert(coopHUD.players[player_no].bag_of_crafting, coopHUD.BoC.Item(item_id))
-				end
+				coopHUD.players[player_no]:loadFromSaveTable(player_save)
 			end
 			--
 		end
@@ -141,7 +115,6 @@ coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, function(_, entPlayer)
 			table.insert(temp_player_table, coopHUD.players[player_index].essau)
 		end
 		for _, temp_player in pairs(temp_player_table) do
-			print(temp_player.entPlayer:GetName())
 			local item_queue = temp_player.entPlayer.QueuedItem
 			if item_queue and item_queue.Item and item_queue.Item ~= nil and temp_player.temp_item == nil then
 				-- enters only if isaac is holding item in queue and temp item in table

@@ -10,7 +10,7 @@ include("sprites.Trinket.lua")
 ---@class coopHUD.Player
 ---@param player_no number player number used in game
 ---@param entPlayer EntityPlayer Player Entity
----@field self coopHUD.Player
+---@field private self coopHUD.Player
 ---@field entPlayer EntityPlayer
 ---@field game_index number holds game index to get proper PlayerEntity
 ---@field controller_index number holds
@@ -487,5 +487,71 @@ function coopHUD.Player.renderStats(self, mirrored)
 	if self.game_index == 0 and not (self.entPlayer:GetPlayerType() == PlayerType.PLAYER_ESAU) then
 		-- saves pos under stats for other hud modules to access like deals stats
 		coopHUD.HUD.stat_anchor = temp_stat_pos
+	end
+end
+---Prepares table with items to save on close game.
+---@param self coopHUD.Player
+---@return table
+function coopHUD.Player.getSaveTable(self)
+	local collectibles = {}
+	for j = 1, #self.collectibles do
+		table.insert(collectibles,
+		             { self.collectibles[j].type, self.collectibles[j].id })
+	end
+	local gulped_trinkets = {}
+	for j = 1, #self.gulped_trinkets do
+		table.insert(gulped_trinkets,
+		             { self.type, self.id })
+	end
+	-- save bag of crafting
+	local bag_of_crafting = {}
+	if self.bag_of_crafting ~= nil then
+		for j = 1, #self.bag_of_crafting do
+			table.insert(bag_of_crafting, self.bag_of_crafting[j].id)
+		end
+	end
+	local essau = nil
+	if self.essau ~= nil then
+		essau = self.essau:getSaveTable()
+	end
+	return { collectibles    = collectibles,
+	         gulped_trinkets = gulped_trinkets,
+	         hold_spell      = self.hold_spell,
+	         bag_of_crafting = bag_of_crafting,
+	         essau           = essau,
+	}
+end
+---@param self coopHUD.Player
+function coopHUD.Player.loadFromSaveTable(self, save_table)
+	--` load collectibles
+	for _, item_id in pairs(save_table.collectibles) do
+		local type, id = item_id[1], item_id[2]
+		if type == PickupVariant.PICKUP_COLLECTIBLE then
+			table.insert(self.collectibles,
+			             coopHUD.Item(self, -1, id))
+		elseif type == PickupVariant.PICKUP_TRINKET then
+			table.insert(self.collectibles,
+			             coopHUD.Trinket(self, -1, id))
+		end
+	end
+	--load gulped_trinkets and un roll able
+	for _, item_id in pairs(save_table.gulped_trinkets) do
+		local type, id = item_id[1], item_id[2]
+		if type == PickupVariant.PICKUP_COLLECTIBLE then
+			table.insert(self.gulped_trinkets,
+			             coopHUD.Item(self, -1, id))
+		elseif type == PickupVariant.PICKUP_TRINKET then
+			table.insert(self.gulped_trinkets,
+			             coopHUD.Trinket(self.entPlayer, -1, id))
+		end
+	end
+	self.hold_spell = save_table.hold_spell
+	-- Bag of crafting
+	for _, item_id in pairs(save_table.bag_of_crafting) do
+		table.insert(self.bag_of_crafting, coopHUD.BoC.Item(item_id))
+	end
+	-- Essau
+	if save_table.essau then
+		self.essau:loadFromSaveTable(save_table.essau)
 	end
 end
