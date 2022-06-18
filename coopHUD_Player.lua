@@ -346,7 +346,8 @@ function coopHUD.Player.render(self)
 				-- collectibles render in big hud
 			else
 				-- renders essau stats on drop pressed
-				if self.essau and Input.IsActionPressed(ButtonAction.ACTION_DROP, self.controller_index) then
+				if self.essau and Input.IsActionPressed(ButtonAction.ACTION_DROP,
+				                                        self.controller_index) and not self.signals.map_btn then
 					self.essau:renderStats(mirrored)
 				else
 					if not self.signals.map_btn then
@@ -364,21 +365,30 @@ function coopHUD.Player.render(self)
 	end
 	--COLLECTIBLES RENDER
 	if coopHUD.options.extra_hud then
-		if self.collectibles[1] ~= nil then
-			if self.big_hud and #coopHUD.players == 1 then
-				-- only for 1 player
-				if self.essau and Input.IsActionPressed(ButtonAction.ACTION_DROP, self.controller_index) then
-					-- renders essau collectibles on drop button pressed
-					if self.essau.collectibles[1] ~= nil then
-						self.essau.collectibles[1]:render_items_table(not mirrored)
+		if not (coopHUD.options.extra_hud_hide_on_battle and coopHUD.signals.on_battle) then
+			if self.collectibles[1] ~= nil then
+				if self.big_hud and #coopHUD.players == 1 then
+					-- only for 1 player
+					if self.essau and Input.IsActionPressed(ButtonAction.ACTION_DROP, self.controller_index) then
+						-- renders essau collectibles on drop button pressed
+						if self.essau.collectibles[1] ~= nil then
+							self.essau.collectibles[1]:render_items_table(not mirrored)
+						end
+					else
+						--renders collectibles on right (like vanilla)
+						self.collectibles[1]:render_items_table(not mirrored)
 					end
 				else
-					--renders collectibles on right (like vanilla)
-					self.collectibles[1]:render_items_table(not mirrored)
-				end
-			else
-				if self.signals.map_btn then
-					self.collectibles[1]:render_items_table(mirrored)
+					if self.signals.map_btn then
+						if self.essau and Input.IsActionPressed(ButtonAction.ACTION_DROP, self.controller_index) then
+							-- renders essau collectibles on drop button pressed
+							if self.essau.collectibles[1] ~= nil then
+								self.essau.collectibles[1]:render_items_table(mirrored)
+							end
+						else
+							self.collectibles[1]:render_items_table(mirrored)
+						end
+					end
 				end
 			end
 		end

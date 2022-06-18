@@ -105,30 +105,6 @@ if ModConfigMenu then
 			return 'Force small (compacted) player HUD in < 2 players'
 		end
 	})
-	-- show my stuff page
-	ModConfigMenu.AddSetting(mod_name, "General", {
-		Type           = ModConfigMenu.OptionType.BOOLEAN,
-		CurrentSetting = function()
-			return coopHUD.options.extra_hud
-		end,
-		Default        = coopHUD.options.extra_hud,
-
-		Display        = function()
-			local onOff = "Off"
-			if coopHUD.options.extra_hud then
-				onOff = "On"
-			end
-
-			return "Extra HUD: " .. onOff
-		end,
-		OnChange       = function(currentBool)
-			coopHUD.options.extra_hud = currentBool
-			coopHUD.save_options()
-		end,
-		Info           = function()
-			return 'Show collected collectibles'
-		end
-	})
 	-- PLAYERS NAME/HEAD
 	ModConfigMenu.AddSetting(mod_name, "General", {
 		Type           = ModConfigMenu.OptionType.BOOLEAN,
@@ -373,6 +349,56 @@ if ModConfigMenu then
 		end,
 		Info           = function()
 			return "Hide chances while in battle"
+		end
+	})
+	-- __ ExtraHUD(items)
+	ModConfigMenu.AddTitle(mod_name, 'ExtraHUD', 'General')
+	-- show extra hud
+	ModConfigMenu.AddSetting(mod_name, "ExtraHUD", {
+		Type           = ModConfigMenu.OptionType.BOOLEAN,
+		CurrentSetting = function()
+			return coopHUD.options.extra_hud
+		end,
+		Default        = coopHUD.options.extra_hud,
+
+		Display        = function()
+			local onOff = "Off"
+			if coopHUD.options.extra_hud then
+				onOff = "On"
+			end
+
+			return "Extra HUD: " .. onOff
+		end,
+		OnChange       = function(currentBool)
+			coopHUD.options.extra_hud = currentBool
+			coopHUD.save_options()
+		end,
+		Info           = function()
+			return 'Show collected collectibles. While in co-op hold MAP button'
+		end
+	})
+	-- hide extra hud in battle
+	ModConfigMenu.AddSetting(mod_name, "ExtraHUD", {
+		Type           = ModConfigMenu.OptionType.BOOLEAN,
+		CurrentSetting = function()
+			return coopHUD.options.extra_hud_hide_on_battle
+		end,
+		Default        = coopHUD.options.extra_hud_hide_on_battle,
+
+		Display        = function()
+			local onOff = "Off"
+			if coopHUD.options.extra_hud_hide_on_battle then
+				onOff = "On"
+			end
+
+			return "Hide on battle: " .. onOff
+		end,
+		OnChange       = function(currentBool)
+			coopHUD.options.extra_hud_hide_on_battle = currentBool
+			coopHUD.save_options()
+		end,
+		Info           = function()
+			return "Hides collectibles while in battle"
 		end
 	})
 	-- __ Players
