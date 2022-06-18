@@ -395,7 +395,7 @@ function coopHUD.Item.render_items_table(self, mirrored)
 	--
 	local temp_index = 1 -- temp index for positioning due we show from latest
 	local collectibles_stop = 1  -- last index of shown item
-	if #items_table > 44 then
+	if #items_table > 51 then
 		-- prevention from showing too much items
 		collectibles_stop = #items_table - 51
 	end

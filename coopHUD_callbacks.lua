@@ -369,55 +369,56 @@ end)
 local btn_held = 0
 pill_held = 0 -- TODO: change to local in retail
 function coopHUD.inputs_signals()
-    -- Trigger for turning on/off coop hud on `H` key
-    if coopHUD.options.h_trigger then
-        if Input.IsButtonTriggered(Keyboard.KEY_H, 0) then
-            if coopHUD.options.onRender then
-                coopHUD.options.onRender = false
-            else
-                coopHUD.options.onRender = true
-            end
-        end
-    end
-    -- Trigger for turning on/off timer on `T` key
-    if Input.IsButtonTriggered(Keyboard.KEY_T, 0) then
-        if coopHUD.options.timer_always_on then
-            coopHUD.options.timer_always_on = false
-        else
-            coopHUD.options.timer_always_on = true
-        end
-    end
-    local mapPressed = false
-    local pill_card_pressed = false
-    for i = 0, Game():GetNumPlayers() - 1 do
-        local controller_index = Isaac.GetPlayer(i).ControllerIndex
-        local player_index = coopHUD.getPlayerNumByControllerIndex(controller_index)
-        if Input.IsActionPressed(ButtonAction.ACTION_MAP, controller_index) then
-            mapPressed = player_index
-        end
-        -- DROP ACTION
-        if Input.IsActionTriggered(ButtonAction.ACTION_DROP, controller_index) then
-            if coopHUD.players[player_index].entPlayer:GetPlayerType() == PlayerType.PLAYER_ISAAC_B then
-                if coopHUD.players[player_index].collectibles ~= nil then
-                    local collectibles = {}
-                    for i = 2, #coopHUD.players[player_index].collectibles do
-                        table.insert(collectibles, coopHUD.players[player_index].collectibles[i])
-                    end
-                    table.insert(collectibles, coopHUD.players[player_index].collectibles[1])
-                    coopHUD.players[player_index].collectibles = collectibles
-                end
-            end
-            if coopHUD.players[player_index].entPlayer:GetPlayerType() == PlayerType.PLAYER_CAIN_B then
-                --shift player bag of crafting if have
-                if coopHUD.players[player_index].bag_of_crafting ~= nil then
-                    local new_bag = {}
-                    for i = 2, #coopHUD.players[player_index].bag_of_crafting do
-                        table.insert(new_bag, coopHUD.players[player_index].bag_of_crafting[i])
-                    end
-                    table.insert(new_bag, coopHUD.players[player_index].bag_of_crafting[1])
-                    coopHUD.players[player_index].bag_of_crafting = new_bag
-                end
-
+	-- Trigger for turning on/off coop hud on `H` key
+	if coopHUD.options.h_trigger then
+		if Input.IsButtonTriggered(Keyboard.KEY_H, 0) then
+			if coopHUD.options.onRender then
+				coopHUD.options.onRender = false
+			else
+				coopHUD.options.onRender = true
+			end
+			coopHUD.save_options()
+			print('Saved!')
+		end
+	end
+	-- Trigger for turning on/off timer on `T` key
+	if Input.IsButtonTriggered(Keyboard.KEY_T, 0) then
+		if coopHUD.options.timer_always_on then
+			coopHUD.options.timer_always_on = false
+		else
+			coopHUD.options.timer_always_on = true
+		end
+	end
+	local mapPressed = false
+	local pill_card_pressed = false
+	for i = 0, Game():GetNumPlayers() - 1 do
+		local controller_index = Isaac.GetPlayer(i).ControllerIndex
+		local player_index = coopHUD.getPlayerNumByControllerIndex(controller_index)
+		if Input.IsActionPressed(ButtonAction.ACTION_MAP, controller_index) then
+			mapPressed = player_index
+		end
+		-- DROP ACTION
+		if Input.IsActionTriggered(ButtonAction.ACTION_DROP, controller_index) then
+			if coopHUD.players[player_index].entPlayer:GetPlayerType() == PlayerType.PLAYER_ISAAC_B then
+				if coopHUD.players[player_index].collectibles ~= nil then
+					local collectibles = {}
+					for i = 2, #coopHUD.players[player_index].collectibles do
+						table.insert(collectibles, coopHUD.players[player_index].collectibles[i])
+					end
+					table.insert(collectibles, coopHUD.players[player_index].collectibles[1])
+					coopHUD.players[player_index].collectibles = collectibles
+				end
+			end
+			if coopHUD.players[player_index].entPlayer:GetPlayerType() == PlayerType.PLAYER_CAIN_B then
+				--shift player bag of crafting if have
+				if coopHUD.players[player_index].bag_of_crafting ~= nil then
+					local new_bag = {}
+					for i = 2, #coopHUD.players[player_index].bag_of_crafting do
+						table.insert(new_bag, coopHUD.players[player_index].bag_of_crafting[i])
+					end
+					table.insert(new_bag, coopHUD.players[player_index].bag_of_crafting[1])
+					coopHUD.players[player_index].bag_of_crafting = new_bag
+				end
 			end
 		end
 		-- PILL CARD ACTION
