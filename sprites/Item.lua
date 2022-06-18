@@ -370,7 +370,14 @@ end
 ---@param self coopHUD.Item
 ---@param mirrored boolean defines which side render true - right / false - left
 function coopHUD.Item.render_items_table(self, mirrored)
-	local items_table = self.parent.collectibles -- saves parent collectibles to local temp
+	local items_table = { } -- saves parent collectibles to local temp
+	--combines trinkets and collectibles item tables
+	for i = 1, #self.parent.gulped_trinkets do
+		table.insert(items_table, self.parent.gulped_trinkets[i])
+	end
+	for i = 1, #self.parent.collectibles do
+		table.insert(items_table, self.parent.collectibles[i])
+	end
 	--
 	local init_pos = Vector(0, 64)
 	if mirrored then

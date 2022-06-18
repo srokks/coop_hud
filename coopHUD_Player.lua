@@ -366,7 +366,7 @@ function coopHUD.Player.render(self)
 	--COLLECTIBLES RENDER
 	if coopHUD.options.extra_hud then
 		if not (coopHUD.options.extra_hud_hide_on_battle and coopHUD.signals.on_battle) then
-			if self.collectibles[1] ~= nil then
+			if #self.collectibles > 0 or #self.gulped_trinkets > 0 then
 				if self.big_hud and #coopHUD.players == 1 then
 					-- only for 1 player
 					if self.essau and Input.IsActionPressed(ButtonAction.ACTION_DROP, self.controller_index) then
@@ -376,7 +376,8 @@ function coopHUD.Player.render(self)
 						end
 					else
 						--renders collectibles on right (like vanilla)
-						self.collectibles[1]:render_items_table(not mirrored)
+						coopHUD.Item.render_items_table(coopHUD.Item(self, -1, 0),
+						                                not mirrored) --FIXME: weird workaround, maybe need to move render_item_table to Player class
 					end
 				else
 					if self.signals.map_btn then
@@ -511,7 +512,7 @@ function coopHUD.Player.getSaveTable(self)
 	local gulped_trinkets = {}
 	for j = 1, #self.gulped_trinkets do
 		table.insert(gulped_trinkets,
-		             { self.type, self.id })
+		             { self.gulped_trinkets[j].type, self.gulped_trinkets[j].id })
 	end
 	-- save bag of crafting
 	local bag_of_crafting = {}
