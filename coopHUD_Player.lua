@@ -371,8 +371,9 @@ function coopHUD.Player.render(self)
 					-- only for 1 player
 					if self.essau and Input.IsActionPressed(ButtonAction.ACTION_DROP, self.controller_index) then
 						-- renders essau collectibles on drop button pressed
-						if self.essau.collectibles[1] ~= nil then
-							self.essau.collectibles[1]:render_items_table(not mirrored)
+						if #self.essau.collectibles > 0 or #self.essau.gulped_trinkets > 0 then
+							coopHUD.Item.render_items_table(coopHUD.Item(self.essau, -1, 0),
+							                                not mirrored)
 						end
 					else
 						--renders collectibles on right (like vanilla)
@@ -383,11 +384,11 @@ function coopHUD.Player.render(self)
 					if self.signals.map_btn then
 						if self.essau and Input.IsActionPressed(ButtonAction.ACTION_DROP, self.controller_index) then
 							-- renders essau collectibles on drop button pressed
-							if self.essau.collectibles[1] ~= nil then
-								self.essau.collectibles[1]:render_items_table(mirrored)
+							if #self.essau.collectibles > 0 or #self.essau.gulped_trinkets > 0 then
+								coopHUD.Item.render_items_table(coopHUD.Item(self.essau, -1, 0), mirrored)
 							end
 						else
-							self.collectibles[1]:render_items_table(mirrored)
+							coopHUD.Item.render_items_table(coopHUD.Item(self, -1, 0), mirrored)
 						end
 					end
 				end
@@ -565,4 +566,18 @@ function coopHUD.Player.loadFromSaveTable(self, save_table)
 	if save_table.essau then
 		self.essau:loadFromSaveTable(save_table.essau)
 	end
+end
+---Return Player by entity index.
+---@param entity_index number
+---@return coopHUD.Player or nil
+function coopHUD.Player.getByEntityIndex(entity_index)
+	for i, player in pairs(coopHUD.players) do
+		if player.entPlayer.Index == entity_index then
+			return player
+		end
+		if player.essau and player.essau.entPlayer.Index == entity_index then
+			return player.essau
+		end
+	end
+	return nil
 end
