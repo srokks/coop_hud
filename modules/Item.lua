@@ -1,4 +1,9 @@
 ---@class coopHUD.Item
+---@field parent coopHUD.Player
+---@field entPlayer EntityPlayer
+---@field slot number
+---@field frame_num number
+---@field id number
 ---@param player coopHUD.Player
 ---@param slot number  slot binding -1 - no slot | ActiveSlot enums
 ---@param item_id number
@@ -36,8 +41,9 @@ function coopHUD.Item.new(player, slot, item_id)
 	return self
 end
 --- return self charge sprite table
+---@private
 ---@param self coopHUD.Item
----@return table table of charge sprites
+---@return table table of charge modules
 function coopHUD.Item.getChargeSprites(self)
 	-- Gets charge of item from  player, slot
 	local sprites = {
@@ -48,7 +54,7 @@ function coopHUD.Item.getChargeSprites(self)
 	if self.id == 0 or self.id == nil or self.slot < 0 then
 		return nil
 	end
-	local max_charges = Isaac.GetItemConfig():GetCollectible(self.id).MaxCharges
+	local max_charges = self:getMaxCharge()
 	if max_charges == 0 then
 		return false
 	end
@@ -85,7 +91,20 @@ function coopHUD.Item.getChargeSprites(self)
 	end
 	return sprites
 end
-function coopHUD.Item:getSprite()
+---Returns items max charge amount, used form maintain Placebo/Mimic/Spindown Dice charges
+---@private
+---@param self coopHUD.Item
+---@return number
+function coopHUD.Item.getMaxCharge(self)
+	local max_charges = Isaac.GetItemConfig():GetCollectible(self.id).MaxCharges
+	if self.id == CollectibleType.COLLECTIBLE_PLACEBO then
+		max_charges = 5
+	end
+	return max_charges
+end
+---@private
+---@param self coopHUD.Item
+function coopHUD.Item.getSprite(self)
 	if self.id == 0 or (self.entPlayer and self.entPlayer.Variant == 1) then
 		return nil
 	end
@@ -96,7 +115,7 @@ function coopHUD.Item:getSprite()
 	local anim_name = "Idle"
 	sprite:Load(coopHUD.Item.anim_path, false)
 	--
-	-- Custom sprites set - jars etc.
+	-- Custom modules set - jars etc.
 	if self.id == CollectibleType.COLLECTIBLE_THE_JAR then
 		sprite_path = "gfx/characters/costumes/costume_rebirth_90_thejar.png"
 		anim_name = "Jar"
@@ -119,6 +138,8 @@ function coopHUD.Item:getSprite()
 	elseif self.id == CollectibleType.COLLECTIBLE_URN_OF_SOULS then
 		sprite_path = "gfx/ui/hud_urnofsouls.png"
 		anim_name = "SoulUrn"
+	elseif self.id == CollectibleType.COLLECTIBLE_D_INFINITY then
+		sprite_path = "gfx/characters/costumes/costume_489_dinfinity.png"
 	end
 	sprite:ReplaceSpritesheet(0, sprite_path) -- item
 	sprite:ReplaceSpritesheet(1, sprite_path) -- border
@@ -152,7 +173,9 @@ function coopHUD.Item:getSprite()
 	--
 	return sprite
 end
-function coopHUD.Item:getFrameNum()
+---@private
+---@param self coopHUD.Item
+function coopHUD.Item.getFrameNum(self)
 	local frame_num = 0
 	if self.id > 0 and self.slot >= 0 then
 		--The Jar/Jar of Flies - charges check
@@ -203,7 +226,9 @@ function coopHUD.Item:getFrameNum()
 	return frame_num
 end
 --- Returns current charge of item if not connected to slot return nil
-function coopHUD.Item:getCharge()
+---@private
+---@param self coopHUD.Item
+function coopHUD.Item.getCharge(self)
 	if self.slot >= 0 then
 		local item_charge = self.entPlayer:GetActiveCharge(self.slot) + self.entPlayer:GetBatteryCharge(self.slot)
 		if self.entPlayer:GetPlayerType() == PlayerType.PLAYER_BETHANY then
@@ -216,7 +241,10 @@ function coopHUD.Item:getCharge()
 		return item_charge
 	end
 end
-function coopHUD.Item:update()
+---Updates item id,frame_num,sprite
+---@private
+---@param self coopHUD.Item
+function coopHUD.Item.update(self)
 	if self.id ~= self.entPlayer:GetActiveItem(self.slot) then
 		self.id = self.entPlayer:GetActiveItem(self.slot)
 		self.sprite = self:getSprite()
@@ -231,14 +259,19 @@ function coopHUD.Item:update()
 	end
 end
 --- updates item charge bars
-function coopHUD.Item:updateCharge()
+---@private
+---@param self coopHUD.Item
+function coopHUD.Item.updateCharge(self)
 	if self.charge ~= self:getCharge() then
 		self.charge = self:getCharge()
 		self.charge_sprites = self.getChargeSprites(self)
 		self:updateSprite()
 	end
 end
-function coopHUD.Item:updateSprite()
+---Updates sprite based on self.id,self.frame_num
+---@private
+---@param self coopHUD.Item
+function coopHUD.Item.updateSprite(self)
 	if self.sprite then
 		if self.frame_num ~= self:getFrameNum() then
 			self.frame_num = self:getFrameNum()
@@ -390,7 +423,7 @@ function coopHUD.Item.render_items_table(self, mirrored)
 	local temp_pos = Vector(init_pos.X, init_pos.Y)
 	--
 	local down_anchor = false --TODO:from arg
-	-- defines items sprites scale and no of colums based on collected collectibles
+	-- defines items modules scale and no of colums based on collected collectibles
 	local scale = Vector(1, 1)
 	local col_no = 2
 	if #items_table > 10 then
