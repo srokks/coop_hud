@@ -1,12 +1,3 @@
-include("sprites.Hearts.lua")
-include("sprites.Inventory.lua")
-include("sprites.Item.lua")
-include("sprites.BoC.lua")
-include("sprites.PlayerHead.lua")
-include("sprites.Pocket.lua")
-include("sprites.Poops.lua")
-include("sprites.Stat.lua")
-include("sprites.Trinket.lua")
 ---@class coopHUD.Player
 ---@param player_no number player number used in game
 ---@param entPlayer EntityPlayer Player Entity
@@ -191,7 +182,7 @@ function coopHUD.Player.renderMain(self, pos, mirrored, scl, down_anchor)
 		dim = Input.IsActionPressed(ButtonAction.ACTION_DROP, self.controller_index)
 		scale = coopHUD.players_config.small.scale -- resets scale if essau logic changes it
 		if dim then scale = Vector(0.9 * coopHUD.players_config.small.scale.X,
-		                           0.9 * coopHUD.players_config.small.scale.Y) end -- shrinks inactive sprites
+		                           0.9 * coopHUD.players_config.small.scale.Y) end -- shrinks inactive modules
 	end
 	-- ACTIVE/SCHOOLBAG ITEM RENDER
 	local active_off = Vector(0, 0)
@@ -242,7 +233,7 @@ function coopHUD.Player.renderPockets(self, pos, mirrored, scl, down_anchor)
 		dim = not Input.IsActionPressed(ButtonAction.ACTION_DROP, self.controller_index)
 		scale = coopHUD.players_config.small.scale -- resets scale if essau logic changes it
 		if dim then scale = Vector(0.9 * coopHUD.players_config.small.scale.X,
-		                           0.9 * coopHUD.players_config.small.scale.Y) end -- shrinks inactive sprites
+		                           0.9 * coopHUD.players_config.small.scale.Y) end -- shrinks inactive modules
 	end
 	--FIRST POCKET RENDER
 	local trinket_off = Vector(0, 0)

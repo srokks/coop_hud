@@ -99,7 +99,7 @@ function coopHUD.PoopsTable.new(entPlayer)
 	end
 	return self
 end
---- Renders poops spells  sprites in current position
+--- Renders poops spells  modules in current position
 ---@param pos Vector position where render sprite
 ---@param mirrored boolean change anchor to right corner
 ---@param scale Vector scale of sprite

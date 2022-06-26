@@ -1,5 +1,5 @@
-include("sprites.RunInfo.lua")
-include("sprites.Streak.lua")
+include("modules.RunInfo.lua")
+include("modules.Streak.lua")
 --
 coopHUD.HUD = {}
 coopHUD.HUD.fonts = {}

@@ -449,7 +449,7 @@ if ModConfigMenu then
 			coopHUD.save_options()
 		end,
 		Info           = function()
-			return "Colors players sprites"
+			return "Colors players modules"
 		end
 	})
 	-- colorful stuff page
