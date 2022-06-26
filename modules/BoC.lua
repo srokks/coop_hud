@@ -238,9 +238,8 @@ function coopHUD.BoC.update(player)
 		player.crafting_result = coopHUD.Item(player, -1, 0)
 	end
 end
-coopHUD.EID = include('helpers.BoC_helpers.lua') -- imports needed function from External Item Description by Wolfsauge
 --- handles Bag of Crafting recipe calculation
---- mod itself imports prepared External Item Descriptions by Wolfsauge functions an use it to calculate result
+--- it unpack bag of crafting to components table for calculate
 ---@param player coopHUD.Player
 ---@return number item id
 function coopHUD.BoC.calculate(player)
@@ -257,7 +256,8 @@ function coopHUD.BoC.calculate(player)
 		return id_b
 	end
 end
----- TODO: @Wolfsauge
+-- BAG CALCULATION FUNCTIONS
+-- adopted functions from External Item Descriptions mod by Wolfsauge - https://steamcommunity.com/sharedfiles/filedetails/?id=836319872
 local xml_data = include('helpers.eid_xmldata.lua')
 --
 coopHUD.BoC.itemUnlockStates = {}
@@ -422,7 +422,14 @@ local calculatedRecipes = {}
 local lockedRecipes = {}
 --If the seed changes, the above two tables will be wiped
 local lastSeedUsed = Game():GetSeeds():GetStartSeed()
---
+--[[ TODO: reset like below, connect somewhere on BOC update func
+	local curSeed = game:GetSeeds():GetStartSeed()
+	if (curSeed ~= lastSeedUsed) then
+		calculatedRecipes = {}
+		lockedRecipes = {}
+	end
+	lastSeedUsed = curSeed
+]]
 -- Checks if any player has a given collectible ID, for modifiers
 function coopHUD.BoC:PlayersHaveCollectible(collectibleID)
 	for i = 0, Game():GetNumPlayers() - 1 do
