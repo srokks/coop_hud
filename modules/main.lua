@@ -1,5 +1,6 @@
 include("modules.Hearts.lua")
 include("modules.Inventory.lua")
+include('modules.ChargeBar.lua')
 include("modules.Item.lua")
 include("modules.BoC.lua")
 include("modules.PlayerHead.lua")

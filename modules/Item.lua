@@ -21,6 +21,7 @@ setmetatable(coopHUD.Item, {
 ---@see coopHUD.Item
 ---@private
 function coopHUD.Item.new(player, slot, item_id)
+	---@type coopHUD.Item
 	local self = setmetatable({}, coopHUD.Item)
 	self.parent = player
 	if self.parent == nil then
@@ -35,72 +36,9 @@ function coopHUD.Item.new(player, slot, item_id)
 	end
 	self.frame_num = self:getFrameNum()
 	self.sprite = self:getSprite()
-	self.charge = self:getCharge()
-	self.charge_sprites = self.getChargeSprites(self)
+	self.charge = coopHUD.ChargeBar(self)
 	self.temp_item = nil
 	return self
-end
---- return self charge sprite table
----@private
----@param self coopHUD.Item
----@return table table of charge modules
-function coopHUD.Item.getChargeSprites(self)
-	-- Gets charge of item from  player, slot
-	local sprites = {
-		beth_charge = Sprite(),
-		charge      = Sprite(),
-		overlay     = Sprite(),
-	}
-	if self.id == 0 or self.id == nil or self.slot < 0 then
-		return nil
-	end
-	local max_charges = self:getMaxCharge()
-	if max_charges == 0 then
-		return false
-	end
-	-- Normal and battery charge
-	local charges = self.entPlayer:GetActiveCharge(self.slot) + self.entPlayer:GetBatteryCharge(self.slot)
-	local step = math.floor((charges / (max_charges * 2)) * 46)
-	sprites.charge:Load(coopHUD.Item.charge_anim_path, true)
-	sprites.charge:SetFrame('ChargeBar', step)
-	-- Overlay sprite
-	sprites.overlay:Load(coopHUD.Item.charge_anim_path, true)
-	if (max_charges > 1 and max_charges < 5) or max_charges == 6 or max_charges == 12 then
-		sprites.overlay:SetFrame("BarOverlay" .. max_charges, 0)
-	else
-		sprites.overlay:SetFrame("BarOverlay1", 0)
-	end
-	-- Bethany charge
-	local player_type = self.entPlayer:GetPlayerType()
-	if player_type == PlayerType.PLAYER_BETHANY or player_type == PlayerType.PLAYER_BETHANY_B then
-		local beth_charge
-		local color = Color(1, 1, 1, 1, 0, 0, 0)
-		if player_type == PlayerType.PLAYER_BETHANY then
-			beth_charge = self.entPlayer:GetEffectiveSoulCharge()
-			color:SetColorize(0.8, 0.9, 1.8, 1)
-		elseif player_type == PlayerType.PLAYER_BETHANY_B then
-			beth_charge = self.entPlayer:GetEffectiveBloodCharge()
-			color:SetColorize(1, 0.2, 0.2, 1)
-		end
-		sprites.beth_charge:Load(coopHUD.Item.charge_anim_path, true)
-		sprites.beth_charge.Color = color
-		step = step + math.floor((beth_charge / (max_charges * 2)) * 46) + 1
-		sprites.beth_charge:SetFrame('ChargeBar', step)
-	else
-		sprites.beth_charge = false
-	end
-	return sprites
-end
----Returns items max charge amount, used form maintain Placebo/Mimic/Spindown Dice charges
----@private
----@param self coopHUD.Item
----@return number
-function coopHUD.Item.getMaxCharge(self)
-	local max_charges = Isaac.GetItemConfig():GetCollectible(self.id).MaxCharges
-	if self.id == CollectibleType.COLLECTIBLE_PLACEBO then
-		max_charges = 5
-	end
-	return max_charges
 end
 ---@private
 ---@param self coopHUD.Item
@@ -211,12 +149,11 @@ function coopHUD.Item.getFrameNum(self)
 			frame_num = self.parent.hold_spell
 		else
 			-- Sets overlay/charges state frame --
-			local max_charges = Isaac.GetItemConfig():GetCollectible(self.id).MaxCharges-- gets max charges
-			if max_charges == 0 then
+			if self.charge and self.charge.max_charge == 0 then
 				-- checks id item has any charges
 				frame_num = 0 -- set frame to unloaded
-			elseif self.entPlayer:NeedsCharge(self.slot) == false or (self.charge and self.charge >= max_charges) then
-				-- checks if item dont needs charges or item is overloaded
+			elseif self.entPlayer:NeedsCharge(self.slot) == false or (self.charge and (self.charge:getCurrentCharge() >= self.charge.max_charge)) then
+				--checks if item dont needs charges or item is overloaded
 				frame_num = 1 -- set frame to loaded
 			else
 				frame_num = 0  -- set frame to unloaded
@@ -225,22 +162,6 @@ function coopHUD.Item.getFrameNum(self)
 	end
 	return frame_num
 end
---- Returns current charge of item if not connected to slot return nil
----@private
----@param self coopHUD.Item
-function coopHUD.Item.getCharge(self)
-	if self.slot >= 0 then
-		local item_charge = self.entPlayer:GetActiveCharge(self.slot) + self.entPlayer:GetBatteryCharge(self.slot)
-		if self.entPlayer:GetPlayerType() == PlayerType.PLAYER_BETHANY then
-			-- Bethany Soul Charge integration
-			item_charge = item_charge + self.entPlayer:GetSoulCharge()
-		elseif self.entPlayer:GetPlayerType() == PlayerType.PLAYER_BETHANY_B then
-			-- T. Bethany Blood Charge integration
-			item_charge = item_charge + self.entPlayer:GetBloodCharge()
-		end
-		return item_charge
-	end
-end
 ---Updates item id,frame_num,sprite
 ---@private
 ---@param self coopHUD.Item
@@ -248,7 +169,6 @@ function coopHUD.Item.update(self)
 	if self.id ~= self.entPlayer:GetActiveItem(self.slot) then
 		self.id = self.entPlayer:GetActiveItem(self.slot)
 		self.sprite = self:getSprite()
-		self.charge_sprites = self.getChargeSprites(self)
 	end
 	if self.frame_num ~= self:getFrameNum() then
 		self.frame_num = self:getFrameNum()
@@ -257,15 +177,8 @@ function coopHUD.Item.update(self)
 	if self.belial_check or self.virtuoses_check then
 		self:updateSprite()
 	end
-end
---- updates item charge bars
----@private
----@param self coopHUD.Item
-function coopHUD.Item.updateCharge(self)
-	if self.charge ~= self:getCharge() then
-		self.charge = self:getCharge()
-		self.charge_sprites = self.getChargeSprites(self)
-		self:updateSprite()
+	if self.charge then
+		self.charge:update()
 	end
 end
 ---Updates sprite based on self.id,self.frame_num
@@ -279,69 +192,15 @@ function coopHUD.Item.updateSprite(self)
 		end
 	end
 end
---- Renders item charge bars if item has
----@param pos Vector position where render sprite
----@param mirrored boolean change anchor to right corner
----@param scale Vector scale of sprite
----@param down_anchor boolean change anchor to down corner
----@param dim boolean defines if dim sprite
----@return Vector
-function coopHUD.Item:renderChargeBar(pos, mirrored, scale, down_anchor)
-	local temp_pos = Vector(pos.X, pos.Y)
-	local offset = Vector(0, 0)
-	if self.charge_sprites then
-		--
-		local sprite_scale = scale
-		if sprite_scale == nil then
-			sprite_scale = Vector(1, 1)
-		end
-		--
-		if mirrored then
-			temp_pos.X = temp_pos.X - (4 * sprite_scale.X)
-			offset.X = -8 * 1.25 * sprite_scale.X
-		else
-			temp_pos.X = temp_pos.X + (4 * sprite_scale.X)
-			offset.X = 8 * sprite_scale.X
-		end
-		--
-		if down_anchor then
-			temp_pos.Y = temp_pos.Y - (16 * sprite_scale.Y)
-			offset.Y = -32 * sprite_scale.Y
-		else
-			temp_pos.Y = temp_pos.Y + (16 * sprite_scale.Y)
-			offset.Y = 32 * sprite_scale.Y
-		end
-		--
-		if self.charge_sprites.charge then
-			self.charge_sprites.charge.Scale = sprite_scale
-			self.charge_sprites.charge:RenderLayer(0, temp_pos)  -- renders background
-		end
-		if self.charge_sprites.beth_charge then
-			self.charge_sprites.beth_charge.Scale = sprite_scale
-			self.charge_sprites.beth_charge:RenderLayer(1, temp_pos) -- renders bethany charge
-		end
-		if self.charge_sprites.charge then
-			self.charge_sprites.charge.Scale = sprite_scale
-			self.charge_sprites.charge:RenderLayer(1, temp_pos)
-			self.charge_sprites.charge:RenderLayer(2, temp_pos)
-		end
-		if self.charge_sprites.overlay then
-			self.charge_sprites.overlay.Scale = sprite_scale
-			self.charge_sprites.overlay:Render(temp_pos)
-		end
-
-	end
-	return offset
-end
 --- Renders item sprite in current position
+---@param self coopHUD.Item
 ---@param pos Vector position where render sprite
 ---@param mirrored boolean change anchor to right corner
 ---@param scale Vector scale of sprite
 ---@param down_anchor boolean change anchor to down corner
 ---@param dim boolean defines if dim sprite
 ---@return Vector offset where render next sprite
-function coopHUD.Item:render(pos, mirrored, scale, down_anchor, dim)
-	self:updateCharge()
+function coopHUD.Item.render(self, pos, mirrored, scale, down_anchor, dim)
 	local temp_pos = Vector(pos.X, pos.Y)
 	local sprite_scale = scale
 	local offset = Vector(0, 0)
@@ -388,15 +247,16 @@ function coopHUD.Item:render(pos, mirrored, scale, down_anchor, dim)
 				temp_pos = Vector(pos.X + 5, pos.Y + 8)
 				if down_anchor then temp_pos.Y = temp_pos.Y - 8 end
 				if Game():GetLevel():GetCurses() >= LevelCurse.CURSE_OF_BLIND then
-					coopHUD.BoC.Unknown:render(temp_pos, mirrored, Vector(0.7, 0.7), down_anchor)
+					--coopHUD.BoC.Unknown:render(temp_pos, mirrored, Vector(0.7, 0.7), down_anchor)--FIXME:COOP-98:BoC: Unknown item sprite
 				else
 					self.parent.crafting_result:render(temp_pos, mirrored, Vector(0.7, 0.7), down_anchor, dim)
 				end
 			end
 		end
 	end
-	if self.slot >= 0 and self.slot ~= ActiveSlot.SLOT_SECONDARY then
-		local charge_off = self:renderChargeBar(Vector(pos.X + offset.X, pos.Y), mirrored, scale, down_anchor)
+	-- ChargeBar render
+	if self.charge then
+		local charge_off = self.charge:render(Vector(pos.X + offset.X, pos.Y), mirrored, scale, down_anchor, dim)
 		offset.X = offset.X + charge_off.X
 	end
 	return offset
