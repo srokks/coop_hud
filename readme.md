@@ -192,10 +192,12 @@ You can install  mod from  [Steam workshop](https://steamcommunity.com/sharedfil
 ## Screens
 
 [//]: # (Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.)
-<img src="thumbnails/01_2p coop.png" alt="Logo" width="600" height="400">
-<img src="thumbnails/02_2p vanilla.png" alt="Logo" width="600" height="400"> </br>
-<img src="thumbnails/05_4p_coop.png" alt="Logo" width="600" height="400"> </br>
-<img src="thumbnails/06_4p_vanilla.png" alt="Logo" width="600" height="400"> </br>
+<img src="thumbnails/2p coop.png" alt="Logo" width="600" height="400">
+<img src="thumbnails/2p van.png" alt="Logo" width="600" height="400"> </br>
+<img src="thumbnails/4p_coop.png" alt="Logo" width="600" height="400"> </br>
+<img src="thumbnails/4p_van.png" alt="Logo" width="600" height="400"> </br>
+<img src="thumbnails/boc_coop.png" alt="Logo" width="600" height="400"> </br>
+<img src="thumbnails/boc_van.png" alt="Logo" width="600" height="400"> </br>
 
 [//]: # (_For more examples, please refer to the [Documentation]&#40;https://example.com&#41;_)
 <p align="right">(<a href="#top">back to top</a>)</p>
