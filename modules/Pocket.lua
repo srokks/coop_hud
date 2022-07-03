@@ -1,4 +1,12 @@
 ---@class coopHUD.Pocket
+---@private field parent coopHUD.Player
+---@field slot number
+---@field type number  0 - none, 1 - card, 2 - pill, 3 - item
+---@field id number holds id in case of pill holds pill color
+---@field sprite Sprite
+---@field item coopHUD.Item or nil
+---@field name string
+---@field desc string
 ---@type fun(parent:coopHUD.Player,slot:number):coopHUD.Pocket
 coopHUD.Pocket = {}
 coopHUD.Pocket.NONE = 0
@@ -13,8 +21,11 @@ setmetatable(coopHUD.Pocket, {
 		return cls.new(...)
 	end,
 })
+---@param parent coopHUD.Player
+---@param slot number
 ---@private
 function coopHUD.Pocket.new(parent, slot)
+	---@type coopHUD.Pocket
 	local self = setmetatable({}, coopHUD.Pocket)
 	self.parent = parent
 	self.slot = slot
@@ -24,7 +35,10 @@ function coopHUD.Pocket.new(parent, slot)
 	self.name, self.desc = self:getName()
 	return self
 end
-function coopHUD.Pocket:getPocket()
+---Returns pocket type and pocket id
+---@param self coopHUD.Pocket
+---@private
+function coopHUD.Pocket.getPocket(self)
 	local pocket_type = 0
 	local pocket_id = 0
 	if self.parent.entPlayer:GetCard(self.slot) > 0 then
@@ -51,7 +65,9 @@ function coopHUD.Pocket:getPocket()
 	end
 	return pocket_type, pocket_id
 end
-function coopHUD.Pocket:getSprite()
+---@param self coopHUD.Pocket
+---@private
+function coopHUD.Pocket.getSprite(self)
 	local sprite = Sprite()
 	if self.type == coopHUD.Pocket.CARD then
 		-- Card
@@ -67,11 +83,15 @@ function coopHUD.Pocket:getSprite()
 	end
 	return sprite
 end
-function coopHUD.Pocket:getItem()
+---@param self coopHUD.Pocket
+---@private
+function coopHUD.Pocket.getItem(self)
 	if self.type ~= 3 then return nil end
 	return coopHUD.Item(self.parent, 2)
 end
-function coopHUD.Pocket:getName()
+---@param self coopHUD.Pocket
+---@private
+function coopHUD.Pocket.getName(self)
 	local name = nil
 	local desc = nil
 	if self.type == nil then return nil, nil end
@@ -105,7 +125,9 @@ function coopHUD.Pocket:getName()
 	end
 	return name, desc
 end
-function coopHUD.Pocket:update()
+---@param self coopHUD.Pocket
+---@private
+function coopHUD.Pocket.update(self)
 	local type, id = self:getPocket()
 	if self.id ~= id then
 		self.type, self.id = type, id
@@ -192,3 +214,4 @@ function coopHUD.Pocket:render(pos, mirrored, scale, down_anchor, dim)
 	end
 	return offset
 end
+
