@@ -1,5 +1,5 @@
-include("sprites.RunInfo.lua")
-include("sprites.Streak.lua")
+include("modules.RunInfo.lua")
+include("modules.Streak.lua")
 --
 coopHUD.HUD = {}
 coopHUD.HUD.fonts = {}
@@ -29,7 +29,6 @@ function coopHUD.HUD.init()
 	coopHUD.HUD.angel = coopHUD.Stat(coopHUD.HUD, coopHUD.Stat.ANGEL, true)
 	coopHUD.HUD.devil = coopHUD.Stat(coopHUD.HUD, coopHUD.Stat.DEVIL, true)
 	coopHUD.HUD.planetarium = coopHUD.Stat(coopHUD.HUD, coopHUD.Stat.PLANETARIUM, true)
-	coopHUD.Collectibles.sprite:SetFrame('Dissapear', 13)
 end
 ---coopHUD.HUD.render - renders specifics to the game like no of coins/keys/bombs
 ---Todo: based on options.show_dest_info - show info about run destination
@@ -116,7 +115,6 @@ function coopHUD.HUD.render()
 		end
 		if not coopHUD.signals.on_battle then
 			coopHUD.Streak:render()
-			coopHUD.Collectibles.render()
 		end
 	end
 end

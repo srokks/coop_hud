@@ -5,6 +5,7 @@
 ---@return coopHUD.Poop
 coopHUD.Poop = {}
 coopHUD.Poop.__index = coopHUD.Poop
+coopHUD.Poop.anim_path = "gfx/ui/ui_poops.anm2"
 setmetatable(coopHUD.Poop, {
 	__call = function(cls, ...)
 		return cls.new(...)
@@ -25,7 +26,7 @@ function coopHUD.Poop:getSprite()
 	local layer_name = 'IdleSmall'
 	if self.slot == 0 then layer_name = 'Idle' end
 	local sprite = Sprite()
-	sprite:Load(coopHUD.GLOBALS.poop_anim_path, true)
+	sprite:Load(coopHUD.Poop.anim_path, true)
 	sprite:SetFrame(layer_name, self.spell_type)
 	if self.dim then
 		local col = Color(0.3, 0.3, 0.3, 1)
@@ -98,7 +99,7 @@ function coopHUD.PoopsTable.new(entPlayer)
 	end
 	return self
 end
---- Renders poops spells  sprites in current position
+--- Renders poops spells  modules in current position
 ---@param pos Vector position where render sprite
 ---@param mirrored boolean change anchor to right corner
 ---@param scale Vector scale of sprite

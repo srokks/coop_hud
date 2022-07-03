@@ -20,7 +20,7 @@ coopHUD.RunInfo.BETH = 12
 coopHUD.RunInfo.GIGA_BOMB = 14
 coopHUD.RunInfo.T_BETH = 15
 coopHUD.RunInfo.POOP = 16
-
+coopHUD.RunInfo.anim_path = "gfx/ui/hudpickups.anm2"
 function coopHUD.RunInfo.new(info_type)
 	local self = setmetatable({}, coopHUD.RunInfo)
 	self.type = info_type
@@ -95,7 +95,7 @@ function coopHUD.RunInfo:getSprite()
 		end
 	end
 	local sprite = Sprite()
-	sprite:Load(coopHUD.GLOBALS.hud_el_anim_path, true)
+	sprite:Load(coopHUD.RunInfo.anim_path, true)
 	sprite:SetFrame('Idle', self.type)
 	sprite:LoadGraphics()
 	return sprite

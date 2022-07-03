@@ -14,7 +14,7 @@ function coopHUD.save_options()
 	save.players_config = coopHUD.players_config
 	--
 	save.run = {
-		['essau_no'] = coopHUD.essau_no,
+		['essau_no']   = coopHUD.essau_no,
 		['angel_seen'] = coopHUD.angel_seen,
 	}
 	--
@@ -24,31 +24,7 @@ function coopHUD.save_options()
 	--
 	local players = {}
 	for i = 1, #coopHUD.players do
-		-- saves player collectibles
-		local collectibles = {}
-		if coopHUD.players[i] then
-			for j = 1, #coopHUD.players[i].collectibles do
-				table.insert(collectibles,
-				             {coopHUD.players[i].collectibles[j].type, coopHUD.players[i].collectibles[j].id})
-			end
-			local gulped_trinkets = {}
-			for j = 1, #coopHUD.players[i].gulped_trinkets do
-				table.insert(gulped_trinkets,
-				             {coopHUD.players[i].gulped_trinkets[j].type, coopHUD.players[i].gulped_trinkets[j].id})
-			end
-			-- save bag of crafting
-			local bag_of_crafting = {}
-			if coopHUD.players[i].bag_of_crafting ~= nil then
-				for j = 1, #coopHUD.players[i].bag_of_crafting do
-					table.insert(bag_of_crafting, coopHUD.players[i].bag_of_crafting[j].id)
-				end
-			end
-			-- save all player infos
-			players[i] = {collectibles = collectibles,
-			              gulped_trinkets = gulped_trinkets,
-			              hold_spell = coopHUD.players[i].hold_spell,
-			              bag_of_crafting = bag_of_crafting}
-		end
+		players[i] = coopHUD.players[i]:getSaveTable()
 	end
 	save.run.players = players
 	coopHUD:SaveData(json.encode(save))
@@ -82,13 +58,13 @@ if ModConfigMenu then
 	ModConfigMenu.AddTitle(mod_name, "General", "General")
 	-- SHOW HUD
 	ModConfigMenu.AddSetting(mod_name, "General", {
-		Type = ModConfigMenu.OptionType.BOOLEAN,
+		Type           = ModConfigMenu.OptionType.BOOLEAN,
 		CurrentSetting = function()
 			return coopHUD.options.onRender
 		end,
-		Default = coopHUD.options.onRender,
+		Default        = coopHUD.options.onRender,
 
-		Display = function()
+		Display        = function()
 			local onOff = "off"
 			if coopHUD.options.onRender then
 				onOff = "on"
@@ -96,24 +72,24 @@ if ModConfigMenu then
 
 			return "Show coopHUD: " .. onOff
 		end,
-		OnChange = function(currentBool)
+		OnChange       = function(currentBool)
 			coopHUD.options.onRender = currentBool
 			coopHUD.save_options()
 		end,
-		Info = function()
+		Info           = function()
 			local TotalText = "Turn on/off coopHUD. Toggled by 'H' on keyboard"
 			return TotalText
 		end
 	})
 	-- Force small
 	ModConfigMenu.AddSetting(mod_name, "General", {
-		Type = ModConfigMenu.OptionType.BOOLEAN,
+		Type           = ModConfigMenu.OptionType.BOOLEAN,
 		CurrentSetting = function()
 			return coopHUD.options.force_small_hud
 		end,
-		Default = coopHUD.options.force_small_hud,
+		Default        = coopHUD.options.force_small_hud,
 
-		Display = function()
+		Display        = function()
 			local onOff = "Off"
 			if coopHUD.options.force_small_hud then
 				onOff = "On"
@@ -121,47 +97,23 @@ if ModConfigMenu then
 
 			return "Force small hud: " .. onOff
 		end,
-		OnChange = function(currentBool)
+		OnChange       = function(currentBool)
 			coopHUD.options.force_small_hud = currentBool
 			coopHUD.save_options()
 		end,
-		Info = function()
+		Info           = function()
 			return 'Force small (compacted) player HUD in < 2 players'
-		end
-	})
-	-- show my stuff page
-	ModConfigMenu.AddSetting(mod_name, "General", {
-		Type = ModConfigMenu.OptionType.BOOLEAN,
-		CurrentSetting = function()
-			return coopHUD.options.show_my_stuff
-		end,
-		Default = coopHUD.options.show_my_stuff,
-
-		Display = function()
-			local onOff = "Off"
-			if coopHUD.options.show_my_stuff then
-				onOff = "On"
-			end
-
-			return "Show my stuff page: " .. onOff
-		end,
-		OnChange = function(currentBool)
-			coopHUD.options.show_my_stuff = currentBool
-			coopHUD.save_options()
-		end,
-		Info = function()
-			return 'Shows player items on long map button push'
 		end
 	})
 	-- PLAYERS NAME/HEAD
 	ModConfigMenu.AddSetting(mod_name, "General", {
-		Type = ModConfigMenu.OptionType.BOOLEAN,
+		Type           = ModConfigMenu.OptionType.BOOLEAN,
 		CurrentSetting = function()
 			return coopHUD.options.render_player_info
 		end,
-		Default = coopHUD.options.force_small_hud,
+		Default        = coopHUD.options.force_small_hud,
 
-		Display = function()
+		Display        = function()
 			local onOff = "Off"
 			if coopHUD.options.render_player_info then
 				onOff = "On"
@@ -169,11 +121,11 @@ if ModConfigMenu then
 
 			return "Render HUD player indicators: " .. onOff
 		end,
-		OnChange = function(currentBool)
+		OnChange       = function(currentBool)
 			coopHUD.options.render_player_info = currentBool
 			coopHUD.save_options()
 		end,
-		Info = function()
+		Info           = function()
 			local TotalText
 			if coopHUD.options.render_player_info then
 				TotalText = "Player head/name will be rendered in HUD"
@@ -185,13 +137,13 @@ if ModConfigMenu then
 	})
 	-- Timer always on setting
 	ModConfigMenu.AddSetting(mod_name, "General", {
-		Type = ModConfigMenu.OptionType.BOOLEAN,
+		Type           = ModConfigMenu.OptionType.BOOLEAN,
 		CurrentSetting = function()
 			return coopHUD.options.timer_always_on
 		end,
-		Default = coopHUD.options.timer_always_on,
+		Default        = coopHUD.options.timer_always_on,
 
-		Display = function()
+		Display        = function()
 			local onOff = "Off"
 			if coopHUD.options.timer_always_on then
 				onOff = "On"
@@ -199,23 +151,23 @@ if ModConfigMenu then
 
 			return "Timer always on: " .. onOff
 		end,
-		OnChange = function(currentBool)
+		OnChange       = function(currentBool)
 			coopHUD.options.timer_always_on = currentBool
 			coopHUD.save_options()
 		end,
-		Info = function()
+		Info           = function()
 			return "Timer toggle. Accesible by pressing 'T' on keyboard"
 		end
 	})
 	-- Show player name
 	ModConfigMenu.AddSetting(mod_name, "General", {
-		Type = ModConfigMenu.OptionType.BOOLEAN,
+		Type           = ModConfigMenu.OptionType.BOOLEAN,
 		CurrentSetting = function()
 			return coopHUD.options.show_player_names
 		end,
-		Default = coopHUD.options.show_player_names,
+		Default        = coopHUD.options.show_player_names,
 
-		Display = function()
+		Display        = function()
 			local onOff = "Off"
 			if coopHUD.options.show_player_names then
 				onOff = "On"
@@ -223,23 +175,23 @@ if ModConfigMenu then
 
 			return "Show player name: " .. onOff
 		end,
-		OnChange = function(currentBool)
+		OnChange       = function(currentBool)
 			coopHUD.options.show_player_names = currentBool
 			coopHUD.save_options()
 		end,
-		Info = function()
+		Info           = function()
 			return "Show  name under player"
 		end
 	})
 	-- h trigger
 	ModConfigMenu.AddSetting(mod_name, "General", {
-		Type = ModConfigMenu.OptionType.BOOLEAN,
+		Type           = ModConfigMenu.OptionType.BOOLEAN,
 		CurrentSetting = function()
 			return coopHUD.options.h_trigger
 		end,
-		Default = coopHUD.options.h_trigger,
+		Default        = coopHUD.options.h_trigger,
 
-		Display = function()
+		Display        = function()
 			local onOff = "Off"
 			if coopHUD.options.h_trigger then
 				onOff = "On"
@@ -247,11 +199,11 @@ if ModConfigMenu then
 
 			return "'h' trigger: " .. onOff
 		end,
-		OnChange = function(currentBool)
+		OnChange       = function(currentBool)
 			coopHUD.options.h_trigger = currentBool
 			coopHUD.save_options()
 		end,
-		Info = function()
+		Info           = function()
 			return "Toggle 'h' trigger for show HUD"
 		end
 	})
@@ -259,13 +211,13 @@ if ModConfigMenu then
 	ModConfigMenu.AddTitle(mod_name, 'Stats', 'Stats')
 	-- stats.show
 	ModConfigMenu.AddSetting(mod_name, "Stats", {
-		Type = ModConfigMenu.OptionType.BOOLEAN,
+		Type           = ModConfigMenu.OptionType.BOOLEAN,
 		CurrentSetting = function()
 			return coopHUD.options.stats.show
 		end,
-		Default = coopHUD.options.stats.show,
+		Default        = coopHUD.options.stats.show,
 
-		Display = function()
+		Display        = function()
 			local onOff = "Off"
 			if coopHUD.options.stats.show then
 				onOff = "On"
@@ -273,23 +225,23 @@ if ModConfigMenu then
 
 			return "Show stats: " .. onOff
 		end,
-		OnChange = function(currentBool)
+		OnChange       = function(currentBool)
 			coopHUD.options.stats.show = currentBool
 			coopHUD.save_options()
 		end,
-		Info = function()
+		Info           = function()
 			return "Shows stats like Vanilla FoundHud"
 		end
 	})
 	-- stats.hide_in_battle
 	ModConfigMenu.AddSetting(mod_name, "Stats", {
-		Type = ModConfigMenu.OptionType.BOOLEAN,
+		Type           = ModConfigMenu.OptionType.BOOLEAN,
 		CurrentSetting = function()
 			return coopHUD.options.stats.hide_in_battle
 		end,
-		Default = coopHUD.options.stats.hide_in_battle,
+		Default        = coopHUD.options.stats.hide_in_battle,
 
-		Display = function()
+		Display        = function()
 			local onOff = "Off"
 			if coopHUD.options.stats.hide_in_battle then
 				onOff = "On"
@@ -297,11 +249,11 @@ if ModConfigMenu then
 
 			return "Hide on battle: " .. onOff
 		end,
-		OnChange = function(currentBool)
+		OnChange       = function(currentBool)
 			coopHUD.options.stats.hide_in_battle = currentBool
 			coopHUD.save_options()
 		end,
-		Info = function()
+		Info           = function()
 			return "Hides stats while in battle"
 		end
 	})
@@ -309,13 +261,13 @@ if ModConfigMenu then
 	ModConfigMenu.AddTitle(mod_name, 'Stats', 'Deals')
 	-- show deals
 	ModConfigMenu.AddSetting(mod_name, "Stats", {
-		Type = ModConfigMenu.OptionType.BOOLEAN,
+		Type           = ModConfigMenu.OptionType.BOOLEAN,
 		CurrentSetting = function()
 			return coopHUD.options.deals.show
 		end,
-		Default = coopHUD.options.deals.show,
+		Default        = coopHUD.options.deals.show,
 
-		Display = function()
+		Display        = function()
 			local onOff = "Off"
 			if coopHUD.options.deals.show then
 				onOff = "On"
@@ -323,23 +275,23 @@ if ModConfigMenu then
 
 			return "Show deals chance: " .. onOff
 		end,
-		OnChange = function(currentBool)
+		OnChange       = function(currentBool)
 			coopHUD.options.deals.show = currentBool
 			coopHUD.save_options()
 		end,
-		Info = function()
+		Info           = function()
 			return "Shows deal chances"
 		end
 	})
 	-- deals position
 	ModConfigMenu.AddSetting(mod_name, "Stats", {
-		Type = ModConfigMenu.OptionType.BOOLEAN,
+		Type           = ModConfigMenu.OptionType.BOOLEAN,
 		CurrentSetting = function()
 			return coopHUD.options.deals.vanilla_position
 		end,
-		Default = coopHUD.options.deals.vanilla_position,
+		Default        = coopHUD.options.deals.vanilla_position,
 
-		Display = function()
+		Display        = function()
 			local onOff = "coopHUD"
 			if coopHUD.options.deals.vanilla_position then
 				onOff = "Vanilla"
@@ -347,69 +299,119 @@ if ModConfigMenu then
 
 			return "Deals position: " .. onOff
 		end,
-		OnChange = function(currentBool)
+		OnChange       = function(currentBool)
 			coopHUD.options.deals.vanilla_position = currentBool
 			coopHUD.save_options()
 		end,
-		Info = function()
+		Info           = function()
 			return "Deals chance position"
 		end
 	})
 	-- show planetarium
 	ModConfigMenu.AddSetting(mod_name, "Stats", {
-		Type = ModConfigMenu.OptionType.BOOLEAN,
+		Type           = ModConfigMenu.OptionType.BOOLEAN,
 		CurrentSetting = function()
 			return coopHUD.options.deals.show_planetarium
 		end,
-		Default = coopHUD.options.deals.show_planetarium,
-		Display = function()
+		Default        = coopHUD.options.deals.show_planetarium,
+		Display        = function()
 			local onOff = "Off"
 			if coopHUD.options.deals.show_planetarium then
 				onOff = "On"
 			end
 			return "Show planetarium chance: " .. onOff
 		end,
-		OnChange = function(currentBool)
+		OnChange       = function(currentBool)
 			coopHUD.options.deals.show_planetarium = currentBool
 			coopHUD.save_options()
 		end,
-		Info = function()
+		Info           = function()
 			return "Show planetarium chances"
 		end
 	})
 	-- hide deals in battle
 	ModConfigMenu.AddSetting(mod_name, "Stats", {
-		Type = ModConfigMenu.OptionType.BOOLEAN,
+		Type           = ModConfigMenu.OptionType.BOOLEAN,
 		CurrentSetting = function()
 			return coopHUD.options.deals.hide_in_battle
 		end,
-		Default = coopHUD.options.deals.hide_in_battle,
-		Display = function()
+		Default        = coopHUD.options.deals.hide_in_battle,
+		Display        = function()
 			local onOff = "Off"
 			if coopHUD.options.deals.hide_in_battle then
 				onOff = "On"
 			end
 			return "Hide chance in battle: " .. onOff
 		end,
-		OnChange = function(currentBool)
+		OnChange       = function(currentBool)
 			coopHUD.options.deals.hide_in_battle = currentBool
 			coopHUD.save_options()
 		end,
-		Info = function()
+		Info           = function()
 			return "Hide chances while in battle"
+		end
+	})
+	-- __ ExtraHUD(items)
+	ModConfigMenu.AddTitle(mod_name, 'ExtraHUD', 'General')
+	-- show extra hud
+	ModConfigMenu.AddSetting(mod_name, "ExtraHUD", {
+		Type           = ModConfigMenu.OptionType.BOOLEAN,
+		CurrentSetting = function()
+			return coopHUD.options.extra_hud
+		end,
+		Default        = coopHUD.options.extra_hud,
+
+		Display        = function()
+			local onOff = "Off"
+			if coopHUD.options.extra_hud then
+				onOff = "On"
+			end
+
+			return "Extra HUD: " .. onOff
+		end,
+		OnChange       = function(currentBool)
+			coopHUD.options.extra_hud = currentBool
+			coopHUD.save_options()
+		end,
+		Info           = function()
+			return 'Show collected collectibles. While in co-op hold MAP button'
+		end
+	})
+	-- hide extra hud in battle
+	ModConfigMenu.AddSetting(mod_name, "ExtraHUD", {
+		Type           = ModConfigMenu.OptionType.BOOLEAN,
+		CurrentSetting = function()
+			return coopHUD.options.extra_hud_hide_on_battle
+		end,
+		Default        = coopHUD.options.extra_hud_hide_on_battle,
+
+		Display        = function()
+			local onOff = "Off"
+			if coopHUD.options.extra_hud_hide_on_battle then
+				onOff = "On"
+			end
+
+			return "Hide on battle: " .. onOff
+		end,
+		OnChange       = function(currentBool)
+			coopHUD.options.extra_hud_hide_on_battle = currentBool
+			coopHUD.save_options()
+		end,
+		Info           = function()
+			return "Hides collectibles while in battle"
 		end
 	})
 	-- __ Players
 	ModConfigMenu.AddTitle(mod_name, "Colors", 'General')
 	-- .player_info_color
 	ModConfigMenu.AddSetting(mod_name, "Colors", {
-		Type = ModConfigMenu.OptionType.BOOLEAN,
+		Type           = ModConfigMenu.OptionType.BOOLEAN,
 		CurrentSetting = function()
 			return coopHUD.options.player_info_color
 		end,
-		Default = coopHUD.options.player_info_color,
+		Default        = coopHUD.options.player_info_color,
 
-		Display = function()
+		Display        = function()
 			local onOff = "Off"
 			if coopHUD.options.player_info_color then
 				onOff = "On"
@@ -417,23 +419,23 @@ if ModConfigMenu then
 
 			return "Colorful HUD: " .. onOff
 		end,
-		OnChange = function(currentBool)
+		OnChange       = function(currentBool)
 			coopHUD.options.player_info_color = currentBool
 			coopHUD.save_options()
 		end,
-		Info = function()
+		Info           = function()
 			return "Player info/stats will be colorfull"
 		end
 	})
 	-- colorful players
 	ModConfigMenu.AddSetting(mod_name, "Colors", {
-		Type = ModConfigMenu.OptionType.BOOLEAN,
+		Type           = ModConfigMenu.OptionType.BOOLEAN,
 		CurrentSetting = function()
 			return coopHUD.options.colorful_players
 		end,
-		Default = coopHUD.options.colorful_players,
+		Default        = coopHUD.options.colorful_players,
 
-		Display = function()
+		Display        = function()
 			local onOff = "Off"
 			if coopHUD.options.colorful_players then
 				onOff = "On"
@@ -441,13 +443,13 @@ if ModConfigMenu then
 
 			return "Colorful players: " .. onOff
 		end,
-		OnChange = function(currentBool)
+		OnChange       = function(currentBool)
 			if not currentBool then coopHUD.options.color_player_names = false end
 			coopHUD.options.colorful_players = currentBool
 			coopHUD.save_options()
 		end,
-		Info = function()
-			return "Colors players sprites"
+		Info           = function()
+			return "Colors players modules"
 		end
 	})
 	-- colorful stuff page
@@ -478,30 +480,30 @@ if ModConfigMenu then
 	ModConfigMenu.AddTitle(mod_name, "Colors", 'Player colors')
 	for i = 0, 3 do
 		ModConfigMenu.AddSetting(mod_name, "Colors", {
-			Type = ModConfigMenu.OptionType.NUMBER,
+			Type           = ModConfigMenu.OptionType.NUMBER,
 			CurrentSetting = function()
 				return coopHUD.players_config.small[i].color
 			end,
-			Minimum = 1,
-			Maximum = #coopHUD.colors,
-			Display = function()
+			Minimum        = 1,
+			Maximum        = #coopHUD.colors,
+			Display        = function()
 				return "Player " .. tostring(i + 1) .. ": " .. coopHUD.colors[coopHUD.players_config.small[i].color].name
 			end,
-			OnChange = function(currentNum)
+			OnChange       = function(currentNum)
 				coopHUD.players_config.small[i].color = currentNum
 				coopHUD.save_options()
 			end,
-			Info = "Change player color color"
+			Info           = "Change player color color"
 		})
 	end
 	--
 	ModConfigMenu.AddTitle(mod_name, "Positions", 'Big HUD  positions:')
 	ModConfigMenu.AddSetting(mod_name, "Positions", {
-		Type = ModConfigMenu.OptionType.BOOLEAN,
+		Type           = ModConfigMenu.OptionType.BOOLEAN,
 		CurrentSetting = function()
 			return coopHUD.players_config.small[0].anchor_top == 'top_left'
 		end,
-		Display = function()
+		Display        = function()
 			local anchor_string = ""
 			if coopHUD.players_config.small[0].anchor_top == 'top_left' then
 				anchor_string = "left side"
@@ -510,7 +512,7 @@ if ModConfigMenu then
 			end
 			return "Player 1: " .. anchor_string
 		end,
-		OnChange = function(currentBool)
+		OnChange       = function(currentBool)
 			if currentBool then
 				coopHUD.players_config.small[0].anchor_top = coopHUD.players_config.default[0].anchor_top
 				coopHUD.players_config.small[0].anchor_bot = coopHUD.players_config.default[0].anchor_bot
@@ -530,16 +532,16 @@ if ModConfigMenu then
 			end
 			coopHUD.save_options()
 		end,
-		Info = function()
+		Info           = function()
 			return "Sets player position on big hud"
 		end
 	})
 	ModConfigMenu.AddSetting(mod_name, "Positions", {
-		Type = ModConfigMenu.OptionType.BOOLEAN,
+		Type           = ModConfigMenu.OptionType.BOOLEAN,
 		CurrentSetting = function()
 			return coopHUD.players_config.small[1].anchor_top == 'top_right'
 		end,
-		Display = function()
+		Display        = function()
 			local anchor_string = ""
 			if coopHUD.players_config.small[1].anchor_top == 'top_left' then
 				anchor_string = "left side"
@@ -548,7 +550,7 @@ if ModConfigMenu then
 			end
 			return "Player 2: " .. anchor_string
 		end,
-		OnChange = function(currentBool)
+		OnChange       = function(currentBool)
 			if currentBool then
 				coopHUD.players_config.small[0].anchor_top = coopHUD.players_config.default[0].anchor_top
 				coopHUD.players_config.small[0].anchor_bot = coopHUD.players_config.default[0].anchor_bot
@@ -568,7 +570,7 @@ if ModConfigMenu then
 			end
 			coopHUD.save_options()
 		end,
-		Info = function()
+		Info           = function()
 			return "Sets player position on big hud"
 		end
 	})

@@ -3,6 +3,7 @@ coopHUD.Streak = {}
 coopHUD.Streak.FLOOR = 0
 coopHUD.Streak.PICKUP = 1
 coopHUD.Streak.font_color = KColor(1, 1, 1, 1)
+coopHUD.Streak.anim_path = "gfx/ui/ui_streak.anm2"
 setmetatable(coopHUD.Streak, {
 	__call = function(cls, ...)
 		return cls.trigger(...)
@@ -10,7 +11,7 @@ setmetatable(coopHUD.Streak, {
 })
 function coopHUD.Streak.getSprite()
 	local sprite = Sprite()
-	sprite:Load(coopHUD.GLOBALS.streak_anim_path, true)
+	sprite:Load(coopHUD.Streak.anim_path, true)
 	sprite:SetFrame('Text', 0)
 	return sprite
 end

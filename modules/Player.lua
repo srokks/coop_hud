@@ -1,17 +1,8 @@
-include("sprites.Collectibles.lua")
-include("sprites.Hearts.lua")
-include("sprites.Inventory.lua")
-include("sprites.Item.lua")
-include("sprites.BoC.lua")
-include("sprites.PlayerHead.lua")
-include("sprites.Pocket.lua")
-include("sprites.Poops.lua")
-include("sprites.Stat.lua")
-include("sprites.Trinket.lua")
 ---@class coopHUD.Player
 ---@param player_no number player number used in game
----@param entPlayer userdata Player Entity
----@field entPlayer userdata
+---@param entPlayer EntityPlayer Player Entity
+---@field private self coopHUD.Player
+---@field entPlayer EntityPlayer
 ---@field game_index number holds game index to get proper PlayerEntity
 ---@field controller_index number holds
 ---@field player_head coopHUD.PlayerHead
@@ -55,6 +46,7 @@ setmetatable(coopHUD.Player, {
 --- Player constructor
 ---@private
 function coopHUD.Player.new(player_no, entPlayer)
+	---@type coopHUD.Player
 	local self = setmetatable({}, coopHUD.Player)
 	--
 	self.entPlayer = Isaac.GetPlayer(player_no)
@@ -125,7 +117,8 @@ function coopHUD.Player.new(player_no, entPlayer)
 	self.font_color = KColor(1, 1, 1, 1)
 	return self
 end
-function coopHUD.Player:update()
+---@param self  coopHUD.Player
+function coopHUD.Player.update(self)
 	-- Player Color Update
 	if coopHUD.options.player_info_color then
 		local temp_color = coopHUD.colors[coopHUD.players_config.small[self.game_index].color].color
@@ -159,14 +152,22 @@ function coopHUD.Player:update()
 	self.hearts:update()
 	self.big_hud = #coopHUD.players < 3 and not coopHUD.options.force_small_hud
 	coopHUD.BoC.update(self)
+	for i = 0, PlayerForm.NUM_PLAYER_FORMS - 1 do
+		if self.transformations[i] ~= self.entPlayer:HasPlayerForm(i) then
+			self.transformations[i] = self.entPlayer:HasPlayerForm(i)
+			coopHUD.Streak(false, coopHUD.Streak.ITEM, coopHUD.PlayerForm[i], nil, true,
+			               self.font_color)
+		end
+	end
 end
 --- renders main player hud - active item/hearts
+---@param self  coopHUD.Player
 ---@param pos Vector position where render sprite
 ---@param mirrored boolean change anchor to right corner
 ---@param scl Vector scale of sprite
 ---@param down_anchor boolean change anchor to down corner
 ---@return Vector offset where render next sprite
-function coopHUD.Player:renderMain(pos, mirrored, scl, down_anchor)
+function coopHUD.Player.renderMain(self, pos, mirrored, scl, down_anchor)
 	local temp_pos = Vector(pos.X, pos.Y)
 	local scale = scl
 	-- Renders player info (head and name)
@@ -181,7 +182,7 @@ function coopHUD.Player:renderMain(pos, mirrored, scl, down_anchor)
 		dim = Input.IsActionPressed(ButtonAction.ACTION_DROP, self.controller_index)
 		scale = coopHUD.players_config.small.scale -- resets scale if essau logic changes it
 		if dim then scale = Vector(0.9 * coopHUD.players_config.small.scale.X,
-		                           0.9 * coopHUD.players_config.small.scale.Y) end -- shrinks inactive sprites
+		                           0.9 * coopHUD.players_config.small.scale.Y) end -- shrinks inactive modules
 	end
 	-- ACTIVE/SCHOOLBAG ITEM RENDER
 	local active_off = Vector(0, 0)
@@ -216,12 +217,13 @@ function coopHUD.Player:renderMain(pos, mirrored, scl, down_anchor)
 	return offset
 end
 --- renders secondary player hud - pocket/trinkets
+---@param self  coopHUD.Player
 ---@param pos Vector position where render sprite
 ---@param mirrored boolean change anchor to right corner
 ---@param scl Vector scale of sprite
 ---@param down_anchor boolean change anchor to down corner
 ---@return Vector offset where render next sprite
-function coopHUD.Player:renderPockets(pos, mirrored, scl, down_anchor)
+function coopHUD.Player.renderPockets(self, pos, mirrored, scl, down_anchor)
 	local temp_pos = Vector(pos.X, pos.Y)
 	local scale = Vector(scl.X, scl.Y)
 	-- DIM CONTROL - for dim active item sprite on PLAYER_JACOB or PLAYER_ESAU
@@ -231,7 +233,7 @@ function coopHUD.Player:renderPockets(pos, mirrored, scl, down_anchor)
 		dim = not Input.IsActionPressed(ButtonAction.ACTION_DROP, self.controller_index)
 		scale = coopHUD.players_config.small.scale -- resets scale if essau logic changes it
 		if dim then scale = Vector(0.9 * coopHUD.players_config.small.scale.X,
-		                           0.9 * coopHUD.players_config.small.scale.Y) end -- shrinks inactive sprites
+		                           0.9 * coopHUD.players_config.small.scale.Y) end -- shrinks inactive modules
 	end
 	--FIRST POCKET RENDER
 	local trinket_off = Vector(0, 0)
@@ -256,7 +258,7 @@ function coopHUD.Player:renderPockets(pos, mirrored, scl, down_anchor)
 	                                      down_anchor, dim)
 	local inv_off = Vector(0, 0)
 	if self.inventory then
-		temp_pos = Vector(pos.X, pos.Y )
+		temp_pos = Vector(pos.X, pos.Y)
 		if down_anchor then
 			temp_pos.Y = temp_pos.Y + math.min(trinket_off.Y, pocket_off.Y)
 		else
@@ -267,14 +269,15 @@ function coopHUD.Player:renderPockets(pos, mirrored, scl, down_anchor)
 	--
 	local offset = Vector(0, 0)
 	if down_anchor then
-		offset.Y = math.min(trinket_off.Y, pocket_off.Y,inv_off.Y)
+		offset.Y = math.min(trinket_off.Y, pocket_off.Y, inv_off.Y)
 	else
-		offset.Y = math.max(trinket_off.Y, pocket_off.Y,inv_off.Y)
+		offset.Y = math.max(trinket_off.Y, pocket_off.Y, inv_off.Y)
 	end
 	return offset
 end
 --- MAIN Player render function
-function coopHUD.Player:render()
+---@param self coopHUD.Player
+function coopHUD.Player.render(self)
 	local anchor = Vector(coopHUD.anchors[coopHUD.players_config.small[self.game_index].anchor].X,
 	                      coopHUD.anchors[coopHUD.players_config.small[self.game_index].anchor].Y)
 	local anchor_bot = Vector(coopHUD.anchors[coopHUD.players_config.small[self.game_index].anchor_bot].X,
@@ -338,24 +341,67 @@ function coopHUD.Player:render()
 					self.essau:renderStats(mirrored)
 				end
 				self:renderStats(mirrored)
+				-- collectibles render in big hud
 			else
 				-- renders essau stats on drop pressed
-				if self.essau and Input.IsActionPressed(ButtonAction.ACTION_DROP, self.controller_index) then
+				if self.essau and Input.IsActionPressed(ButtonAction.ACTION_DROP,
+				                                        self.controller_index) and not self.signals.map_btn then
 					self.essau:renderStats(mirrored)
 				else
-					self:renderStats(mirrored)
+					if not self.signals.map_btn then
+						-- hides when signal for extra hud (collectibles)
+						self:renderStats(mirrored)
+					else
+						if not coopHUD.options.extra_hud then
+							-- renders in case of turned of extra hud option
+							self:renderStats(mirrored)
+						end
+					end
+				end
+			end
+		end
+	end
+	--COLLECTIBLES RENDER
+	if coopHUD.options.extra_hud then
+		if not (coopHUD.options.extra_hud_hide_on_battle and coopHUD.signals.on_battle) then
+			if #self.collectibles > 0 or #self.gulped_trinkets > 0 then
+				if self.big_hud and #coopHUD.players == 1 then
+					-- only for 1 player
+					if self.essau and Input.IsActionPressed(ButtonAction.ACTION_DROP, self.controller_index) then
+						-- renders essau collectibles on drop button pressed
+						if #self.essau.collectibles > 0 or #self.essau.gulped_trinkets > 0 then
+							coopHUD.Item.render_items_table(coopHUD.Item(self.essau, -1, 0),
+							                                not mirrored)
+						end
+					else
+						--renders collectibles on right (like vanilla)
+						coopHUD.Item.render_items_table(coopHUD.Item(self, -1, 0),
+						                                not mirrored) --FIXME: weird workaround, maybe need to move render_item_table to Player class
+					end
+				else
+					if self.signals.map_btn then
+						if self.essau and Input.IsActionPressed(ButtonAction.ACTION_DROP, self.controller_index) then
+							-- renders essau collectibles on drop button pressed
+							if #self.essau.collectibles > 0 or #self.essau.gulped_trinkets > 0 then
+								coopHUD.Item.render_items_table(coopHUD.Item(self.essau, -1, 0), mirrored)
+							end
+						else
+							coopHUD.Item.render_items_table(coopHUD.Item(self, -1, 0), mirrored)
+						end
+					end
 				end
 			end
 		end
 	end
 end
 --- renders  player extra hud - mantle charge/extra lives
+---@param self  coopHUD.Player
 ---@param pos Vector position where render sprite
 ---@param mirrored boolean change anchor to right corner
 ---@param scale Vector scale of sprite
 ---@param down_anchor boolean change anchor to down corner
 ---@return Vector offset where render next sprite
-function coopHUD.Player:renderExtras(pos, mirrored, scale, down_anchor)
+function coopHUD.Player.renderExtras(self, pos, mirrored, scale, down_anchor)
 	local final_offset = Vector(0, 0)
 	local temp_pos = Vector(pos.X + 4, pos.Y)
 	--
@@ -402,9 +448,10 @@ function coopHUD.Player:renderExtras(pos, mirrored, scale, down_anchor)
 	return final_offset
 end
 --- renders  players stats
+---@param self  coopHUD.Player
 ---@param mirrored boolean change anchor to right corner
 ---@return Vector offset where render next sprite
-function coopHUD.Player:renderStats(mirrored)
+function coopHUD.Player.renderStats(self, mirrored)
 	--when options.stats.hide_in_battle on and battle signal
 	local font_color = KColor(1, 1, 1, 1)
 	if coopHUD.options.stats.colorful then
@@ -451,4 +498,96 @@ function coopHUD.Player:renderStats(mirrored)
 		-- saves pos under stats for other hud modules to access like deals stats
 		coopHUD.HUD.stat_anchor = temp_stat_pos
 	end
+end
+---Prepares table with items to save on close game.
+---@param self coopHUD.Player
+---@return table
+function coopHUD.Player.getSaveTable(self)
+	local collectibles = {}
+	for j = 1, #self.collectibles do
+		table.insert(collectibles,
+		             { self.collectibles[j].type, self.collectibles[j].id })
+	end
+	local gulped_trinkets = {}
+	for j = 1, #self.gulped_trinkets do
+		table.insert(gulped_trinkets,
+		             { self.gulped_trinkets[j].type, self.gulped_trinkets[j].id })
+	end
+	-- save bag of crafting
+	local bag_of_crafting = {}
+	if self.bag_of_crafting ~= nil then
+		for j = 1, #self.bag_of_crafting do
+			table.insert(bag_of_crafting, self.bag_of_crafting[j].id)
+		end
+	end
+	local essau = nil
+	if self.essau ~= nil then
+		essau = self.essau:getSaveTable()
+	end
+	return { collectibles    = collectibles,
+	         gulped_trinkets = gulped_trinkets,
+	         hold_spell      = self.hold_spell,
+	         bag_of_crafting = bag_of_crafting,
+	         essau           = essau,
+	}
+end
+---@param self coopHUD.Player
+function coopHUD.Player.loadFromSaveTable(self, save_table)
+	--` load collectibles
+	for _, item_id in pairs(save_table.collectibles) do
+		local type, id = item_id[1], item_id[2]
+		if type == PickupVariant.PICKUP_COLLECTIBLE then
+			table.insert(self.collectibles,
+			             coopHUD.Item(self, -1, id))
+		elseif type == PickupVariant.PICKUP_TRINKET then
+			table.insert(self.collectibles,
+			             coopHUD.Trinket(self, -1, id))
+		end
+	end
+	--load gulped_trinkets and un roll able
+	for _, item_id in pairs(save_table.gulped_trinkets) do
+		local type, id = item_id[1], item_id[2]
+		if type == PickupVariant.PICKUP_COLLECTIBLE then
+			table.insert(self.gulped_trinkets,
+			             coopHUD.Item(self, -1, id))
+		elseif type == PickupVariant.PICKUP_TRINKET then
+			table.insert(self.gulped_trinkets,
+			             coopHUD.Trinket(self.entPlayer, -1, id))
+		end
+	end
+	self.hold_spell = save_table.hold_spell
+	-- Bag of crafting
+	for _, item_id in pairs(save_table.bag_of_crafting) do
+		table.insert(self.bag_of_crafting, coopHUD.BoC.Item(item_id))
+	end
+	-- Essau
+	if save_table.essau then
+		self.essau:loadFromSaveTable(save_table.essau)
+	end
+end
+---Return Player by entity index.
+---@param entity_index number
+---@return coopHUD.Player or nil
+function coopHUD.Player.getByEntityIndex(entity_index)
+	for i, player in pairs(coopHUD.players) do
+		if player.entPlayer.Index == entity_index then
+			return player
+		end
+		if player.essau and player.essau.entPlayer.Index == entity_index then
+			return player.essau
+		end
+	end
+	return nil
+end
+---Returns player number searching coopHUD.player table for matching controller index
+---@param controller_index number
+---@return number or -1
+function coopHUD.Player.getIndexByControllerIndex(controller_index)
+	local final_index = -1
+	for i, p in pairs(coopHUD.players) do
+		if p.controller_index == controller_index then
+			final_index = i
+		end
+	end
+	return final_index
 end

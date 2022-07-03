@@ -4,6 +4,7 @@
 ---@return coopHUD.Inventory
 coopHUD.Inventory = {}
 coopHUD.Inventory.__index = coopHUD.Inventory
+coopHUD.Inventory.anim_path = "gfx/ui/ui_inventory.anm2"
 setmetatable(coopHUD.Inventory, {
 	__call = function(cls, ...)
 		return cls.new(...)
@@ -16,7 +17,7 @@ function coopHUD.Inventory.new(parent)
 	self.parent = parent
 	self.max_collectibles = 8
 	self.sprite = Sprite()
-	self.sprite:Load(coopHUD.GLOBALS.inventory_anim_path, true)
+	self.sprite:Load(coopHUD.Inventory.anim_path, true)
 	self.sprite:SetFrame('Idle', 0)
 	return self
 end

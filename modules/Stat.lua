@@ -21,6 +21,7 @@ coopHUD.Stat.DEVIL = 6
 coopHUD.Stat.ANGEL = 7
 coopHUD.Stat.PLANETARIUM = 8
 coopHUD.Stat.DUALITY = 10
+coopHUD.Stat.anim_path = "gfx/ui/hudstats2.anm2"
 ---@see coopHUD.Stat
 ---@private
 function coopHUD.Stat.new(parent, type, icon)
@@ -79,7 +80,7 @@ end
 function coopHUD.Stat:getSprite()
 	if self.icon and self.type ~= nil then
 		local sprite = Sprite()
-		sprite:Load(coopHUD.GLOBALS.hud_stats_anim_path, true)
+		sprite:Load(coopHUD.Stat.anim_path, true)
 		sprite:SetFrame('Idle', self.type)
 		return sprite
 	else

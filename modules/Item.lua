@@ -1,4 +1,9 @@
 ---@class coopHUD.Item
+---@field parent coopHUD.Player
+---@field entPlayer EntityPlayer
+---@field slot number
+---@field frame_num number
+---@field id number
 ---@param player coopHUD.Player
 ---@param slot number  slot binding -1 - no slot | ActiveSlot enums
 ---@param item_id number
@@ -6,6 +11,8 @@
 coopHUD.Item = {}
 coopHUD.Item.__index = coopHUD.Item
 coopHUD.Item.type = PickupVariant.PICKUP_COLLECTIBLE
+coopHUD.Item.anim_path = '/gfx/ui/items_coop.anm2'
+coopHUD.Item.charge_anim_path = "gfx/ui/activechargebar_coop.anm2"
 setmetatable(coopHUD.Item, {
 	__call = function(cls, ...)
 		return cls.new(...)
@@ -14,6 +21,7 @@ setmetatable(coopHUD.Item, {
 ---@see coopHUD.Item
 ---@private
 function coopHUD.Item.new(player, slot, item_id)
+	---@type coopHUD.Item
 	local self = setmetatable({}, coopHUD.Item)
 	self.parent = player
 	if self.parent == nil then
@@ -28,62 +36,13 @@ function coopHUD.Item.new(player, slot, item_id)
 	end
 	self.frame_num = self:getFrameNum()
 	self.sprite = self:getSprite()
-	self.charge = self:getCharge()
-	self.charge_sprites = self.getChargeSprites(self)
+	self.charge = coopHUD.ChargeBar(self)
 	self.temp_item = nil
 	return self
 end
---- return self charge sprite table
+---@private
 ---@param self coopHUD.Item
----@return table table of charge sprites
-function coopHUD.Item.getChargeSprites(self)
-	-- Gets charge of item from  player, slot
-	local sprites = {
-		beth_charge = Sprite(),
-		charge      = Sprite(),
-		overlay     = Sprite(),
-	}
-	if self.id == 0 or self.id == nil or self.slot < 0 then
-		return nil
-	end
-	local max_charges = Isaac.GetItemConfig():GetCollectible(self.id).MaxCharges
-	if max_charges == 0 then
-		return false
-	end
-	-- Normal and battery charge
-	local charges = self.entPlayer:GetActiveCharge(self.slot) + self.entPlayer:GetBatteryCharge(self.slot)
-	local step = math.floor((charges / (max_charges * 2)) * 46)
-	sprites.charge:Load(coopHUD.GLOBALS.charge_anim_path, true)
-	sprites.charge:SetFrame('ChargeBar', step)
-	-- Overlay sprite
-	sprites.overlay:Load(coopHUD.GLOBALS.charge_anim_path, true)
-	if (max_charges > 1 and max_charges < 5) or max_charges == 6 or max_charges == 12 then
-		sprites.overlay:SetFrame("BarOverlay" .. max_charges, 0)
-	else
-		sprites.overlay:SetFrame("BarOverlay1", 0)
-	end
-	-- Bethany charge
-	local player_type = self.entPlayer:GetPlayerType()
-	if player_type == PlayerType.PLAYER_BETHANY or player_type == PlayerType.PLAYER_BETHANY_B then
-		local beth_charge
-		local color = Color(1, 1, 1, 1, 0, 0, 0)
-		if player_type == PlayerType.PLAYER_BETHANY then
-			beth_charge = self.entPlayer:GetEffectiveSoulCharge()
-			color:SetColorize(0.8, 0.9, 1.8, 1)
-		elseif player_type == PlayerType.PLAYER_BETHANY_B then
-			beth_charge = self.entPlayer:GetEffectiveBloodCharge()
-			color:SetColorize(1, 0.2, 0.2, 1)
-		end
-		sprites.beth_charge:Load(coopHUD.GLOBALS.charge_anim_path, true)
-		sprites.beth_charge.Color = color
-		step = step + math.floor((beth_charge / (max_charges * 2)) * 46) + 1
-		sprites.beth_charge:SetFrame('ChargeBar', step)
-	else
-		sprites.beth_charge = false
-	end
-	return sprites
-end
-function coopHUD.Item:getSprite()
+function coopHUD.Item.getSprite(self)
 	if self.id == 0 or (self.entPlayer and self.entPlayer.Variant == 1) then
 		return nil
 	end
@@ -92,9 +51,9 @@ function coopHUD.Item:getSprite()
 	local sprite = Sprite()
 	local sprite_path = Isaac.GetItemConfig():GetCollectible(self.id).GfxFileName
 	local anim_name = "Idle"
-	sprite:Load(coopHUD.GLOBALS.item_anim_path, false)
+	sprite:Load(coopHUD.Item.anim_path, false)
 	--
-	-- Custom sprites set - jars etc.
+	-- Custom modules set - jars etc.
 	if self.id == CollectibleType.COLLECTIBLE_THE_JAR then
 		sprite_path = "gfx/characters/costumes/costume_rebirth_90_thejar.png"
 		anim_name = "Jar"
@@ -117,6 +76,8 @@ function coopHUD.Item:getSprite()
 	elseif self.id == CollectibleType.COLLECTIBLE_URN_OF_SOULS then
 		sprite_path = "gfx/ui/hud_urnofsouls.png"
 		anim_name = "SoulUrn"
+	elseif self.id == CollectibleType.COLLECTIBLE_D_INFINITY then
+		sprite_path = "gfx/characters/costumes/costume_489_dinfinity.png"
 	end
 	sprite:ReplaceSpritesheet(0, sprite_path) -- item
 	sprite:ReplaceSpritesheet(1, sprite_path) -- border
@@ -150,7 +111,9 @@ function coopHUD.Item:getSprite()
 	--
 	return sprite
 end
-function coopHUD.Item:getFrameNum()
+---@private
+---@param self coopHUD.Item
+function coopHUD.Item.getFrameNum(self)
 	local frame_num = 0
 	if self.id > 0 and self.slot >= 0 then
 		--The Jar/Jar of Flies - charges check
@@ -186,12 +149,11 @@ function coopHUD.Item:getFrameNum()
 			frame_num = self.parent.hold_spell
 		else
 			-- Sets overlay/charges state frame --
-			local max_charges = Isaac.GetItemConfig():GetCollectible(self.id).MaxCharges-- gets max charges
-			if max_charges == 0 then
+			if self.charge and self.charge.max_charge == 0 then
 				-- checks id item has any charges
 				frame_num = 0 -- set frame to unloaded
-			elseif self.entPlayer:NeedsCharge(self.slot) == false or (self.charge and self.charge >= max_charges) then
-				-- checks if item dont needs charges or item is overloaded
+			elseif self.entPlayer:NeedsCharge(self.slot) == false or (self.charge and (self.charge:getCurrentCharge() >= self.charge.max_charge)) then
+				--checks if item dont needs charges or item is overloaded
 				frame_num = 1 -- set frame to loaded
 			else
 				frame_num = 0  -- set frame to unloaded
@@ -200,25 +162,14 @@ function coopHUD.Item:getFrameNum()
 	end
 	return frame_num
 end
---- Returns current charge of item if not connected to slot return nil
-function coopHUD.Item:getCharge()
-	if self.slot >= 0 then
-		local item_charge = self.entPlayer:GetActiveCharge(self.slot) + self.entPlayer:GetBatteryCharge(self.slot)
-		if self.entPlayer:GetPlayerType() == PlayerType.PLAYER_BETHANY then
-			-- Bethany Soul Charge integration
-			item_charge = item_charge + self.entPlayer:GetSoulCharge()
-		elseif self.entPlayer:GetPlayerType() == PlayerType.PLAYER_BETHANY_B then
-			-- T. Bethany Blood Charge integration
-			item_charge = item_charge + self.entPlayer:GetBloodCharge()
-		end
-		return item_charge
-	end
-end
-function coopHUD.Item:update()
+---Updates item id,frame_num,sprite
+---@private
+---@param self coopHUD.Item
+function coopHUD.Item.update(self)
 	if self.id ~= self.entPlayer:GetActiveItem(self.slot) then
 		self.id = self.entPlayer:GetActiveItem(self.slot)
 		self.sprite = self:getSprite()
-		self.charge_sprites = self.getChargeSprites(self)
+		self.charge = coopHUD.ChargeBar(self)
 	end
 	if self.frame_num ~= self:getFrameNum() then
 		self.frame_num = self:getFrameNum()
@@ -227,16 +178,14 @@ function coopHUD.Item:update()
 	if self.belial_check or self.virtuoses_check then
 		self:updateSprite()
 	end
-end
---- updates item charge bars
-function coopHUD.Item:updateCharge()
-	if self.charge ~= self:getCharge() then
-		self.charge = self:getCharge()
-		self.charge_sprites = self.getChargeSprites(self)
-		self:updateSprite()
+	if self.charge then
+		self.charge:update()
 	end
 end
-function coopHUD.Item:updateSprite()
+---Updates sprite based on self.id,self.frame_num
+---@private
+---@param self coopHUD.Item
+function coopHUD.Item.updateSprite(self)
 	if self.sprite then
 		if self.frame_num ~= self:getFrameNum() then
 			self.frame_num = self:getFrameNum()
@@ -244,69 +193,15 @@ function coopHUD.Item:updateSprite()
 		end
 	end
 end
---- Renders item charge bars if item has
----@param pos Vector position where render sprite
----@param mirrored boolean change anchor to right corner
----@param scale Vector scale of sprite
----@param down_anchor boolean change anchor to down corner
----@param dim boolean defines if dim sprite
----@return Vector
-function coopHUD.Item:renderChargeBar(pos, mirrored, scale, down_anchor)
-	local temp_pos = Vector(pos.X, pos.Y)
-	local offset = Vector(0, 0)
-	if self.charge_sprites then
-		--
-		local sprite_scale = scale
-		if sprite_scale == nil then
-			sprite_scale = Vector(1, 1)
-		end
-		--
-		if mirrored then
-			temp_pos.X = temp_pos.X - (4 * sprite_scale.X)
-			offset.X = -8 * 1.25 * sprite_scale.X
-		else
-			temp_pos.X = temp_pos.X + (4 * sprite_scale.X)
-			offset.X = 8 * sprite_scale.X
-		end
-		--
-		if down_anchor then
-			temp_pos.Y = temp_pos.Y - (16 * sprite_scale.Y)
-			offset.Y = -32 * sprite_scale.Y
-		else
-			temp_pos.Y = temp_pos.Y + (16 * sprite_scale.Y)
-			offset.Y = 32 * sprite_scale.Y
-		end
-		--
-		if self.charge_sprites.charge then
-			self.charge_sprites.charge.Scale = sprite_scale
-			self.charge_sprites.charge:RenderLayer(0, temp_pos)  -- renders background
-		end
-		if self.charge_sprites.beth_charge then
-			self.charge_sprites.beth_charge.Scale = sprite_scale
-			self.charge_sprites.beth_charge:RenderLayer(1, temp_pos) -- renders bethany charge
-		end
-		if self.charge_sprites.charge then
-			self.charge_sprites.charge.Scale = sprite_scale
-			self.charge_sprites.charge:RenderLayer(1, temp_pos)
-			self.charge_sprites.charge:RenderLayer(2, temp_pos)
-		end
-		if self.charge_sprites.overlay then
-			self.charge_sprites.overlay.Scale = sprite_scale
-			self.charge_sprites.overlay:Render(temp_pos)
-		end
-
-	end
-	return offset
-end
 --- Renders item sprite in current position
+---@param self coopHUD.Item
 ---@param pos Vector position where render sprite
 ---@param mirrored boolean change anchor to right corner
 ---@param scale Vector scale of sprite
 ---@param down_anchor boolean change anchor to down corner
 ---@param dim boolean defines if dim sprite
 ---@return Vector offset where render next sprite
-function coopHUD.Item:render(pos, mirrored, scale, down_anchor, dim)
-	self:updateCharge()
+function coopHUD.Item.render(self, pos, mirrored, scale, down_anchor, dim)
 	local temp_pos = Vector(pos.X, pos.Y)
 	local sprite_scale = scale
 	local offset = Vector(0, 0)
@@ -353,16 +248,67 @@ function coopHUD.Item:render(pos, mirrored, scale, down_anchor, dim)
 				temp_pos = Vector(pos.X + 5, pos.Y + 8)
 				if down_anchor then temp_pos.Y = temp_pos.Y - 8 end
 				if Game():GetLevel():GetCurses() >= LevelCurse.CURSE_OF_BLIND then
-					coopHUD.BoC.Unknown:render(temp_pos, mirrored, Vector(0.7, 0.7), down_anchor)
+					--coopHUD.BoC.Unknown:render(temp_pos, mirrored, Vector(0.7, 0.7), down_anchor)--FIXME:COOP-98:BoC: Unknown item sprite
 				else
 					self.parent.crafting_result:render(temp_pos, mirrored, Vector(0.7, 0.7), down_anchor, dim)
 				end
 			end
 		end
 	end
-	if self.slot >= 0 and self.slot ~= ActiveSlot.SLOT_SECONDARY then
-		local charge_off = self:renderChargeBar(Vector(pos.X + offset.X, pos.Y), mirrored, scale, down_anchor)
+	-- ChargeBar render
+	if self.charge then
+		local charge_off = self.charge:render(Vector(pos.X + offset.X, pos.Y), mirrored, scale, down_anchor, dim)
 		offset.X = offset.X + charge_off.X
 	end
 	return offset
+end
+--- Renders player collectibles table
+---@param self coopHUD.Item
+---@param mirrored boolean defines which side render true - right / false - left
+function coopHUD.Item.render_items_table(self, mirrored)
+	local items_table = { } -- saves parent collectibles to local temp
+	--combines trinkets and collectibles item tables
+	for i = 1, #self.parent.gulped_trinkets do
+		table.insert(items_table, self.parent.gulped_trinkets[i])
+	end
+	for i = 1, #self.parent.collectibles do
+		table.insert(items_table, self.parent.collectibles[i])
+	end
+	--
+	local init_pos = Vector(0, 64)
+	if mirrored then
+		init_pos.X = coopHUD.anchors.bot_right.X - 64
+	else
+		init_pos.X = coopHUD.anchors.bot_left.X
+	end
+	local temp_pos = Vector(init_pos.X, init_pos.Y)
+	--
+	local down_anchor = false --TODO:from arg
+	-- defines items modules scale and no of colums based on collected collectibles
+	local scale = Vector(1, 1)
+	local col_no = 2
+	if #items_table > 10 then
+		scale = Vector(0.625, 0.625)
+		col_no = 3
+	end
+	if #items_table > 24 then
+		scale = Vector(0.5, 0.5)
+		col_no = 4
+	end
+	--
+	local temp_index = 1 -- temp index for positioning due we show from latest
+	local collectibles_stop = 1  -- last index of shown item
+	if #items_table > 51 then
+		-- prevention from showing too much items
+		collectibles_stop = #items_table - 51
+	end
+	for i = #items_table, collectibles_stop, -1 do
+		local off = items_table[i]:render(temp_pos, false, scale, down_anchor, false)
+		temp_pos.X = temp_pos.X + off.X / 1.25
+		if temp_index % col_no == 0 then
+			temp_pos.X = init_pos.X
+			temp_pos.Y = temp_pos.Y + off.Y / 1.25
+		end
+		temp_index = temp_index + 1
+	end
 end
