@@ -24,7 +24,7 @@ function coopHUD.ChargeBar.new(parent_item)
 	local self = setmetatable({}, coopHUD.ChargeBar)
 	---@type coopHUD.Item
 	self.parent_item = parent_item
-	if self.parent_item.id == 0 or self.parent_item.parent.entPlayer == false then
+	if self.parent_item.id == 0 or self.parent_item.slot < 0 or self.parent_item.parent.entPlayer == false then
 		return nil
 	end
 	self.max_charge = self:getMaxCharge()
@@ -107,6 +107,9 @@ end
 function coopHUD.ChargeBar.getMaxCharge(self)
 	if self.parent_item.entPlayer == false or self.parent_item == nil then return nil end
 	local max_charges = Isaac.GetItemConfig():GetCollectible(self.parent_item.id).MaxCharges
+	if self.parent_item.id == CollectibleType.COLLECTIBLE_PLACEBO and self.parent_item.parent.placebo_charge ~= nil then
+		max_charges = self.parent_item.parent.placebo_charge
+	end
 	return max_charges
 end
 ---@param self coopHUD.ChargeBar

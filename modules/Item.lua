@@ -169,6 +169,7 @@ function coopHUD.Item.update(self)
 	if self.id ~= self.entPlayer:GetActiveItem(self.slot) then
 		self.id = self.entPlayer:GetActiveItem(self.slot)
 		self.sprite = self:getSprite()
+		self.charge = coopHUD.ChargeBar(self)
 	end
 	if self.frame_num ~= self:getFrameNum() then
 		self.frame_num = self:getFrameNum()
