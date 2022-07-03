@@ -105,8 +105,7 @@ end
 ---@param self coopHUD.ChargeBar
 ---@return number
 function coopHUD.ChargeBar.getMaxCharge(self)
-	if self.parent_item.entPlayer == nil or self.parent_item == nil then return nil end
-	--print(self.parent_item.id)
+	if self.parent_item.entPlayer == false or self.parent_item == nil then return nil end
 	local max_charges = Isaac.GetItemConfig():GetCollectible(self.parent_item.id).MaxCharges
 	return max_charges
 end
