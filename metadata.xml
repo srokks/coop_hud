@@ -22,6 +22,11 @@
 		[*] Can be turned off in options
 		[/list]
 		* might be glitchy after roll of collectibles
+		[*] Bag of Crafting - calculation improvements
+		[*] Code optimization and reorganization - hope will help with performance.
+		[*] Charge bar rework - now support custom animation files.
+		[*] Fixed no info on Transformation.
+		[*] LangAPI - full integration.
 		[/list]
 		[h2] What this mod do[/h2]
 		[list]
@@ -91,15 +96,20 @@
 		[list]
 		[*] Modded cards/pills support
 		[*] Modded characters
+		[*] Placebo/Mimic Card/Clear Rune - no implementation of custom max charges - WIP
+		[*] D Infinity - no shift between dice types - WIP
+		[*] Destination/Waves indicator - WIP
 		[*] Jar of Wisp - cannot get Jar of Wisps charge from API, charge counted manual.
-		No support for multiple Jar of Wisp on one run - wont show proper indicator
-		[*] Urn of soul - cannot get souls from game API, only opened/closed sprite indicator
+		No support for multiple Jar of Wisp on one run - wont show proper indicator - PERM BUG
+		[*] Urn of soul - cannot get souls from game API, only opened/closed sprite indicator - PERM BUG
 		[/list]
 		[h2] Mods Compatibility[/h2]
 		[list]
 		[*] It's compatible with modded trinkets and items
-		[*] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2635267643] [Rep] Enhanced Boss Bars [/url] from [url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge
-		[*] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1978904635] MiniMAPI[/url] from [url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge
+		[*] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2635267643] [Rep] Enhanced Boss Bars [/url] from
+		[url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge
+		[*] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1978904635] MiniMAPI[/url] from
+		[url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge
 		[*] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=836319872] [AB+|Rep] External item
 		descriptions[/url] from [url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900]Wofsauge[/url]
 		For right now you must set EID position manually
@@ -112,7 +122,7 @@
 		his mods which helped in developing this mod
 		[/list]
 	</description>
-	<version>0.7.5</version>
+	<version>0.8</version>
 	<visibility>Public</visibility>
 	<tag id="Lua"/>
 	<tag id="Tweaks"/>
