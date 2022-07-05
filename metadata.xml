@@ -12,6 +12,9 @@
 		[h3] [b] MOD IS STILL DEVELOPED PLEASE SUBMIT ANY WEIR BEHAVIOUR ( weird positions/ console errors/ log files)
 		in Bugs topic[/b] [/h3]
 		[h2] What new:[/h2]
+		[h3] v.0.8.1[/h3]
+		[list][*] Fixed disappearing HUD after other player join[/list]
+		[h3] v.0.8[/h3]
 		[list]
 		[*] ExtraHUD - I've reworked collectibles show, It's more like vanilla:
 		[list]
@@ -122,7 +125,7 @@
 		his mods which helped in developing this mod
 		[/list]
 	</description>
-	<version>0.8</version>
+	<version>0.8.1</version>
 	<visibility>Public</visibility>
 	<tag id="Lua"/>
 	<tag id="Tweaks"/>
