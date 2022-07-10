@@ -28,6 +28,7 @@ function coopHUD.inputs_signals()
 		local controller_index = Isaac.GetPlayer(i).ControllerIndex
 		local player_index = coopHUD.Player.getIndexByControllerIndex(controller_index)
 		if Input.IsActionPressed(ButtonAction.ACTION_MAP, controller_index) then
+			mapPressed = false
 			mapPressed = player_index
 		end
 		-- DROP ACTION
