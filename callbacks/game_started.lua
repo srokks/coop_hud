@@ -7,11 +7,9 @@ function coopHUD.on_player_init()
 			if player_type ~= PlayerType.PLAYER_THESOUL_B and player_type ~= PlayerType.PLAYER_ESAU then
 				-- skips iteration when non first character
 				coopHUD.players[i + 1 - coopHUD.essau_no] = coopHUD.Player(i)
-				if coopHUD.players[i + 1 - coopHUD.essau_no] then
-					--coopHUD:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, coopHUD.players[i + 1 - coopHUD.essau_no].update)
-				end
 			else
 				coopHUD.essau_no = coopHUD.essau_no + 1
+				-- FIXME: wrong increasing essau counter on the soul_b join
 			end
 		end
 		if coopHUD.signals.is_joining then
