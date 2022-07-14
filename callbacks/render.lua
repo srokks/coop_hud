@@ -3,8 +3,9 @@ local btn_held = 0
 local pill_held = 0
 function coopHUD.inputs_signals()
 	-- Trigger for turning on/off coop hud on `H` key
-	if coopHUD.options.h_trigger then
-		if Input.IsButtonTriggered(Keyboard.KEY_H, 0) then
+	local hotkeyToString = InputHelper.KeyboardToString
+	if coopHUD.options.h_trigger_key > -1 then
+		if Input.IsButtonTriggered(coopHUD.options.h_trigger_key, 0) then
 			if coopHUD.options.onRender then
 				coopHUD.options.onRender = false
 			else
