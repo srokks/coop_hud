@@ -1,3 +1,8 @@
+---@class coopHUD.RunInfo
+---@field type number
+---@field amount number
+---@field sprite Sprite
+---@type fun(type):coopHUD.RunInfo
 coopHUD.RunInfo = {}
 coopHUD.RunInfo.__index = coopHUD.RunInfo
 setmetatable(coopHUD.RunInfo, {
@@ -21,6 +26,7 @@ coopHUD.RunInfo.GIGA_BOMB = 14
 coopHUD.RunInfo.T_BETH = 15
 coopHUD.RunInfo.POOP = 16
 coopHUD.RunInfo.anim_path = "gfx/ui/hudpickups.anm2"
+---@param info_type
 function coopHUD.RunInfo.new(info_type)
 	local self = setmetatable({}, coopHUD.RunInfo)
 	self.type = info_type
@@ -29,7 +35,8 @@ function coopHUD.RunInfo.new(info_type)
 	self.sprite = self:getSprite()
 	return self
 end
-function coopHUD.RunInfo:getAmount()
+---@param self coopHUD.RunInfo
+function coopHUD.RunInfo.getAmount(self)
 	local player = Isaac.GetPlayer(0)
 	if player then
 		if self.type == coopHUD.RunInfo.COIN then
@@ -56,7 +63,8 @@ function coopHUD.RunInfo:getAmount()
 	end
 	return 0
 end
-function coopHUD.RunInfo:getType()
+---@param self coopHUD.RunInfo
+function coopHUD.RunInfo.getType(self)
 	local type = self.type
 	local player = Isaac.GetPlayer(0)
 	if player then
@@ -69,7 +77,8 @@ function coopHUD.RunInfo:getType()
 	end
 	return type
 end
-function coopHUD.RunInfo:getSprite()
+---@param self coopHUD.RunInfo
+function coopHUD.RunInfo.getSprite(self)
 	if self.type == coopHUD.RunInfo.BOMB then
 		if self:checkPlayer() then
 			return nil
@@ -100,6 +109,12 @@ function coopHUD.RunInfo:getSprite()
 	sprite:LoadGraphics()
 	return sprite
 end
+--- Renders poops spells  modules in current position
+---@param pos Vector position where render sprite
+---@param mirrored boolean change anchor to right corner
+---@param scale Vector scale of sprite
+---@param down_anchor boolean change anchor to down corner
+---@return Vector offset where render next sprite
 function coopHUD.RunInfo:render(pos, mirrored, scale, down_anchor)
 	self:update()
 	-- Scale set
@@ -130,7 +145,8 @@ function coopHUD.RunInfo:render(pos, mirrored, scale, down_anchor)
 	end
 	return offset
 end
-function coopHUD.RunInfo:update()
+---@param self coopHUD.RunInfo
+function coopHUD.RunInfo.update(self)
 	if self.type ~= self:getType() then
 		self.type = self:getType()
 		self.sprite = self:getSprite()
@@ -150,7 +166,8 @@ function coopHUD.RunInfo:checkDeepPockets()
 	end
 	return false
 end
-function coopHUD.RunInfo:checkPlayer()
+---@param self coopHUD.RunInfo
+function coopHUD.RunInfo.checkPlayer(self)
 	for i = 0, Game():GetNumPlayers() - 1, 1 do
 		if self.type == coopHUD.RunInfo.BOMB then
 			if Isaac.GetPlayer(i):GetPlayerType() ~= PlayerType.PLAYER_BLUEBABY_B then
@@ -175,7 +192,8 @@ function coopHUD.RunInfo:checkPlayer()
 	end
 	return true
 end
-function coopHUD.RunInfo:getText()
+---@param self coopHUD.RunInfo
+function coopHUD.RunInfo.getText(self)
 	local format_string = "%.2i"
 	if self.type == coopHUD.RunInfo.COIN and self:checkDeepPockets() then
 		format_string = "%.3i"
@@ -191,7 +209,8 @@ function coopHUD.RunInfo:getText()
 	end
 	return text
 end
-function coopHUD.RunInfo:getOffset()
+---@param self coopHUD.RunInfo
+function coopHUD.RunInfo.getOffset(self)
 	local offset = Vector(0, 0)
 	if self.sprite then
 		offset.X = 16 + coopHUD.HUD.fonts.pft:GetStringWidth(self:getText())
