@@ -1,0 +1,77 @@
+Index: coopHUD_globals.lua
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/coopHUD_globals.lua b/coopHUD_globals.lua
+--- a/coopHUD_globals.lua	(revision 6d6e8f2a31f0af555c9088ef28edad85574afc80)
++++ b/coopHUD_globals.lua	(date 1657989047264)
+@@ -19,7 +19,7 @@
+     show_player_names = true,
+     extra_hud = true,
+     extra_hud_hide_on_battle = true,
+-    h_trigger_key = -1,
++    h_trigger_key = Keyboard.KEY_H,
+     stats = {
+         show = true,
+         hide_in_battle = true,
+Index: metadata.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/metadata.xml b/metadata.xml
+--- a/metadata.xml	(revision 6d6e8f2a31f0af555c9088ef28edad85574afc80)
++++ b/metadata.xml	(date 1657987997179)
+@@ -1,8 +1,8 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <metadata>
+-	<name>Coop HUD *WIP*</name>
++	<name>Coop HUD *DEV*</name>
+ 	<directory>coop_hud</directory>
+-	<id>2731267631</id>
++	<id></id>
+ 	<description>
+ 		[h1]Coop HUD - proper HUD for coop[/h1]
+ 		Mod renders player items/trinkets/stats and more for up to 4 coop players.
+Index: main.lua
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/main.lua b/main.lua
+--- a/main.lua	(revision 6d6e8f2a31f0af555c9088ef28edad85574afc80)
++++ b/main.lua	(date 1657963056235)
+@@ -8,4 +8,5 @@
+ include('coopHUD_hud.lua')
+ include("callbacks.main.lua")
+ --
+-print('CoopHUD v.' .. tostring(coopHUD.VERSION) .. ' successfully!')
+\ No newline at end of file
++print('CoopHUD v.' .. tostring(coopHUD.VERSION) .. ' successfully!')
++include("test.lua")
+\ No newline at end of file
+Index: test.lua
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/test.lua b/test.lua
+new file mode 100644
+--- /dev/null	(date 1657990630539)
++++ b/test.lua	(date 1657990630539)
+@@ -0,0 +1,14 @@
++function coopHUD.test()
++    print(coopHUD.players)
++    if Input.IsButtonTriggered(Keyboard.KEY_J, 0) then
++
++    end
++    if Input.IsButtonTriggered(Keyboard.KEY_K, 0) then
++
++    end
++    if Input.IsButtonTriggered(Keyboard.KEY_I, 0) then
++
++    end
++end
++coopHUD:AddCallback(ModCallbacks.MC_POST_RENDER, coopHUD.test)
++
