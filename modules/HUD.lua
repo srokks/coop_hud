@@ -30,12 +30,6 @@ function coopHUD.HUD.init()
 	coopHUD.HUD.devil = coopHUD.Stat(coopHUD.HUD, coopHUD.Stat.DEVIL, true)
 	coopHUD.HUD.planetarium = coopHUD.Stat(coopHUD.HUD, coopHUD.Stat.PLANETARIUM, true)
 end
----coopHUD.HUD.render - renders specifics to the game like no of coins/keys/bombs
----Todo: based on options.show_dest_info - show info about run destination
----Todo: based on options.show_difficulty
----Todo: render streak on pickup item/pill_use/
----Todo: render floor info
----Todo: render stuff page in center
 function coopHUD.HUD.render()
 	if coopHUD.HUD.coins then
 		local middle_bot_anchor = Vector((Isaac.GetScreenWidth() / 2), Isaac.GetScreenHeight() - 14) -- middle of screen
@@ -58,7 +52,7 @@ function coopHUD.HUD.render()
 		offset = coopHUD.HUD.beth:render(temp_pos)
 		temp_pos.X = temp_pos.X + offset.X
 		offset = coopHUD.HUD.t_beth:render(temp_pos)
-		------ DEALS RENDER`
+		------ DEALS RENDER
 		if coopHUD.options.deals.show then
 			if not (coopHUD.options.deals.hide_in_battle and coopHUD.signals.on_battle) then
 				--when options.stats.hide_in_battle on and battle signal
