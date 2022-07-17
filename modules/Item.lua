@@ -7,7 +7,7 @@
 ---@param player coopHUD.Player
 ---@param slot number  slot binding -1 - no slot | ActiveSlot enums
 ---@param item_id number
----@type fun (player:coopHUD.Player, slot:number, item_id:number):coopHUD.Item
+---@type coopHUD.Item | fun (player:coopHUD.Player, slot:number, item_id:number):coopHUD.Item
 coopHUD.Item = {}
 coopHUD.Item.__index = coopHUD.Item
 coopHUD.Item.type = PickupVariant.PICKUP_COLLECTIBLE

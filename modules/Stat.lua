@@ -2,7 +2,7 @@
 ---@param parent coopHUD.Player parent of stat class
 ---@param type number coopHUD.Stat.Type -- type of stat class
 ---@param icon boolean if true Stat will be rendered with icon else only number stat with diff if is
----@type fun(parent:coopHUD.Player,type:number,icon:boolean):coopHUD.Stat
+---@type coopHUD.Stat | fun(parent:coopHUD.Player,type:number,icon:boolean):coopHUD.Stat
 ---@return coopHUD.Stat
 coopHUD.Stat = {}
 coopHUD.Stat.__index = coopHUD.Stat

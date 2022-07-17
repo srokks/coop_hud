@@ -7,7 +7,7 @@
 ---@field item coopHUD.Item or nil
 ---@field name string
 ---@field desc string
----@type fun(parent:coopHUD.Player,slot:number):coopHUD.Pocket
+---@type coopHUD.Pocket | fun(parent:coopHUD.Player,slot:number):coopHUD.Pocket
 coopHUD.Pocket = {}
 coopHUD.Pocket.NONE = 0
 coopHUD.Pocket.CARD = 1

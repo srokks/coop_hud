@@ -1,7 +1,7 @@
 ---@class coopHUD.Poop
 ---@param entPlayer
 ---@param slot
----@type fun(entPlayer:userdata,slot:number):coopHUD.Poop
+---@type coopHUD.Poop | fun(entPlayer:userdata,slot:number):coopHUD.Poop
 ---@return coopHUD.Poop
 coopHUD.Poop = {}
 coopHUD.Poop.__index = coopHUD.Poop

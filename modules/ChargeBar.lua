@@ -2,7 +2,7 @@
 ---@field anim_path string path to animation
 ---@field sprite_empty Sprite
 ---@field sprite_full Sprite
----@type fun(parent_item:coopHUD.Item):coopHUD.ChargeBar
+---@type coopHUD.ChargeBar | fun(parent_item:coopHUD.Item):coopHUD.ChargeBar
 coopHUD.ChargeBar = {}
 coopHUD.ChargeBar.__index = coopHUD.ChargeBar
 coopHUD.ChargeBar.anim_path = "gfx/ui/ui_chargebar.anm2"

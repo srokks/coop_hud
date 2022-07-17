@@ -35,7 +35,7 @@
 ---@field signals table map_btn;
 ---@field font_color KColor holds color used in HUD when option o
 ---@return coopHUD.Player
----@type fun(player_no:number, entPlayer:userdata):coopHUD.Player
+---@type coopHUD.Player | fun(player_no:number, entPlayer:userdata):coopHUD.Player
 coopHUD.Player = {}
 coopHUD.Player.__index = coopHUD.Player
 setmetatable(coopHUD.Player, {

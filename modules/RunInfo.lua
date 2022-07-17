@@ -2,7 +2,7 @@
 ---@field type number
 ---@field amount number
 ---@field sprite Sprite
----@type fun(type):coopHUD.RunInfo
+---@type coopHUD.RunInfo | fun(type):coopHUD.RunInfo
 coopHUD.RunInfo = {}
 coopHUD.RunInfo.__index = coopHUD.RunInfo
 setmetatable(coopHUD.RunInfo, {
