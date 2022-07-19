@@ -102,11 +102,15 @@ function coopHUD.HUD.render()
 		local f_col = KColor(0.5, 0.5, 0.5, 1) -- Default font color font color with 0.5 alpha
 		if coopHUD.options.timer_always_on or coopHUD.signals.map then
 			coopHUD.HUD.fonts.pft:DrawStringScaled(time_string,
-			                                       middle_bot_anchor.X, 0,
-			                                       1, 1,
-			                                       f_col, 1, true)
+					middle_bot_anchor.X, 0,
+					1, 1,
+					f_col, 1, true)
 			timer_offset.Y = coopHUD.HUD.fonts.upheaval:GetBaselineHeight()
 		end
+		if Game().Difficulty == Difficulty.DIFFICULTY_GREED or Game().Difficulty == Difficulty.DIFFICULTY_GREEDIER then
+			coopHUD.HUD.greed_waves:render(Vector(middle_bot_anchor.X - coopHUD.HUD.greed_waves:getOffset().X / 2, 0 + timer_offset.Y))
+		end
+		---STREAK RENDER
 		if not coopHUD.signals.on_battle then
 			coopHUD.Streak:render()
 		end
