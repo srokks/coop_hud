@@ -1,6 +1,29 @@
 include("modules.RunInfo.lua")
 include("modules.Streak.lua")
---
+---@class FontsTable
+---@field lua_mini_lined Font
+---@field pft Font
+---@field team_meat_10 Font
+---@field team_meat_12 Font
+---@field upheaval Font
+
+
+---@class coopHUD.HUD
+---@field fonts FontsTable
+---@field coins coopHUD.RunInfo
+---@field keys coopHUD.RunInfo
+---@field beth coopHUD.RunInfo
+---@field t_beth coopHUD.RunInfo
+---@field coins coopHUD.RunInfo
+---@field poop coopHUD.RunInfo
+---@field greed_waves coopHUD.RunInfo
+---@field angel coopHUD.Stat
+---@field devil coopHUD.Stat
+---@field planetarium coopHUD.Stat
+---@field no_achievements coopHUD.RunInfo
+---@field font_color KColor
+
+---@type coopHUD.HUD
 coopHUD.HUD = {}
 coopHUD.HUD.fonts = {}
 coopHUD.HUD.fonts.lua_mini = Font()
