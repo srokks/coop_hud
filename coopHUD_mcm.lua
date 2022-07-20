@@ -194,6 +194,30 @@ if ModConfigMenu then
             return "Timer toggle. Accesible by pressing 'T' on keyboard"
         end
     })
+    -- Show RunInfos
+    ModConfigMenu.AddSetting(mod_name, "General", {
+        Type = ModConfigMenu.OptionType.BOOLEAN,
+        CurrentSetting = function()
+            return coopHUD.options.show_run_info
+        end,
+        Default = coopHUD.options.show_run_info,
+
+        Display = function()
+            local onOff = "Off"
+            if coopHUD.options.show_run_info then
+                onOff = "On"
+            end
+
+            return "Show run info: " .. onOff
+        end,
+        OnChange = function(currentBool)
+            coopHUD.options.show_run_info = currentBool
+            coopHUD.save_options()
+        end,
+        Info = function()
+            return "Show run info such as achievement lock/destination (only with timer)"
+        end
+    })
     -- Show player name
     ModConfigMenu.AddSetting(mod_name, "General", {
         Type = ModConfigMenu.OptionType.BOOLEAN,

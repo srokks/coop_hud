@@ -131,9 +131,11 @@ function coopHUD.HUD.render()
                     1, 1,
                     f_col, 1, true)
             timer_offset.Y = coopHUD.HUD.fonts.upheaval:GetBaselineHeight()
-            -- Renders no achievement lock
-            if coopHUD:IsNoAchievementRun() then
-                coopHUD.HUD.no_achievements:render(Vector(middle_bot_anchor.X - coopHUD.HUD.fonts.pft:GetStringWidth(time_string) / 2 - 16, 2))
+            if coopHUD.options.show_run_info then
+                -- Renders no achievement lock
+                if coopHUD:IsNoAchievementRun() then
+                    coopHUD.HUD.no_achievements:render(Vector(middle_bot_anchor.X - coopHUD.HUD.fonts.pft:GetStringWidth(time_string) / 2 - 16, 2))
+                end
             end
         end
         if Game().Difficulty == Difficulty.DIFFICULTY_GREED or Game().Difficulty == Difficulty.DIFFICULTY_GREEDIER then
