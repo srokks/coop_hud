@@ -28,6 +28,9 @@ function coopHUD.ChargeBar.new(parent_item)
 		return nil
 	end
 	self.max_charge = self:getMaxCharge()
+	if self.max_charge == 0 then
+		return nil
+	end
 	--
 	self.normal_charge = self.parent_item.parent.entPlayer:GetActiveCharge(self.parent_item.slot)
 	self.battery_charge = self.parent_item.parent.entPlayer:GetBatteryCharge(self.parent_item.slot)
