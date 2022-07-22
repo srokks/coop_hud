@@ -243,18 +243,17 @@ end
 ---@param player coopHUD.Player
 ---@return number item id
 function coopHUD.BoC.calculate(player)
-	local bag = {}
-	for _, k in pairs(player.bag_of_crafting) do
-		table.insert(bag, k.id)
-	end
-	local components = { table.unpack(bag) }
-	local result = 0
-	local id_a, id_b = coopHUD.BoC.calculateBagOfCrafting(components)
-	if coopHUD.isCollectibleUnlockedAnyPool(id_a) then
-		return id_a
-	else
-		return id_b
-	end
+    local bag = {}
+    for _, k in pairs(player.bag_of_crafting) do
+        table.insert(bag, k.id)
+    end
+    local components = { table.unpack(bag) }
+    local id_a, id_b = coopHUD.BoC.calculateBagOfCrafting(components)
+    if coopHUD.isCollectibleUnlockedAnyPool(id_a) then
+        return id_a
+    else
+        return id_b
+    end
 end
 -- BAG CALCULATION FUNCTIONS
 -- adopted functions from External Item Descriptions mod by Wolfsauge - https://steamcommunity.com/sharedfiles/filedetails/?id=836319872

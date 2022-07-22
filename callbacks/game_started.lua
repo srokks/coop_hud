@@ -20,10 +20,12 @@ end
 -- __________ On start
 function coopHUD.on_start(_, cont)
 	--Resets tables
+	include('modules.BoC.lua')
 	coopHUD.players = {}
 	coopHUD.essau_no = 0 -- resets essau_no
 	coopHUD.on_player_init() -- inits players
-	coopHUD.BoC:GameStartCrafting() --TODO:make trigger only when bag of crafting in game
+	coopHUD.itemUnlockStates = {}
+	coopHUD.BoC.GameStartCrafting() --TODO:make trigger only when bag of crafting in game
 	--
 	coopHUD.angel_seen = false -- resets angel seen state on restart
 	coopHUD.jar_of_wisp_charge = false -- resets wisp charge  on restart
@@ -43,5 +45,6 @@ function coopHUD.on_start(_, cont)
 		end
 	end
 	coopHUD.HUD.init()
+
 end
 coopHUD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, coopHUD.on_start)
