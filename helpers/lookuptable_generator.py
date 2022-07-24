@@ -164,11 +164,4 @@ for pill in pillMetadatas:
 
 newfile.write("}\n\n")
 
-newfile.write("--Challenges for use in HUD challenges destination info\n")
-newfile.write("xml.challenges = {")
-for challenge in challenges:
-    newfile.write(" [" + challenge['id'] + "] = { endstage = " + challenge['endstage'] + " },")
-
-newfile.write("}\n\n")
-
 newfile.write("return xml")
