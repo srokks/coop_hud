@@ -1,4 +1,4 @@
-local xml_data = include('helpers.eid_xmldata.lua')
+local xml_data = include('helpers.xml_data.lua')
 function coopHUD.getMinimapOffset()
     local minimap_offset = Vector(Isaac.GetScreenWidth(), 0)
     if MinimapAPI ~= nil then

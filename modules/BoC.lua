@@ -257,7 +257,7 @@ function coopHUD.BoC.calculate(player)
 end
 -- BAG CALCULATION FUNCTIONS
 -- adopted functions from External Item Descriptions mod by Wolfsauge - https://steamcommunity.com/sharedfiles/filedetails/?id=836319872
-local xml_data = include('helpers.eid_xmldata.lua')
+local xml_data = include('helpers.xml_data.lua')
 --
 
 local pickupValues = {
