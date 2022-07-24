@@ -24,6 +24,7 @@ include("modules.Destination.lua")
 ---@field no_achievements coopHUD.RunInfo
 ---@field font_color KColor
 ---@field destination coopHUD.Destination|nil
+---@field hard_mode coopHUD.RunInfo|nil
 ---@type coopHUD.HUD
 coopHUD.HUD = {}
 coopHUD.HUD.fonts = {}
@@ -54,6 +55,10 @@ function coopHUD.HUD.init()
     coopHUD.HUD.devil = coopHUD.Stat(coopHUD.HUD, coopHUD.Stat.DEVIL, true)
     coopHUD.HUD.planetarium = coopHUD.Stat(coopHUD.HUD, coopHUD.Stat.PLANETARIUM, true)
     -- Run info specifics
+    coopHUD.HUD.hard_mode = nil
+    if Game().Difficulty == Difficulty.DIFFICULTY_HARD then
+        coopHUD.HUD.hard_mode = coopHUD.RunInfo(coopHUD.RunInfo.HARD)
+    end
     coopHUD.HUD.no_achievements = coopHUD.RunInfo(coopHUD.RunInfo.NO_ACHIEVEMENTS)
     --Destination if custom run and
     coopHUD.HUD.destination = nil
@@ -138,6 +143,14 @@ function coopHUD.HUD.render()
                     f_col, 1, true)
             timer_offset.Y = coopHUD.HUD.fonts.upheaval:GetBaselineHeight()
             if coopHUD.options.show_run_info then
+                -- Renders hard mode indicator
+                if coopHUD.HUD.hard_mode then
+                    temp_pos = Vector(middle_bot_anchor.X - coopHUD.HUD.fonts.pft:GetStringWidth(time_string) / 2 - 16, 2)
+                    if coopHUD:IsNoAchievementRun() then
+                        temp_pos.X = temp_pos.X - 16
+                    end
+                    coopHUD.HUD.hard_mode:render(temp_pos)
+                end
                 -- Renders no achievement lock
                 if coopHUD:IsNoAchievementRun() then
                     coopHUD.HUD.no_achievements:render(Vector(middle_bot_anchor.X - coopHUD.HUD.fonts.pft:GetStringWidth(time_string) / 2 - 16, 2))
