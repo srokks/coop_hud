@@ -1,7 +1,22 @@
 ---@class coopHUD.RunInfo
----@field type number
----@field amount number
----@field sprite Sprite
+---@field private type number
+---@field private amount number
+---@field private sprite Sprite
+---@field COIN number
+---@field KEY number
+---@field BOMB number
+---@field GOLDEN_KEY number
+---@field HARD number
+---@field NO_ACHIEVEMENTS number
+---@field GOLDEN_BOMB number
+---@field GREED_WAVES number
+---@field D_RUN number
+---@field SLOT number
+---@field GREEDIER number
+---@field BETH number
+---@field GIGA_BOMB number
+---@field T_BETH number
+---@field POOP number
 ---@type coopHUD.RunInfo | fun(type):coopHUD.RunInfo
 coopHUD.RunInfo = {}
 coopHUD.RunInfo.__index = coopHUD.RunInfo
