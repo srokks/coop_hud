@@ -1,5 +1,6 @@
 include("modules.RunInfo.lua")
 include("modules.Streak.lua")
+include("modules.Destination.lua")
 ---@class FontsTable
 ---@field lua_mini_lined Font
 ---@field pft Font
@@ -22,7 +23,7 @@ include("modules.Streak.lua")
 ---@field planetarium coopHUD.Stat
 ---@field no_achievements coopHUD.RunInfo
 ---@field font_color KColor
-
+---@field destination coopHUD.Destination|nil
 ---@type coopHUD.HUD
 coopHUD.HUD = {}
 coopHUD.HUD.fonts = {}
@@ -54,6 +55,11 @@ function coopHUD.HUD.init()
     coopHUD.HUD.planetarium = coopHUD.Stat(coopHUD.HUD, coopHUD.Stat.PLANETARIUM, true)
     -- Run info specifics
     coopHUD.HUD.no_achievements = coopHUD.RunInfo(coopHUD.RunInfo.NO_ACHIEVEMENTS)
+    --Destination if custom run and
+    coopHUD.HUD.destination = nil
+    if Game():GetSeeds():IsCustomRun() and Isaac.GetChallenge() > 0 then
+        coopHUD.HUD.destination = coopHUD.Destination()
+    end
 end
 function coopHUD.HUD.render()
     if coopHUD.HUD.coins then
@@ -136,6 +142,10 @@ function coopHUD.HUD.render()
                 if coopHUD:IsNoAchievementRun() then
                     coopHUD.HUD.no_achievements:render(Vector(middle_bot_anchor.X - coopHUD.HUD.fonts.pft:GetStringWidth(time_string) / 2 - 16, 2))
                 end
+                -- Renders destination in challenges
+                if coopHUD.HUD.destination then
+                    coopHUD.HUD.destination:render(Vector(middle_bot_anchor.X + coopHUD.HUD.fonts.pft:GetStringWidth(time_string) / 2 + 2, 2))
+                end
             end
         end
         if Game().Difficulty == Difficulty.DIFFICULTY_GREED or Game().Difficulty == Difficulty.DIFFICULTY_GREEDIER then
@@ -145,6 +155,5 @@ function coopHUD.HUD.render()
         if not coopHUD.signals.on_battle then
             coopHUD.Streak:render()
         end
-
     end
 end
