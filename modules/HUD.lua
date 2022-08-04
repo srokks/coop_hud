@@ -65,6 +65,7 @@ function coopHUD.HUD.init()
     if Game():GetSeeds():IsCustomRun() and Isaac.GetChallenge() > 0 then
         coopHUD.HUD.destination = coopHUD.Destination()
     end
+    coopHUD.HUD.v_lap = coopHUD.RunInfo(coopHUD.RunInfo.V_LAP)
 end
 function coopHUD.HUD.render()
     if coopHUD.HUD.coins then
@@ -158,6 +159,10 @@ function coopHUD.HUD.render()
                 -- Renders destination in challenges
                 if coopHUD.HUD.destination then
                     coopHUD.HUD.destination:render(Vector(middle_bot_anchor.X + coopHUD.HUD.fonts.pft:GetStringWidth(time_string) / 2 + 2, 2))
+                end
+                -- Renders Victory Lap indicator
+                if Game():GetVictoryLap() > 0 then
+                    coopHUD.HUD.v_lap:render(Vector(middle_bot_anchor.X + coopHUD.HUD.fonts.pft:GetStringWidth(time_string) / 2 + 2, 2))
                 end
             end
         end

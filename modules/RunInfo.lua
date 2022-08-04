@@ -12,6 +12,7 @@
 ---@field GREED_WAVES number
 ---@field D_RUN number
 ---@field SLOT number
+---@field V_LAP number
 ---@field GREEDIER number
 ---@field BETH number
 ---@field GIGA_BOMB number
@@ -35,6 +36,7 @@ coopHUD.RunInfo.GOLDEN_BOMB = 6
 coopHUD.RunInfo.GREED_WAVES = 7
 coopHUD.RunInfo.D_RUN = 8
 coopHUD.RunInfo.SLOT = 9
+coopHUD.RunInfo.V_LAP = 10
 coopHUD.RunInfo.GREEDIER = 11
 coopHUD.RunInfo.BETH = 12
 coopHUD.RunInfo.GIGA_BOMB = 14
@@ -80,6 +82,9 @@ function coopHUD.RunInfo.getAmount(self)
         if self.type == coopHUD.RunInfo.SLOT then
             --FIXME: https://coophud.atlassian.net/browse/COOP-105
             return player:GetGreedDonationBreakChance()
+        end
+        if self.type == coopHUD.RunInfo.V_LAP then
+            return Game():GetVictoryLap()
         end
     end
     if self.type == coopHUD.RunInfo.HARD
@@ -241,6 +246,9 @@ function coopHUD.RunInfo.getText(self)
     local format_string = "%.2i"
     if self.type == coopHUD.RunInfo.COIN and self:checkDeepPockets() then
         format_string = "%.3i"
+    end
+    if self.type == coopHUD.RunInfo.V_LAP then
+        format_string = "%.1i"
     end
     local text = string.format(format_string, self.amount)
     if self.type == coopHUD.RunInfo.SLOT then
