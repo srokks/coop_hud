@@ -1,3 +1,7 @@
+<div id="logo" align="center" >
+<img src="thumbnails/00_coopHUD_ico.png" alt="logo" width="451" height="460"> </br>
+</div>
+
 <div id ='description'>
 
 # Coop HUD - proper HUD for coop Isaac
