@@ -1,11 +1,31 @@
+Index: metadata.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/metadata.xml b/metadata.xml
+--- a/metadata.xml	(revision 7fb7df368a794b43262d7fd57151e35b8849e008)
++++ b/metadata.xml	(date 1659625092466)
+@@ -1,8 +1,8 @@
+ <?xml version='1.0' encoding='UTF-8'?>
+ <metadata>
+-    <name>coopHUD *WIP*</name>
+-    <directory>coop_hud_2731267631</directory>
+-    <id>2731267631</id>
++    <name>coopHUD *DEV*</name>
++    <directory>coop_hud</directory>
++    <id>0</id>
+     <description>
+         [h1]Coop HUD - proper HUD for coop Isaac[/h1]
+         This mod renders active items/pocket/trinkets in proper position for coop game up to 4 players.
 Index: coopHUD_globals.lua
 IDEA additional info:
 Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 <+>UTF-8
 ===================================================================
 diff --git a/coopHUD_globals.lua b/coopHUD_globals.lua
---- a/coopHUD_globals.lua	(revision cfcf9c70c47f9341e1b545162e4c5c35b4e93cf0)
-+++ b/coopHUD_globals.lua	(date 1658827426692)
+--- a/coopHUD_globals.lua	(revision 7fb7df368a794b43262d7fd57151e35b8849e008)
++++ b/coopHUD_globals.lua	(date 1659625053892)
 @@ -1,4 +1,4 @@
 -coopHUD.VERSION = '0.8.2-WIP'
 +coopHUD.VERSION = '0.8.2-DEV'
@@ -21,33 +41,14 @@ diff --git a/coopHUD_globals.lua b/coopHUD_globals.lua
      stats = {
          show = true,
          hide_in_battle = true,
-Index: metadata.xml
-IDEA additional info:
-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
-<+>UTF-8
-===================================================================
-diff --git a/metadata.xml b/metadata.xml
---- a/metadata.xml	(revision cfcf9c70c47f9341e1b545162e4c5c35b4e93cf0)
-+++ b/metadata.xml	(date 1658827426701)
-@@ -1,8 +1,8 @@
- <?xml version="1.0" encoding="UTF-8"?>
- <metadata>
--	<name>Coop HUD *WIP*</name>
-+	<name>Coop HUD *DEV*</name>
- 	<directory>coop_hud</directory>
--	<id>2731267631</id>
-+	<id></id>
- 	<description>
- 		[h1]Coop HUD - proper HUD for coop[/h1]
- 		Mod renders player items/trinkets/stats and more for up to 4 coop players.
 Index: main.lua
 IDEA additional info:
 Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 <+>UTF-8
 ===================================================================
 diff --git a/main.lua b/main.lua
---- a/main.lua	(revision cfcf9c70c47f9341e1b545162e4c5c35b4e93cf0)
-+++ b/main.lua	(date 1658827426697)
+--- a/main.lua	(revision 7fb7df368a794b43262d7fd57151e35b8849e008)
++++ b/main.lua	(date 1659625053909)
 @@ -8,4 +8,5 @@
  include('coopHUD_hud.lua')
  include("callbacks.main.lua")
@@ -64,8 +65,8 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 ===================================================================
 diff --git a/test.lua b/test.lua
 new file mode 100644
---- /dev/null	(date 1658827465917)
-+++ b/test.lua	(date 1658827465917)
+--- /dev/null	(date 1659617542003)
++++ b/test.lua	(date 1659617542003)
 @@ -0,0 +1,15 @@
 +function coopHUD.test()
 +	if coopHUD.players[1] == nil then
