@@ -179,9 +179,13 @@ function coopHUD.HUD.render()
 			                                      0 + timer_offset.Y))
 			-- Renders Greed Donation Machine break chance
 			if Game():GetLevel():GetStage() == 7 and Game():GetRoom():GetBossID() ~= 0 and not coopHUD.signals.on_battle then
-				coopHUD.HUD.slot:render(Vector(middle_bot_anchor.X + coopHUD.HUD.greed_waves:getOffset().X /2,
-			                                      0 + timer_offset.Y))
+				coopHUD.HUD.slot:render(Vector(middle_bot_anchor.X + coopHUD.HUD.greed_waves:getOffset().X / 2,
+				                               0 + timer_offset.Y))
 			end
+		end
+		-- Renders Gideon Waves if in his room
+		if Game():GetRoom():GetBossID() == 83 then
+			--TODO: COOP-131: Giedon Waves
 		end
 		---STREAK RENDER
 		if not coopHUD.signals.on_battle then
