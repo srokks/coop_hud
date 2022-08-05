@@ -1,4 +1,4 @@
-coopHUD.VERSION = '0.8.2-WIP'
+coopHUD.VERSION = '0.8.5-WIP'
 coopHUD.showExtraInfo = false
 coopHUD.HUD_table = {}
 coopHUD.signals = {
