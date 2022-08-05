@@ -95,7 +95,6 @@ end
 ---@return number
 function coopHUD.Destination.getDestination()
     local challenge_type = Isaac.GetChallenge()
-    print(challenge_type, challenge_to_type[challenge_type])
     return challenge_to_type[challenge_type]
 end
 ---@private

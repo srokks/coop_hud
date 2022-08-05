@@ -96,7 +96,6 @@ if ModConfigMenu then
             return 'Toggle HUD' .. ": " .. key
         end,
         OnChange = function(currentNum)
-            print('cur nim', currentNum)
             coopHUD.options.h_trigger_key = currentNum or -1
             coopHUD.save_options()
         end,
@@ -107,7 +106,6 @@ if ModConfigMenu then
             local keepSettingString = ""
             if currentValue > -1 then
                 local currentSettingString = hotkeyToString[currentValue]
-                print(currentSettingString)
                 keepSettingString = "This setting is currently set to \"" .. currentSettingString .. "\".$newlinePress this button to keep it unchanged.$newline$newline"
             end
             return "Press a button on your keyboard to change this setting.$newline$newline" .. keepSettingString .. "Press ESC to go back and clear this setting."
