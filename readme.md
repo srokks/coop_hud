@@ -57,10 +57,13 @@ coopHUD lack of couple things like boss bars or minimap. For best experience use
 * Modded characters head indicator
 
 ## Known bugs:
-
-* Mod crushing on non default (English) langage
-* Jar of Wisp - cannot get Jar of Wisps charge from API, charge counted manual.
-  No support for multiple Jar of Wisp on one run - wont show proper indicator - [PERM]
+* Custom challenge destination indicator
+* Bag of crafting - sometimes collects wrong pickup info for hud
+* Gideon Waves: cannot get current gideon wave
+* Jacob & Essau: player info covers stats when to much things
+* Stats on right are covered when map is too big
+* Items with custom charges or charges dependent on pill/card - no proper charges for Placebo/
+* Jar of Wisp - cannot get Jar of Wisps charge from API, charge counted manual.[PERM]
 * Urn of soul - cannot get souls from game API, only opened/closed sprite indicator - [PERM]
 
 ## Mods compatibility:
@@ -81,22 +84,21 @@ coopHUD lack of couple things like boss bars or minimap. For best experience use
 
 ### Whats new
 
-### v.8.2:
+### v.8.5:
 
-* Can rebind HUD toggle button
-* ExtraHUD - I've reworked collectibles show, It's more like vanilla:
-  * In 1 player mode shows just like in classic Isaac
-  * In coop shown instead of stats, just hold MAP button
-  * Shows up to 52 recent passive items/gulped trinkets
-  * For Essau collectibles - press DROP button
-  * Can be turned off in options
-* might be glitchy after roll of collectibles
-* Bag of Crafting - calculation improvements
-* Code optimization and reorganization - hope will help with performance.
-* Charge bar rework - now support custom animation files.
-* Fixed no info on Transformation.
-* LangAPI - full integration.
-
+* Shows run info:
+  * Hard mode indicator
+  * No achievement indicator
+  * Destination (only for vanilla challanges )
+  * Greed Waves/Greed Donation Machine break chances indicators
+* Fixed - wrong Bag of Crafting result
+* Fixed - charge bar rendering for no charges items
+* Fixed - no longer shows normal hud on boss transition
+* Fixed - crashing when non default language set
+* Not working:
+  * Custom challenge destination indicator
+  * Gideon Waves: cannot get current gideon wave
+* added metadata parser from mod files
 </div>
 <div id="screens">
 
