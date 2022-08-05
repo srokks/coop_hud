@@ -243,17 +243,17 @@ end
 ---@param player coopHUD.Player
 ---@return number item id
 function coopHUD.BoC.calculate(player)
-    local bag = {}
-    for _, k in pairs(player.bag_of_crafting) do
-        table.insert(bag, k.id)
-    end
-    local components = { table.unpack(bag) }
-    local id_a, id_b = coopHUD.BoC.calculateBagOfCrafting(components)
-    if coopHUD.isCollectibleUnlockedAnyPool(id_a) then
-        return id_a
-    else
-        return id_b
-    end
+	local bag = {}
+	for _, k in pairs(player.bag_of_crafting) do
+		table.insert(bag, k.id)
+	end
+	local components = { table.unpack(bag) }
+	local id_a, id_b = coopHUD.BoC.calculateBagOfCrafting(components)
+	if coopHUD.isCollectibleUnlockedAnyPool(id_a) then
+		return id_a
+	else
+		return id_b
+	end
 end
 -- BAG CALCULATION FUNCTIONS
 -- adopted functions from External Item Descriptions mod by Wolfsauge - https://steamcommunity.com/sharedfiles/filedetails/?id=836319872
@@ -420,8 +420,14 @@ local calculatedRecipes = {}
 local lockedRecipes = {}
 --If the seed changes, the above two tables will be wiped
 local lastSeedUsed = Game():GetSeeds():GetStartSeed()
+coopHUD.lastSeedUsed = Game():GetSeeds():GetStartSeed()
 --
 function coopHUD.BoC.calculateBagOfCrafting(componentsTable)
+	-- Refresh seed on differ
+	local curSeed = Game():GetSeeds():GetStartSeed()
+	if lastSeedUsed ~= curSeed then
+		lastSeedUsed = curSeed
+	end
 	-- ingredients must be sorted by ID for the RNG shifting to be accurate, so make a local copy
 	local components = { table.unpack(componentsTable) }
 	table.sort(components)

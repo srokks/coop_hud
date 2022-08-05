@@ -20,7 +20,6 @@ end
 -- __________ On start
 function coopHUD.on_start(_, cont)
 	--Resets tables
-	include('modules.BoC.lua')
 	coopHUD.players = {}
 	coopHUD.essau_no = 0 -- resets essau_no
 	coopHUD.on_player_init() -- inits players
@@ -45,6 +44,5 @@ function coopHUD.on_start(_, cont)
 		end
 	end
 	coopHUD.HUD.init()
-
 end
 coopHUD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, coopHUD.on_start)
