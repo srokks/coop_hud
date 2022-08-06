@@ -3,7 +3,6 @@ local btn_held = 0
 local pill_held = 0
 function coopHUD.inputs_signals()
 	-- Trigger for turning on/off coop hud on `H` key
-	local hotkeyToString = InputHelper.KeyboardToString
 	if coopHUD.options.h_trigger_key > -1 then
 		if Input.IsButtonTriggered(coopHUD.options.h_trigger_key, 0) then
 			if coopHUD.options.onRender then
@@ -11,8 +10,6 @@ function coopHUD.inputs_signals()
 			else
 				coopHUD.options.onRender = true
 			end
-			coopHUD.save_options()
-			print('Saved!')
 		end
 	end
 	-- Trigger for turning on/off timer on `T` key
@@ -95,7 +92,9 @@ function coopHUD.inputs_signals()
 				coopHUD.players[pill_card_pressed].bag_of_crafting = {} -- resets bag of crafting
 				--adds collectible to inventory
 				local item_queue = Isaac.GetItemConfig():GetCollectible(coopHUD.players[pill_card_pressed].crafting_result.id)
-				if item_queue == nil then return end
+				if item_queue == nil then
+					return
+				end
 				if item_queue.Type == ItemType.ITEM_ACTIVE then
 				elseif item_queue.Type == ItemType.ITEM_TRINKET then
 				else
@@ -138,20 +137,20 @@ function coopHUD.render()
 	end
 	-- _____ Main render function
 	local paused = Game():IsPaused()
-	for i = 1, #coopHUD.players do
-		if coopHUD.players[i] then
-			coopHUD.on_player_init()
-			if coopHUD.options.onRender and not paused and not coopHUD.signals.is_joining then
-				if Game():GetHUD():IsVisible() then
-					Game():GetHUD():SetVisible(false)
-				end
-				coopHUD.players[i]:render()
-				coopHUD.HUD.render()
+	if coopHUD.players[1] then
+		coopHUD.on_player_init()
+		if coopHUD.options.onRender and not paused and not coopHUD.signals.is_joining then
+			if Game():GetHUD():IsVisible() then
+				Game():GetHUD():SetVisible(false)
 			end
-			if not coopHUD.options.onRender or coopHUD.signals.is_joining then
-				if not Game():GetHUD():IsVisible() then
-					Game():GetHUD():SetVisible(true)
-				end
+			for i = 1, #coopHUD.players do
+				coopHUD.players[i]:render()
+			end
+			coopHUD.HUD.render()
+		end
+		if not coopHUD.options.onRender or coopHUD.signals.is_joining then
+			if not Game():GetHUD():IsVisible() and not paused then
+				Game():GetHUD():SetVisible(true)
 			end
 		end
 	end

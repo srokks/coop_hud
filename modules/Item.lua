@@ -7,7 +7,7 @@
 ---@param player coopHUD.Player
 ---@param slot number  slot binding -1 - no slot | ActiveSlot enums
 ---@param item_id number
----@type fun (player:coopHUD.Player, slot:number, item_id:number):coopHUD.Item
+---@type coopHUD.Item | fun (player:coopHUD.Player, slot:number, item_id:number):coopHUD.Item
 coopHUD.Item = {}
 coopHUD.Item.__index = coopHUD.Item
 coopHUD.Item.type = PickupVariant.PICKUP_COLLECTIBLE
@@ -248,7 +248,7 @@ function coopHUD.Item.render(self, pos, mirrored, scale, down_anchor, dim)
 				temp_pos = Vector(pos.X + 5, pos.Y + 8)
 				if down_anchor then temp_pos.Y = temp_pos.Y - 8 end
 				if Game():GetLevel():GetCurses() >= LevelCurse.CURSE_OF_BLIND then
-					--coopHUD.BoC.Unknown:render(temp_pos, mirrored, Vector(0.7, 0.7), down_anchor)--FIXME:COOP-98:BoC: Unknown item sprite
+					coopHUD.BoC.Unknown:render(temp_pos, mirrored, Vector(0.7, 0.7), down_anchor)
 				else
 					self.parent.crafting_result:render(temp_pos, mirrored, Vector(0.7, 0.7), down_anchor, dim)
 				end

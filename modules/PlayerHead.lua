@@ -1,5 +1,5 @@
 ---@class coopHUD.PlayerHead
----@type fun(parent:coopHUD.Player):coopHUD.PlayerHead
+---@type coopHUD.PlayerHead | fun(parent:coopHUD.Player):coopHUD.PlayerHead
 ---@return coopHUD.PlayerHead
 coopHUD.PlayerHead = {}
 coopHUD.PlayerHead.__index = coopHUD.PlayerHead

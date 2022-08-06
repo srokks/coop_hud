@@ -1,132 +1,113 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <metadata>
-	<name>Coop HUD *WIP*</name>
-	<directory>coop_hud</directory>
-	<id>2731267631</id>
-	<description>
-		[h1]Coop HUD - proper HUD for coop[/h1]
-		Mod renders player items/trinkets/stats and more for up to 4 coop players.
-		[h3]Recently due performance issues mod has been hidden in workshop and rewritten.
-		It is less laggy and buggy right now. Check what is already working in description[/h3]
+    <name>coopHUD *WIP*</name>
+    <directory>coop_hud_2731267631</directory>
+    <id>2731267631</id>
+    <description>
+        [h1]Coop HUD - proper HUD for coop Isaac[/h1]
+        This mod renders active items/pocket/trinkets in proper position for coop game up to 4 players.
+        [h3]MOD IS STILL DEVELOPED PLEASE SUBMIT ANY WEIR BEHAVIOUR ( weird positions/ console errors/ log files) in Bugs topic[/h3]
+        [h2]Features[/h2]
+        [list]
+            [*] Renders actives/hearts/trinkets/pockets in proper and readable position for up to 4 players (8 characters max)
+            [*] Colorfully player sprites/text infos
+            [*] Shows pockets/pills/card names
+            [*] Shows health bar with Mantle Indicator for all players
+            [*] Vanilla like prompts (using cards/ pills/ active items/ transformations ) with color of player
+            [*] Stats - just like vanilla FoundHUD stat display:
+            [list]
+                [*] Show stats up to 4 players on screen
+                [*] Highlight on map button
+                [*] Stats colors
+            [/list]
+            [*] Hide stats on battle function
+            [*] Angel/Devil/Planetarium chances - with customizable positions
+            [*] ExtraHUD - just like vanilla collectibles list:
+            [list]
+                [*] In 1 player mode shows just like in classic Isaac
+                [*] In coop shown instead of stats, just hold MAP button
+                [*] Shows up to 52 recent passive items/gulped trinkets
+                [*] For Essau collectibles - press DROP button
+            [/list]
+            [*] Jacob and Essau - up to 4 pairs of Jacob and Essau with readable:
+            [list]
+                [*] Shows Essau collectibles (press DROP button)
+                [*] Shows Essau stats (when more than 2 players or forced small hud press DROP button)
+            [/list]
+            [*] Tainted Support
+            [list]
+                [*] Tainted Isaac: shows inventory for all 4 players
+                [*] Tainted Maggy: pulsing hearts
+                [*] Tainted ???: show Poop Spells and Hold Spell for all 4 players
+                [*] Tainted Cain: shows Bag of Crafting recipe and crafting for all 4 players
+            [/list]
+            [*] HUD toggle button - adjust in options
+            [*] Bag of Crafting - active item crafting result preview
+        [/list]
+        [h2]Requirements/ needed mods[/h2]
+        coopHUD lack of couple things like boss bars or minimap. For best experience use below mods.
+        [list]
+            [*] mod options:  [url=https://steamcommunity.com/workshop/filedetails/?id=2487535818]Mod Config Menu - Continued[/url]
+            [*] minimap:  [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1978904635]MiniMAPI: A Minimap API[/url]  from  [url=https://steamcommunity.com/id/Wofsauge]Wofsauge[/url]
+            [*] boss bars:  [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2635267643]Enhanced Boss Bars[/url]  from  [url=https://steamcommunity.com/id/Wofsauge]Wofsauge[/url]
+        [/list]
+        [h2]Planned features/not working:[/h2]
+        [list]
+            [*] Placebo/ Mimic Card/ Clear rune - lack of custom charges ammount
+            [*] D Infinity - lack of item sprite shift logic
+            [*] RunInfo: No Achievement/Hard Mode/Victory Laps
+            [*] Waves info: Greed Waves,Gideon Waves
+            [*] Modded cards/pills
+            [*] Modded characters head indicator
+        [/list]
+        [h2]Known bugs:[/h2]
+        [list]
+            [*] Custom challenge destination indicator
+            [*] Bag of crafting - sometimes collects wrong pickup info for hud
+            [*] Gideon Waves: cannot get current gideon wave
+            [*] Jacob &amp; Essau: player info covers stats when to much things
+            [*] Stats on right are covered when map is too big
+            [*] Items with custom charges or charges dependent on pill/card - no proper charges for Placebo/
+            [*] Jar of Wisp - cannot get Jar of Wisps charge from API, charge counted manual.[PERM]
+            [*] Urn of soul - cannot get souls from game API, only opened/closed sprite indicator - [PERM]
+        [/list]
+        [h2]Mods compatibility:[/h2]
+        [list]
+            [*] It's compatible with most of modded trinkets and items
+            [*] Support modded sprites
+            [*]  [url=https://steamcommunity.com/sharedfiles/filedetails/?id=836319872]External item descriptions[/url]  from  [url=https://steamcommunity.com/id/Wofsauge]Wofsauge[/url]
+            [*]  [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2376005362]Encyclopedia - An In-Game Wiki[/url]  from  [url=https://steamcommunity.com/id/AgentCucco]AgentCucco[/url]
+            [*] Compatible and improving gameplay mods are in my  [url=https://steamcommunity.com/workshop/filedetails/?id=2738883704]collection[/url]
+        [/list]
+        [h2]Thanks to![/h2]
+        [list]
+            [*]  [url=https://steamcommunity.com/id/Wofsauge]Wofsauge[/url]  for TBoI API and his mods which helped in developing this one
+        [/list]
 
-		[h3] [b] MOD IS STILL DEVELOPED PLEASE SUBMIT ANY WEIR BEHAVIOUR ( weird positions/ console errors/ log files)
-		in Bugs topic[/b] [/h3]
-		[h2] What new:[/h2]
-		[h3] v.0.8.2[/h3]
-		[list]
-		[*] Can rebind HUD toggle button
-		[*] ExtraHUD - I've reworked collectibles show, It's more like vanilla:
-		[list]
-		[*] In 1 player mode shows just like in classic Isaac
-		[*] In coop shown instead of stats, just hold MAP button
-		[*] Shows up to 52 recent passive items/gulped trinkets
-		[*] For Essau collectibles - press DROP button
-		[*] Can be turned off in options
-		[/list]
-		* might be glitchy after roll of collectibles
-		[*] Bag of Crafting - calculation improvements
-		[*] Code optimization and reorganization - hope will help with performance.
-		[*] Charge bar rework - now support custom animation files.
-		[*] Fixed no info on Transformation.
-		[*] LangAPI - full integration.
-		[/list]
-		[h2] What this mod do[/h2]
-		[list]
-		[*] Renders proper HUD for coop/multiplayer up to 4 players
-		[*] Colorful players and HUD info - can turn off
-		[*] Shows pockets/pills/card names
-		[*] Bethany charges/ colored charge bar
-		[*] Jacob/Essau: full support for up to 4 Jacob/Essau pairs on screen:
-		[list]
-		[*] Shows full and clear Jacob Essau active items/trinkets/pockets on screen
-		[*] Shows Essau stats:
-		[list]
-		[*] When more than 2 players: on drop button - switched with main
-		[*] With less then 2 players: under main character stats
-		[/list]
-		[/list]
-		[*] Tainted Support:
-		[list]
-		[*] Tainted Isaak support - up to 4 players
-		[*] Tainted Maggy - shows pulsating heart animation
-		[*] Forgotten - Lost - full support
-		[*] Tainted ??? support - show Poop Spells and Hold Spell up to 4 players
-		[*] Tainted Cain support - shows Bag of Crafting recipe and crafting result up to 4 players
-		[list][*] For active item Bag of Crafting - shows crafting result[/list]
-		[/list]
-		[*] Tainted Support:
-		[list]
-		[*] Tainted Isaac support - up to 4 players
-		[*] Forgotten - Lost - full support
-		[*] Tainted ??? support - show spells and Hold up to 4 players
-		[*] Can now turn off my stuff page if annoying
-		[/list]
-		[*] Vanilla like prompts (using cards/ pills/ active items/ transformations ) with color of player
-		[*] Stats - just like vanilla FoundHUD stat display:
-		[list]
-		[*] Show stats up to 4 players
-		[*] Highlight on map button
-		[*] Stats colors - can turn on/off
-		[*] Hide stats on battle - can turn on/off
-		[*] Angel/Devil/Planetarium chances - with customizable positions
-		[/list]
-		[/list]
-		[h2] Planned features/ not implemented yet[/h2]
-		[list]
-		[*] Gideon/Greed Wave Counter
-		[*] Destination icons
-		[*] Small HUD - customizable positions
-		[/list]
-		[h2] What this mod lack of[/h2]
-		[list]
-		[*] For menu options use [url=https://steamcommunity.com/workshop/filedetails/?id=2487535818]Mod Config Menu -
-		Continued[/url]
-		[*] Boss bars – I won’t be messing with. I suggest
-		using[url=https://steamcommunity.com/sharedfiles/filedetails/?id=2635267643] [Rep] Enhanced Boss Bars [/url]
-		from[url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge[/url]
-		My mod should override Boss bars settings in case bar covers coopHUD check options. If boss bar covers items
-		change it padding in settings.
-		[*] Minimap – Same as boss bars – Use
-		[url=https://steamcommunity.com/sharedfiles/filedetails/?id=1978904635]MiniMAPI[/url] from
-		[url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge[/url]
-		My mod should override MiniMAPI settings.
-		Options should be:
-		General -> Display on No HUD seed - On
-		Map (1) - > Show map effect icons - Off
-		[/list]
-		[h2]Issues/ not working/missing[/h2]
-		[list]
-		[*] Modded cards/pills support
-		[*] Modded characters
-		[*] Placebo/Mimic Card/Clear Rune - no implementation of custom max charges - WIP
-		[*] D Infinity - no shift between dice types - WIP
-		[*] Destination/Waves indicator - WIP
-		[*] Jar of Wisp - cannot get Jar of Wisps charge from API, charge counted manual.
-		No support for multiple Jar of Wisp on one run - wont show proper indicator - PERM BUG
-		[*] Urn of soul - cannot get souls from game API, only opened/closed sprite indicator - PERM BUG
-		[/list]
-		[h2] Mods Compatibility[/h2]
-		[list]
-		[*] It's compatible with modded trinkets and items
-		[*] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2635267643] [Rep] Enhanced Boss Bars [/url] from
-		[url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge
-		[*] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1978904635] MiniMAPI[/url] from
-		[url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge
-		[*] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=836319872] [AB+|Rep] External item
-		descriptions[/url] from [url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900]Wofsauge[/url]
-		For right now you must set EID position manually
-		[*] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2376005362] Encyclopedia - An In-Game
-		Wiki[/url]from [url=https://steamcommunity.com/id/AgentCucco/myworkshopfiles/?appid=250900] AgentCucco[/url]
-		[/list]
-		[h2] Thanks to![/h2]
-		[list]
-		[*] [url=https://steamcommunity.com/id/Wofsauge/myworkshopfiles/?appid=250900] Wofsauge[/url] - for TBoI API and
-		his mods which helped in developing this mod
-		[/list]
-	</description>
-	<version>0.8.2</version>
-	<visibility>Public</visibility>
-	<tag id="Lua"/>
-	<tag id="Tweaks"/>
-	<tag id="Graphics"/>
+        [h3]Whats new[/h3]
+        [h3]v.8.5:[/h3]
+        [list]
+            [*] Shows run info:
+            [list]
+                [*] Hard mode indicator
+                [*] No achievement indicator
+                [*] Destination (only for vanilla challanges )
+                [*] Greed Waves/Greed Donation Machine break chances indicators
+            [/list]
+            [*] Fixed - wrong Bag of Crafting result
+            [*] Fixed - charge bar rendering for no charges items
+            [*] Fixed - no longer shows normal hud on boss transition
+            [*] Fixed - crashing when non default language set
+            [*] Not working:
+            [list]
+                [*] Custom challenge destination indicator
+                [*] Gideon Waves: cannot get current gideon wave
+            [/list]
+            [*] added metadata parser from mod files
+        [/list]</description>
+    <version>0.8.5</version>
+    <visibility>Public</visibility>
+    <tag id="Lua" />
+    <tag id="Tweaks" />
+    <tag id="Graphics" />
 </metadata>

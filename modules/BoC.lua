@@ -248,9 +248,8 @@ function coopHUD.BoC.calculate(player)
 		table.insert(bag, k.id)
 	end
 	local components = { table.unpack(bag) }
-	local result = 0
 	local id_a, id_b = coopHUD.BoC.calculateBagOfCrafting(components)
-	if coopHUD.BoC:isCollectibleUnlockedAnyPool(id_a) then
+	if coopHUD.isCollectibleUnlockedAnyPool(id_a) then
 		return id_a
 	else
 		return id_b
@@ -258,9 +257,8 @@ function coopHUD.BoC.calculate(player)
 end
 -- BAG CALCULATION FUNCTIONS
 -- adopted functions from External Item Descriptions mod by Wolfsauge - https://steamcommunity.com/sharedfiles/filedetails/?id=836319872
-local xml_data = include('helpers.eid_xmldata.lua')
+local xml_data = include('helpers.xml_data.lua')
 --
-coopHUD.BoC.itemUnlockStates = {}
 
 local pickupValues = {
 	0x00000000, -- 0 None
@@ -422,91 +420,14 @@ local calculatedRecipes = {}
 local lockedRecipes = {}
 --If the seed changes, the above two tables will be wiped
 local lastSeedUsed = Game():GetSeeds():GetStartSeed()
---[[ TODO: reset like below, connect somewhere on BOC update func
-	local curSeed = game:GetSeeds():GetStartSeed()
-	if (curSeed ~= lastSeedUsed) then
-		calculatedRecipes = {}
-		lockedRecipes = {}
-	end
-	lastSeedUsed = curSeed
-]]
--- Checks if any player has a given collectible ID, for modifiers
-function coopHUD.BoC:PlayersHaveCollectible(collectibleID)
-	for i = 0, Game():GetNumPlayers() - 1 do
-		local player = Isaac.GetPlayer(i)
-		if player:HasCollectible(collectibleID) then
-			return true, player
-		end
-	end
-	return false
-end
-function coopHUD.BoC:GetMaxCollectibleID()
-	local id = CollectibleType.NUM_COLLECTIBLES - 1
-	local step = 16
-	while step > 0 do
-		if Isaac.GetItemConfig():GetCollectible(id + step) ~= nil then
-			id = id + step
-		else
-			step = step // 2
-		end
-	end
-	return id
-end
-local maxCollectibleID = nil
-function coopHUD.BoC:isCollectibleUnlocked(collectibleID, itemPoolOfItem)
-	local itemPool = Game():GetItemPool()
-	if maxCollectibleID == nil then maxCollectibleID = coopHUD.BoC:GetMaxCollectibleID() end
-	for i = 1, maxCollectibleID do
-		if ItemConfig.Config.IsValidCollectible(i) and i ~= collectibleID then
-			itemPool:AddRoomBlacklist(i)
-		end
-	end
-	local isUnlocked = false
-	for i = 0, 1 do
-		-- some samples to make sure
-		local collID = itemPool:GetCollectible(itemPoolOfItem, false, 1)
-		if collID == collectibleID then
-			isUnlocked = true
-			break
-		end
-	end
-	itemPool:ResetRoomBlacklist()
-	return isUnlocked
-end
-function coopHUD.BoC:isCollectibleUnlockedAnyPool(collectibleID)
-	--THIS FUNCTION IS FOR REPENTANCE ONLY due to using Repentance XML data
-	--Currently used by the Achievement Check, Spindown Dice, and Bag of Crafting
-	if coopHUD.BoC:PlayersHaveCollectible(CollectibleType.COLLECTIBLE_TMTRAINER) then return true end
-	local item = Isaac.GetItemConfig():GetCollectible(collectibleID)
-	if item == nil then return false end
-	if coopHUD.BoC.itemUnlockStates[collectibleID] == nil then
-		--whitelist all quest items and items with no associated achievement
-		if item.AchievementID == -1 or (item.Tags and item.Tags & ItemConfig.TAG_QUEST == ItemConfig.TAG_QUEST) then
-			coopHUD.BoC.itemUnlockStates[collectibleID] = true
-			return true
-		end
-		--blacklist all hidden items
-		if item.Hidden then
-			coopHUD.BoC.itemUnlockStates[collectibleID] = false
-			return false
-		end
-		--iterate through the pools this item can be in
-		for _, itemPoolID in ipairs(xml_data.XMLItemIsInPools[collectibleID]) do
-			if (itemPoolID < ItemPoolType.NUM_ITEMPOOLS and coopHUD.BoC:isCollectibleUnlocked(collectibleID,
-			                                                                                  itemPoolID)) then
-				coopHUD.BoC.itemUnlockStates[collectibleID] = true
-				return true
-			end
-		end
-		--note: some items will still be missed by this, if they've been taken out of their pools (especially when in Greed Mode)
-		coopHUD.BoC.itemUnlockStates[collectibleID] = false
-		return false
-	else
-		return coopHUD.BoC.itemUnlockStates[collectibleID]
-	end
-end
+coopHUD.lastSeedUsed = Game():GetSeeds():GetStartSeed()
 --
 function coopHUD.BoC.calculateBagOfCrafting(componentsTable)
+	-- Refresh seed on differ
+	local curSeed = Game():GetSeeds():GetStartSeed()
+	if lastSeedUsed ~= curSeed then
+		lastSeedUsed = curSeed
+	end
 	-- ingredients must be sorted by ID for the RNG shifting to be accurate, so make a local copy
 	local components = { table.unpack(componentsTable) }
 	table.sort(components)
@@ -515,7 +436,7 @@ function coopHUD.BoC.calculateBagOfCrafting(componentsTable)
 	local fixedRecipeResult = nil
 	local cacheResult = CraftingFixedRecipes[componentsAsString]
 	if cacheResult ~= nil then
-		if coopHUD.BoC:isCollectibleUnlockedAnyPool(cacheResult) then
+		if coopHUD.isCollectibleUnlockedAnyPool(cacheResult) then
 			return cacheResult, cacheResult
 		else
 			fixedRecipeResult = cacheResult
@@ -623,7 +544,7 @@ function coopHUD.BoC.calculateBagOfCrafting(componentsTable)
 					return firstOption, k
 				else
 					--Don't do the 2nd pass if this item is definitely unlocked
-					if coopHUD.BoC:isCollectibleUnlockedAnyPool(k) then
+					if coopHUD.isCollectibleUnlockedAnyPool(k) then
 						calculatedRecipes[componentsAsString] = k
 						lockedRecipes[componentsAsString] = k
 						return k, k
@@ -645,7 +566,7 @@ function coopHUD.BoC:GameStartCrafting()
 			CraftingItemQualities[item.ID] = item.Quality
 		end
 	end
-	if not coopHUD.BoC:PlayersHaveCollectible(CollectibleType.COLLECTIBLE_TMTRAINER) then
+	if not coopHUD.PlayersHaveCollectible(CollectibleType.COLLECTIBLE_TMTRAINER) then
 		if Isaac.GetItemConfig():GetCollectible(xml_data.XMLMaxItemID + 1) ~= nil then
 			-- Items past max ID detected
 			CraftingMaxItemID = xml_data.XMLMaxItemID -- XMLMaxItemID is never modified

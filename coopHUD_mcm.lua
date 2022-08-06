@@ -96,7 +96,6 @@ if ModConfigMenu then
             return 'Toggle HUD' .. ": " .. key
         end,
         OnChange = function(currentNum)
-            print('cur nim', currentNum)
             coopHUD.options.h_trigger_key = currentNum or -1
             coopHUD.save_options()
         end,
@@ -107,7 +106,6 @@ if ModConfigMenu then
             local keepSettingString = ""
             if currentValue > -1 then
                 local currentSettingString = hotkeyToString[currentValue]
-                print(currentSettingString)
                 keepSettingString = "This setting is currently set to \"" .. currentSettingString .. "\".$newlinePress this button to keep it unchanged.$newline$newline"
             end
             return "Press a button on your keyboard to change this setting.$newline$newline" .. keepSettingString .. "Press ESC to go back and clear this setting."
@@ -192,6 +190,30 @@ if ModConfigMenu then
         end,
         Info = function()
             return "Timer toggle. Accesible by pressing 'T' on keyboard"
+        end
+    })
+    -- Show RunInfos
+    ModConfigMenu.AddSetting(mod_name, "General", {
+        Type = ModConfigMenu.OptionType.BOOLEAN,
+        CurrentSetting = function()
+            return coopHUD.options.show_run_info
+        end,
+        Default = coopHUD.options.show_run_info,
+
+        Display = function()
+            local onOff = "Off"
+            if coopHUD.options.show_run_info then
+                onOff = "On"
+            end
+
+            return "Show run info: " .. onOff
+        end,
+        OnChange = function(currentBool)
+            coopHUD.options.show_run_info = currentBool
+            coopHUD.save_options()
+        end,
+        Info = function()
+            return "Show run info such as achievement lock/destination (only with timer)"
         end
     })
     -- Show player name

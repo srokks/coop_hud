@@ -2,7 +2,7 @@ local langAPI = {}
 langAPI.table = include('helpers.langAPI_tables.lua')
 langAPI.lang_index = 0
 function langAPI.setLangIndex()
-	local lang_codes = { en = 0, jp = 2, es = 4, de = 5, ru, kr = 11, zh = 13 }
+	local lang_codes = { en = 0, jp = 2, es = 4, de = 5, ru = 10, kr = 11, zh = 13 }
 	langAPI.lang_index = tonumber(langAPI.table.languages[lang_codes[Options.Language]].index)
 end
 langAPI.setLangIndex()

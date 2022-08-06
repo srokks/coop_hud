@@ -1,6 +1,6 @@
 ---@class coopHUD.Inventory
 ---@param parent coopHUD.Player
----@type fun(parent:coopHUD.Player):coopHUD.Inventory
+---@type coopHUD.Inventory | fun(parent:coopHUD.Player):coopHUD.Inventory
 ---@return coopHUD.Inventory
 coopHUD.Inventory = {}
 coopHUD.Inventory.__index = coopHUD.Inventory
@@ -79,3 +79,4 @@ function coopHUD.Inventory:render(pos, mirrored, down_anchor)
 	if down_anchor then offset.Y = offset.Y * -1 end
 	return offset
 end
+

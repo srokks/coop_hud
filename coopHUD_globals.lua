@@ -1,4 +1,4 @@
-coopHUD.VERSION = '0.8.2-WIP'
+coopHUD.VERSION = '0.8.5-WIP'
 coopHUD.showExtraInfo = false
 coopHUD.HUD_table = {}
 coopHUD.signals = {
@@ -14,6 +14,7 @@ coopHUD.options = {
     player_info_color = true,
     force_small_hud = false,
     timer_always_on = false,
+    show_run_info = true,
     colorful_players = true,
     colorful_stuff_page = true,
     show_player_names = true,

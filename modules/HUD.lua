@@ -1,6 +1,33 @@
 include("modules.RunInfo.lua")
 include("modules.Streak.lua")
---
+include("modules.Destination.lua")
+---@class FontsTable
+---@field lua_mini_lined Font
+---@field pft Font
+---@field team_meat_10 Font
+---@field team_meat_12 Font
+---@field upheaval Font
+
+
+---@class coopHUD.HUD
+---@field fonts FontsTable
+---@field coins coopHUD.RunInfo
+---@field keys coopHUD.RunInfo
+---@field beth coopHUD.RunInfo
+---@field t_beth coopHUD.RunInfo
+---@field coins coopHUD.RunInfo
+---@field poop coopHUD.RunInfo
+---@field greed_waves coopHUD.RunInfo
+---@field angel coopHUD.Stat
+---@field devil coopHUD.Stat
+---@field planetarium coopHUD.Stat
+---@field no_achievements coopHUD.RunInfo
+---@field font_color KColor
+---@field destination coopHUD.Destination|nil
+---@field hard_mode coopHUD.RunInfo|nil
+---@field slot coopHUD.RunInfo|nil
+---@field v_lap coopHUD.RunInfo
+---@type coopHUD.HUD
 coopHUD.HUD = {}
 coopHUD.HUD.fonts = {}
 coopHUD.HUD.fonts.lua_mini = Font()
@@ -29,13 +56,20 @@ function coopHUD.HUD.init()
 	coopHUD.HUD.angel = coopHUD.Stat(coopHUD.HUD, coopHUD.Stat.ANGEL, true)
 	coopHUD.HUD.devil = coopHUD.Stat(coopHUD.HUD, coopHUD.Stat.DEVIL, true)
 	coopHUD.HUD.planetarium = coopHUD.Stat(coopHUD.HUD, coopHUD.Stat.PLANETARIUM, true)
+	-- Run info specifics
+	coopHUD.HUD.hard_mode = nil
+	if Game().Difficulty == Difficulty.DIFFICULTY_HARD then
+		coopHUD.HUD.hard_mode = coopHUD.RunInfo(coopHUD.RunInfo.HARD)
+	end
+	coopHUD.HUD.no_achievements = coopHUD.RunInfo(coopHUD.RunInfo.NO_ACHIEVEMENTS)
+	--Destination if custom run and
+	coopHUD.HUD.destination = nil
+	if Game():GetSeeds():IsCustomRun() and Isaac.GetChallenge() > 0 then
+		coopHUD.HUD.destination = coopHUD.Destination()
+	end
+	coopHUD.HUD.v_lap = coopHUD.RunInfo(coopHUD.RunInfo.V_LAP)
+	coopHUD.HUD.slot = coopHUD.RunInfo(coopHUD.RunInfo.SLOT)
 end
----coopHUD.HUD.render - renders specifics to the game like no of coins/keys/bombs
----Todo: based on options.show_dest_info - show info about run destination
----Todo: based on options.show_difficulty
----Todo: render streak on pickup item/pill_use/
----Todo: render floor info
----Todo: render stuff page in center
 function coopHUD.HUD.render()
 	if coopHUD.HUD.coins then
 		local middle_bot_anchor = Vector((Isaac.GetScreenWidth() / 2), Isaac.GetScreenHeight() - 14) -- middle of screen
@@ -58,7 +92,7 @@ function coopHUD.HUD.render()
 		offset = coopHUD.HUD.beth:render(temp_pos)
 		temp_pos.X = temp_pos.X + offset.X
 		offset = coopHUD.HUD.t_beth:render(temp_pos)
-		------ DEALS RENDER`
+		------ DEALS RENDER
 		if coopHUD.options.deals.show then
 			if not (coopHUD.options.deals.hide_in_battle and coopHUD.signals.on_battle) then
 				--when options.stats.hide_in_battle on and battle signal
@@ -112,7 +146,48 @@ function coopHUD.HUD.render()
 			                                       1, 1,
 			                                       f_col, 1, true)
 			timer_offset.Y = coopHUD.HUD.fonts.upheaval:GetBaselineHeight()
+			if coopHUD.options.show_run_info then
+				-- Renders hard mode indicator
+				if coopHUD.HUD.hard_mode then
+					temp_pos = Vector(middle_bot_anchor.X - coopHUD.HUD.fonts.pft:GetStringWidth(time_string) / 2 - 16,
+					                  2)
+					if coopHUD:IsNoAchievementRun() then
+						temp_pos.X = temp_pos.X - 16
+					end
+					coopHUD.HUD.hard_mode:render(temp_pos)
+				end
+				-- Renders no achievement lock
+				if coopHUD:IsNoAchievementRun() then
+					coopHUD.HUD.no_achievements:render(Vector(middle_bot_anchor.X - coopHUD.HUD.fonts.pft:GetStringWidth(time_string) / 2 - 16,
+					                                          2))
+				end
+				-- Renders destination in challenges
+				if coopHUD.HUD.destination then
+					coopHUD.HUD.destination:render(Vector(middle_bot_anchor.X + coopHUD.HUD.fonts.pft:GetStringWidth(time_string) / 2 + 2,
+					                                      2))
+				end
+				-- Renders Victory Lap indicator
+				if Game():GetVictoryLap() > 0 then
+					coopHUD.HUD.v_lap:render(Vector(middle_bot_anchor.X + coopHUD.HUD.fonts.pft:GetStringWidth(time_string) / 2 + 2,
+					                                2))
+				end
+			end
 		end
+		-- Renders Greed Waves
+		if Game().Difficulty == Difficulty.DIFFICULTY_GREED or Game().Difficulty == Difficulty.DIFFICULTY_GREEDIER then
+			coopHUD.HUD.greed_waves:render(Vector(middle_bot_anchor.X - coopHUD.HUD.greed_waves:getOffset().X / 2,
+			                                      0 + timer_offset.Y))
+			-- Renders Greed Donation Machine break chance
+			if Game():GetLevel():GetStage() == 7 and Game():GetRoom():GetBossID() ~= 0 and not coopHUD.signals.on_battle then
+				coopHUD.HUD.slot:render(Vector(middle_bot_anchor.X + coopHUD.HUD.greed_waves:getOffset().X / 2,
+				                               0 + timer_offset.Y))
+			end
+		end
+		-- Renders Gideon Waves if in his room
+		if Game():GetRoom():GetBossID() == 83 then
+			--TODO: COOP-131: Giedon Waves
+		end
+		---STREAK RENDER
 		if not coopHUD.signals.on_battle then
 			coopHUD.Streak:render()
 		end

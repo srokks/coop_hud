@@ -49,7 +49,7 @@ coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
 -- CollectibleType.COLLECTIBLE_JAR_OF_WISPS
 -- connect to MC_USE_ITEM to handle jar of wisp since no possibility to get var var_data
 -- on use will increase global jar_of_wisp use variable
--- FIXME: no charges for multiples jar of wisp instances in one run
+-- FIXME:COOP-56:Jar of wisp: no proper sprite set: no charges for multiples jar of wisp instances in one run
 coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
                     function(_, collectible_type, rng, entPlayer, use_flags, slot, var_data)
 	                    local player_index = coopHUD.Player.getIndexByControllerIndex(entPlayer.ControllerIndex)
