@@ -49,6 +49,12 @@
         [list]
             [*] mod options:  [url=https://steamcommunity.com/workshop/filedetails/?id=2487535818]Mod Config Menu - Continued[/url]
             [*] minimap:  [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1978904635]MiniMAPI: A Minimap API[/url]  from  [url=https://steamcommunity.com/id/Wofsauge]Wofsauge[/url]
+            My mod should override MiniMAPI settings.
+                [list]
+                Options should be:
+                [*] General -> Display on No HUD seed - On
+                [*] Map (1) - > Show map effect icons - Off
+                [/list]
             [*] boss bars:  [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2635267643]Enhanced Boss Bars[/url]  from  [url=https://steamcommunity.com/id/Wofsauge]Wofsauge[/url]
         [/list]
         [h2]Planned features/not working:[/h2]
@@ -105,7 +111,7 @@
             [/list]
             [*] added metadata parser from mod files
         [/list]</description>
-    <version>0.8.5</version>
+    <version>0.8.6</version>
     <visibility>Public</visibility>
     <tag id="Lua" />
     <tag id="Tweaks" />
