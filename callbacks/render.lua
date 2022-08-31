@@ -31,6 +31,7 @@ function coopHUD.inputs_signals()
 		end
 		-- DROP ACTION
 		if Input.IsActionTriggered(ButtonAction.ACTION_DROP, controller_index) then
+			--- TAINTED ISAAC - inventory shift
 			if coopHUD.players[player_index].entPlayer:GetPlayerType() == PlayerType.PLAYER_ISAAC_B then
 				if coopHUD.players[player_index].collectibles ~= nil then
 					local collectibles = {}
@@ -41,6 +42,7 @@ function coopHUD.inputs_signals()
 					coopHUD.players[player_index].collectibles = collectibles
 				end
 			end
+			--- TAINTED CAIN - bag of crafting shift
 			if coopHUD.players[player_index].entPlayer:GetPlayerType() == PlayerType.PLAYER_CAIN_B then
 				--shift player bag of crafting if have
 				if coopHUD.players[player_index].bag_of_crafting ~= nil then
@@ -50,6 +52,13 @@ function coopHUD.inputs_signals()
 					end
 					table.insert(new_bag, coopHUD.players[player_index].bag_of_crafting[1])
 					coopHUD.players[player_index].bag_of_crafting = new_bag
+				end
+			end
+			--- D INFINITY - shift
+			if coopHUD.players[player_index].active_item.id == CollectibleType.COLLECTIBLE_D_INFINITY then
+				coopHUD.players[player_index].active_item.d_infinity_charge = coopHUD.players[player_index].active_item.d_infinity_charge+1
+				if coopHUD.players[player_index].active_item.d_infinity_charge == 10 then
+					coopHUD.players[player_index].active_item.d_infinity_charge = 0
 				end
 			end
 		end
