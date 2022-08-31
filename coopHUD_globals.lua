@@ -4,7 +4,7 @@ coopHUD.HUD_table = {}
 coopHUD.signals = {
     map = nil, -- emits true when map btn hold - global signal
     is_joining = false, -- to maintain back button when joining
-    on_battle = false,
+    on_battle = false, -- when false not in battle - 0 - in normal battle/not cleared room, 1 - boss battle, 2 - ambush (challange room,other)
 }
 ---@type coopHUD.Player[]
 coopHUD.players = {}
