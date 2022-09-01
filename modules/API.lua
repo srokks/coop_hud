@@ -19,8 +19,10 @@ function coopHUD.getMinimapOffset()
 			for i, v in ipairs(MinimapAPI:GetLevel()) do
 				if v ~= nil then
 					if v:GetDisplayFlags() > 0 then
-						minx = math.min(minx, v.RenderOffset.X)
-						maxy = math.max(maxy, v.RenderOffset.Y)
+						if v.RenderOffset then
+							minx = math.min(minx, v.RenderOffset.X)
+							maxy = math.max(maxy, v.RenderOffset.Y)
+						end
 					end
 				end
 			end
