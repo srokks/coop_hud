@@ -164,7 +164,9 @@ function coopHUD.ChargeBar.render(self, pos, mirrored, scale, down_anchor, dim)
 	end
 	--
 	self.bar_sprite.Scale = scale
-	self.bar_sprite:Render(temp_pos, Vector(0, 28 - (step * self.normal_charge)))
+	local temp_step = 28 - (step * self.normal_charge)
+	if temp_step <= 0 then temp_step = 0 end
+	self.bar_sprite:Render(temp_pos, Vector(0, temp_step))
 	--
 	self.overcharge_bar_sprite.Scale = scale
 	self.overcharge_bar_sprite:Render(temp_pos, Vector(0, 28 - (step * (self.battery_charge))))
