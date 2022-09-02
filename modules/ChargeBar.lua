@@ -110,8 +110,13 @@ end
 function coopHUD.ChargeBar.getMaxCharge(self)
 	if self.parent_item.entPlayer == false or self.parent_item == nil then return nil end
 	local max_charges = Isaac.GetItemConfig():GetCollectible(self.parent_item.id).MaxCharges
-	if self.parent_item.id == CollectibleType.COLLECTIBLE_PLACEBO and self.parent_item.parent.placebo_charge ~= nil then
-		max_charges = self.parent_item.parent.placebo_charge
+	if self.parent_item.id == CollectibleType.COLLECTIBLE_PLACEBO or
+			self.parent_item.id == CollectibleType.COLLECTIBLE_BLANK_CARD or
+			self.parent_item.id == CollectibleType.COLLECTIBLE_CLEAR_RUNE or
+			self.parent_item.id == CollectibleType.COLLECTIBLE_D_INFINITY then
+		if self.parent_item.custom_max_charge then
+			max_charges = self.parent_item.custom_max_charge
+		end
 	end
 	return max_charges
 end

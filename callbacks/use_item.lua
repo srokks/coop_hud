@@ -90,3 +90,27 @@ coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
 		                    end
 	                    end
                     end, CollectibleType.COLLECTIBLE_BAG_OF_CRAFTING)
+---CollectibleType.COLLECTIBLE_D_INFINITY
+coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
+                    function(_, collectible_type, rng, entPlayer, use_flags, slot, var_data)
+	                    local player_index = coopHUD.Player.getIndexByControllerIndex(entPlayer.ControllerIndex)
+						coopHUD.players[player_index].active_item:update_custom_charge()
+                    end, CollectibleType.COLLECTIBLE_D_INFINITY)
+---CollectibleType.COLLECTIBLE_PLACEBO
+coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
+                    function(_, collectible_type, rng, entPlayer, use_flags, slot, var_data)
+	                    local player_index = coopHUD.Player.getIndexByControllerIndex(entPlayer.ControllerIndex)
+						coopHUD.players[player_index].active_item:update_custom_charge()
+                    end, CollectibleType.COLLECTIBLE_PLACEBO)
+---CollectibleType.COLLECTIBLE_CLEAR_RUNE
+coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
+                    function(_, collectible_type, rng, entPlayer, use_flags, slot, var_data)
+	                    local player_index = coopHUD.Player.getIndexByControllerIndex(entPlayer.ControllerIndex)
+						coopHUD.players[player_index].active_item:update_custom_charge()
+                    end, CollectibleType.COLLECTIBLE_CLEAR_RUNE)
+---CollectibleType.COLLECTIBLE_BLANK_CARD
+coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
+                    function(_, collectible_type, rng, entPlayer, use_flags, slot, var_data)
+	                    local player_index = coopHUD.Player.getIndexByControllerIndex(entPlayer.ControllerIndex)
+						coopHUD.players[player_index].active_item:update_custom_charge()
+                    end, CollectibleType.COLLECTIBLE_BLANK_CARD)
