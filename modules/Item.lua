@@ -4,6 +4,8 @@
 ---@field slot number
 ---@field frame_num number
 ---@field id number
+---@field custom_max_charge number holds custom max charge value for item such as Placebo/Mimics/D_Infinity
+---@field ref_table coopHUD.Item[]
 ---@param player coopHUD.Player
 ---@param slot number  slot binding -1 - no slot | ActiveSlot enums
 ---@param item_id number
@@ -13,6 +15,9 @@ coopHUD.Item.__index = coopHUD.Item
 coopHUD.Item.type = PickupVariant.PICKUP_COLLECTIBLE
 coopHUD.Item.anim_path = '/gfx/ui/items_coop.anm2'
 coopHUD.Item.charge_anim_path = "gfx/ui/activechargebar_coop.anm2"
+local xml_data = include('helpers.xml_data.lua')
+---@type coopHUD.Item[]
+coopHUD.Item.ref_table = {}
 setmetatable(coopHUD.Item, {
 	__call = function(cls, ...)
 		return cls.new(...)
@@ -24,10 +29,9 @@ function coopHUD.Item.new(player, slot, item_id)
 	---@type coopHUD.Item
 	local self = setmetatable({}, coopHUD.Item)
 	self.parent = player
-	if self.parent == nil then
-		return nil
+	if self.parent ~= nil then
+		self.entPlayer = self.parent.entPlayer
 	end
-	self.entPlayer = self.parent.entPlayer
 	self.slot = slot
 	if slot >= 0 then
 		self.id = self.entPlayer:GetActiveItem(self.slot)
@@ -38,6 +42,9 @@ function coopHUD.Item.new(player, slot, item_id)
 	self.sprite = self:getSprite()
 	self.charge = coopHUD.ChargeBar(self)
 	self.temp_item = nil
+	self.custom_max_charge = nil
+	self.d_infinity_charge = nil
+	table.insert(self.ref_table, self)
 	return self
 end
 ---@private
@@ -78,13 +85,14 @@ function coopHUD.Item.getSprite(self)
 		anim_name = "SoulUrn"
 	elseif self.id == CollectibleType.COLLECTIBLE_D_INFINITY then
 		sprite_path = "gfx/characters/costumes/costume_489_dinfinity.png"
+		anim_name = "D_Infinity"
 	end
 	sprite:ReplaceSpritesheet(0, sprite_path) -- item
 	sprite:ReplaceSpritesheet(1, sprite_path) -- border
 	sprite:ReplaceSpritesheet(2, sprite_path) -- shadow
 	--
 	if self.slot == ActiveSlot.SLOT_PRIMARY then
-		local book_sprite_path = nil
+		local book_sprite_path
 		self.virtuoses_check = self.entPlayer:HasCollectible(CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES) and self.id ~= CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES
 		self.belial_check = self.entPlayer:GetPlayerType() == PlayerType.PLAYER_JUDAS
 				and self.entPlayer:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) and self.id ~= CollectibleType.COLLECTIBLE_BIRTHRIGHT
@@ -144,6 +152,15 @@ function coopHUD.Item.getFrameNum(self)
 			if urn_state ~= 0 then
 				-- checks if urn is open
 				frame_num = 22 -- opened urn frame no
+			end
+		elseif self.id == CollectibleType.COLLECTIBLE_D_INFINITY then
+			if self.d_infinity_charge == nil then
+				self.d_infinity_charge = 0
+			end
+			frame_num = self.d_infinity_charge
+			local max_charges = Isaac.GetItemConfig():GetCollectible(self.id).MaxCharges
+			if self.entPlayer:NeedsCharge(self.slot) == false then
+				frame_num = self.d_infinity_charge + 10
 			end
 		elseif self.id == CollectibleType.COLLECTIBLE_HOLD then
 			frame_num = self.parent.hold_spell
@@ -312,3 +329,53 @@ function coopHUD.Item.render_items_table(self, mirrored)
 		temp_index = temp_index + 1
 	end
 end
+---Updates custom charge for item with it such as
+---@param self coopHUD.Item
+function coopHUD.Item.update_custom_charge(self)
+	if self.id == CollectibleType.COLLECTIBLE_D_INFINITY then
+		local form_to_max_charge = { 4, 6, 6, 2, 3, 4, 1, 3, 6, 6 }
+		self.custom_max_charge = form_to_max_charge[self.d_infinity_charge + 1]
+	end
+	if self.id == CollectibleType.COLLECTIBLE_PLACEBO then
+		if self.parent.first_pocket.type == coopHUD.Pocket.PILL then
+			local item_pool = Game():GetItemPool()
+			local pill_effect = item_pool:GetPillEffect(self.parent.first_pocket.id, self.parent.entPlayer)
+			self.custom_max_charge = xml_data.pillMetadata[pill_effect].mimiccharge
+		end
+	end
+	if self.id == CollectibleType.COLLECTIBLE_CLEAR_RUNE then
+		if self.parent.first_pocket.type == coopHUD.Pocket.CARD then
+			local card_effect = self.parent.first_pocket.id
+			self.custom_max_charge = xml_data.cardMetadata[card_effect].mimiccharge
+		end
+	end
+	if self.id == CollectibleType.COLLECTIBLE_BLANK_CARD then
+		if self.parent.first_pocket.type == coopHUD.Pocket.CARD then
+			local card_effect = self.parent.first_pocket.id
+			self.custom_max_charge = xml_data.cardMetadata[card_effect].mimiccharge
+		end
+	end
+end
+---Returns var da
+---@param self coopHUD.Item
+---@return VarData
+function coopHUD.Item.get_custom_charge_and_reset(self, collectible_type)
+	local var_data = nil
+	for _, item in pairs(coopHUD.Item.ref_table) do
+		if item.slot >= 0 and item.id > 0 then
+			if item.custom_max_charge and item.id ~= collectible_type then
+				var_data = { id =  collectible_type, max_charge = item.custom_max_charge }
+				if collectible_type == CollectibleType.COLLECTIBLE_D_INFINITY then
+					var_data.d_infinity_charge = item.d_infinity_charge
+					item.d_infinity_charge = nil
+				end
+				item.custom_max_charge = nil
+			end
+		end
+	end
+	return var_data
+end
+---@class VarData holds custom item data
+---@field id number
+---@field max_charges number|nil
+---@field d_infinity_charge number|nil
