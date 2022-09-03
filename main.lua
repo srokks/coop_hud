@@ -2,6 +2,7 @@
 coopHUD = RegisterMod("Coop HUD", 1)
 ---
 include("coopHUD_globals.lua")
+---@type langAPI
 coopHUD.langAPI = include("helpers.langAPI.lua")
 include("coopHUD_mcm.lua")
 include('modules.main.lua')
