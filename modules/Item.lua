@@ -86,6 +86,10 @@ function coopHUD.Item.getSprite(self)
 	elseif self.id == CollectibleType.COLLECTIBLE_SMELTER then
 		sprite_path = "gfx/ui/hud_smelter.png"
 		anim_name = "D_Infinity"
+	elseif self.id == CollectibleType.COLLECTIBLE_GLASS_CANNON then
+		sprite_path = "gfx/ui/hud_glasscannon.png"
+	elseif self.id == CollectibleType.COLLECTIBLE_BROKEN_GLASS_CANNON then
+		sprite_path = "gfx/ui/hud_brokenglasscannon.png"
 	elseif self.id == CollectibleType.COLLECTIBLE_URN_OF_SOULS then
 		sprite_path = "gfx/ui/hud_urnofsouls.png"
 		anim_name = "SoulUrn"
