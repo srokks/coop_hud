@@ -55,8 +55,9 @@ function coopHUD.inputs_signals()
 				end
 			end
 			--- D INFINITY - shift
-			if coopHUD.players[player_index].active_item.id == CollectibleType.COLLECTIBLE_D_INFINITY then
-				coopHUD.players[player_index].active_item.d_infinity_charge = coopHUD.players[player_index].active_item.d_infinity_charge+1
+			local animationName = coopHUD.players[player_index].entPlayer:GetSprite():GetAnimation()
+			if coopHUD.players[player_index].active_item.id == CollectibleType.COLLECTIBLE_D_INFINITY and not coopHUD.players[player_index].entPlayer:IsHoldingItem() then
+				coopHUD.players[player_index].active_item.d_infinity_charge = coopHUD.players[player_index].active_item.d_infinity_charge + 1
 				if coopHUD.players[player_index].active_item.d_infinity_charge == 10 then
 					coopHUD.players[player_index].active_item.d_infinity_charge = 0
 				end
