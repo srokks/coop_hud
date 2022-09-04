@@ -37,6 +37,10 @@ function coopHUD.on_start(_, cont)
 			coopHUD.angel_seen = save.run.angel_seen
 			--TODO: jar of wisp charge load from save
 			-- Loads player data from save
+			-- Custom data load
+			for _,varData in pairs(save.run.floor_custom_data) do
+				table.insert(coopHUD.floor_custom_items,varData)
+			end
 			for player_no, player_save in pairs(save.run.players) do
 				coopHUD.players[player_no]:loadFromSaveTable(player_save)
 			end
