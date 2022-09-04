@@ -80,6 +80,9 @@ function coopHUD.Item.getSprite(self)
 		if self.entPlayer:GetPlayerType() == PlayerType.PLAYER_LAZARUS2_B then
 			sprite_path = 'gfx/ui/ui_flip_coop.png'
 		end
+	elseif self.id == CollectibleType.COLLECTIBLE_MAMA_MEGA then
+		sprite_path = "gfx/ui/hud_mamamega.png"
+		anim_name = "EverythingJar"
 	elseif self.id == CollectibleType.COLLECTIBLE_URN_OF_SOULS then
 		sprite_path = "gfx/ui/hud_urnofsouls.png"
 		anim_name = "SoulUrn"
@@ -164,6 +167,10 @@ function coopHUD.Item.getFrameNum(self)
 			end
 		elseif self.id == CollectibleType.COLLECTIBLE_HOLD then
 			frame_num = self.parent.hold_spell
+		elseif self.id == CollectibleType.COLLECTIBLE_MAMA_MEGA then
+			if self.parent.entPlayer:HasGoldenBomb()  then
+				frame_num = 1
+			end
 		else
 			-- Sets overlay/charges state frame --
 			if self.charge and self.charge.max_charge == 0 then
