@@ -83,6 +83,9 @@ function coopHUD.Item.getSprite(self)
 	elseif self.id == CollectibleType.COLLECTIBLE_MAMA_MEGA then
 		sprite_path = "gfx/ui/hud_mamamega.png"
 		anim_name = "EverythingJar"
+	elseif self.id == CollectibleType.COLLECTIBLE_SMELTER then
+		sprite_path = "gfx/ui/hud_smelter.png"
+		anim_name = "D_Infinity"
 	elseif self.id == CollectibleType.COLLECTIBLE_URN_OF_SOULS then
 		sprite_path = "gfx/ui/hud_urnofsouls.png"
 		anim_name = "SoulUrn"
@@ -168,7 +171,7 @@ function coopHUD.Item.getFrameNum(self)
 		elseif self.id == CollectibleType.COLLECTIBLE_HOLD then
 			frame_num = self.parent.hold_spell
 		elseif self.id == CollectibleType.COLLECTIBLE_MAMA_MEGA then
-			if self.parent.entPlayer:HasGoldenBomb()  then
+			if self.parent.entPlayer:HasGoldenBomb() then
 				frame_num = 1
 			end
 		else
@@ -179,6 +182,9 @@ function coopHUD.Item.getFrameNum(self)
 			elseif self.entPlayer:NeedsCharge(self.slot) == false or (self.charge and (self.charge:getCurrentCharge() >= self.charge.max_charge)) then
 				--checks if item dont needs charges or item is overloaded
 				frame_num = 1 -- set frame to loaded
+				if self.id == CollectibleType.COLLECTIBLE_SMELTER then
+					frame_num = 11
+				end
 			else
 				frame_num = 0  -- set frame to unloaded
 			end
