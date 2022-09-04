@@ -37,6 +37,8 @@ coopHUD.players = {} -- main players table, holds coopHUD.Player instances
 coopHUD.essau_no = 0 -- holds run info about extra players in game (Essau,Lost from T.Forgotten)
 coopHUD.angel_seen = false -- holds run info, if angel room was seen, used in deals calculate
 coopHUD.jar_of_wisp_charge = 0 -- holds run info, charge of jar of wisp
+---@type VarData[]
+coopHUD.floor_custom_items = {} -- table of floor custom items, resets on new floor
 coopHUD.players_config = {
     small = {
         scale = Vector(1, 1),

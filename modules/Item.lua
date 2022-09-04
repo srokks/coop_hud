@@ -42,8 +42,8 @@ function coopHUD.Item.new(player, slot, item_id)
 	self.sprite = self:getSprite()
 	self.charge = coopHUD.ChargeBar(self)
 	self.temp_item = nil
-	self.custom_max_charge = nil
 	self.d_infinity_charge = nil
+	self.custom_max_charge = self:getMaxCharge()
 	table.insert(self.ref_table, self)
 	return self
 end
@@ -184,7 +184,19 @@ end
 ---@param self coopHUD.Item
 function coopHUD.Item.update(self)
 	if self.id ~= self.entPlayer:GetActiveItem(self.slot) then
+		-- VAR DATA ITEMS - getting info from saved floor items
+		-- done before changing id of item
+		if self.id == CollectibleType.COLLECTIBLE_PLACEBO or
+				self.id == CollectibleType.COLLECTIBLE_BLANK_CARD or
+				self.id == CollectibleType.COLLECTIBLE_CLEAR_RUNE or
+				self.id == CollectibleType.COLLECTIBLE_D_INFINITY then
+			local var_data = self:get_custom_charge_and_reset()
+			if var_data then
+				table.insert(coopHUD.floor_custom_items, var_data)
+			end
+		end
 		self.id = self.entPlayer:GetActiveItem(self.slot)
+		self.custom_max_charge = self:getMaxCharge()
 		self.sprite = self:getSprite()
 		self.charge = coopHUD.ChargeBar(self)
 	end
@@ -356,26 +368,60 @@ function coopHUD.Item.update_custom_charge(self)
 		end
 	end
 end
----Returns var da
+---Returns var data of item
 ---@param self coopHUD.Item
----@return VarData
-function coopHUD.Item.get_custom_charge_and_reset(self, collectible_type)
-	local var_data = nil
-	for _, item in pairs(coopHUD.Item.ref_table) do
-		if item.slot >= 0 and item.id > 0 then
-			if item.custom_max_charge and item.id ~= collectible_type then
-				var_data = { id =  collectible_type, max_charge = item.custom_max_charge }
-				if collectible_type == CollectibleType.COLLECTIBLE_D_INFINITY then
-					var_data.d_infinity_charge = item.d_infinity_charge
-					item.d_infinity_charge = nil
-				end
-				item.custom_max_charge = nil
-			end
+---@return VarData|nil
+function coopHUD.Item.get_custom_charge_and_reset(self)
+	---@type VarData
+	var_data = nil
+	if self.custom_max_charge then
+		local level = Game():GetLevel()
+		var_data = { id         = self.id,
+		             max_charge = self.custom_max_charge,
+		             floor      = level:GetAbsoluteStage(),
+		             room_idx   = level:GetCurrentRoomIndex() }
+		self.custom_max_charge = nil
+		if self.id == CollectibleType.COLLECTIBLE_D_INFINITY then
+			var_data.d_infinity_charge = self.d_infinity_charge
+			self.d_infinity_charge = nil
 		end
 	end
 	return var_data
 end
+---Return max charge from floor_left_over_items
+---@param self coopHUD.Item
+---@return number|nil
+function coopHUD.Item.getMaxCharge(self)
+	local max_charge = nil
+	if self.id == CollectibleType.COLLECTIBLE_PLACEBO or
+			self.id == CollectibleType.COLLECTIBLE_BLANK_CARD or
+			self.id == CollectibleType.COLLECTIBLE_CLEAR_RUNE or
+			self.id == CollectibleType.COLLECTIBLE_D_INFINITY then
+		---Schoolbag prevention
+		if self.parent.schoolbag_item then
+			max_charge = self.parent.schoolbag_item.custom_max_charge
+			self.parent.schoolbag_item.custom_max_charge = nil
+		end
+		local level = Game():GetLevel()
+		if coopHUD.floor_custom_items then
+			for i, varData in pairs(coopHUD.floor_custom_items) do
+				if varData.id == self.id and
+						varData.floor == level:GetAbsoluteStage() and
+						varData.room_idx == level:GetCurrentRoomIndex() then
+					max_charge = varData.max_charge
+					if varData.d_infinity_charge then
+						self.d_infinity_charge = varData.d_infinity_charge
+					end
+					coopHUD.floor_custom_items[i] = nil
+				end
+			end
+		end
+	end
+	return max_charge
+end
 ---@class VarData holds custom item data
 ---@field id number
----@field max_charges number|nil
+---@field max_charge number|nil
 ---@field d_infinity_charge number|nil
+---@field floor number which floor entity was left
+---@field room_idx number room index where entity was left
