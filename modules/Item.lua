@@ -143,8 +143,12 @@ function coopHUD.Item.getFrameNum(self)
 		elseif self.id == CollectibleType.COLLECTIBLE_JAR_OF_FLIES then
 			frame_num = self.entPlayer:GetJarFlies()
 		elseif self.id == CollectibleType.COLLECTIBLE_JAR_OF_WISPS then
-			local wisp_charge = 0 -- holds if item charged and needed to add 15 to set proper frame
-			--TODO: jaro of wisp set frame logic
+			if self.custom_max_charge then
+				frame_num = self.custom_max_charge
+				if self.charge:isFull() then
+					frame_num = frame_num + 15 --  if item charged and needed to add 15 to set proper frame
+				end
+			end
 		elseif self.id == CollectibleType.COLLECTIBLE_BAG_OF_CRAFTING then
 			if self.slot < 2 then
 				-- set frame only for active BoC
@@ -208,7 +212,8 @@ function coopHUD.Item.update(self)
 		if self.id == CollectibleType.COLLECTIBLE_PLACEBO or
 				self.id == CollectibleType.COLLECTIBLE_BLANK_CARD or
 				self.id == CollectibleType.COLLECTIBLE_CLEAR_RUNE or
-				self.id == CollectibleType.COLLECTIBLE_D_INFINITY then
+				self.id == CollectibleType.COLLECTIBLE_D_INFINITY or
+				self.id == CollectibleType.COLLECTIBLE_JAR_OF_WISPS then
 			local var_data = self:get_custom_charge_and_reset()
 			if var_data then
 				table.insert(coopHUD.floor_custom_items, var_data)
@@ -386,6 +391,12 @@ function coopHUD.Item.update_custom_charge(self)
 			self.custom_max_charge = xml_data.cardMetadata[card_effect].mimiccharge
 		end
 	end
+	if self.id == CollectibleType.COLLECTIBLE_JAR_OF_WISPS then
+		if self.custom_max_charge < 11 then
+			-- max charge 12
+			self.custom_max_charge = self.custom_max_charge + 1 --increase charge
+		end
+	end
 end
 ---Returns var data of item
 ---@param self coopHUD.Item
@@ -415,7 +426,8 @@ function coopHUD.Item.getMaxCharge(self)
 	if self.id == CollectibleType.COLLECTIBLE_PLACEBO or
 			self.id == CollectibleType.COLLECTIBLE_BLANK_CARD or
 			self.id == CollectibleType.COLLECTIBLE_CLEAR_RUNE or
-			self.id == CollectibleType.COLLECTIBLE_D_INFINITY then
+			self.id == CollectibleType.COLLECTIBLE_D_INFINITY or
+			self.id == CollectibleType.COLLECTIBLE_JAR_OF_WISPS then
 		---Schoolbag prevention
 		if self.parent.schoolbag_item then
 			max_charge = self.parent.schoolbag_item.custom_max_charge
@@ -434,6 +446,9 @@ function coopHUD.Item.getMaxCharge(self)
 					coopHUD.floor_custom_items[i] = nil
 				end
 			end
+		end
+		if self.id == CollectibleType.COLLECTIBLE_JAR_OF_WISPS and max_charge == nil then
+				return 0
 		end
 	end
 	return max_charge

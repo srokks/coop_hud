@@ -48,12 +48,11 @@ coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
                     end, CollectibleType.COLLECTIBLE_D4)
 -- CollectibleType.COLLECTIBLE_JAR_OF_WISPS
 -- connect to MC_USE_ITEM to handle jar of wisp since no possibility to get var var_data
--- on use will increase global jar_of_wisp use variable
--- FIXME:COOP-56:Jar of wisp: no proper sprite set: no charges for multiples jar of wisp instances in one run
+-- on use update custom var data in active_item object
 coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
                     function(_, collectible_type, rng, entPlayer, use_flags, slot, var_data)
-	                    local player_index = coopHUD.Player.getIndexByControllerIndex(entPlayer.ControllerIndex)
-					--TODO: set cur charge for jar of wisp
+	                    local player = coopHUD.Player.getByEntityIndex(entPlayer.Index)
+						player.active_item:update_custom_charge()
                     end, CollectibleType.COLLECTIBLE_JAR_OF_WISPS)
 --CollectibleType.COLLECTIBLE_HOLD
 --connect to MC_USE_ITEM to handle hold current spell, cannot get from Isaac API
