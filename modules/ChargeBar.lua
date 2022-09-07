@@ -197,3 +197,9 @@ end
 function coopHUD.ChargeBar.getCurrentCharge(self)
 	return self.normal_charge + self.battery_charge + self.beth_charge
 end
+---Returns true if charge bar is full
+---@param self coopHUD.ChargeBar
+---@return boolean
+function coopHUD.ChargeBar.isFull(self)
+	return self:getCurrentCharge() >= self.max_charge
+end
