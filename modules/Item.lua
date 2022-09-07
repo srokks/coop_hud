@@ -144,11 +144,7 @@ function coopHUD.Item.getFrameNum(self)
 			frame_num = self.entPlayer:GetJarFlies()
 		elseif self.id == CollectibleType.COLLECTIBLE_JAR_OF_WISPS then
 			local wisp_charge = 0 -- holds if item charged and needed to add 15 to set proper frame
-			local max_charges = Isaac.GetItemConfig():GetCollectible(self.id).MaxCharges
-			if self.entPlayer:NeedsCharge(self.slot) == false or (self.charge and self.charge >= max_charges) then
-				wisp_charge = 19
-			end
-			frame_num = coopHUD.jar_of_wisp_charge + wisp_charge
+			--TODO: jaro of wisp set frame logic
 		elseif self.id == CollectibleType.COLLECTIBLE_BAG_OF_CRAFTING then
 			if self.slot < 2 then
 				-- set frame only for active BoC
