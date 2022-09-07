@@ -154,7 +154,9 @@ function coopHUD.Item.getFrameNum(self)
 				frame_num = 0
 			end
 		elseif self.id == CollectibleType.COLLECTIBLE_EVERYTHING_JAR then
-			frame_num = self:getCharge() + 1
+			if self.charge then
+				frame_num = self.charge:getCurrentCharge() + 1
+			end
 		elseif self.id == CollectibleType.COLLECTIBLE_URN_OF_SOULS then
 			local tempEffects = self.entPlayer:GetEffects()
 			local urn_state = tempEffects:GetCollectibleEffectNum(640) -- gets effect of item 0-closed urn/1- opened
