@@ -53,12 +53,7 @@ coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
 coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
                     function(_, collectible_type, rng, entPlayer, use_flags, slot, var_data)
 	                    local player_index = coopHUD.Player.getIndexByControllerIndex(entPlayer.ControllerIndex)
-	                    if player_index >= 0 and coopHUD.players[player_index] then
-		                    if coopHUD.jar_of_wisp_charge < 11 then
-			                    -- max charge 12
-			                    coopHUD.jar_of_wisp_charge = coopHUD.jar_of_wisp_charge + 1 --increase charge
-		                    end
-	                    end
+					--TODO: set cur charge for jar of wisp
                     end, CollectibleType.COLLECTIBLE_JAR_OF_WISPS)
 --CollectibleType.COLLECTIBLE_HOLD
 --connect to MC_USE_ITEM to handle hold current spell, cannot get from Isaac API

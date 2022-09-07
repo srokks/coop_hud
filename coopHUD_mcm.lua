@@ -24,10 +24,6 @@ function coopHUD.save_options()
 		             varData)
 	end
 	--
-	if coopHUD.jar_of_wisp_charge and coopHUD.jar_of_wisp_charge > 0 then
-		save.run['jar_of_wisp_use'] = coopHUD.jar_of_wisp_charge
-	end
-	--
 	local players = {}
 	for i = 1, #coopHUD.players do
 		players[i] = coopHUD.players[i]:getSaveTable()
