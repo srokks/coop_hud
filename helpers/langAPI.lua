@@ -28,9 +28,46 @@ function langAPI.getItemNameByID(id)
 	return langAPI.table.category.Items[name][langAPI.lang_index]
 end
 ---Returns pocket name/description based on code name
+---@private
 ---@param code_name string
 ---@return string
 function langAPI.getPocketName(code_name)
 	return langAPI.table.category.PocketItems[code_name][langAPI.lang_index]
+end
+---Returns card name based on card id
+---@param id
+---@return string
+function langAPI.getCardNameByID(id)
+	local card = Isaac.GetItemConfig():GetCard(id)
+	local name, subs = string.gsub(card.Name, "#", "")
+	if subs > 0 then
+		return langAPI.getPocketName(name)
+	else
+		return name
+	end
+end
+---Returns card desc based on card id
+---@param id number
+---@return string
+function langAPI.getCardDescByID(id)
+	local card = Isaac.GetItemConfig():GetCard(id)
+	local name, subs = string.gsub(card.Description, "#", "")
+	if subs > 0 then
+		return langAPI.getPocketName(name)
+	else
+		return name
+	end
+end
+---Returns pill name based on card id
+---@param pill_effect number
+---@return string
+function langAPI.getPillNameByEffect(pill_effect)
+	pillEffect = Isaac.GetItemConfig():GetPillEffect(pill_effect)
+	local name, subs = string.gsub(pillEffect.Name, "#", "")
+	if subs > 0 then
+		return langAPI.getPocketName(name)
+	else
+		return name
+	end
 end
 return langAPI

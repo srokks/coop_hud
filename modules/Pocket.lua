@@ -97,22 +97,15 @@ function coopHUD.Pocket.getName(self)
 	if self.type == nil then return nil, nil end
 	if self.id == coopHUD.Pocket.NONE then return nil, nil end
 	if self.type == coopHUD.Pocket.CARD then
-		name = Isaac.GetItemConfig():GetCard(self.id).Name
-		name = string.sub(name, 2) --  get rid of # on front of
-		name = coopHUD.langAPI.getPocketName(name)
-		--
-		desc = Isaac.GetItemConfig():GetCard(self.id).Description
-		desc = string.sub(desc, 2) --  get rid of # on front of
-		desc = coopHUD.langAPI.getPocketName(desc)
+		name = coopHUD.langAPI.getCardNameByID(self.id)
+		desc = coopHUD.langAPI.getCardDescByID(self.id)
 	elseif self.type == coopHUD.Pocket.PILL then
 		name = "???" .. " "
 		desc = "???" .. " "
 		local item_pool = Game():GetItemPool()
 		if item_pool:IsPillIdentified(self.id) then
 			local pill_effect = item_pool:GetPillEffect(self.id, self.parent.entPlayer)
-			name = Isaac.GetItemConfig():GetPillEffect(pill_effect).Name
-			name = string.sub(name, 2) --  get rid of # on front of
-			name = coopHUD.langAPI.getPocketName(name)
+			name = coopHUD.langAPI.getPillNameByEffect(pill_effect)
 			desc = name
 		end
 	elseif self.type == coopHUD.Pocket.COLLECTIBLE then
