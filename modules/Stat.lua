@@ -88,28 +88,20 @@ function coopHUD.Stat:getSprite()
 		return nil
 	end
 end
---- Renders stas sprite in current position
+--- Renders stats sprite in current position
 ---@param pos Vector position where render sprite
 ---@param mirrored boolean change anchor to right corner
----@param scale Vector scale of sprite
----@param down_anchor boolean change anchor to down corner
----@param dim boolean defines if dim sprite
+---@param vertical boolean change position, vertical used with deals and coopHUD position
+---@param only_num boolean determines if stat renders with icon
+---@param color_alpha number alpha color of rendered icon
 ---@return Vector offset where render next sprite
-function coopHUD.Stat:render(pos, mirrored, vertical, only_num)
+function coopHUD.Stat:render(pos, mirrored, vertical, only_num,color_alpha)
 	self:update()
 	local init_pos = (Vector(pos.X, pos.Y))
 	if vertical then
 		init_pos.Y = init_pos.Y - 16
 	end
 	local offset = Vector(0, 0)
-	local color_alpha = 1
-	if self.type <= coopHUD.Stat.LUCK then
-		if self.parent.signals.map_btn then
-			color_alpha = 1
-		else
-			color_alpha = 0.5
-		end
-	end
 	if self.icon and self.sprite and not only_num then
 		-- Icon render
 		if mirrored then
@@ -160,7 +152,7 @@ function coopHUD.Stat:render(pos, mirrored, vertical, only_num)
 			end
 			local diff_off = Vector(0, 0)
 			local diff_pos = Vector(init_pos.X, init_pos.Y)
-			local align = 0
+			align = 0
 			if vertical then -- in case of verticals stats - used in deals in coopHUD position setting
 				if self.sprite then
 					diff_pos.X = diff_pos.X + 12 -- increments if pos if has sprite

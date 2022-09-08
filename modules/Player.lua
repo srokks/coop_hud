@@ -512,17 +512,21 @@ function coopHUD.Player.renderStats(self, mirrored)
 			only_num = true
 		end
 	end
-	self.speed:render(temp_stat_pos, mirrored, false, only_num) -- renders object with player mirrored spec
+	local color_alpha = 0.5
+	if self.signals.map_btn then
+		color_alpha = 1
+	end
+	self.speed:render(temp_stat_pos, mirrored, false, only_num, color_alpha) -- renders object with player mirrored spec
 	temp_stat_pos.Y = temp_stat_pos.Y + off.Y -- increments position with static offset vertical
-	self.tears_delay:render(temp_stat_pos, mirrored, false, only_num)
+	self.tears_delay:render(temp_stat_pos, mirrored, false, only_num, color_alpha)
 	temp_stat_pos.Y = temp_stat_pos.Y + off.Y
-	self.damage:render(temp_stat_pos, mirrored, false, only_num)
+	self.damage:render(temp_stat_pos, mirrored, false, only_num, color_alpha)
 	temp_stat_pos.Y = temp_stat_pos.Y + off.Y
-	self.range:render(temp_stat_pos, mirrored, false, only_num)
+	self.range:render(temp_stat_pos, mirrored, false, only_num, color_alpha)
 	temp_stat_pos.Y = temp_stat_pos.Y + off.Y
-	self.shot_speed:render(temp_stat_pos, mirrored, false, only_num)
+	self.shot_speed:render(temp_stat_pos, mirrored, false, only_num, color_alpha)
 	temp_stat_pos.Y = temp_stat_pos.Y + off.Y
-	self.luck:render(temp_stat_pos, mirrored, false, only_num)
+	self.luck:render(temp_stat_pos, mirrored, false, only_num, color_alpha)
 	temp_stat_pos.Y = temp_stat_pos.Y + off.Y
 	if self.game_index == 0 and not (self.entPlayer:GetPlayerType() == PlayerType.PLAYER_ESAU) then
 		-- saves pos under stats for other hud modules to access like deals stats
