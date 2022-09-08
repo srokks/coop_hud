@@ -99,12 +99,16 @@ function coopHUD.HUD.render()
 				if coopHUD.options.deals.vanilla_position then
 					local deals_pos = Vector(coopHUD.HUD.stat_anchor.X, coopHUD.HUD.stat_anchor.Y)
 					coopHUD.HUD.font_color = coopHUD.players[1].font_color
-					coopHUD.HUD.devil:render(deals_pos, false, false)
+					local color_alpha = 0.5
+					if coopHUD.signals.map then
+						color_alpha = 1
+					end
+					coopHUD.HUD.devil:render(deals_pos, false, false, false, color_alpha)
 					deals_pos.Y = deals_pos.Y + 14
-					coopHUD.HUD.angel:render(deals_pos, false, false)
+					coopHUD.HUD.angel:render(deals_pos, false, false, false, color_alpha)
 					deals_pos.Y = deals_pos.Y + 14
 					if coopHUD.options.deals.show_planetarium then
-						coopHUD.HUD.planetarium:render(deals_pos, false, false)
+						coopHUD.HUD.planetarium:render(deals_pos, false, false, false, color_alpha)
 					end
 				else
 					local deals_pos = Vector(middle_bot_anchor.X, middle_bot_anchor.Y + 4)
@@ -115,15 +119,15 @@ function coopHUD.HUD.render()
 					end
 					deals_pos.X = deals_pos.X - coopHUD.HUD.devil:getOffset().X / 2
 					-- ANGEL
-					coopHUD.HUD.angel:render(deals_pos, false, true)
+					coopHUD.HUD.angel:render(deals_pos, false, true, false, 1)
 					-- DEVIL
 					off = coopHUD.HUD.devil:render(Vector(deals_pos.X + coopHUD.HUD.angel:getOffset().X, deals_pos.Y),
-					                               false, true)
+					                               false, true, false, 1)
 					--PLANETARIUM
 					if coopHUD.options.deals.show_planetarium then
 						coopHUD.HUD.planetarium:render(Vector(deals_pos.X + coopHUD.HUD.angel:getOffset().X + coopHUD.HUD.devil:getOffset().X,
 						                                      deals_pos.Y),
-						                               false, true)
+						                               false, true, false, 1)
 					end
 				end
 			end
