@@ -1,4 +1,5 @@
 ---@class coopHUD.Stat
+---@field SPEED
 ---@param parent coopHUD.Player parent of stat class
 ---@param type number coopHUD.Stat.Type -- type of stat class
 ---@param icon boolean if true Stat will be rendered with icon else only number stat with diff if is
@@ -160,18 +161,21 @@ function coopHUD.Stat:render(pos, mirrored, vertical, only_num)
 			local diff_off = Vector(0, 0)
 			local diff_pos = Vector(init_pos.X, init_pos.Y)
 			local align = 0
-			if vertical then
+			if vertical then -- in case of verticals stats - used in deals in coopHUD position setting
 				if self.sprite then
-					diff_pos.X = diff_pos.X + 12
+					diff_pos.X = diff_pos.X + 12 -- increments if pos if has sprite
 				end
 				diff_pos.Y = diff_pos.Y - coopHUD.HUD.fonts.lua_mini:GetBaselineHeight()
 				offset.Y = offset.Y + coopHUD.HUD.fonts.lua_mini:GetBaselineHeight() / 2
 			else
-				diff_pos.X = diff_pos.X + offset.X
-				offset.X = offset.X + coopHUD.HUD.fonts.lua_mini:GetStringWidth(dif_string)
+				diff_pos.X = diff_pos.X + offset.X -- adds normal stat string and icon offset to base pos
+				offset.X = offset.X + coopHUD.HUD.fonts.lua_mini:GetStringWidth(dif_string) -- adds proper
 			end
 			if mirrored then
+				diff_pos.X = diff_pos.X - 2 -- makes margin between text
 				align = 1
+			else
+				diff_pos.X = diff_pos.X + 2 -- makes margin between text
 			end
 			coopHUD.HUD.fonts.lua_mini:DrawString(dif_string,
 			                                      diff_pos.X,
@@ -192,6 +196,7 @@ function coopHUD.Stat:update()
 	if self.amount ~= temp_amount then
 		if temp_amount and self.amount then
 			self.diff = temp_amount - self.amount
+			self.diff_counter = 0
 		end
 		self.amount = temp_amount
 		if self.amount == nil then
@@ -212,7 +217,7 @@ function coopHUD.Stat.calculateDeal()
 	local deal = 0.0
 	local angel = 0.0
 	local devil = 0.0
-	local banned_stages = {[1] = true, [9] = true, [10] = true, [11] = true, [12] = true, [12] = true}
+	local banned_stages = { [1] = true, [9] = true, [10] = true, [11] = true, [12] = true, [12] = true }
 	-- door chance
 	if banned_stages[Game():GetLevel():GetStage()] == nil and
 			Game():GetLevel():GetCurseName() ~= "Curse of the Labyrinth!" or Game().Difficulty > 1 then
@@ -223,14 +228,14 @@ function coopHUD.Stat.calculateDeal()
 	end
 	-- angel components
 	local comp = {
-		rosary_bead   = {false, 0.5},
-		key_piece_1   = {false, 0.75},
-		key_piece_2   = {false, 0.75},
-		virtouses     = {false, 0.75},
-		bum_killed    = {false, 0.75},
-		bum_left      = {false, 0.9},
-		dead_bum_left = {false, 1.1},
-		donation      = {false, 0.5},
+		rosary_bead   = { false, 0.5 },
+		key_piece_1   = { false, 0.75 },
+		key_piece_2   = { false, 0.75 },
+		virtouses     = { false, 0.75 },
+		bum_killed    = { false, 0.75 },
+		bum_left      = { false, 0.9 },
+		dead_bum_left = { false, 1.1 },
+		donation      = { false, 0.5 },
 	}
 	-- check collectibles
 	local duality = false
@@ -316,10 +321,10 @@ function coopHUD.Stat.calculateDeal()
 	end
 	devil = deal * (1.0 - angel)
 	angel = deal * angel
-	return { devil = devil * 100,
+	return { devil   = devil * 100,
 	         angel   = angel * 100,
 		--planetarium = { lvl:GetPlanetariumChance() * 100, 0 },
-		     duality = duality}
+		     duality = duality }
 end
 --- returns offset of stat
 ---@param vertical boolean
