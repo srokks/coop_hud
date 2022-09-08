@@ -195,7 +195,11 @@ function coopHUD.Stat:update()
 	local temp_amount = self:getAmount()
 	if self.amount ~= temp_amount then
 		if temp_amount and self.amount then
-			self.diff = temp_amount - self.amount
+			if self.diff then
+				self.diff = self.diff + (temp_amount - self.amount)
+			else
+				self.diff = temp_amount - self.amount
+			end
 			self.diff_counter = 0
 		end
 		self.amount = temp_amount
