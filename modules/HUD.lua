@@ -98,6 +98,10 @@ function coopHUD.HUD.render()
 				--when options.stats.hide_in_battle on and battle signal
 				if coopHUD.options.deals.vanilla_position then
 					local deals_pos = Vector(coopHUD.HUD.stat_anchor.X, coopHUD.HUD.stat_anchor.Y)
+					if (coopHUD.options.deals.hide_in_battle == false and coopHUD.options.stats.hide_in_battle == true and coopHUD.signals.on_battle) or
+							coopHUD.options.stats.show == false and coopHUD.options.deals.show == true then
+						deals_pos = Vector(coopHUD.anchors.bot_left.X, coopHUD.anchors.bot_left.Y / 2 - 24)
+					end
 					coopHUD.HUD.font_color = coopHUD.players[1].font_color
 					local color_alpha = 0.5
 					if coopHUD.signals.map then

@@ -483,7 +483,7 @@ function coopHUD.Player.renderStats(self, mirrored)
 	if coopHUD.options.stats.colorful then
 		font_color = self.font_color
 	end
-	local temp_stat_pos = Vector(0, 82)
+	local temp_stat_pos = Vector(coopHUD.anchors.top_right.X, 82)
 	if mirrored then
 		temp_stat_pos.X = coopHUD.anchors.bot_right.X
 	else
