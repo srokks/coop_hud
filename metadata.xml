@@ -47,71 +47,74 @@
         [h2]Requirements/ needed mods[/h2]
         coopHUD lack of couple things like boss bars or minimap. For best experience use below mods.
         [list]
-            [*] mod options:  [url=https://steamcommunity.com/workshop/filedetails/?id=2487535818]Mod Config Menu - Continued[/url]
-            [*] minimap:  [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1978904635]MiniMAPI: A Minimap API[/url]  from  [url=https://steamcommunity.com/id/Wofsauge]Wofsauge[/url]
-            My mod should override MiniMAPI settings.
-                [list]
-                Options should be:
-                [*] General -> Display on No HUD seed - On
-                [*] Map (1) - > Show map effect icons - Off
-                [/list]
-            [*] boss bars:  [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2635267643]Enhanced Boss Bars[/url]  from  [url=https://steamcommunity.com/id/Wofsauge]Wofsauge[/url]
+            [*] mod options:  [url=https://steamcommunity.com/workshop/filedetails/?id=2487535818]Mod Config Menu - Continued[/url] 
+        [/list]
+        My mod should override MiniMAPI settings:
+        [list]
+            [*] General -&gt; Display on No HUD seed - On
+            [*] Map (1) - &gt; Show map effect icons - Off
+        [/list]
+        [*] minimap:  [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1978904635]MiniMAPI: A Minimap API[/url]  from  [url=https://steamcommunity.com/id/Wofsauge]Wofsauge[/url] 
+        [*] boss bars:  [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2635267643]Enhanced Boss Bars[/url]  from  [url=https://steamcommunity.com/id/Wofsauge]Wofsauge[/url] 
         [/list]
         [h2]Planned features/not working:[/h2]
         [list]
-            [*] Placebo/ Mimic Card/ Clear rune - lack of custom charges ammount
-            [*] D Infinity - lack of item sprite shift logic
-            [*] RunInfo: No Achievement/Hard Mode/Victory Laps
-            [*] Waves info: Greed Waves,Gideon Waves
-            [*] Modded cards/pills
-            [*] Modded characters head indicator
+        [*] Placebo/ Mimic Card/ Clear rune - lack of custom charges ammount
+        [*] D Infinity - lack of item sprite shift logic
+        [*] RunInfo: No Achievement/Hard Mode/Victory Laps
+        [*] Waves info: Greed Waves,Gideon Waves
+        [*] Modded cards/pills
+        [*] Modded characters head indicator
         [/list]
         [h2]Known bugs:[/h2]
         [list]
-            [*] Custom challenge destination indicator
-            [*] Bag of crafting - sometimes collects wrong pickup info for hud
-            [*] Gideon Waves: cannot get current gideon wave
-            [*] Jacob &amp; Essau: player info covers stats when to much things
-            [*] Stats on right are covered when map is too big
-            [*] Items with custom charges or charges dependent on pill/card - no proper charges for Placebo/
-            [*] Jar of Wisp - cannot get Jar of Wisps charge from API, charge counted manual.[PERM]
-            [*] Urn of soul - cannot get souls from game API, only opened/closed sprite indicator - [PERM]
+        [*] Custom challenge destination indicator
+        [*] Bag of crafting - sometimes collects wrong pickup info for hud
+        [*] Gideon Waves: cannot get current gideon wave
+        [*] Jacob &amp; Essau: player info covers stats when too many things
+        [*] On full discovered large map covers - stats/timer
+        [*] Urn of soul - cannot get souls from game API, only opened/closed sprite indicator - [PERM]
+        [*] T. Samson - no player color change on Rage growing
         [/list]
         [h2]Mods compatibility:[/h2]
         [list]
-            [*] It's compatible with most of modded trinkets and items
-            [*] Support modded sprites
-            [*]  [url=https://steamcommunity.com/sharedfiles/filedetails/?id=836319872]External item descriptions[/url]  from  [url=https://steamcommunity.com/id/Wofsauge]Wofsauge[/url]
-            [*]  [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2376005362]Encyclopedia - An In-Game Wiki[/url]  from  [url=https://steamcommunity.com/id/AgentCucco]AgentCucco[/url]
-            [*] Compatible and improving gameplay mods are in my  [url=https://steamcommunity.com/workshop/filedetails/?id=2738883704]collection[/url]
+        [*] It's compatible with most of modded trinkets and items
+        [*] Support modded sprites
+        [*]  [url=https://steamcommunity.com/sharedfiles/filedetails/?id=836319872]External item descriptions[/url]  from  [url=https://steamcommunity.com/id/Wofsauge]Wofsauge[/url] 
+        [*]  [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2376005362]Encyclopedia - An In-Game Wiki[/url]  from  [url=https://steamcommunity.com/id/AgentCucco]AgentCucco[/url] 
+        [*] Compatible and improving gameplay mods are in my  [url=https://steamcommunity.com/workshop/filedetails/?id=2738883704]collection[/url] 
         [/list]
         [h2]Thanks to![/h2]
         [list]
-            [*]  [url=https://steamcommunity.com/id/Wofsauge]Wofsauge[/url]  for TBoI API and his mods which helped in developing this one
+        [*]  [url=https://steamcommunity.com/id/Wofsauge]Wofsauge[/url]  for TBoI API and his mods which helped in developing this one
         [/list]
 
         [h3]Whats new[/h3]
-        [h3]v.8.5:[/h3]
+        [h3]v.8.7:[/h3]
         [list]
-            [*] Shows run info:
+            [*] Implemented custom item charge/var data for due lack of VarData API functions:
             [list]
-                [*] Hard mode indicator
-                [*] No achievement indicator
-                [*] Destination (only for vanilla challanges )
-                [*] Greed Waves/Greed Donation Machine break chances indicators
+                [*] Placebo - on use set max charge based on held pill
+                [*] Blank card - on use set max charge based on held card
+                [*] Clear rune  - on use set max charge based on held rune 
+                [*] D Infinity - shift dices with Drop button/ max charge based on form on use
+                [*] Jar of Wisps - manually set sprite on item use
+                [*] Everything Jar - based on current charge 
+                [*] Custom charge/form is saved when putting down on pedestal - based on item  and current room so might get messy with multiple instances of item in same room.
             [/list]
-            [*] Fixed - wrong Bag of Crafting result
-            [*] Fixed - charge bar rendering for no charges items
-            [*] Fixed - no longer shows normal hud on boss transition
-            [*] Fixed - crashing when non default language set
-            [*] Not working:
+            [*] Fixed sprites for:
             [list]
-                [*] Custom challenge destination indicator
-                [*] Gideon Waves: cannot get current gideon wave
+                [*] Smelter - proper sprite image - same as vanilla
+                [*] Mama Mega - golden bomb indicator
+                [*] Glowing Hour Glass - empty hourglass when unloaded
             [/list]
-            [*] added metadata parser from mod files
+            [*] Fixed API:getMinimapOffset - nil call error
+            [*] Fixed signal battle in challenge room
+            [*] Fixed render positions based on mod config offset
+            [*] Deals - fixed position for vanilla setting
+            [*] Bigger stat and difference span
         [/list]</description>
-    <version>0.8.6</version>
+    <version>0.8.7</version>
     <visibility>Public</visibility>
     <tag id="Lua" />
     <tag id="Tweaks" />
