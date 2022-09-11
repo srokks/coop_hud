@@ -27,6 +27,8 @@ include("modules.Destination.lua")
 ---@field hard_mode coopHUD.RunInfo|nil
 ---@field slot coopHUD.RunInfo|nil
 ---@field v_lap coopHUD.RunInfo
+---@field stat_anchor Vector holds anchor for deal when set vanilla pos
+---@field stat_anchor_mirrored boolean hold info for vanilla pos deals if need to mirror sprite
 ---@type coopHUD.HUD
 coopHUD.HUD = {}
 coopHUD.HUD.fonts = {}
@@ -98,6 +100,7 @@ function coopHUD.HUD.render()
 				--when options.stats.hide_in_battle on and battle signal
 				if coopHUD.options.deals.vanilla_position then
 					local deals_pos = Vector(coopHUD.HUD.stat_anchor.X, coopHUD.HUD.stat_anchor.Y)
+					local mirrored = coopHUD.HUD.stat_anchor_mirrored
 					if (coopHUD.options.deals.hide_in_battle == false and coopHUD.options.stats.hide_in_battle == true and coopHUD.signals.on_battle) or
 							coopHUD.options.stats.show == false and coopHUD.options.deals.show == true then
 						deals_pos = Vector(coopHUD.anchors.bot_left.X, coopHUD.anchors.bot_left.Y / 2 - 24)
@@ -107,12 +110,12 @@ function coopHUD.HUD.render()
 					if coopHUD.signals.map then
 						color_alpha = 1
 					end
-					coopHUD.HUD.devil:render(deals_pos, false, false, false, color_alpha)
+					coopHUD.HUD.devil:render(deals_pos, mirrored, false, false, color_alpha)
 					deals_pos.Y = deals_pos.Y + 14
-					coopHUD.HUD.angel:render(deals_pos, false, false, false, color_alpha)
+					coopHUD.HUD.angel:render(deals_pos, mirrored, false, false, color_alpha)
 					deals_pos.Y = deals_pos.Y + 14
 					if coopHUD.options.deals.show_planetarium then
-						coopHUD.HUD.planetarium:render(deals_pos, false, false, false, color_alpha)
+						coopHUD.HUD.planetarium:render(deals_pos, mirrored, false, false, color_alpha)
 					end
 				else
 					local deals_pos = Vector(middle_bot_anchor.X, middle_bot_anchor.Y + 4)
