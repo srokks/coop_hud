@@ -58,7 +58,7 @@ function coopHUD.getMinimapOffset()
 			-- BOSS ONLY
 			return Vector(Isaac.GetScreenWidth(), 0)
 		end
-		if MinimapAPI:GetConfig("HideInCombat") == 3 and coopHUD.signals.on_battle == 0  then
+		if MinimapAPI:GetConfig("HideInCombat") == 3 and coopHUD.signals.on_battle == 0 then
 			-- ALWAYS
 			return Vector(Isaac.GetScreenWidth(), 0)
 		end
@@ -66,11 +66,10 @@ function coopHUD.getMinimapOffset()
 	return minimap_offset
 end
 function coopHUD.updateAnchors()
-	local offset = 0
-	if SHExists then
+	local offset = ModConfigMenu.Config["General"].HudOffset
+	if offset == nil and ScreenHelper then
 		offset = ScreenHelper.GetOffset()
 	end
-	offset = offset + Options.HUDOffset * 10
 	if coopHUD.anchors.top_left ~= Vector.Zero + Vector(offset * 2, offset * 1.2) then
 		coopHUD.anchors.top_left = Vector.Zero + Vector(offset * 2, offset * 1.2)
 	end
