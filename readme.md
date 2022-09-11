@@ -44,6 +44,9 @@ This mod renders active items/pocket/trinkets in proper position for coop game u
 coopHUD lack of couple things like boss bars or minimap. For best experience use below mods.
 
 * mod options: [Mod Config Menu - Continued](https://steamcommunity.com/workshop/filedetails/?id=2487535818)
+  My mod should override MiniMAPI settings:
+  * General -> Display on No HUD seed - On
+  * Map (1) - > Show map effect icons - Off
 * minimap: [MiniMAPI: A Minimap API](https://steamcommunity.com/sharedfiles/filedetails/?id=1978904635) from [Wofsauge](https://steamcommunity.com/id/Wofsauge)
 * boss bars: [Enhanced Boss Bars](https://steamcommunity.com/sharedfiles/filedetails/?id=2635267643) from [Wofsauge](https://steamcommunity.com/id/Wofsauge)
 
@@ -60,11 +63,10 @@ coopHUD lack of couple things like boss bars or minimap. For best experience use
 * Custom challenge destination indicator
 * Bag of crafting - sometimes collects wrong pickup info for hud
 * Gideon Waves: cannot get current gideon wave
-* Jacob & Essau: player info covers stats when to much things
-* Stats on right are covered when map is too big
-* Items with custom charges or charges dependent on pill/card - no proper charges for Placebo/
-* Jar of Wisp - cannot get Jar of Wisps charge from API, charge counted manual.[PERM]
+* Jacob & Essau: player info covers stats when too many things
+* On full discovered large map covers - stats/timer
 * Urn of soul - cannot get souls from game API, only opened/closed sprite indicator - [PERM]
+* T. Samson - no player color change on Rage growing
 
 ## Mods compatibility:
 
@@ -84,21 +86,25 @@ coopHUD lack of couple things like boss bars or minimap. For best experience use
 
 ### Whats new
 
-### v.8.5:
+### v.8.7:
 
-* Shows run info:
-  * Hard mode indicator
-  * No achievement indicator
-  * Destination (only for vanilla challanges )
-  * Greed Waves/Greed Donation Machine break chances indicators
-* Fixed - wrong Bag of Crafting result
-* Fixed - charge bar rendering for no charges items
-* Fixed - no longer shows normal hud on boss transition
-* Fixed - crashing when non default language set
-* Not working:
-  * Custom challenge destination indicator
-  * Gideon Waves: cannot get current gideon wave
-* added metadata parser from mod files
+* Implemented custom item charge/var data for due lack of VarData API functions:
+  * Placebo - on use set max charge based on held pill
+  * Blank card - on use set max charge based on held card
+  * Clear rune  - on use set max charge based on held rune 
+  * D Infinity - shift dices with Drop button/ max charge based on form on use
+  * Jar of Wisps - manually set sprite on item use
+  * Everything Jar - based on current charge 
+  * Custom charge/form is saved when putting down on pedestal - based on item  and current room so might get messy with multiple instances of item in same room.
+* Fixed sprites for:
+  * Smelter - proper sprite image - same as vanilla
+  * Mama Mega - golden bomb indicator
+  * Glowing Hour Glass - empty hourglass when unloaded
+* Fixed API:getMinimapOffset - nil call error
+* Fixed signal battle in challenge room
+* Fixed render positions based on mod config offset
+* Deals - fixed position for vanilla setting
+* Bigger stat and difference span
 </div>
 <div id="screens">
 
