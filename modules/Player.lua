@@ -531,6 +531,7 @@ function coopHUD.Player.renderStats(self, mirrored)
 	if self.game_index == 0 and not (self.entPlayer:GetPlayerType() == PlayerType.PLAYER_ESAU) then
 		-- saves pos under stats for other hud modules to access like deals stats
 		coopHUD.HUD.stat_anchor = temp_stat_pos
+		coopHUD.HUD.stat_anchor_mirrored = mirrored
 	end
 end
 ---Prepares table with items to save on close game.
