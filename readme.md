@@ -86,7 +86,7 @@ coopHUD lack of couple things like boss bars or minimap. For best experience use
 
 ### Whats new
 
-### v.8.7:
+### v.8.6:
 
 * Implemented custom item charge/var data for due lack of VarData API functions:
   * Placebo - on use set max charge based on held pill
