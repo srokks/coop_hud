@@ -71,7 +71,7 @@ def get_mod_info_dict(debug=False):
     mod_info_dict = {
         'name': f'coopHUD *{code}*',
         'id': mod_id,
-        'directory': 'coop_hud' if debug else f'coop_hud_{mod_id}',
+        'directory': 'coop_hud_DEV' if debug else 'coop_hud',
         'description': get_description() + '\n' + get_change_log(),
         'version': version,
         'visibility': 'Private' if debug else 'Public',
