@@ -90,7 +90,7 @@
         [/list]
 
         [h3]Whats new[/h3]
-        [h3]v.8.7:[/h3]
+        [h3]v.8.6:[/h3]
         [list]
             [*] Implemented custom item charge/var data for due lack of VarData API functions:
             [list]
