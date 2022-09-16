@@ -196,3 +196,39 @@ function coopHUD.IsNoAchievementRun()
 	end
 	return false
 end
+local json = require("json")
+---Saves coopHUD options and player info
+function coopHUD.save_options()
+	local save = {}
+	save.version = coopHUD.VERSION
+	save.options = coopHUD.options
+	save.players_config = coopHUD.players_config
+	--
+	save.run = {
+		['essau_no']   = coopHUD.essau_no,
+		['angel_seen'] = coopHUD.angel_seen,
+	}
+	--
+	save.run.floor_custom_data = {}
+	for _, varData in pairs(coopHUD.floor_custom_items) do
+		table.insert(save.run.floor_custom_data,
+		             varData)
+	end
+	--
+	local players = {}
+	for i = 1, #coopHUD.players do
+		players[i] = coopHUD.players[i]:getSaveTable()
+	end
+	save.run.players = players
+	coopHUD:SaveData(json.encode(save))
+end
+
+if coopHUD:HasData() then
+	local save = json.decode(coopHUD:LoadData())
+	coopHUD.players_config.small[0] = save.players_config.small['0']
+	coopHUD.players_config.small[1] = save.players_config.small['1']
+	coopHUD.players_config.small[2] = save.players_config.small['2']
+	coopHUD.players_config.small[3] = save.players_config.small['3']
+	coopHUD.options = save.options
+end
+

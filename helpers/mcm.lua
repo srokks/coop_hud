@@ -1,40 +1,3 @@
-local json = require("json")
-if coopHUD:HasData() then
-	local save = json.decode(coopHUD:LoadData())
-	coopHUD.players_config.small[0] = save.players_config.small['0']
-	coopHUD.players_config.small[1] = save.players_config.small['1']
-	coopHUD.players_config.small[2] = save.players_config.small['2']
-	coopHUD.players_config.small[3] = save.players_config.small['3']
-	coopHUD.options = save.options
-end
-function coopHUD.save_options()
-	local save = {}
-	save.version = coopHUD.VERSION
-	save.options = coopHUD.options
-	save.players_config = coopHUD.players_config
-	--
-	save.run = {
-		['essau_no']   = coopHUD.essau_no,
-		['angel_seen'] = coopHUD.angel_seen,
-	}
-	--
-	save.run.floor_custom_data = {}
-	for _, varData in pairs(coopHUD.floor_custom_items) do
-		table.insert(save.run.floor_custom_data,
-		             varData)
-	end
-	--
-	local players = {}
-	for i = 1, #coopHUD.players do
-		players[i] = coopHUD.players[i]:getSaveTable()
-	end
-	save.run.players = players
-	coopHUD:SaveData(json.encode(save))
-end
-coopHUD:AddCallback(ModCallbacks.MC_PRE_GAME_EXIT, function()
-	coopHUD.save_options()
-	coopHUD.players = {}
-end)
 if ModConfigMenu then
 	local mod_name = "Coop HUD"
 	--= DEBUG: Used to reset the config, remove on retail.
@@ -633,34 +596,4 @@ if ModConfigMenu then
 			return "Sets player position on small hud"
 		end
 	})]]
-end
--- Overrides External item description mod setting to better fit with HUD
-if EID then
-	if EID.UserConfig.YPosition < 80 then
-		EID.UserConfig.YPosition = 80
-	end
-	if EID.UserConfig.TextboxWidth < 150 then
-		EID.UserConfig.TextboxWidth = 150
-	end
-	if EID.UserConfig.LineHeight > 9 then
-		EID.UserConfig.LineHeight = 9
-	end
-end
--- Overrides Enhanced Boss Bars  mod setting to better fit with HUD
-if HPBars and HPBars.UserConfig then
-	if HPBars.UserConfig.ScreenPadding <= 33 then
-		HPBars.UserConfig.ScreenPadding = 33
-	end
-end
--- Overrides MinimapAPI  mod setting to show on coopHUD
-if MinimapAPI then
-	if not MinimapAPI.Config.DisplayOnNoHUD then
-		MinimapAPI.Config.DisplayOnNoHUD = true
-	end
-	if MinimapAPI:GetConfig('ShowLevelFlags') then
-		MinimapAPI.Config.ShowLevelFlags = false
-	end
-	if MinimapAPI:GetConfig('DisplayOnNoHUD') then
-		MinimapAPI.Config.DisplayOnNoHUD = true
-	end
 end
