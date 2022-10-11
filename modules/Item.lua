@@ -300,7 +300,7 @@ function coopHUD.Item.render(self, pos, mirrored, scale, down_anchor, dim)
 			if self.parent.crafting_result then
 				temp_pos = Vector(pos.X + 5, pos.Y + 8)
 				if down_anchor then temp_pos.Y = temp_pos.Y - 8 end
-				if Game():GetLevel():GetCurses() >= LevelCurse.CURSE_OF_BLIND then
+				if Game():GetLevel():GetCurses() & LevelCurse.CURSE_OF_BLIND > 0 then
 					coopHUD.BoC.Unknown:render(temp_pos, mirrored, Vector(0.7, 0.7), down_anchor)
 				else
 					self.parent.crafting_result:render(temp_pos, mirrored, Vector(0.7, 0.7), down_anchor, dim)

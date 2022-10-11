@@ -8,7 +8,7 @@ function coopHUD.getMinimapOffset()
 		local maxy = 0
 		-- NO MAP CHECK
 		if MinimapAPI:GetConfig("DisplayMode") == 4
-				or Game():GetLevel():GetCurses() == LevelCurse.CURSE_OF_THE_LOST then
+				or Game():GetLevel():GetCurses() & LevelCurse.CURSE_OF_THE_LOST > 0 then
 			return minimap_offset
 			-- BOUNDED MAP
 		elseif MinimapAPI:GetConfig("DisplayMode") == 2 then

@@ -209,7 +209,7 @@ function coopHUD.BoC:render(player, pos, mirrored, down_anchor)
 			temp_pos.Y = temp_pos.Y + 32
 		end
 		if #player.bag_of_crafting == 8 then
-			if Game():GetLevel():GetCurses() >= LevelCurse.CURSE_OF_BLIND then
+			if Game():GetLevel():GetCurses() & LevelCurse.CURSE_OF_BLIND > 0 then
 				coopHUD.BoC.Unknown:render(temp_pos, mirrored, Vector(1, 1), down_anchor)
 			else
 				player.crafting_result:render(temp_pos, mirrored, Vector(1, 1), down_anchor)

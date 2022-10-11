@@ -35,7 +35,8 @@ function coopHUD.Heart:getType()
 	local golden = false
 	local remain_souls = 0
 	local overlay = nil
-	if Game():GetLevel():GetCurses() == 8 then
+
+	if Game():GetLevel():GetCurses() & LevelCurse.CURSE_OF_THE_UNKNOWN > 0 then
 		-- checks curse of the unknown
 		if self.pos == 0 and not player:IsSubPlayer() then
 			heart_type = 'CurseHeart'
