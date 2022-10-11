@@ -149,10 +149,11 @@ function coopHUD.Player.update(self)
 	self.hearts:update()
 	self.big_hud = #coopHUD.players < 3 and not coopHUD.options.force_small_hud
 	coopHUD.BoC.update(self)
+	--Checks if player acquire transformation changes info and flashes streak
 	for i = 0, PlayerForm.NUM_PLAYER_FORMS - 1 do
 		if self.transformations[i] ~= self.entPlayer:HasPlayerForm(i) then
 			self.transformations[i] = self.entPlayer:HasPlayerForm(i)
-			coopHUD.Streak(false, coopHUD.Streak.ITEM, coopHUD.PlayerForm[i], nil, true,
+			coopHUD.Streak(false, coopHUD.Streak.ITEM, coopHUD.langAPI.getTransformationString(i), nil, true,
 			               self.font_color)
 		end
 	end
