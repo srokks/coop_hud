@@ -84,58 +84,6 @@ function coopHUD.inputs_signals()
 		coopHUD.signals.map = false
 		btn_held = 0
 	end
-	--
-	local icount = nil
-	-- Bag of crafting - creation item logic -- based on External Item Description mod by Wolsauge
-	if pill_card_pressed and coopHUD.players[pill_card_pressed].bag_of_crafting then
-		local animationName = coopHUD.players[pill_card_pressed].entPlayer:GetSprite():GetAnimation()
-		if pill_card_pressed and string.match(animationName, "PickupWalk")
-				and #coopHUD.players[pill_card_pressed].bag_of_crafting == 8 then
-			pill_held = pill_held + 1
-			if pill_held < 30 then
-				icount = coopHUD.players[pill_card_pressed].entPlayer:GetCollectibleCount()
-			end
-		else
-			if pill_card_pressed and pill_held >= 30 and (string.match(animationName, "Walk")
-					and not string.match(animationName, "Pickup")
-					or (coopHUD.players[pill_card_pressed].entPlayer:GetCollectibleCount() ~= icount)) then
-				coopHUD.players[pill_card_pressed].bag_of_crafting = {} -- resets bag of crafting
-				--adds collectible to inventory
-				local item_queue = Isaac.GetItemConfig():GetCollectible(coopHUD.players[pill_card_pressed].crafting_result.id)
-				if item_queue == nil then
-					return
-				end
-				if item_queue.Type == ItemType.ITEM_ACTIVE then
-				elseif item_queue.Type == ItemType.ITEM_TRINKET then
-				else
-					-- normal characters add collectible
-					table.insert(coopHUD.players[pill_card_pressed].collectibles,
-					             coopHUD.Item(coopHUD.players[pill_card_pressed], -1,
-					                          item_queue.ID)) -- add picked up item to collectibles
-				end
-				--____ Flashes triggers streak text with picked up name
-				local streak_main_line = item_queue.Name
-				local streak_sec_line = item_queue.Description
-				if coopHUD.langAPI then
-					--	 checks if langAPI loaded
-					if string.sub(streak_main_line, 0, 1) == "#" then
-						--if begins with # get name from api
-						streak_main_line = coopHUD.langAPI.getItemName(string.sub(streak_main_line, 2))
-					end
-					if string.sub(streak_sec_line, 0, 1) == "#" then
-						--if begins with # get desc from api
-						streak_sec_line = coopHUD.langAPI.getItemName(string.sub(streak_sec_line, 2))
-					end
-				end
-				-- triggers streak on item pickup
-				coopHUD.Streak(false, coopHUD.Streak.ITEM, streak_main_line, streak_sec_line, true,
-				               coopHUD.players[pill_card_pressed].font_color)
-				coopHUD.BoC.update(coopHUD.players[pill_card_pressed])
-				pill_held = 0
-			else
-			end
-		end
-	end
 end
 -- MAIN RENDER
 function coopHUD.render()

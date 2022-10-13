@@ -237,6 +237,48 @@ function coopHUD.BoC.update(player)
 	else
 		player.crafting_result = coopHUD.Item(player, -1, 0)
 	end
+	coopHUD.BoC.trackBagHolding(player)
+end
+local holdCounter = 0  -- held counter for
+local icount = 0  -- item counter for BoC
+---Bag of crafting - tracking crafting logic. Connected to
+---@param player coopHUD.Player
+function coopHUD.BoC.trackBagHolding(player)
+	-- Bag of crafting - creation item logic -- based on External Item Description mod by Wolsauge
+	local isCardHold = Input.IsActionPressed(ButtonAction.ACTION_PILLCARD, player.entPlayer.ControllerIndex)
+	local animationName = player.entPlayer:GetSprite():GetAnimation()
+	if isCardHold and string.match(animationName, "PickupWalk") and #player.bag_of_crafting >= 8 then
+		holdCounter = holdCounter + 1
+		if holdCounter < 30 then
+			icount = player.entPlayer:GetCollectibleCount()
+		end
+	else
+		if isCardHold and holdCounter >= 30 and (string.match(animationName, "Walk") and
+				not string.match(animationName, "Pickup") and
+				(player.entPlayer:GetCollectibleCount() ~= icount)) then
+			player.bag_of_crafting = {}
+			--adds collectible to inventory
+			local item_queue = Isaac.GetItemConfig():GetCollectible(player.crafting_result.id)
+			if item_queue == nil then
+				return
+			end
+			if item_queue.Type == ItemType.ITEM_ACTIVE then
+			elseif item_queue.Type == ItemType.ITEM_TRINKET then
+			else
+				-- normal characters add collectible
+				table.insert(player.collectibles,
+				             coopHUD.Item(player, -1,
+				                          item_queue.ID)) -- add picked up item to collectibles
+			end
+			--___Triggers streak info on item pickup
+			coopHUD.Streak(false, coopHUD.Streak.ITEM,
+			               coopHUD.langAPI.getItemNameByID(item_queue.ID),
+			               coopHUD.langAPI.getItemDescByID(item_queue.ID), true,
+			               player.font_color)
+		else
+			holdCounter = 0
+		end
+	end
 end
 --- handles Bag of Crafting recipe calculation
 --- it unpack bag of crafting to components table for calculate

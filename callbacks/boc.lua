@@ -40,7 +40,7 @@ coopHUD:AddCallback(ModCallbacks.MC_POST_PICKUP_UPDATE, function()
 					if craftingIDs ~= nil then
 						for _, item_id in ipairs(craftingIDs) do
 							-- checks if bag is full
-							if #coopHUD.players[last_bag].bag_of_crafting >= 8 then
+							if #coopHUD.players[last_bag].bag_of_crafting == 8 then
 								table.remove(coopHUD.players[last_bag].bag_of_crafting, 1)
 							end
 							-- inserts ito bag and BoC.Item

@@ -27,6 +27,14 @@ function langAPI.getItemNameByID(id)
 	name = string.sub(name, 2) --  get rid of # on front of
 	return langAPI.table.category.Items[name][langAPI.lang_index]
 end
+---Returns item description based on given code id
+---@param id number
+---@return string
+function langAPI.getItemDescByID(id)
+	local desc = Isaac.GetItemConfig():GetCollectible(id).Description
+	desc = string.sub(desc, 2) --  get rid of # on front of
+	return langAPI.table.category.Items[desc][langAPI.lang_index]
+end
 ---Returns pocket name/description based on code name
 ---@private
 ---@param code_name string
