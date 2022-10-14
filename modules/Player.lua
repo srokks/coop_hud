@@ -317,12 +317,14 @@ function coopHUD.Player.render(self)
 	end
 	-- PLAYER COLOR SET
 	local col = Color(1, 1, 1, 1)
-	if coopHUD.options.colorful_players then
-		col.R = self.font_color.Red
-		col.G = self.font_color.Green
-		col.B = self.font_color.Blue
+	local alpha = 1
+	if self.entPlayer:GetPlayerType() == PlayerType.PLAYER_SAMSON_B then
+		alpha = self.entPlayer.SamsonBerserkCharge / 100000
 	end
-	self.entPlayer:SetColor(col, 2, 100, false, false)
+	if coopHUD.options.colorful_players then
+		col:SetColorize(self.font_color.Red, self.font_color.Green, self.font_color.Blue, alpha)
+	end
+	self.entPlayer:SetColor(col, 2, 1, true, true)
 	if self.essau then
 		-- colors essau sprite
 		self.essau.entPlayer:SetColor(col, 2, 100, false, false)
