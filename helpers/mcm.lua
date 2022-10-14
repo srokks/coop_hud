@@ -254,6 +254,30 @@ if ModConfigMenu then
 			return "Hides stats while in battle"
 		end
 	})
+	-- stats.force show
+	ModConfigMenu.AddSetting(mod_name, "Stats", {
+		Type           = ModConfigMenu.OptionType.BOOLEAN,
+		CurrentSetting = function()
+			return coopHUD.options.stats.force_show
+		end,
+		Default        = coopHUD.options.stats.force_show,
+
+		Display        = function()
+			local onOff = "Off"
+			if coopHUD.options.stats.force_show then
+				onOff = "On"
+			end
+
+			return "Force show: " .. onOff
+		end,
+		OnChange       = function(currentBool)
+			coopHUD.options.stats.force_show = currentBool
+			coopHUD.save_options()
+		end,
+		Info           = function()
+			return "Force to show stats on map button when battle"
+		end
+	})
 	-- Deals
 	ModConfigMenu.AddTitle(mod_name, 'Stats', 'Deals')
 	-- show deals

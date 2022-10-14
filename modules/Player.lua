@@ -339,6 +339,9 @@ function coopHUD.Player.render(self)
 	end
 	--STATS/COLLECTIBLES RENDER
 	local stat_on_battle_check = not (coopHUD.options.stats.hide_in_battle and coopHUD.signals.on_battle)
+	if coopHUD.options.stats.force_show and coopHUD.signals.map then
+		stat_on_battle_check = true  -- Force to show stats on map button when battle
+	end
 	local hud_on_battle_check = not (coopHUD.options.extra_hud_hide_on_battle and coopHUD.signals.on_battle)
 	if coopHUD.options.stats.show and stat_on_battle_check then
 		if self.big_hud then
