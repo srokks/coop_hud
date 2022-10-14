@@ -237,7 +237,9 @@ function coopHUD.BoC.update(player)
 	else
 		player.crafting_result = coopHUD.Item(player, -1, 0)
 	end
-	coopHUD.BoC.trackBagHolding(player)
+	if Input.IsActionPressed(ButtonAction.ACTION_PILLCARD, player.entPlayer.ControllerIndex) then
+		coopHUD.BoC.trackBagHolding(player)
+	end
 end
 local holdCounter = 0  -- held counter for
 local icount = 0  -- item counter for BoC
