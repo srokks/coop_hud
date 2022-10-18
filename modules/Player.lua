@@ -33,6 +33,7 @@
 ---@field hold_spell nil|number holds current hold spell FOR T.???
 ---@field poops nil|coopHUD.PoopsTable holds poops FOR T.???
 ---@field signals table map_btn;
+---@field temp_item nil|ItemConfigItem
 ---@field font_color KColor holds color used in HUD when option o
 ---@return coopHUD.Player
 ---@type coopHUD.Player | fun(player_no:number, entPlayer:userdata):coopHUD.Player
@@ -651,4 +652,51 @@ function coopHUD.Player.getIndexByControllerIndex(controller_index)
 		end
 	end
 	return final_index
+end
+---@param player coopHUD.Player
+function coopHUD.Player.addItem(player)
+	if player.temp_item.Type == ItemType.ITEM_ACTIVE then
+	elseif player.temp_item.Type == ItemType.ITEM_TRINKET then
+	elseif player.entPlayer:HasCollectible(player.temp_item.ID) then
+		-- triggers only for passive items and familiars
+		-- holds non roll able items and adds it to gulped_trinkets
+		local non_roll = { [CollectibleType.COLLECTIBLE_KEY_PIECE_1]   = true,
+						   [CollectibleType.COLLECTIBLE_KEY_PIECE_2]   = true,
+						   [CollectibleType.COLLECTIBLE_MISSING_NO]    = true,
+						   [CollectibleType.COLLECTIBLE_POLAROID]      = true,
+						   [CollectibleType.COLLECTIBLE_NEGATIVE]      = true,
+						   [CollectibleType.COLLECTIBLE_DAMOCLES]      = true,
+						   [CollectibleType.COLLECTIBLE_KNIFE_PIECE_1] = true,
+						   [CollectibleType.COLLECTIBLE_KNIFE_PIECE_2] = true,
+						   [CollectibleType.COLLECTIBLE_DOGMA]         = true,
+						   [CollectibleType.COLLECTIBLE_DADS_NOTE]     = true,
+						   [CollectibleType.COLLECTIBLE_BIRTHRIGHT]    = true, }
+		if non_roll[player.temp_item.ID] then
+			table.insert(player.gulped_trinkets,
+						 coopHUD.Item(player, -1,
+									  player.temp_item.ID))
+		else
+			if player.entPlayer:GetPlayerType() == PlayerType.PLAYER_ISAAC_B then
+				local max_collectibles = 8
+				if player.entPlayer:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
+					max_collectibles = 12
+				end
+				if #player.collectibles == max_collectibles then
+					player.collectibles[1] = coopHUD.Item(player,
+														  -1,
+														  player.temp_item.ID)
+				else
+					table.insert(player.collectibles,
+								 coopHUD.Item(player, -1,
+											  player.temp_item.ID)) -- add picked up item to collectibles
+				end
+			else
+				-- normal characters add collectible
+				table.insert(player.collectibles,
+							 coopHUD.Item(player, -1,
+										  player.temp_item.ID)) -- add picked up item to collectibles
+			end
+		end
+	end
+	player.temp_item = nil -- resets temp item
 end

@@ -263,14 +263,9 @@ function coopHUD.BoC.trackBagHolding(player)
 			local item_queue = Isaac.GetItemConfig():GetCollectible(player.crafting_result.id)
 			if item_queue == nil then
 				return
-			end
-			if item_queue.Type == ItemType.ITEM_ACTIVE then
-			elseif item_queue.Type == ItemType.ITEM_TRINKET then
 			else
-				-- normal characters add collectible
-				table.insert(player.collectibles,
-				             coopHUD.Item(player, -1,
-				                          item_queue.ID)) -- add picked up item to collectibles
+				player.temp_item = item_queue
+				player:addItem()
 			end
 			--___Triggers streak info on item pickup
 			coopHUD.Streak(false, coopHUD.Streak.ITEM,
