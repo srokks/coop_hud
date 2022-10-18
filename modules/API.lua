@@ -222,7 +222,12 @@ function coopHUD.save_options()
 	save.run.players = players
 	coopHUD:SaveData(json.encode(save))
 end
-
+--- Prints string into in-game console as well to debug log
+---@param str string
+function coopHUD.debug_str(str)
+	print(str)
+	Isaac.DebugString(str)
+end
 if coopHUD:HasData() then
 	local save = json.decode(coopHUD:LoadData())
 	coopHUD.players_config.small[0] = save.players_config.small['0']
