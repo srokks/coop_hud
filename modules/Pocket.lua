@@ -188,13 +188,13 @@ function coopHUD.Pocket:render(pos, mirrored, scale, down_anchor, dim)
 			offset.X = offset.X + self.parent.poops:render(Vector(pos.X + offset.X, pos.Y), mirrored, scale,
 			                                               down_anchor).X
 		elseif self.item and self.item.id == CollectibleType.COLLECTIBLE_BAG_OF_CRAFTING then
-			coopHUD.BoC:render(self.parent, Vector(pos.X + offset.X, pos.Y), mirrored, down_anchor)
+			coopHUD.BoC:render(self.parent, Vector(pos.X + offset.X, pos.Y), mirrored, sprite_scale, down_anchor)
 		else
 			local text = self.name
 			if Input.IsActionPressed(ButtonAction.ACTION_MAP, self.parent.controller_index) then
 				text = self.desc
 			end
-			local font_height = coopHUD.HUD.fonts.pft:GetLineHeight()
+			local font_height = coopHUD.HUD.fonts.pft:GetLineHeight() * sprite_scale.Y
 			temp_pos = Vector(pos.X + offset.X, pos.Y + offset.Y - font_height)
 			if mirrored then temp_pos.X = temp_pos.X - string.len(text) * (6 * sprite_scale.X) end
 			if down_anchor then
@@ -202,6 +202,7 @@ function coopHUD.Pocket:render(pos, mirrored, scale, down_anchor, dim)
 			end
 			coopHUD.HUD.fonts.pft:DrawStringScaled(text, temp_pos.X, temp_pos.Y, sprite_scale.X, sprite_scale.Y,
 			                                       self.parent.font_color, 0, true)
+			offset.X = offset.X + coopHUD.HUD.fonts.pft:GetStringWidth(text) * sprite_scale.X
 		end
 	end
 	return offset
