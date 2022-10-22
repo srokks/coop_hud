@@ -190,10 +190,10 @@ function coopHUD.Player.renderMain(self, pos, mirrored, scl, down_anchor)
 	if self.entPlayer:GetPlayerType() == PlayerType.PLAYER_JACOB or self.entPlayer:GetPlayerType() == PlayerType.PLAYER_ESAU then
 		-- if playing as jacob sets dim according to pressed drop button
 		dim = Input.IsActionPressed(ButtonAction.ACTION_DROP, self.controller_index)
-		scale = coopHUD.players_config.small.scale -- resets scale if essau logic changes it
+		scale = Vector(coopHUD.options.hud_scale, coopHUD.options.hud_scale)-- resets scale if essau logic changes it
 		if dim then
-			scale = Vector(0.9 * coopHUD.players_config.small.scale.X,
-			               0.9 * coopHUD.players_config.small.scale.Y)
+			scale = Vector(0.9 * coopHUD.options.hud_scale,
+			               0.9 * coopHUD.options.hud_scale)
 		end -- shrinks inactive modules
 	end
 	-- ACTIVE/SCHOOLBAG ITEM RENDER
@@ -243,10 +243,10 @@ function coopHUD.Player.renderPockets(self, pos, mirrored, scl, down_anchor)
 	if self.entPlayer:GetPlayerType() == PlayerType.PLAYER_JACOB or self.entPlayer:GetPlayerType() == PlayerType.PLAYER_ESAU then
 		-- if playing as jacob sets dim according to pressed drop button
 		dim = not Input.IsActionPressed(ButtonAction.ACTION_DROP, self.controller_index)
-		scale = coopHUD.players_config.small.scale -- resets scale if essau logic changes it
+		scale = Vector(coopHUD.options.hud_scale, coopHUD.options.hud_scale) -- resets scale if essau logic changes it
 		if dim then
-			scale = Vector(0.9 * coopHUD.players_config.small.scale.X,
-			               0.9 * coopHUD.players_config.small.scale.Y)
+			scale = Vector(0.9 * coopHUD.options.hud_scale,
+			               0.9 * coopHUD.options.hud_scale)
 		end -- shrinks inactive modules
 	end
 	--FIRST POCKET RENDER
@@ -297,7 +297,7 @@ function coopHUD.Player.render(self)
 	local anchor_bot = Vector(coopHUD.anchors[coopHUD.players_config.small[self.game_index].anchor_bot].X,
 	                          coopHUD.anchors[coopHUD.players_config.small[self.game_index].anchor_bot].Y)
 	local mirrored = coopHUD.players_config.small[self.game_index].mirrored
-	local scale = coopHUD.players_config.small.scale
+	local scale = Vector(coopHUD.options.hud_scale,coopHUD.options.hud_scale)
 	local down_anchor = coopHUD.players_config.small[self.game_index].down_anchor
 	if self.big_hud then
 		anchor = Vector(coopHUD.anchors[coopHUD.players_config.small[self.game_index].anchor_top].X,

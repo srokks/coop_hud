@@ -102,36 +102,6 @@ if ModConfigMenu then
 			return 'Force small (compacted) player HUD in < 2 players'
 		end
 	})
-	-- PLAYERS NAME/HEAD
-	ModConfigMenu.AddSetting(mod_name, "General", {
-		Type           = ModConfigMenu.OptionType.BOOLEAN,
-		CurrentSetting = function()
-			return coopHUD.options.render_player_info
-		end,
-		Default        = coopHUD.options.force_small_hud,
-
-		Display        = function()
-			local onOff = "Off"
-			if coopHUD.options.render_player_info then
-				onOff = "On"
-			end
-
-			return "Render HUD player indicators: " .. onOff
-		end,
-		OnChange       = function(currentBool)
-			coopHUD.options.render_player_info = currentBool
-			coopHUD.save_options()
-		end,
-		Info           = function()
-			local TotalText
-			if coopHUD.options.render_player_info then
-				TotalText = "Player head/name will be rendered in HUD"
-			else
-				TotalText = "No player indicator Vanilla like"
-			end
-			return TotalText
-		end
-	})
 	-- Timer always on setting
 	ModConfigMenu.AddSetting(mod_name, "General", {
 		Type           = ModConfigMenu.OptionType.BOOLEAN,
@@ -202,6 +172,27 @@ if ModConfigMenu then
 		end,
 		Info           = function()
 			return "Show  name under player"
+		end
+	})
+	-- SCALING
+	ModConfigMenu.AddSetting(mod_name, "General", {
+		Type           = ModConfigMenu.OptionType.NUMBER,
+		CurrentSetting = function()
+			return coopHUD.options.hud_scale
+		end,
+		Default        = coopHUD.options.hud_scale,
+		Minimum        = 0.1,
+		Maximum        = 1.50,
+		ModifyBy       = 0.05,
+		Display        = function()
+			return "HUD scaling: " .. coopHUD.options.hud_scale * 100 .. "%"
+		end,
+		OnChange       = function(currentNum)
+			coopHUD.options.hud_scale = currentNum
+			coopHUD.save_options()
+		end,
+		Info           = function()
+			return "Set custom HUD scaling"
 		end
 	})
 	-- __ Stats
@@ -422,6 +413,36 @@ if ModConfigMenu then
 			return "Hides collectibles while in battle"
 		end
 	})
+	-- PLAYERS NAME/HEAD
+	ModConfigMenu.AddSetting(mod_name, "ExtraHUD", {
+		Type           = ModConfigMenu.OptionType.BOOLEAN,
+		CurrentSetting = function()
+			return coopHUD.options.render_player_info
+		end,
+		Default        = coopHUD.options.force_small_hud,
+
+		Display        = function()
+			local onOff = "Off"
+			if coopHUD.options.render_player_info then
+				onOff = "On"
+			end
+
+			return "Render HUD player indicators: " .. onOff
+		end,
+		OnChange       = function(currentBool)
+			coopHUD.options.render_player_info = currentBool
+			coopHUD.save_options()
+		end,
+		Info           = function()
+			local TotalText
+			if coopHUD.options.render_player_info then
+				TotalText = "There will be character indicator and player name in hud"
+			else
+				TotalText = "No player indicator Vanilla like"
+			end
+			return TotalText
+		end
+	})
 	-- __ Players
 	ModConfigMenu.AddTitle(mod_name, "Colors", 'General')
 	-- .player_info_color
@@ -601,22 +622,22 @@ if ModConfigMenu then
 	-- DEBUG: until finished only for debuging
 	--[[ModConfigMenu.AddTitle(mod_name, "Positions", 'Small HUD positions')
 	ModConfigMenu.AddSetting(mod_name, "Positions", {
-		Type = ModConfigMenu.OptionType.NUMBER,
+		Type           = ModConfigMenu.OptionType.NUMBER,
 		CurrentSetting = function()
 			return coopHUD.anchors[coopHUD.players_config.small[0].anchor .. '_id']
 		end,
-		Minimum = 0,
-		Maximum = 3,
-		Display = function()
+		Minimum        = 0,
+		Maximum        = 3,
+		Display        = function()
 			return "Player 1: " .. coopHUD.anchors[coopHUD.players_config.small[0].anchor .. '_name']
 		end,
-		OnChange = function(currentNum)
+		OnChange       = function(currentNum)
 			coopHUD.players_config.small[0].anchor = coopHUD.players_config.default[currentNum].anchor
 			coopHUD.players_config.small[0].mirrored = coopHUD.players_config.default[currentNum].mirrored
 			coopHUD.players_config.small[0].down_anchor = coopHUD.players_config.default[currentNum].down_anchor
 			coopHUD.save_options()
 		end,
-		Info = function()
+		Info           = function()
 			return "Sets player position on small hud"
 		end
 	})]]
