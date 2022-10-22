@@ -298,12 +298,13 @@ function coopHUD.Item.render(self, pos, mirrored, scale, down_anchor, dim)
 		if self.id == CollectibleType.COLLECTIBLE_BAG_OF_CRAFTING and self.slot == ActiveSlot.SLOT_PRIMARY then
 			--renders bag of crafting result item
 			if self.parent.crafting_result then
-				temp_pos = Vector(pos.X + 5, pos.Y + 8)
+				temp_pos = Vector(pos.X + 5 * sprite_scale.X, pos.Y + 8 * sprite_scale.Y)
 				if down_anchor then temp_pos.Y = temp_pos.Y - 8 end
 				if Game():GetLevel():GetCurses() & LevelCurse.CURSE_OF_BLIND > 0 then
-					coopHUD.BoC.Unknown:render(temp_pos, mirrored, Vector(0.7, 0.7), down_anchor)
+					coopHUD.BoC.Unknown:render(temp_pos, mirrored, Vector(0.7, 0.7) * sprite_scale, down_anchor)
 				else
-					self.parent.crafting_result:render(temp_pos, mirrored, Vector(0.7, 0.7), down_anchor, dim)
+					self.parent.crafting_result:render(temp_pos, mirrored, Vector(0.7, 0.7) * sprite_scale, down_anchor,
+					                                   dim)
 				end
 			end
 		end
@@ -448,7 +449,7 @@ function coopHUD.Item.getMaxCharge(self)
 			end
 		end
 		if self.id == CollectibleType.COLLECTIBLE_JAR_OF_WISPS and max_charge == nil then
-				return 0
+			return 0
 		end
 	end
 	return max_charge
