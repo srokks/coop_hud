@@ -148,6 +148,14 @@ function coopHUD.Player.update(self)
 	self.second_pocket:update()
 	self.third_pocket:update()
 	self.hearts:update()
+	-- triggers poops update
+	if self.poops then
+		self.poops:update()
+	end
+	-- triggers sub player hearts update
+	if self.sub_hearts then
+		self.sub_hearts:update()
+	end
 	self.big_hud = #coopHUD.players < 3 and not coopHUD.options.force_small_hud
 	coopHUD.BoC.update(self)
 	--Checks if player acquire transformation changes info and flashes streak
@@ -661,20 +669,20 @@ function coopHUD.Player.addItem(player)
 		-- triggers only for passive items and familiars
 		-- holds non roll able items and adds it to gulped_trinkets
 		local non_roll = { [CollectibleType.COLLECTIBLE_KEY_PIECE_1]   = true,
-						   [CollectibleType.COLLECTIBLE_KEY_PIECE_2]   = true,
-						   [CollectibleType.COLLECTIBLE_MISSING_NO]    = true,
-						   [CollectibleType.COLLECTIBLE_POLAROID]      = true,
-						   [CollectibleType.COLLECTIBLE_NEGATIVE]      = true,
-						   [CollectibleType.COLLECTIBLE_DAMOCLES]      = true,
-						   [CollectibleType.COLLECTIBLE_KNIFE_PIECE_1] = true,
-						   [CollectibleType.COLLECTIBLE_KNIFE_PIECE_2] = true,
-						   [CollectibleType.COLLECTIBLE_DOGMA]         = true,
-						   [CollectibleType.COLLECTIBLE_DADS_NOTE]     = true,
-						   [CollectibleType.COLLECTIBLE_BIRTHRIGHT]    = true, }
+		                   [CollectibleType.COLLECTIBLE_KEY_PIECE_2]   = true,
+		                   [CollectibleType.COLLECTIBLE_MISSING_NO]    = true,
+		                   [CollectibleType.COLLECTIBLE_POLAROID]      = true,
+		                   [CollectibleType.COLLECTIBLE_NEGATIVE]      = true,
+		                   [CollectibleType.COLLECTIBLE_DAMOCLES]      = true,
+		                   [CollectibleType.COLLECTIBLE_KNIFE_PIECE_1] = true,
+		                   [CollectibleType.COLLECTIBLE_KNIFE_PIECE_2] = true,
+		                   [CollectibleType.COLLECTIBLE_DOGMA]         = true,
+		                   [CollectibleType.COLLECTIBLE_DADS_NOTE]     = true,
+		                   [CollectibleType.COLLECTIBLE_BIRTHRIGHT]    = true, }
 		if non_roll[player.temp_item.ID] then
 			table.insert(player.gulped_trinkets,
-						 coopHUD.Item(player, -1,
-									  player.temp_item.ID))
+			             coopHUD.Item(player, -1,
+			                          player.temp_item.ID))
 		else
 			if player.entPlayer:GetPlayerType() == PlayerType.PLAYER_ISAAC_B then
 				local max_collectibles = 8
@@ -683,18 +691,18 @@ function coopHUD.Player.addItem(player)
 				end
 				if #player.collectibles == max_collectibles then
 					player.collectibles[1] = coopHUD.Item(player,
-														  -1,
-														  player.temp_item.ID)
+					                                      -1,
+					                                      player.temp_item.ID)
 				else
 					table.insert(player.collectibles,
-								 coopHUD.Item(player, -1,
-											  player.temp_item.ID)) -- add picked up item to collectibles
+					             coopHUD.Item(player, -1,
+					                          player.temp_item.ID)) -- add picked up item to collectibles
 				end
 			else
 				-- normal characters add collectible
 				table.insert(player.collectibles,
-							 coopHUD.Item(player, -1,
-										  player.temp_item.ID)) -- add picked up item to collectibles
+				             coopHUD.Item(player, -1,
+				                          player.temp_item.ID)) -- add picked up item to collectibles
 			end
 		end
 	end
