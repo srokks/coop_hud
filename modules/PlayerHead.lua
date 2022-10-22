@@ -43,11 +43,11 @@ end
 ---@param scale Vector scale of sprite
 ---@param down_anchor boolean change anchor to down corner
 ---@return Vector offset where render next sprite
-function coopHUD.PlayerHead:render(anchor, mirrored, scale, down_anchor)
+function coopHUD.PlayerHead:render(pos, mirrored, scale, down_anchor)
 	local offset = Vector(0, 0)
 	if self.sprite then
-		local temp_pos = Vector(anchor.X, anchor.Y)
-		local text_pos = Vector(anchor.X, anchor.Y)
+		local temp_pos = Vector(pos.X, pos.Y)
+		local text_pos = Vector(pos.X, pos.Y)
 		local sprite_scale = scale
 		--
 		if sprite_scale == nil then
@@ -65,21 +65,21 @@ function coopHUD.PlayerHead:render(anchor, mirrored, scale, down_anchor)
 		end
 		--
 		if down_anchor then
-			--FIXME: wrong offset return
-			temp_pos.Y = temp_pos.Y - (coopHUD.HUD.fonts.lua_mini:GetBaselineHeight())
-			text_pos.Y = text_pos.Y - (coopHUD.HUD.fonts.lua_mini:GetBaselineHeight())
+			temp_pos.Y = temp_pos.Y - (coopHUD.HUD.fonts.lua_mini:GetBaselineHeight() * sprite_scale.Y)
+			text_pos.Y = text_pos.Y - (coopHUD.HUD.fonts.lua_mini:GetBaselineHeight() * sprite_scale.Y)
 			offset.Y = (-16 * sprite_scale.Y) - coopHUD.HUD.fonts.lua_mini:GetBaselineHeight()
 		else
-			temp_pos.Y = temp_pos.Y + (coopHUD.HUD.fonts.lua_mini:GetBaselineHeight())
+			temp_pos.Y = temp_pos.Y + (coopHUD.HUD.fonts.lua_mini:GetBaselineHeight() * sprite_scale.Y)
 			text_pos.Y = text_pos.Y + (16 * sprite_scale.Y)
-			offset.Y = (16 * sprite_scale.Y) + coopHUD.HUD.fonts.lua_mini:GetBaselineHeight()
+			offset.Y = (16 * sprite_scale.Y) + coopHUD.HUD.fonts.lua_mini:GetBaselineHeight() * sprite_scale.Y
 		end
 		--
 		self.sprite.Scale = sprite_scale
 		self.sprite:Render(temp_pos)
-		coopHUD.HUD.fonts.lua_mini:DrawString(self.name,
-		                                      text_pos.X, text_pos.Y,
-		                                      self.parent.font_color, 1, true)
+		coopHUD.HUD.fonts.lua_mini:DrawStringScaled(self.name,
+		                                            text_pos.X, text_pos.Y,
+		                                            sprite_scale.X, sprite_scale.Y,
+		                                            self.parent.font_color, 1, true)
 	end
 	return offset
 end
