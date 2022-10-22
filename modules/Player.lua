@@ -297,7 +297,7 @@ function coopHUD.Player.render(self)
 	local anchor_bot = Vector(coopHUD.anchors[coopHUD.players_config.small[self.game_index].anchor_bot].X,
 	                          coopHUD.anchors[coopHUD.players_config.small[self.game_index].anchor_bot].Y)
 	local mirrored = coopHUD.players_config.small[self.game_index].mirrored
-	local scale = Vector(coopHUD.options.hud_scale,coopHUD.options.hud_scale)
+	local scale = Vector(coopHUD.options.hud_scale, coopHUD.options.hud_scale)
 	local down_anchor = coopHUD.players_config.small[self.game_index].down_anchor
 	if self.big_hud then
 		anchor = Vector(coopHUD.anchors[coopHUD.players_config.small[self.game_index].anchor_top].X,
@@ -358,7 +358,7 @@ function coopHUD.Player.render(self)
 		if self.big_hud then
 			if #coopHUD.players == 1 then
 				-- always show when only 1 player
-				self:renderStats(mirrored)
+				self:renderStats(mirrored, scale)
 				-- renders main stat and essau stats on same time
 				if self.essau then
 					self.essau:renderStats(mirrored)
@@ -491,10 +491,12 @@ end
 --- renders  players stats
 ---@param self  coopHUD.Player
 ---@param mirrored boolean change anchor to right corner
+---@param scale Vector
 ---@return Vector offset where render next sprite
 function coopHUD.Player.renderStats(self, mirrored)
 	--when options.stats.hide_in_battle on and battle signal
 	local font_color = KColor(1, 1, 1, 1)
+	local scale = Vector(coopHUD.options.hud_scale, coopHUD.options.hud_scale)
 	if coopHUD.options.stats.colorful then
 		font_color = self.font_color
 	end
@@ -504,7 +506,7 @@ function coopHUD.Player.renderStats(self, mirrored)
 	else
 		temp_stat_pos.X = coopHUD.anchors.bot_left.X
 	end
-	local off = Vector(0, 14) -- static offset for stats
+	local off = self.speed:getOffset() -- static offset for stats
 	if self.game_index - coopHUD.essau_no == 2 or self.game_index - coopHUD.essau_no == 3 then
 		-- checks if player is 3rd or 4th
 		if mirrored then
@@ -531,17 +533,18 @@ function coopHUD.Player.renderStats(self, mirrored)
 	if self.signals.map_btn then
 		color_alpha = 1
 	end
-	self.speed:render(temp_stat_pos, mirrored, false, only_num, color_alpha) -- renders object with player mirrored spec
+	self.speed:render(temp_stat_pos, mirrored, false, only_num, color_alpha,
+	                  scale) -- renders object with player mirrored spec
 	temp_stat_pos.Y = temp_stat_pos.Y + off.Y -- increments position with static offset vertical
-	self.tears_delay:render(temp_stat_pos, mirrored, false, only_num, color_alpha)
+	self.tears_delay:render(temp_stat_pos, mirrored, false, only_num, color_alpha, scale)
 	temp_stat_pos.Y = temp_stat_pos.Y + off.Y
-	self.damage:render(temp_stat_pos, mirrored, false, only_num, color_alpha)
+	self.damage:render(temp_stat_pos, mirrored, false, only_num, color_alpha, scale)
 	temp_stat_pos.Y = temp_stat_pos.Y + off.Y
-	self.range:render(temp_stat_pos, mirrored, false, only_num, color_alpha)
+	self.range:render(temp_stat_pos, mirrored, false, only_num, color_alpha, scale)
 	temp_stat_pos.Y = temp_stat_pos.Y + off.Y
-	self.shot_speed:render(temp_stat_pos, mirrored, false, only_num, color_alpha)
+	self.shot_speed:render(temp_stat_pos, mirrored, false, only_num, color_alpha, scale)
 	temp_stat_pos.Y = temp_stat_pos.Y + off.Y
-	self.luck:render(temp_stat_pos, mirrored, false, only_num, color_alpha)
+	self.luck:render(temp_stat_pos, mirrored, false, only_num, color_alpha, scale)
 	temp_stat_pos.Y = temp_stat_pos.Y + off.Y
 	if self.game_index == 0 and not (self.entPlayer:GetPlayerType() == PlayerType.PLAYER_ESAU) then
 		-- saves pos under stats for other hud modules to access like deals stats

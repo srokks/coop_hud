@@ -74,7 +74,8 @@ function coopHUD.HUD.init()
 end
 function coopHUD.HUD.render()
 	if coopHUD.HUD.coins then
-		local middle_bot_anchor = Vector((Isaac.GetScreenWidth() / 2), Isaac.GetScreenHeight() - 14) -- middle of screen
+		local scale = Vector(coopHUD.options.hud_scale, coopHUD.options.hud_scale)
+		local middle_bot_anchor = Vector((Isaac.GetScreenWidth() / 2), Isaac.GetScreenHeight() - 14 * scale.Y) -- middle of screen
 		local offset = Vector(0, 0)
 		--
 		local temp_pos = Vector(middle_bot_anchor.X, middle_bot_anchor.Y)
@@ -110,12 +111,12 @@ function coopHUD.HUD.render()
 					if coopHUD.signals.map then
 						color_alpha = 1
 					end
-					coopHUD.HUD.devil:render(deals_pos, mirrored, false, false, color_alpha)
-					deals_pos.Y = deals_pos.Y + 14
-					coopHUD.HUD.angel:render(deals_pos, mirrored, false, false, color_alpha)
-					deals_pos.Y = deals_pos.Y + 14
+					coopHUD.HUD.devil:render(deals_pos, mirrored, false, false, color_alpha, scale)
+					deals_pos.Y = deals_pos.Y + coopHUD.HUD.devil:getOffset().Y
+					coopHUD.HUD.angel:render(deals_pos, mirrored, false, false, color_alpha, scale)
+					deals_pos.Y = deals_pos.Y + coopHUD.HUD.angel:getOffset().Y
 					if coopHUD.options.deals.show_planetarium then
-						coopHUD.HUD.planetarium:render(deals_pos, mirrored, false, false, color_alpha)
+						coopHUD.HUD.planetarium:render(deals_pos, mirrored, false, false, color_alpha, scale)
 					end
 				else
 					local deals_pos = Vector(middle_bot_anchor.X, middle_bot_anchor.Y + 4)
@@ -126,15 +127,15 @@ function coopHUD.HUD.render()
 					end
 					deals_pos.X = deals_pos.X - coopHUD.HUD.devil:getOffset().X / 2
 					-- ANGEL
-					coopHUD.HUD.angel:render(deals_pos, false, true, false, 1)
+					coopHUD.HUD.angel:render(deals_pos, false, true, false, 1, scale)
 					-- DEVIL
 					off = coopHUD.HUD.devil:render(Vector(deals_pos.X + coopHUD.HUD.angel:getOffset().X, deals_pos.Y),
-					                               false, true, false, 1)
+					                               false, true, false, 1, scale)
 					--PLANETARIUM
 					if coopHUD.options.deals.show_planetarium then
 						coopHUD.HUD.planetarium:render(Vector(deals_pos.X + coopHUD.HUD.angel:getOffset().X + coopHUD.HUD.devil:getOffset().X,
 						                                      deals_pos.Y),
-						                               false, true, false, 1)
+						                               false, true, false, 1, scale)
 					end
 				end
 			end

@@ -1,5 +1,6 @@
 ---@class coopHUD.Stat
 ---@field SPEED
+---@field private sprite Sprite
 ---@param parent coopHUD.Player parent of stat class
 ---@param type number coopHUD.Stat.Type -- type of stat class
 ---@param icon boolean if true Stat will be rendered with icon else only number stat with diff if is
@@ -94,10 +95,12 @@ end
 ---@param vertical boolean change position, vertical used with deals and coopHUD position
 ---@param only_num boolean determines if stat renders with icon
 ---@param color_alpha number alpha color of rendered icon
+---@param scale Vector
 ---@return Vector offset where render next sprite
-function coopHUD.Stat:render(pos, mirrored, vertical, only_num,color_alpha)
+function coopHUD.Stat:render(pos, mirrored, vertical, only_num, color_alpha, scale)
 	self:update()
 	local init_pos = (Vector(pos.X, pos.Y))
+	if scale == nil then scale = Vector(1, 1) end -- nil error prevent
 	if vertical then
 		init_pos.Y = init_pos.Y - 16
 	end
@@ -105,12 +108,13 @@ function coopHUD.Stat:render(pos, mirrored, vertical, only_num,color_alpha)
 	if self.icon and self.sprite and not only_num then
 		-- Icon render
 		if mirrored then
-			init_pos.X = init_pos.X - 16
+			init_pos.X = init_pos.X - 16 * scale.Y
 		else
-			offset.X = offset.X + 16
+			offset.X = offset.X + 16 * scale.Y
 		end
-		offset.Y = offset.Y + 16
+		offset.Y = offset.Y + 16 * scale.Y
 		self.sprite.Color = Color(1, 1, 1, color_alpha)
+		self.sprite.Scale = scale
 		self.sprite:Render(Vector(init_pos.X, init_pos.Y))
 	end
 	-- STAT.amount render
@@ -126,18 +130,19 @@ function coopHUD.Stat:render(pos, mirrored, vertical, only_num,color_alpha)
 		end
 		local f_color = KColor(self.parent.font_color.Red, self.parent.font_color.Green, self.parent.font_color.Blue,
 		                       color_alpha)
-		coopHUD.HUD.fonts.lua_mini:DrawString(amount_string,
-		                                      init_pos.X + offset.X, init_pos.Y,
-		                                      f_color,
-		                                      align, false)
+		coopHUD.HUD.fonts.lua_mini:DrawStringScaled(amount_string,
+		                                            init_pos.X + offset.X, init_pos.Y,
+		                                            scale.X, scale.Y,
+		                                            f_color,
+		                                            align, false)
 		-- increases horizontal offset of string width
 		if mirrored then
-			offset.X = offset.X - coopHUD.HUD.fonts.lua_mini:GetStringWidth(amount_string)
+			offset.X = offset.X - coopHUD.HUD.fonts.lua_mini:GetStringWidth(amount_string) * scale.X
 		else
-			offset.X = offset.X + coopHUD.HUD.fonts.lua_mini:GetStringWidth(amount_string)
+			offset.X = offset.X + coopHUD.HUD.fonts.lua_mini:GetStringWidth(amount_string) * scale.X
 		end
 		-- increases vertical offset of max of string base height and last icon offset
-		offset.Y = math.max(offset.Y, coopHUD.HUD.fonts.lua_mini:GetBaselineHeight())
+		offset.Y = math.max(offset.Y, coopHUD.HUD.fonts.lua_mini:GetBaselineHeight() * scale.Y)
 		-- STAT.Diff - render
 		if self.diff then
 			local dif_color = KColor(0, 1, 0, 0.7) -- green
@@ -153,27 +158,30 @@ function coopHUD.Stat:render(pos, mirrored, vertical, only_num,color_alpha)
 			local diff_off = Vector(0, 0)
 			local diff_pos = Vector(init_pos.X, init_pos.Y)
 			align = 0
-			if vertical then -- in case of verticals stats - used in deals in coopHUD position setting
+			if vertical then
+				-- in case of verticals stats - used in deals in coopHUD position setting
 				if self.sprite then
-					diff_pos.X = diff_pos.X + 12 -- increments if pos if has sprite
+					diff_pos.X = diff_pos.X + 12 * scale.X -- increments if pos if has sprite
 				end
-				diff_pos.Y = diff_pos.Y - coopHUD.HUD.fonts.lua_mini:GetBaselineHeight()
-				offset.Y = offset.Y + coopHUD.HUD.fonts.lua_mini:GetBaselineHeight() / 2
+				diff_pos.Y = diff_pos.Y - coopHUD.HUD.fonts.lua_mini:GetBaselineHeight() * scale.Y
+				offset.Y = offset.Y + (coopHUD.HUD.fonts.lua_mini:GetBaselineHeight() / 2) * scale.Y
 			else
 				diff_pos.X = diff_pos.X + offset.X -- adds normal stat string and icon offset to base pos
-				offset.X = offset.X + coopHUD.HUD.fonts.lua_mini:GetStringWidth(dif_string) -- adds proper
+				offset.X = offset.X + coopHUD.HUD.fonts.lua_mini:GetStringWidth(dif_string) * scale.X -- adds proper
 			end
 			if mirrored then
-				diff_pos.X = diff_pos.X - 2 -- makes margin between text
+				diff_pos.X = diff_pos.X - 2 * scale.X -- makes margin between text
 				align = 1
 			else
-				diff_pos.X = diff_pos.X + 2 -- makes margin between text
+				diff_pos.X = diff_pos.X + 2 * scale.X-- makes margin between text
 			end
-			coopHUD.HUD.fonts.lua_mini:DrawString(dif_string,
-			                                      diff_pos.X,
-			                                      diff_pos.Y,
-			                                      dif_color,
-			                                      align, false)
+			coopHUD.HUD.fonts.lua_mini:DrawStringScaled(dif_string,
+			                                            diff_pos.X,
+			                                            diff_pos.Y,
+			                                            scale.X,
+			                                            scale.Y,
+			                                            dif_color,
+			                                            align, false)
 			self.diff_counter = self.diff_counter + 1
 			if self.diff_counter > 200 then
 				self.diff_counter = 0
@@ -328,22 +336,22 @@ end
 function coopHUD.Stat:getOffset(vertical)
 	local offset = Vector(0, 0)
 	if self.sprite then
-		offset.X = offset.X + 16
-		offset.Y = offset.Y + 16
+		offset.X = offset.X + 16 * coopHUD.options.hud_scale
+		offset.Y = offset.Y + 16 * coopHUD.options.hud_scale
 	end
 	if self.amount then
 		local amount_string = string.format("%.2f", self.amount)
-		offset.X = offset.X + coopHUD.HUD.fonts.lua_mini:GetStringWidth(amount_string)
-		offset.Y = math.max(offset.Y, coopHUD.HUD.fonts.lua_mini:GetBaselineHeight())
+		offset.X = offset.X + coopHUD.HUD.fonts.lua_mini:GetStringWidth(amount_string) * coopHUD.options.hud_scale
+		offset.Y = math.max(offset.Y, coopHUD.HUD.fonts.lua_mini:GetBaselineHeight()* coopHUD.options.hud_scale)
 		if self.diff then
 			local dif_string = string.format("%.1f", self.diff)
 			if self:getAttitude() then
 				dif_string = '+' .. dif_string
 			end
 			if vertical then
-				offset.Y = offset.Y + coopHUD.HUD.fonts.lua_mini:GetBaselineHeight() / 2
+				offset.Y = offset.Y + (coopHUD.HUD.fonts.lua_mini:GetBaselineHeight() / 2) * coopHUD.options.hud_scale
 			else
-				--offset.X = offset.X + coopHUD.HUD.fonts.lua_mini:GetStringWidth(dif_string)
+				offset.X = offset.X + coopHUD.HUD.fonts.lua_mini:GetStringWidth(dif_string) * coopHUD.options.hud_scale
 			end
 		end
 	end
