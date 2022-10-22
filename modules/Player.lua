@@ -278,7 +278,7 @@ function coopHUD.Player.renderPockets(self, pos, mirrored, scl, down_anchor)
 		else
 			temp_pos.Y = temp_pos.Y + math.max(trinket_off.Y, pocket_off.Y)
 		end
-		inv_off = self.inventory:render(temp_pos, mirrored, down_anchor)
+		inv_off = self.inventory:render(temp_pos, mirrored, scale, down_anchor)
 	end
 	--
 	local offset = Vector(0, 0)

@@ -1,5 +1,6 @@
 ---@class coopHUD.Inventory
 ---@param parent coopHUD.Player
+---@field sprite Sprite
 ---@type coopHUD.Inventory | fun(parent:coopHUD.Player):coopHUD.Inventory
 ---@return coopHUD.Inventory
 coopHUD.Inventory = {}
@@ -22,59 +23,60 @@ function coopHUD.Inventory.new(parent)
 	return self
 end
 --- Renders item sprite in current position
+---@param self coopHUD.Inventory
 ---@param pos Vector position where render sprite
 ---@param mirrored boolean change anchor to right corner
 ---@param down_anchor boolean change anchor to down corner
 ---@return Vector offset where render next sprite
-function coopHUD.Inventory:render(pos, mirrored, down_anchor)
+function coopHUD.Inventory.render(self, pos, mirrored, scale, down_anchor)
 	local temp_pos = Vector(pos.X, pos.Y)
-	local sprite_pivot = Vector(8, 8)
+	local sprite_pivot = Vector(8, 8) * scale
 	--
 	if self.parent.entPlayer:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
 		self.max_collectibles = 12
 	else
 		self.max_collectibles = 8
 	end
-
 	--
 	if mirrored then
 		sprite_pivot.X = sprite_pivot.X * -1
 	end
 	if down_anchor then
-		temp_pos.Y = temp_pos.Y - 16
+		temp_pos.Y = temp_pos.Y - 16 * scale.Y
 		sprite_pivot.Y = sprite_pivot.Y * -1
 	else
-		temp_pos.Y = temp_pos.Y + 8
+		temp_pos.Y = temp_pos.Y
 	end
 	for i = 1, self.max_collectibles do
 		if i == 1 then
 			self.sprite.Color = Color(1, 1, 1, 1)
+			self.sprite.Scale = scale
 			self.sprite:RenderLayer(1, temp_pos + sprite_pivot)
 		end
 		local off
 		if self.parent.collectibles[i] then
 			off = self.parent.collectibles[i]:render(Vector(temp_pos.X, temp_pos.Y), mirrored,
-			                                         Vector(0.5, 0.5), down_anchor)
+			                                         Vector(0.5, 0.5) * scale, down_anchor)
 			temp_pos.X = temp_pos.X + off.X * 0.75
 		else
 			self.sprite.Color = Color(1, 1, 1, 0.5)
 			self.sprite:RenderLayer(0, temp_pos + sprite_pivot)
 			if mirrored then
-				temp_pos.X = temp_pos.X - 12
+				temp_pos.X = temp_pos.X - 12 * scale.X
 			else
-				temp_pos.X = temp_pos.X + 12
+				temp_pos.X = temp_pos.X + 12 * scale.X
 			end
 		end
 		if self.max_collectibles / i == 2 then
 			temp_pos = Vector(pos.X, pos.Y)
 			if down_anchor then
-				temp_pos.Y = temp_pos.Y - 16
+				temp_pos.Y = temp_pos.Y - 16 * scale.Y
 			end
-			temp_pos.Y = temp_pos.Y + 16
+			temp_pos.Y = temp_pos.Y + 16 * scale.Y
 		end
 	end
 	--
-	local offset = Vector(12 * self.max_collectibles, 32)
+	local offset = Vector((12 * scale.X) * self.max_collectibles / 2, 32 * scale.Y)
 	if mirrored then offset.X = offset.X * -1 end
 	if down_anchor then offset.Y = offset.Y * -1 end
 	return offset
