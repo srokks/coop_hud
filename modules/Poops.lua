@@ -22,7 +22,8 @@ function coopHUD.Poop.new(entPlayer, slot)
 	self.dim = (self.slot < self.entPlayer:GetPoopMana())
 	return self
 end
-function coopHUD.Poop:getSprite()
+---@param self coopHUD.Poop
+function coopHUD.Poop.getSprite(self)
 	local layer_name = 'IdleSmall'
 	if self.slot == 0 then layer_name = 'Idle' end
 	local sprite = Sprite()
@@ -35,7 +36,8 @@ function coopHUD.Poop:getSprite()
 	end
 	return sprite
 end
-function coopHUD.Poop:render(pos, mirrored, scale, down_anchor)
+---@param self coopHUD.Poop
+function coopHUD.Poop.render(self, pos, mirrored, scale, down_anchor)
 	local poop_pos = Vector(pos.X, pos.Y)
 	local offset = Vector(0, 0)
 	local sprite_scale = scale
@@ -66,7 +68,8 @@ function coopHUD.Poop:render(pos, mirrored, scale, down_anchor)
 	end
 	return offset
 end
-function coopHUD.Poop:update()
+---@param self coopHUD.Poop
+function coopHUD.Poop.update(self)
 	if self.dim ~= (self.slot >= self.entPlayer:GetPoopMana()) then
 		self.dim = (self.slot >= self.entPlayer:GetPoopMana())
 		self.sprite = self:getSprite()
@@ -100,21 +103,22 @@ function coopHUD.PoopsTable.new(entPlayer)
 	return self
 end
 --- Renders poops spells  modules in current position
+---@param self coopHUD.PoopsTable
 ---@param pos Vector position where render sprite
 ---@param mirrored boolean change anchor to right corner
 ---@param scale Vector scale of sprite
 ---@param down_anchor boolean change anchor to down corner
 ---@return Vector offset where render next sprite
-function coopHUD.PoopsTable:render(pos, mirrored, scale, down_anchor)
+function coopHUD.PoopsTable.render(self, pos, mirrored, scale, down_anchor)
 	local init_pos = Vector(pos.X, pos.Y)
 	local off = Vector(0, 0)
 	local offset = Vector(0, 0)
 	for i = 0, PoopSpellType.SPELL_QUEUE_SIZE - 1, 1 do
 		if i == 1 then
 			if down_anchor then
-				init_pos.Y = init_pos.Y - 8
+				init_pos.Y = init_pos.Y - 8 * scale.X
 			else
-				init_pos.Y = init_pos.Y + 8
+				init_pos.Y = init_pos.Y + 8 * scale.Y
 			end
 		end
 		off = self.poops[i]:render(Vector(init_pos.X, init_pos.Y), mirrored, scale, down_anchor)
@@ -124,7 +128,8 @@ function coopHUD.PoopsTable:render(pos, mirrored, scale, down_anchor)
 	offset.X = init_pos.X - pos.X
 	return offset
 end
-function coopHUD.PoopsTable:update()
+---@param self coopHUD.PoopsTable
+function coopHUD.PoopsTable.update(self)
 	if self.poop_mana ~= self.entPlayer:GetPoopMana() then
 		self.poop_mana = self.entPlayer:GetPoopMana()
 	end
