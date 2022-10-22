@@ -84,17 +84,17 @@ function coopHUD.HUD.render()
 		temp_pos.X = temp_pos.X - coopHUD.HUD.poop:getOffset().X / 2
 		temp_pos.X = temp_pos.X - coopHUD.HUD.beth:getOffset().X / 2
 		temp_pos.X = temp_pos.X - coopHUD.HUD.t_beth:getOffset().X / 2
-		offset = coopHUD.HUD.coins:render(temp_pos)
+		offset = coopHUD.HUD.coins:render(temp_pos,false,scale)
 		temp_pos.X = temp_pos.X + offset.X
-		offset = coopHUD.HUD.bombs:render(temp_pos)
+		offset = coopHUD.HUD.bombs:render(temp_pos,false,scale)
 		temp_pos.X = temp_pos.X + offset.X
-		offset = coopHUD.HUD.poop:render(temp_pos)
+		offset = coopHUD.HUD.poop:render(temp_pos,false,scale)
 		temp_pos.X = temp_pos.X + offset.X
-		offset = coopHUD.HUD.keys:render(temp_pos)
+		offset = coopHUD.HUD.keys:render(temp_pos,false,scale)
 		temp_pos.X = temp_pos.X + offset.X
-		offset = coopHUD.HUD.beth:render(temp_pos)
+		offset = coopHUD.HUD.beth:render(temp_pos,false,scale)
 		temp_pos.X = temp_pos.X + offset.X
-		offset = coopHUD.HUD.t_beth:render(temp_pos)
+		offset = coopHUD.HUD.t_beth:render(temp_pos,false,scale)
 		------ DEALS RENDER
 		if coopHUD.options.deals.show then
 			if not (coopHUD.options.deals.hide_in_battle and coopHUD.signals.on_battle) then
