@@ -333,15 +333,6 @@ function coopHUD.Item.render_items_table(self, mirrored, scale, down_anchor)
 		table.insert(items_table, self.parent.collectibles[i])
 	end
 	--
-	local init_pos = Vector(0, 64)
-	if mirrored then
-		init_pos.X = coopHUD.anchors.bot_right.X - 64
-	else
-		init_pos.X = coopHUD.anchors.bot_left.X
-	end
-	local temp_pos = Vector(init_pos.X, init_pos.Y)
-	--
-
 	-- defines items modules scale and no of colums based on collected collectibles
 	local sprite_scale = Vector(1, 1)
 	local col_no = 2
@@ -360,6 +351,15 @@ function coopHUD.Item.render_items_table(self, mirrored, scale, down_anchor)
 		-- prevention from showing too much items
 		collectibles_stop = #items_table - 51
 	end
+	local init_pos = Vector(0, 64 )
+	if mirrored then
+		init_pos.X = coopHUD.anchors.bot_right.X - 52 * sprite_scale.X * scale.X
+	else
+		init_pos.X = coopHUD.anchors.bot_left.X
+	end
+	local temp_pos = Vector(init_pos.X, init_pos.Y)
+	--
+
 	for i = #items_table, collectibles_stop, -1 do
 		local off = items_table[i]:render(temp_pos, false, sprite_scale * scale, down_anchor, false)
 		temp_pos.X = temp_pos.X + off.X / 1.25
