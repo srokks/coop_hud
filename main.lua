@@ -11,4 +11,4 @@ include('coopHUD_hud.lua')
 include("callbacks.main.lua")
 --
 coopHUD.debug_str('CoopHUD v.' .. tostring(coopHUD.VERSION) .. ' successfully!')
-include("test.lua")
+

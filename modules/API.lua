@@ -66,6 +66,7 @@ function coopHUD.getMinimapOffset()
 	return minimap_offset
 end
 function coopHUD.updateAnchors()
+	--FIXME: error when no MCM installed https://coophud.atlassian.net/browse/COOP-157
 	local offset = ModConfigMenu.Config["General"].HudOffset
 	if offset == nil and ScreenHelper then
 		offset = ScreenHelper.GetOffset()
