@@ -412,22 +412,22 @@ function coopHUD.Player.render(self)
 				-- renders essau collectibles on drop button pressed
 				if #self.essau.collectibles + #self.essau.gulped_trinkets > 0 then
 					coopHUD.Item.render_items_table(coopHUD.Item(self.essau, -1, 0),
-					                                not mirrored)
+					                                not mirrored, scale)
 				end
 			else
 				--renders collectibles on right (like vanilla)
 				coopHUD.Item.render_items_table(coopHUD.Item(self, -1, 0),
-				                                not mirrored)
+				                                not mirrored, scale)
 			end
 		else
 			if self.signals.map_btn then
 				if self.essau and Input.IsActionPressed(ButtonAction.ACTION_DROP, self.controller_index) then
 					if #self.essau.collectibles + #self.essau.gulped_trinkets > 0 then
-						coopHUD.Item.render_items_table(coopHUD.Item(self.essau, -1, 0), mirrored)
+						coopHUD.Item.render_items_table(coopHUD.Item(self.essau, -1, 0), mirrored,scale)
 					end
 				else
 					coopHUD.Item.render_items_table(coopHUD.Item(self, -1, 0),
-					                                mirrored)
+					                                mirrored,scale)
 				end
 			end
 		end

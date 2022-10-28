@@ -318,8 +318,12 @@ function coopHUD.Item.render(self, pos, mirrored, scale, down_anchor, dim)
 end
 --- Renders player collectibles table
 ---@param self coopHUD.Item
+---@param scale Vector
 ---@param mirrored boolean defines which side render true - right / false - left
-function coopHUD.Item.render_items_table(self, mirrored)
+function coopHUD.Item.render_items_table(self, mirrored, scale, down_anchor)
+	if scale == nil then
+		scale = Vector(1,1)
+	end
 	local items_table = { } -- saves parent collectibles to local temp
 	--combines trinkets and collectibles item tables
 	for i = 1, #self.parent.gulped_trinkets do
@@ -337,16 +341,16 @@ function coopHUD.Item.render_items_table(self, mirrored)
 	end
 	local temp_pos = Vector(init_pos.X, init_pos.Y)
 	--
-	local down_anchor = false --TODO:from arg
+
 	-- defines items modules scale and no of colums based on collected collectibles
-	local scale = Vector(1, 1)
+	local sprite_scale = Vector(1, 1)
 	local col_no = 2
 	if #items_table > 10 then
-		scale = Vector(0.625, 0.625)
+		sprite_scale = Vector(0.625, 0.625)
 		col_no = 3
 	end
 	if #items_table > 24 then
-		scale = Vector(0.5, 0.5)
+		sprite_scale = Vector(0.5, 0.5)
 		col_no = 4
 	end
 	--
@@ -357,7 +361,7 @@ function coopHUD.Item.render_items_table(self, mirrored)
 		collectibles_stop = #items_table - 51
 	end
 	for i = #items_table, collectibles_stop, -1 do
-		local off = items_table[i]:render(temp_pos, false, scale, down_anchor, false)
+		local off = items_table[i]:render(temp_pos, false, sprite_scale * scale, down_anchor, false)
 		temp_pos.X = temp_pos.X + off.X / 1.25
 		if temp_index % col_no == 0 then
 			temp_pos.X = init_pos.X
