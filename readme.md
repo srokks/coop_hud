@@ -14,13 +14,13 @@ This mod renders active items/pocket/trinkets in proper position for coop game u
 
 * Renders actives/hearts/trinkets/pockets in proper and readable position for up to 4 players (8 characters max)
 * Colorfully player sprites/text infos
-* Shows pockets/pills/card names
+* Show pockets/pills/card names
 * Shows health bar with Mantle Indicator for all players
 * Vanilla like prompts (using cards/ pills/ active items/ transformations ) with color of player
 * Stats - just like vanilla FoundHUD stat display:
   * Show stats up to 4 players on screen
   * Highlight on map button
-  * Stats colors
+  * Stat colors
 * Hide stats on battle function
 * Angel/Devil/Planetarium chances - with customizable positions
 * ExtraHUD - just like vanilla collectibles list:
@@ -43,7 +43,7 @@ This mod renders active items/pocket/trinkets in proper position for coop game u
 
 coopHUD lack of couple things like boss bars or minimap. For best experience use below mods.
 
-* mod options: [Mod Config Menu - Continued](https://steamcommunity.com/workshop/filedetails/?id=2487535818)
+* mod options: [Mod Config Menu - Continued](https://steamcommunity.com/workshop/filedetails/?id=2487535818) or [Mod Config Menu - Pure](https://steamcommunity.com/sharedfiles/filedetails/?id=2681875787)
   My mod should override MiniMAPI settings:
   * General -> Display on No HUD seed - On
   * Map (1) - > Show map effect icons - Off
@@ -52,21 +52,22 @@ coopHUD lack of couple things like boss bars or minimap. For best experience use
 
 ## Planned features/not working:
 
-* Placebo/ Mimic Card/ Clear rune - lack of custom charges ammount
-* D Infinity - lack of item sprite shift logic
 * RunInfo: No Achievement/Hard Mode/Victory Laps
 * Waves info: Greed Waves,Gideon Waves
 * Modded cards/pills
 * Modded characters head indicator
+* Fiend Folio 
 
 ## Known bugs:
 * Custom challenge destination indicator
-* Bag of crafting - sometimes collects wrong pickup info for hud
+* Bag of crafting - when collecting couple items at once, they might get added in invalid order. Might mess crafting result
+* Fortune Teller notes/ Rules streak info are not showing - no api function to catch that
 * Gideon Waves: cannot get current gideon wave
 * Jacob & Essau: player info covers stats when too many things
 * On full discovered large map covers - stats/timer
 * Urn of soul - cannot get souls from game API, only opened/closed sprite indicator - [PERM]
-* T. Samson - no player color change on Rage growing
+* For 2nd player when map button pressed theres weird position loop (miniApi bug)
+* T.???:Poop spells not visible when have second pocket
 
 ## Mods compatibility:
 
@@ -86,25 +87,15 @@ coopHUD lack of couple things like boss bars or minimap. For best experience use
 
 ### Whats new
 
-### v.8.6:
+### v.8.7:
 
-* Implemented custom item charge/var data for due lack of VarData API functions:
-  * Placebo - on use set max charge based on held pill
-  * Blank card - on use set max charge based on held card
-  * Clear rune  - on use set max charge based on held rune 
-  * D Infinity - shift dices with Drop button/ max charge based on form on use
-  * Jar of Wisps - manually set sprite on item use
-  * Everything Jar - based on current charge 
-  * Custom charge/form is saved when putting down on pedestal - based on item  and current room so might get messy with multiple instances of item in same room.
-* Fixed sprites for:
-  * Smelter - proper sprite image - same as vanilla
-  * Mama Mega - golden bomb indicator
-  * Glowing Hour Glass - empty hourglass when unloaded
-* Fixed API:getMinimapOffset - nil call error
-* Fixed signal battle in challenge room
-* Fixed render positions based on mod config offset
-* Deals - fixed position for vanilla setting
-* Bigger stat and difference span
+* Code reorganizing
+* Fixed transformation strings now in proper language 
+* Bag of Crafting - better crafting logic (it tends to craft in mod but not in game)
+* Tainted Samson - player color intensity will increase when Samson gains Berserk, no color for unloaded berserk
+* Added check for pickup items (from pedestals or crafting) - wont add item when messed up crafting result
+* HUD scaling - you can set custom HUD scale in settings
+
 </div>
 <div id="screens">
 
