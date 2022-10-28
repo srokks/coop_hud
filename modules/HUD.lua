@@ -155,7 +155,7 @@ function coopHUD.HUD.render()
 		if coopHUD.options.timer_always_on or coopHUD.signals.map then
 			coopHUD.HUD.fonts.pft:DrawStringScaled(time_string,
 			                                       middle_bot_anchor.X, 0,
-			                                       1, 1,
+			                                       scale.X, scale.Y,
 			                                       f_col, 1, true)
 			timer_offset.Y = coopHUD.HUD.fonts.upheaval:GetBaselineHeight()
 			if coopHUD.options.show_run_info then
