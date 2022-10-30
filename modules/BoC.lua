@@ -1,5 +1,8 @@
 local anim_path = "gfx/ui/ui_crafting.anm2"
 ---@class coopHUD.BoC
+---@field Result coopHUD.BoC.Item
+---@field Unknown coopHUD.BoC.Item
+---@field EmptyItem coopHUD.BoC.Item
 ---@field Item fun(id:number):coopHUD.BoC.Item
 ---@type coopHUD.BoC
 coopHUD.BoC = {}
@@ -155,15 +158,20 @@ end
 function coopHUD.BoC.Item:render(pos, mirrored, scale, down_anchor, dim)
 	local temp_pos = Vector(pos.X + 4, pos.Y + 4)
 	local off = Vector(0, 0)
-	local pivot = Vector(10, 10)
+	local pivot = Vector(10 * scale.X, 10 * scale.Y)
+	local render_scale = scale
+	if render_scale == nil then
+		render_scale = Vector(1, 1)
+	end
 	if mirrored then
 	end
 	if down_anchor then
-		temp_pos.Y = temp_pos.Y - 10
+		temp_pos.Y = temp_pos.Y - 10 * scale
 		pivot.Y = pivot.Y * -1
 	end
 	if self.sprite then
 		off = off + pivot
+		self.sprite.Scale = render_scale
 		self.sprite:Render(temp_pos)
 	end
 	return off
@@ -174,45 +182,46 @@ end
 ---@param mirrored boolean change anchor to right corner
 ---@param down_anchor boolean change anchor to down corner
 ---@return Vector offset where render next sprite
-function coopHUD.BoC:render(player, pos, mirrored, down_anchor)
-	local init_pos = Vector(pos.X, pos.Y + 2)
-	if down_anchor then
-		init_pos.Y = init_pos.Y - 22
-	end
+function coopHUD.BoC:render(player, pos, mirrored, scale, down_anchor)
+	local sprite_scale = scale
+	local init_pos = Vector(pos.X, pos.Y + 2 * sprite_scale.Y)
 	if mirrored then
-		init_pos.X = init_pos.X - 76
+		init_pos.X = init_pos.X - 76 * sprite_scale.X
+	end
+	if down_anchor then
+		init_pos.Y = init_pos.Y - 22 * sprite_scale.Y
 	end
 	-- renders items
 	local temp_pos = Vector(init_pos.X, init_pos.Y)
 	for i = 1, 8 do
 		if player.bag_of_crafting[i] ~= nil then
-			local off = player.bag_of_crafting[i]:render(temp_pos) -- renders BoC.Item
+			local off = player.bag_of_crafting[i]:render(temp_pos, nil, sprite_scale) -- renders BoC.Item
 			temp_pos.X = temp_pos.X + off.X
 		else
-			local off = coopHUD.BoC.EmptyItem:render(temp_pos) -- renders empty item spot
+			local off = coopHUD.BoC.EmptyItem:render(temp_pos, nil, sprite_scale) -- renders empty item spot
 			temp_pos.X = temp_pos.X + off.X
 		end
 		if i == 4 then
-			temp_pos = Vector(init_pos.X, init_pos.Y + 10)
+			temp_pos = Vector(init_pos.X, init_pos.Y + 10 * sprite_scale.Y)
 		end
 	end
 	-- renders result box
 	--TODO: dim when no result item
-	temp_pos = Vector(init_pos.X + 60, init_pos.Y + 6)
-	coopHUD.BoC.Result:render(temp_pos)
+	temp_pos = Vector(init_pos.X + 60 * sprite_scale.X, init_pos.Y + 6 * sprite_scale.Y)
+	coopHUD.BoC.Result:render(temp_pos, nil, sprite_scale)
 	if player.crafting_result ~= nil then
-		temp_pos = Vector(init_pos.X + 48, init_pos.Y - 6)
+		temp_pos = Vector(init_pos.X + 48 * sprite_scale.X, init_pos.Y - 8 * sprite_scale.Y)
 		if mirrored then
-			temp_pos.X = temp_pos.X + 32
+			temp_pos.X = temp_pos.X + 32 * sprite_scale.X
 		end
 		if down_anchor then
-			temp_pos.Y = temp_pos.Y + 32
+			temp_pos.Y = temp_pos.Y + 32 * sprite_scale.Y
 		end
 		if #player.bag_of_crafting == 8 then
-			if Game():GetLevel():GetCurses() >= LevelCurse.CURSE_OF_BLIND then
-				coopHUD.BoC.Unknown:render(temp_pos, mirrored, Vector(1, 1), down_anchor)
+			if Game():GetLevel():GetCurses() & LevelCurse.CURSE_OF_BLIND > 0 then
+				coopHUD.BoC.Unknown:render(temp_pos, mirrored, sprite_scale, down_anchor)
 			else
-				player.crafting_result:render(temp_pos, mirrored, Vector(1, 1), down_anchor)
+				player.crafting_result:render(temp_pos, mirrored, sprite_scale, down_anchor)
 			end
 		end
 	end
@@ -236,6 +245,45 @@ function coopHUD.BoC.update(player)
 		player.crafting_result = coopHUD.Item(player, -1, result)
 	else
 		player.crafting_result = coopHUD.Item(player, -1, 0)
+	end
+	if Input.IsActionPressed(ButtonAction.ACTION_PILLCARD, player.entPlayer.ControllerIndex) then
+		coopHUD.BoC.trackBagHolding(player)
+	end
+end
+local holdCounter = 0  -- held counter for
+local icount = 0  -- item counter for BoC
+---Bag of crafting - tracking crafting logic. Connected to
+---@param player coopHUD.Player
+function coopHUD.BoC.trackBagHolding(player)
+	-- Bag of crafting - creation item logic -- based on External Item Description mod by Wolsauge
+	local isCardHold = Input.IsActionPressed(ButtonAction.ACTION_PILLCARD, player.entPlayer.ControllerIndex)
+	local animationName = player.entPlayer:GetSprite():GetAnimation()
+	if isCardHold and string.match(animationName, "PickupWalk") and #player.bag_of_crafting >= 8 then
+		holdCounter = holdCounter + 1
+		if holdCounter < 30 then
+			icount = player.entPlayer:GetCollectibleCount()
+		end
+	else
+		if isCardHold and holdCounter >= 30 and (string.match(animationName, "Walk") and
+				not string.match(animationName, "Pickup") and
+				(player.entPlayer:GetCollectibleCount() ~= icount)) then
+			player.bag_of_crafting = {}
+			--adds collectible to inventory
+			local item_queue = Isaac.GetItemConfig():GetCollectible(player.crafting_result.id)
+			if item_queue == nil then
+				return
+			else
+				player.temp_item = item_queue
+				player:addItem()
+			end
+			--___Triggers streak info on item pickup
+			coopHUD.Streak(false, coopHUD.Streak.ITEM,
+			               coopHUD.langAPI.getItemNameByID(item_queue.ID),
+			               coopHUD.langAPI.getItemDescByID(item_queue.ID), true,
+			               player.font_color)
+		else
+			holdCounter = 0
+		end
 	end
 end
 --- handles Bag of Crafting recipe calculation

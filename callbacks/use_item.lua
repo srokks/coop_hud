@@ -78,7 +78,7 @@ coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
 coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
                     function(_, collectible_type, rng, entPlayer, use_flags, slot, var_data)
 	                    local player_index = coopHUD.Player.getIndexByControllerIndex(entPlayer.ControllerIndex)
-	                    if entPlayer:GetPlayerType() ~= PlayerType.PLAYER_CAIN_B then
+	                    if entPlayer:GetPlayerType() ~= PlayerType.PLAYER_CAIN_B and slot == 0 then
 		                    if #coopHUD.players[player_index].bag_of_crafting == 8 then
 			                    coopHUD.players[player_index].bag_of_crafting = {}
 		                    end

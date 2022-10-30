@@ -298,12 +298,13 @@ function coopHUD.Item.render(self, pos, mirrored, scale, down_anchor, dim)
 		if self.id == CollectibleType.COLLECTIBLE_BAG_OF_CRAFTING and self.slot == ActiveSlot.SLOT_PRIMARY then
 			--renders bag of crafting result item
 			if self.parent.crafting_result then
-				temp_pos = Vector(pos.X + 5, pos.Y + 8)
+				temp_pos = Vector(pos.X + 5 * sprite_scale.X, pos.Y + 8 * sprite_scale.Y)
 				if down_anchor then temp_pos.Y = temp_pos.Y - 8 end
-				if Game():GetLevel():GetCurses() >= LevelCurse.CURSE_OF_BLIND then
-					coopHUD.BoC.Unknown:render(temp_pos, mirrored, Vector(0.7, 0.7), down_anchor)
+				if Game():GetLevel():GetCurses() & LevelCurse.CURSE_OF_BLIND > 0 then
+					coopHUD.BoC.Unknown:render(temp_pos, mirrored, Vector(0.7, 0.7) * sprite_scale, down_anchor)
 				else
-					self.parent.crafting_result:render(temp_pos, mirrored, Vector(0.7, 0.7), down_anchor, dim)
+					self.parent.crafting_result:render(temp_pos, mirrored, Vector(0.7, 0.7) * sprite_scale, down_anchor,
+					                                   dim)
 				end
 			end
 		end
@@ -317,8 +318,12 @@ function coopHUD.Item.render(self, pos, mirrored, scale, down_anchor, dim)
 end
 --- Renders player collectibles table
 ---@param self coopHUD.Item
+---@param scale Vector
 ---@param mirrored boolean defines which side render true - right / false - left
-function coopHUD.Item.render_items_table(self, mirrored)
+function coopHUD.Item.render_items_table(self, mirrored, scale, down_anchor)
+	if scale == nil then
+		scale = Vector(1,1)
+	end
 	local items_table = { } -- saves parent collectibles to local temp
 	--combines trinkets and collectibles item tables
 	for i = 1, #self.parent.gulped_trinkets do
@@ -328,24 +333,15 @@ function coopHUD.Item.render_items_table(self, mirrored)
 		table.insert(items_table, self.parent.collectibles[i])
 	end
 	--
-	local init_pos = Vector(0, 64)
-	if mirrored then
-		init_pos.X = coopHUD.anchors.bot_right.X - 64
-	else
-		init_pos.X = coopHUD.anchors.bot_left.X
-	end
-	local temp_pos = Vector(init_pos.X, init_pos.Y)
-	--
-	local down_anchor = false --TODO:from arg
 	-- defines items modules scale and no of colums based on collected collectibles
-	local scale = Vector(1, 1)
+	local sprite_scale = Vector(1, 1)
 	local col_no = 2
 	if #items_table > 10 then
-		scale = Vector(0.625, 0.625)
+		sprite_scale = Vector(0.625, 0.625)
 		col_no = 3
 	end
 	if #items_table > 24 then
-		scale = Vector(0.5, 0.5)
+		sprite_scale = Vector(0.5, 0.5)
 		col_no = 4
 	end
 	--
@@ -355,8 +351,17 @@ function coopHUD.Item.render_items_table(self, mirrored)
 		-- prevention from showing too much items
 		collectibles_stop = #items_table - 51
 	end
+	local init_pos = Vector(0, 64 )
+	if mirrored then
+		init_pos.X = coopHUD.anchors.bot_right.X - 52 * sprite_scale.X * scale.X
+	else
+		init_pos.X = coopHUD.anchors.bot_left.X
+	end
+	local temp_pos = Vector(init_pos.X, init_pos.Y)
+	--
+
 	for i = #items_table, collectibles_stop, -1 do
-		local off = items_table[i]:render(temp_pos, false, scale, down_anchor, false)
+		local off = items_table[i]:render(temp_pos, false, sprite_scale * scale, down_anchor, false)
 		temp_pos.X = temp_pos.X + off.X / 1.25
 		if temp_index % col_no == 0 then
 			temp_pos.X = init_pos.X
@@ -448,7 +453,7 @@ function coopHUD.Item.getMaxCharge(self)
 			end
 		end
 		if self.id == CollectibleType.COLLECTIBLE_JAR_OF_WISPS and max_charge == nil then
-				return 0
+			return 0
 		end
 	end
 	return max_charge

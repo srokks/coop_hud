@@ -8,7 +8,7 @@ function coopHUD.getMinimapOffset()
 		local maxy = 0
 		-- NO MAP CHECK
 		if MinimapAPI:GetConfig("DisplayMode") == 4
-				or Game():GetLevel():GetCurses() == LevelCurse.CURSE_OF_THE_LOST then
+				or Game():GetLevel():GetCurses() & LevelCurse.CURSE_OF_THE_LOST > 0 then
 			return minimap_offset
 			-- BOUNDED MAP
 		elseif MinimapAPI:GetConfig("DisplayMode") == 2 then
@@ -66,6 +66,7 @@ function coopHUD.getMinimapOffset()
 	return minimap_offset
 end
 function coopHUD.updateAnchors()
+	--FIXME: error when no MCM installed https://coophud.atlassian.net/browse/COOP-157
 	local offset = ModConfigMenu.Config["General"].HudOffset
 	if offset == nil and ScreenHelper then
 		offset = ScreenHelper.GetOffset()
@@ -196,3 +197,45 @@ function coopHUD.IsNoAchievementRun()
 	end
 	return false
 end
+local json = require("json")
+---Saves coopHUD options and player info
+function coopHUD.save_options()
+	local save = {}
+	save.version = coopHUD.VERSION
+	save.options = coopHUD.options
+	save.players_config = coopHUD.players_config
+	--
+	save.run = {
+		['essau_no']   = coopHUD.essau_no,
+		['angel_seen'] = coopHUD.angel_seen,
+	}
+	--
+	save.run.floor_custom_data = {}
+	for _, varData in pairs(coopHUD.floor_custom_items) do
+		table.insert(save.run.floor_custom_data,
+		             varData)
+	end
+	--
+	local players = {}
+	for i = 1, #coopHUD.players do
+		players[i] = coopHUD.players[i]:getSaveTable()
+	end
+	save.run.players = players
+	coopHUD:SaveData(json.encode(save))
+	Isaac.DebugString('coopHUD settings saved!')
+end
+--- Prints string into in-game console as well to debug log
+---@param str string
+function coopHUD.debug_str(str)
+	print(str)
+	Isaac.DebugString(str)
+end
+if coopHUD:HasData() then
+	local save = json.decode(coopHUD:LoadData())
+	coopHUD.players_config.small[0] = save.players_config.small['0']
+	coopHUD.players_config.small[1] = save.players_config.small['1']
+	coopHUD.players_config.small[2] = save.players_config.small['2']
+	coopHUD.players_config.small[3] = save.players_config.small['3']
+	coopHUD.options = save.options
+end
+
