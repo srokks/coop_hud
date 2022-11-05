@@ -1,6 +1,6 @@
 --- BAG COLLECT LOGIC ---
 -- _____ Modified EID Wolsauge bag of crafting functions
-local pickups_collected = {} -- table of collected pickup indexes, TODO:reset each room
+local pickups_collected = {} -- table of collected pickup indexes, resets each room
 local pickups_just_touched = {} -- flags of pickups a player/pickup-collector has touched, so the bag doesn't think it collected it
 coopHUD:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, function(_, pickup, collider, _)
 	if collider.Type == EntityType.ENTITY_PLAYER or collider.Type == EntityType.ENTITY_FAMILIAR or
@@ -53,4 +53,8 @@ coopHUD:AddCallback(ModCallbacks.MC_POST_PICKUP_UPDATE, function()
 		end
 		pickups_just_touched[pickup.Index] = nil -- resets touched room pickups
 	end
+end)
+coopHUD:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function(_)
+	-- We're using the pickup indexes for quick checking, which reset on each new room
+	pickupsCollected = {}
 end)

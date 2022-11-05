@@ -60,7 +60,8 @@ coopHUD lack of couple things like boss bars or minimap. For best experience use
 
 ## Known bugs:
 * Custom challenge destination indicator
-* Bag of crafting - when collecting couple items at once, they might get added in invalid order. Might mess crafting result
+* Bag of crafting - after 1.7.9 update broke recipe calculation
+* Glowing Hour Glass - after 1.7.9 update broke charges indicator
 * Fortune Teller notes/ Rules streak info are not showing - no api function to catch that
 * Gideon Waves: cannot get current gideon wave
 * Jacob & Essau: player info covers stats when too many things
@@ -87,14 +88,13 @@ coopHUD lack of couple things like boss bars or minimap. For best experience use
 
 ### Whats new
 
-### v.8.7:
+### v.0.8.8:
 
-* Code reorganizing
-* Fixed transformation strings now in proper language 
-* Bag of Crafting - better crafting logic (it tends to craft in mod but not in game)
-* Tainted Samson - player color intensity will increase when Samson gains Berserk, no color for unloaded berserk
-* Added check for pickup items (from pedestals or crafting) - wont add item when messed up crafting result
-* HUD scaling - you can set custom HUD scale in settings
+* added reset settings on mod version change
+* update xml files and lang files to 1.7.9
+* code clean
+
+Full changelog [in here](https://steamcommunity.com/sharedfiles/filedetails/changelog/2731267631)
 
 </div>
 <div id="screens">

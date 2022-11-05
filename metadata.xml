@@ -37,31 +37,29 @@
             [*] Tainted Support
             [list]
                 [*] Tainted Isaac: shows inventory for all 4 players
-                [*] Tainted Maggy: pulsing hearts
-                [*] Tainted ???: show Poop Spells and Hold Spell for all 4 players
-                [*] Tainted Cain: shows Bag of Crafting recipe and crafting for all 4 players
-            [/list]
-            [*] HUD toggle button - adjust in options
-            [*] Bag of Crafting - active item crafting result preview
+        [*] Tainted Maggy: pulsing hearts
+        [*] Tainted ???: show Poop Spells and Hold Spell for all 4 players
+        [*] Tainted Cain: shows Bag of Crafting recipe and crafting for all 4 players
+        [/list]
+        [*] HUD toggle button - adjust in options
+        [*] Bag of Crafting - active item crafting result preview
         [/list]
         [h2]Requirements/ needed mods[/h2]
         coopHUD lack of couple things like boss bars or minimap. For best experience use below mods.
         [list]
-            [*] mod options:  [url=https://steamcommunity.com/workshop/filedetails/?id=2487535818]Mod Config Menu - Continued[/url]  or  [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2681875787]Mod Config Menu - Pure[/url]
+        [*] mod options: [url=https://steamcommunity.com/workshop/filedetails/?id=2487535818]Mod Config Menu -
+        Continued[/url] or [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2681875787]Mod Config Menu -
+        Pure[/url]
         [/list]
         My mod should override MiniMAPI settings:
         [list]
-            [*] General -&gt; Display on No HUD seed - On
-            [*] Map (1) - &gt; Show map effect icons - Off
+        [*] General -&gt; Display on No HUD seed - On
+        [*] Map (1) - &gt; Show map effect icons - Off
         [/list]
-        [/list]
-        My mod should override MiniMAPI settings:
-        [list]
-            [*] General -&gt; Display on No HUD seed - On
-            [*] Map (1) - &gt; Show map effect icons - Off
-        [/list]
-        [*] minimap:  [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1978904635]MiniMAPI: A Minimap API[/url]  from  [url=https://steamcommunity.com/id/Wofsauge]Wofsauge[/url]
-        [*] boss bars:  [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2635267643]Enhanced Boss Bars[/url]  from  [url=https://steamcommunity.com/id/Wofsauge]Wofsauge[/url]
+        [*] minimap: [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1978904635]MiniMAPI: A Minimap
+        API[/url] from [url=https://steamcommunity.com/id/Wofsauge]Wofsauge[/url]
+        [*] boss bars: [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2635267643]Enhanced Boss Bars[/url]
+        from [url=https://steamcommunity.com/id/Wofsauge]Wofsauge[/url]
         [/list]
         [h2]Planned features/not working:[/h2]
         [list]
@@ -74,7 +72,8 @@
         [h2]Known bugs:[/h2]
         [list]
         [*] Custom challenge destination indicator
-        [*] Bag of crafting - when collecting couple items at once, they might get added in invalid order. Might mess crafting result
+        [*] Bag of crafting - after 1.7.9 update broke recipe calculation
+        [*] Glowing Hour Glass - after 1.7.9 update broke charges indicator
         [*] Fortune Teller notes/ Rules streak info are not showing - no api function to catch that
         [*] Gideon Waves: cannot get current gideon wave
         [*] Jacob &amp; Essau: player info covers stats when too many things
@@ -87,28 +86,31 @@
         [list]
         [*] It's compatible with most of modded trinkets and items
         [*] Support modded sprites
-        [*]  [url=https://steamcommunity.com/sharedfiles/filedetails/?id=836319872]External item descriptions[/url]  from  [url=https://steamcommunity.com/id/Wofsauge]Wofsauge[/url]
-        [*]  [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2376005362]Encyclopedia - An In-Game Wiki[/url]  from  [url=https://steamcommunity.com/id/AgentCucco]AgentCucco[/url]
-        [*] Compatible and improving gameplay mods are in my  [url=https://steamcommunity.com/workshop/filedetails/?id=2738883704]collection[/url]
+        [*] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=836319872]External item descriptions[/url] from
+        [url=https://steamcommunity.com/id/Wofsauge]Wofsauge[/url]
+        [*] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2376005362]Encyclopedia - An In-Game Wiki[/url]
+        from [url=https://steamcommunity.com/id/AgentCucco]AgentCucco[/url]
+        [*] Compatible and improving gameplay mods are in my
+        [url=https://steamcommunity.com/workshop/filedetails/?id=2738883704]collection[/url]
         [/list]
         [h2]Thanks to![/h2]
         [list]
-        [*]  [url=https://steamcommunity.com/id/Wofsauge]Wofsauge[/url]  for TBoI API and his mods which helped in developing this one
+        [*] [url=https://steamcommunity.com/id/Wofsauge]Wofsauge[/url] for TBoI API and his mods which helped in
+        developing this one
         [/list]
 
         [h3]Whats new[/h3]
-        [h3]v.8.7:[/h3]
+        [h3]v.0.8.8:[/h3]
         [list]
-            [*] Code reorganizing
-            [*] Fixed transformation strings now in proper language
-            [*] Bag of Crafting - better crafting logic (it tends to craft in mod but not in game)
-            [*] Tainted Samson - player color intensity will increase when Samson gains Berserk, no color for unloaded berserk
-            [*] Added check for pickup items (from pedestals or crafting) - wont add item when messed up crafting result
-            [*] HUD scaling - you can set custom HUD scale in settings
-        [/list]</description>
-    <version>0.8.7</version>
+        [*] added reset settings on mod version change
+        [*] update xml files and lang files to 1.7.9
+        [*] code clean
+        [/list]
+        Full changelog [url=https://steamcommunity.com/sharedfiles/filedetails/changelog/2731267631]in here[/url]
+    </description>
+    <version>0.8.8</version>
     <visibility>Public</visibility>
-    <tag id="Lua" />
-    <tag id="Tweaks" />
-    <tag id="Graphics" />
+    <tag id="Lua"/>
+    <tag id="Tweaks"/>
+    <tag id="Graphics"/>
 </metadata>

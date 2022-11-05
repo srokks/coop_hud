@@ -618,7 +618,7 @@ if ModConfigMenu then
 			return "Sets player position on big hud"
 		end
 	})
-	-- TODO: uptade other anchors on change
+	-- TODO:COOP-61 small hud customizable positions https://coophud.atlassian.net/browse/COOP-61
 	-- DEBUG: until finished only for debuging
 	--[[ModConfigMenu.AddTitle(mod_name, "Positions", 'Small HUD positions')
 	ModConfigMenu.AddSetting(mod_name, "Positions", {

@@ -475,6 +475,7 @@ function coopHUD.BoC.calculateBagOfCrafting(componentsTable)
 	local curSeed = Game():GetSeeds():GetStartSeed()
 	if lastSeedUsed ~= curSeed then
 		lastSeedUsed = curSeed
+		coopHUD.itemUnlockStates = {}
 	end
 	-- ingredients must be sorted by ID for the RNG shifting to be accurate, so make a local copy
 	local components = { table.unpack(componentsTable) }
@@ -642,4 +643,5 @@ function coopHUD.BoC:GameStartCrafting()
 			moddedCrafting = true
 		end
 	end
+	Isaac.DebugString("coopHUD Bag of Crafting initiated! * might be buggy ")
 end
