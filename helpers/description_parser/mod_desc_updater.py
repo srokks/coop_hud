@@ -36,7 +36,7 @@ def prepare_clean_xml_tree():
 
 def get_mod_info_dict(debug=False):
     def get_name():
-        with open('../coopHUD_globals.lua') as f:
+        with open('../../coopHUD_globals.lua') as f:
             version_line = f.readlines(1)[0]
         if 'coopHUD.VERSION' in version_line:
             version_line = version_line.split('=')[1]
@@ -49,7 +49,7 @@ def get_mod_info_dict(debug=False):
             return '', ''
 
     def get_description():
-        with open('../readme.md') as f:
+        with open('../../readme.md') as f:
             markdown_string = f.read()
             soup = BeautifulSoup(markdown_string, 'html.parser')
             markdown_string = soup.find("div", {"id": "description"}).text
@@ -58,7 +58,7 @@ def get_mod_info_dict(debug=False):
         return steam_string
 
     def get_change_log():
-        with open('../readme.md') as f:
+        with open('../../readme.md') as f:
             markdown_string = f.read()
             soup = BeautifulSoup(markdown_string, 'html.parser')
             markdown_string = soup.find("div", {"id": "new-features"}).text
@@ -97,4 +97,4 @@ def update_xml_file(xml_path, debug=False):
 
 
 if __name__ == '__main__':
-    update_xml_file('../metadata.xml', False)
+    update_xml_file('../../metadata.xml', False)
