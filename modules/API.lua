@@ -78,16 +78,16 @@ function coopHUD.updateAnchors()
 		coopHUD.anchors.bot_left = Vector(0, Isaac.GetScreenHeight()) + Vector(offset * 2.2, -offset * 1.6)
 	end
 	if coopHUD.anchors.top_right ~= Vector(coopHUD.getMinimapOffset().X, 0) + Vector(-offset * 2.2,
-	                                                                                 offset * 1.2) then
+			offset * 1.2) then
 		coopHUD.anchors.top_right = Vector(coopHUD.getMinimapOffset().X, 0) + Vector(-offset * 2.2, offset * 1.2)
 	end
 	if coopHUD.anchors.bot_right ~= Vector(Isaac.GetScreenWidth(), Isaac.GetScreenHeight()) + Vector(-offset * 2.2,
-	                                                                                                 -offset * 1.6) then
+			-offset * 1.6) then
 		coopHUD.anchors.bot_right = Vector(Isaac.GetScreenWidth(), Isaac.GetScreenHeight()) + Vector(-offset * 2.2,
-		                                                                                             -offset * 1.6)
+				-offset * 1.6)
 	end
 end
-coopHUD.itemUnlockStates = {} -- holds cache for already unlocked items TODO:reset on seed change
+coopHUD.itemUnlockStates = {} -- holds cache for already unlocked items
 --- Checks if any player has a given collectible ID, if has return also EntityPlayer
 ---Function from External Item Descriptions mod by Wolfsauge - https://steamcommunity.com/sharedfiles/filedetails/?id=83631987
 ---@author Wolfsauge
@@ -229,6 +229,15 @@ end
 function coopHUD.debug_str(str)
 	print(str)
 	Isaac.DebugString(str)
+end
+function coopHUD.is_boc_in_game()
+	for i = 0, Game():GetNumPlayers() - 1 do
+		local player = Isaac.GetPlayer(i)
+		if player:HasCollectible(CollectibleType.COLLECTIBLE_BAG_OF_CRAFTING) then
+			return true, player
+		end
+	end
+	return false
 end
 if coopHUD:HasData() then
 	local save = json.decode(coopHUD:LoadData())
