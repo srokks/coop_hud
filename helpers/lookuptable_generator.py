@@ -2,10 +2,13 @@
 # YOU DONT HAVE TO RUN THIS FILE YOURSELF! THE RESULTING DATA IS SHIPPED WITH THE MOD ALREADY!
 # Script modified from External Item Descriptions mod by Wolfsauge - https://steamcommunity.com/sharedfiles/filedetails/?id=83631987
 import xml.etree.ElementTree as ET
+import argparse
 
-# filePath = "D:\\Programme\\Steam\\steamapps\\common\\The Binding of Isaac Rebirth\\resources-dlc3\\"
-filePath = "C:\\Users\\srokk\\OneDrive\\Isaac\\extracted_resources\\resources-dlc3\\"
-
+parser = argparse.ArgumentParser(
+    description='This tool generates the lookup tables we need to display additional informations.')
+parser.add_argument(dest='path', type=str, help='path to extracted resources-dlc3 directory')
+args = parser.parse_args()
+filePath = args.path
 
 # take second element for sort
 def sortByID(elem):
