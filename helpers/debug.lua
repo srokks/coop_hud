@@ -1,6 +1,6 @@
 function coopHUD.test()
 	if coopHUD.players[1] == nil then
-		coopHUD.on_start(_, truee)
+		coopHUD.on_start(_, true)
 	end
 	-----@type
 	--local str = 'hud_scale: ' .. tostring(coopHUD.options.hud_scale)
