@@ -227,7 +227,7 @@ end
 --- Prints string into in-game console as well to debug log
 ---@param str string
 function coopHUD.debug_str(str)
-	local disp_string = '[coopHUD]:' .. str
+	local disp_string = '[coopHUD]:' .. tostring(str)
 	print(disp_string)
 	Isaac.DebugString(disp_string)
 end
