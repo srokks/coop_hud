@@ -227,8 +227,9 @@ end
 --- Prints string into in-game console as well to debug log
 ---@param str string
 function coopHUD.debug_str(str)
-	print(str)
-	Isaac.DebugString(str)
+	local disp_string = '[coopHUD]:' .. str
+	print(disp_string)
+	Isaac.DebugString(disp_string)
 end
 function coopHUD.is_boc_in_game()
 	for i = 0, Game():GetNumPlayers() - 1 do
@@ -248,7 +249,7 @@ if coopHUD:HasData() then
 		coopHUD.players_config.small[3] = save.players_config.small['3']
 		coopHUD.options = save.options
 	else
-		coopHUD.debug_str('coopHUD updated, settings has been reset')
+		coopHUD.debug_str('mod updated, settings has been reset')
 		coopHUD.save_options()
 	end
 end

@@ -1,3 +1,4 @@
+include('helpers.modded_support.lua')
 ---@class coopHUD
 coopHUD = RegisterMod("Coop HUD", 1)
 ---
@@ -10,5 +11,5 @@ include('modules.main.lua')
 include('coopHUD_hud.lua')
 include("callbacks.main.lua")
 --
-coopHUD.debug_str('CoopHUD v.' .. tostring(coopHUD.VERSION) .. ' successfully!')
+coopHUD.debug_str(' v.' .. tostring(coopHUD.VERSION) .. ' loaded successfully!')
 
