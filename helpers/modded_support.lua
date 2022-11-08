@@ -41,8 +41,9 @@ local function registerModNew(ref, modName, apiVersion)
     if registeredCorrectly then
         if string.match(modName, "Coop HUD") then
             if oldCards ~= nil then
-                Isaac.DebugString('[coopHUD]:restore')
+                Isaac.DebugString('[coopHUD]:restore' .. modName)
                 ref.modded_cards = oldCards
+                oldCards = nil
             else
                 ref.modded_cards = {}
             end
