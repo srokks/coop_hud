@@ -24,6 +24,7 @@ end
 --[[ -- Prevention from deleting previously loaded card info on manual mod reload
 oldCards = nil
 if coopHUD and coopHUD.modded_cards ~= nil then
+    ---@type modded_cards_data[]
     oldCards = coopHUD.modded_cards
 end
 --]]

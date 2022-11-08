@@ -71,8 +71,13 @@ function coopHUD.Pocket.getSprite(self)
 	local sprite = Sprite()
 	if self.type == coopHUD.Pocket.CARD then
 		-- Card
-		sprite:Load(coopHUD.Pocket.card_anim_path, true)
-		sprite:SetFrame("CardFronts", self.id) -- sets card frame
+		if coopHUD.modded_cards[self.id] then
+			sprite:Load(coopHUD.modded_cards[self.id].path, true)
+			sprite:SetFrame(coopHUD.modded_cards[self.id].animName, 0) -- sets card frame
+		else
+			sprite:Load(coopHUD.Pocket.card_anim_path, true)
+			sprite:SetFrame("CardFronts", self.id) -- sets card frame
+		end
 	elseif self.type == coopHUD.Pocket.PILL then
 		-- Pill
 		if self.id > 2048 then self.id = self.id - 2048 end -- check if its horse pill and change id to normal

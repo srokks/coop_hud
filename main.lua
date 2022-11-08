@@ -1,5 +1,8 @@
 include('helpers.modded_support.lua')
 ---@class coopHUD
+---@field modded_cards modded_cards_data[]
+
+---@type coopHUD
 coopHUD = RegisterMod("Coop HUD", 1)
 ---
 include("coopHUD_globals.lua")
