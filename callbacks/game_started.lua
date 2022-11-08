@@ -27,6 +27,12 @@ function coopHUD.on_start(_, cont)
     if coopHUD.is_boc_in_game() then
         coopHUD.BoC.GameStartCrafting()
     end
+    -- Triggers mod config menu update due loading after
+    if coopHUD.mcm ~= true then
+        coopHUD.debug_str(' mcm')
+        coopHUD.add_mcm_entries()
+        coopHUD.mcm = true
+    end
     --
     coopHUD.angel_seen = false -- resets angel seen state on restart
     if cont then

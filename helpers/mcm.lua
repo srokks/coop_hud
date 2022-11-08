@@ -1,18 +1,19 @@
-if ModConfigMenu then
-	local mod_name = "Coop HUD"
-	--= DEBUG: Used to reset the config, remove on retail.
-	local categoryToChange = ModConfigMenu.GetCategoryIDByName(mod_name)
-	if categoryToChange then
-		ModConfigMenu.MenuData[categoryToChange] = {}
-		ModConfigMenu.MenuData[categoryToChange].Name = tostring(mod_name)
-		ModConfigMenu.MenuData[categoryToChange].Subcategories = {}
-	end
-	ModConfigMenu.UpdateCategory(mod_name, {
-		Info = {
-			"coopHUD Settings.",
-		}
-	})
-	--xw
+function coopHUD.add_mcm_entries()
+	if ModConfigMenu then
+		local mod_name = "Coop HUD"
+		--[[ = DEBUG: Used to reset the config, remove on retail.
+        local categoryToChange = ModConfigMenu.GetCategoryIDByName(mod_name)
+        if categoryToChange then
+            ModConfigMenu.MenuData[categoryToChange] = {}
+            ModConfigMenu.MenuData[categoryToChange].Name = tostring(mod_name)
+            ModConfigMenu.MenuData[categoryToChange].Subcategories = {}
+        end
+        ModConfigMenu.UpdateCategory(mod_name, {
+            Info = {
+                "coopHUD Settings.",
+            }
+        })
+        --]]
 	ModConfigMenu.AddSpace(mod_name, "Info")
 	ModConfigMenu.AddText(mod_name, "Info", mod_name)
 	ModConfigMenu.AddSpace(mod_name, "Info")
@@ -641,4 +642,5 @@ if ModConfigMenu then
 			return "Sets player position on small hud"
 		end
 	})]]
+	end
 end
