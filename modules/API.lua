@@ -67,8 +67,12 @@ function coopHUD.getMinimapOffset()
 end
 function coopHUD.updateAnchors()
 	--FIXME: error when no MCM installed https://coophud.atlassian.net/browse/COOP-157
-	local offset = ModConfigMenu.Config["General"].HudOffset
+	local offset = Options.HUDOffset * 10
+	if ModConfigMenu then
+		offset = ModConfigMenu.Config["General"].HudOffset
+	end
 	if offset == nil and ScreenHelper then
+		coopHUD.debug_str(offset)
 		offset = ScreenHelper.GetOffset()
 	end
 	if coopHUD.anchors.top_left ~= Vector.Zero + Vector(offset * 2, offset * 1.2) then
