@@ -230,10 +230,12 @@ function coopHUD.save_options()
 end
 --- Prints string into in-game console as well to debug log
 ---@param str string
-function coopHUD.debug_str(str)
+function coopHUD.debug_str(str,only_debug)
 	local disp_string = '[coopHUD]:' .. tostring(str)
-	print(disp_string)
 	Isaac.DebugString(disp_string)
+	if not only_debug then
+		print(disp_string)
+	end
 end
 function coopHUD.is_boc_in_game()
 	for i = 0, Game():GetNumPlayers() - 1 do

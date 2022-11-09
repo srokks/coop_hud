@@ -27,9 +27,9 @@ function coopHUD.on_start(_, cont)
     if coopHUD.is_boc_in_game() then
         coopHUD.BoC.GameStartCrafting()
     end
-    -- Triggers mod config menu update due loading after
+    -- Triggers mod config menu update due higher load priority
     if coopHUD.mcm ~= true then
-        coopHUD.debug_str(' mcm')
+        coopHUD.debug_str(' post load mcm entries loading',true)
         coopHUD.add_mcm_entries()
         coopHUD.mcm = true
     end
