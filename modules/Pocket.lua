@@ -80,7 +80,9 @@ function coopHUD.Pocket.getSprite(self)
 		end
 	elseif self.type == coopHUD.Pocket.PILL then
 		-- Pill
-		if self.id > 2048 then self.id = self.id - 2048 end -- check if its horse pill and change id to normal
+		if self.id > 2048 then
+			self.id = self.id - 2048 + 14
+		end -- check if its horse pill and change id to normal
 		sprite:Load(coopHUD.Pocket.pill_anim_path, true)
 		sprite:SetFrame("Pills", self.id) --sets frame to pills with correct id
 	else
