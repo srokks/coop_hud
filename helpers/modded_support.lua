@@ -43,7 +43,6 @@ local function registerModNew(ref, modName, apiVersion)
             if oldCards ~= nil then
                 Isaac.DebugString('[coopHUD]:restore' .. modName)
                 ref.modded_cards = oldCards
-                oldCards = nil
             else
                 ref.modded_cards = {}
             end
