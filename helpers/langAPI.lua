@@ -24,16 +24,28 @@ end
 ---@return string
 function langAPI.getItemNameByID(id)
 	local name = Isaac.GetItemConfig():GetCollectible(id).Name
-	name = string.sub(name, 2) --  get rid of # on front of
-	return langAPI.table.category.Items[name][langAPI.lang_index]
+	if string.sub(name, 0, 1) == "#" then
+		-- if begins with # get name from api
+		name = string.sub(name, 2) --  get rid of # on front of
+		return langAPI.table.category.Items[name][langAPI.lang_index]
+	else
+		-- else means modded item
+		return name
+	end
 end
 ---Returns item description based on given code id
 ---@param id number
 ---@return string
 function langAPI.getItemDescByID(id)
 	local desc = Isaac.GetItemConfig():GetCollectible(id).Description
-	desc = string.sub(desc, 2) --  get rid of # on front of
-	return langAPI.table.category.Items[desc][langAPI.lang_index]
+	if string.sub(desc, 0, 1) == "#" then
+		-- if begins with # get name from api
+		desc = string.sub(desc, 2) --  get rid of # on front of
+		return langAPI.table.category.Items[desc][langAPI.lang_index]
+	else
+		-- else means modded item
+		return desc
+	end
 end
 ---Returns pocket name/description based on code name
 ---@private
