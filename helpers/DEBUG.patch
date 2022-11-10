@@ -1,0 +1,80 @@
+Index: helpers/modded_support.lua
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/helpers/modded_support.lua b/helpers/modded_support.lua
+--- a/helpers/modded_support.lua	(revision 4c9bd2ff756257c7cfb124d044b8ed0e051395f8)
++++ b/helpers/modded_support.lua	(date 1668023059992)
+@@ -21,7 +21,7 @@
+     end
+     return id
+ end
+---[[ -- Prevention from deleting previously loaded card info on manual mod reload
++---[[ -- Prevention from deleting previously loaded card info on manual mod reload
+ oldCards = nil
+ if coopHUD and coopHUD.modded_cards ~= nil then
+     ---@type modded_cards_data[]
+Index: helpers/mcm.lua
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/helpers/mcm.lua b/helpers/mcm.lua
+--- a/helpers/mcm.lua	(revision 4c9bd2ff756257c7cfb124d044b8ed0e051395f8)
++++ b/helpers/mcm.lua	(date 1668023048798)
+@@ -1,7 +1,7 @@
+ function coopHUD.add_mcm_entries()
+ 	if ModConfigMenu then
+ 		local mod_name = "Coop HUD"
+-		--[[ = DEBUG: Used to reset the config, remove on retail.
++		---[[ = DEBUG: Used to reset the config, remove on retail.
+         local categoryToChange = ModConfigMenu.GetCategoryIDByName(mod_name)
+         if categoryToChange then
+             ModConfigMenu.MenuData[categoryToChange] = {}
+Index: metadata.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/metadata.xml b/metadata.xml
+--- a/metadata.xml	(revision 4c9bd2ff756257c7cfb124d044b8ed0e051395f8)
++++ b/metadata.xml	(date 1668023018305)
+@@ -1,8 +1,8 @@
+ <?xml version='1.0' encoding='UTF-8'?>
+ <metadata>
+-    <name> coopHUD</name>
++    <name> coopHUD *DEV*</name>
+     <directory>coopHUD</directory>
+-    <id>2731267631</id>
++    <id>0</id>
+     <description>
+         [h1]Coop HUD - proper HUD for coop Isaac[/h1]
+         This mod renders active items/pocket/trinkets in proper position for coop game up to 4 players.
+Index: main.lua
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/main.lua b/main.lua
+--- a/main.lua	(revision 4c9bd2ff756257c7cfb124d044b8ed0e051395f8)
++++ b/main.lua	(date 1668019385233)
+@@ -16,3 +16,4 @@
+ --
+ coopHUD.debug_str(' v.' .. tostring(coopHUD.VERSION) .. ' loaded successfully!')
+ 
++include("helpers.debug.lua")
+Index: coopHUD_globals.lua
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/coopHUD_globals.lua b/coopHUD_globals.lua
+--- a/coopHUD_globals.lua	(revision 4c9bd2ff756257c7cfb124d044b8ed0e051395f8)
++++ b/coopHUD_globals.lua	(date 1668027078712)
+@@ -1,4 +1,4 @@
+-coopHUD.VERSION = '0.8.8-WIP'
++coopHUD.VERSION = 'DEV'
+ coopHUD.showExtraInfo = false
+ coopHUD.HUD_table = {}
+ coopHUD.signals = {
