@@ -353,7 +353,7 @@ function coopHUD.Item.render_items_table(self, mirrored, scale, down_anchor)
 	end
 	local init_pos = Vector(0, 64 )
 	if mirrored then
-		init_pos.X = coopHUD.anchors.bot_right.X - 52 * sprite_scale.X * scale.X
+		init_pos.X = coopHUD.anchors.bot_right.X - 52 * scale.X
 	else
 		init_pos.X = coopHUD.anchors.bot_left.X
 	end
