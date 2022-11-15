@@ -112,3 +112,18 @@ end
 function draw_on_screen(str, pos_x, pos_y)
 	coopHUD.HUD.fonts.lua_mini_lined:DrawString(tostring(str), pos_x, pos_y, KColor(1, 1, 1, 1), 0, false)
 end
+
+---Adds dummy collectibles to test render of collectibles
+---@param player coopHUD.Player
+---@param no number|1
+function add_dummy_collectibles(player, no)
+	if no == nil then no = 1 end
+	for i = 1, no do
+		local item_id = math.random(1, Isaac.GetItemConfig():GetCollectibles().Size - 1)
+		coopHUD.debug_str('Added dummy item: ' .. coopHUD.langAPI.getItemNameByID(item_id) .. ' to player ' .. player.game_index,
+		                  true)
+		table.insert(player.collectibles,
+		             coopHUD.Item(player, -1,
+		                          item_id))
+	end
+end
