@@ -474,6 +474,7 @@ function coopHUD.BoC.calculateBagOfCrafting(componentsTable)
 	-- Refresh seed on differ
 	local curSeed = Game():GetSeeds():GetStartSeed()
 	if lastSeedUsed ~= curSeed then
+		coopHUD.debug_str('BoC:seed reset', true)
 		lastSeedUsed = curSeed
 		coopHUD.itemUnlockStates = {}
 	end
@@ -612,7 +613,7 @@ function coopHUD.BoC:GameStartCrafting()
 	for i = 1, xml_data.XMLMaxItemID do
 		local item = Isaac.GetItemConfig():GetCollectible(i)
 		if item ~= nil then
-			CraftingItemQualities[item.ID] = item.Quality
+			CraftingItemQualities[item.ID] = item.CraftingQuality or item.Quality
 		end
 	end
 	if not coopHUD.PlayersHaveCollectible(CollectibleType.COLLECTIBLE_TMTRAINER) then
@@ -623,7 +624,7 @@ function coopHUD.BoC:GameStartCrafting()
 			local coll = Isaac.GetItemConfig():GetCollectible(CraftingMaxItemID + 1)
 			while coll ~= nil do
 				CraftingMaxItemID = CraftingMaxItemID + 1
-				CraftingItemQualities[coll.ID] = coll.Quality
+				CraftingItemQualities[coll.ID] = coll.CraftingQuality or coll.Quality
 				coll = Isaac.GetItemConfig():GetCollectible(CraftingMaxItemID + 1)
 			end
 			local itemPool = Game():GetItemPool()
@@ -643,5 +644,5 @@ function coopHUD.BoC:GameStartCrafting()
 			moddedCrafting = true
 		end
 	end
-	Isaac.DebugString("coopHUD Bag of Crafting initiated! * might be buggy ")
+	coopHUD.debug_str("Bag of Crafting initiated! * might be buggy ", true)
 end
