@@ -249,13 +249,12 @@ function coopHUD.Player.renderPockets(self, pos, mirrored, scl, down_anchor)
 			               0.9 * coopHUD.options.hud_scale)
 		end -- shrinks inactive modules
 	end
-	--FIRST POCKET RENDER
+	--
 	local trinket_off = Vector(0, 0)
-	trinket_off = self.first_trinket:render(temp_pos, mirrored, scl,
-	                                        down_anchor)
+	trinket_off = self.first_trinket:render(temp_pos, mirrored, scl, down_anchor)
+	--
 	temp_pos.X = temp_pos.X + trinket_off.X
-	trinket_off.X = trinket_off.X + self.second_trinket:render(temp_pos, mirrored, scl,
-	                                                           down_anchor)                .X
+	trinket_off.X = trinket_off.X + self.second_trinket:render(temp_pos, mirrored, scl, down_anchor).X
 	--
 	local pocket_off = Vector(0, 0)
 	temp_pos = Vector(pos.X + trinket_off.X, pos.Y)
@@ -423,11 +422,11 @@ function coopHUD.Player.render(self)
 			if self.signals.map_btn then
 				if self.essau and Input.IsActionPressed(ButtonAction.ACTION_DROP, self.controller_index) then
 					if #self.essau.collectibles + #self.essau.gulped_trinkets > 0 then
-						coopHUD.Item.render_items_table(coopHUD.Item(self.essau, -1, 0), mirrored,scale)
+						coopHUD.Item.render_items_table(coopHUD.Item(self.essau, -1, 0), mirrored, scale)
 					end
 				else
 					coopHUD.Item.render_items_table(coopHUD.Item(self, -1, 0),
-					                                mirrored,scale)
+					                                mirrored, scale)
 				end
 			end
 		end

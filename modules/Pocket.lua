@@ -191,10 +191,7 @@ function coopHUD.Pocket:render(pos, mirrored, scale, down_anchor, dim)
 		offset = self.item:render(pos, mirrored, scale, down_anchor)
 	end
 	if (self.name or self.desc) and self.slot == 0 then
-		if self.item and self.item.id == CollectibleType.COLLECTIBLE_HOLD and self.parent.poops then
-			offset.X = offset.X + self.parent.poops:render(Vector(pos.X + offset.X, pos.Y), mirrored, scale,
-			                                               down_anchor).X
-		elseif self.item and self.item.id == CollectibleType.COLLECTIBLE_BAG_OF_CRAFTING then
+		if self.item and self.item.id == CollectibleType.COLLECTIBLE_BAG_OF_CRAFTING then
 			coopHUD.BoC:render(self.parent, Vector(pos.X + offset.X, pos.Y), mirrored, sprite_scale, down_anchor)
 		else
 			local text = self.name
@@ -209,6 +206,12 @@ function coopHUD.Pocket:render(pos, mirrored, scale, down_anchor, dim)
 			end
 			coopHUD.HUD.fonts.pft:DrawStringScaled(text, temp_pos.X, temp_pos.Y, sprite_scale.X, sprite_scale.Y,
 			                                       self.parent.font_color, 0, true)
+			--Renders poops if (player has it) over next to pocket sprite and over string with name
+			--POOPS will always render on first pocket
+			if self.parent.poops then
+				self.parent.poops:render(Vector(pos.X + offset.X, pos.Y - font_height), mirrored, scale,
+				                         down_anchor)
+			end
 			offset.X = offset.X + coopHUD.HUD.fonts.pft:GetStringWidth(text) * sprite_scale.X
 		end
 	end
