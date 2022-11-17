@@ -75,7 +75,8 @@ end
 function coopHUD.HUD.render()
 	if coopHUD.HUD.coins then
 		local scale = Vector(coopHUD.options.hud_scale, coopHUD.options.hud_scale)
-		local middle_bot_anchor = Vector((Isaac.GetScreenWidth() / 2), Isaac.GetScreenHeight() - 14 * scale.Y) -- middle of screen
+		local middle_bot_anchor = Vector((Isaac.GetScreenWidth() / 2),
+		                                 Isaac.GetScreenHeight() - 14 * scale.Y) -- middle of screen
 		local offset = Vector(0, 0)
 		--
 		local temp_pos = Vector(middle_bot_anchor.X, middle_bot_anchor.Y)
@@ -84,17 +85,17 @@ function coopHUD.HUD.render()
 		temp_pos.X = temp_pos.X - coopHUD.HUD.poop:getOffset().X / 2
 		temp_pos.X = temp_pos.X - coopHUD.HUD.beth:getOffset().X / 2
 		temp_pos.X = temp_pos.X - coopHUD.HUD.t_beth:getOffset().X / 2
-		offset = coopHUD.HUD.coins:render(temp_pos,false,scale)
+		offset = coopHUD.HUD.coins:render(temp_pos, false, scale)
 		temp_pos.X = temp_pos.X + offset.X
-		offset = coopHUD.HUD.bombs:render(temp_pos,false,scale)
+		offset = coopHUD.HUD.bombs:render(temp_pos, false, scale)
 		temp_pos.X = temp_pos.X + offset.X
-		offset = coopHUD.HUD.poop:render(temp_pos,false,scale)
+		offset = coopHUD.HUD.poop:render(temp_pos, false, scale)
 		temp_pos.X = temp_pos.X + offset.X
-		offset = coopHUD.HUD.keys:render(temp_pos,false,scale)
+		offset = coopHUD.HUD.keys:render(temp_pos, false, scale)
 		temp_pos.X = temp_pos.X + offset.X
-		offset = coopHUD.HUD.beth:render(temp_pos,false,scale)
+		offset = coopHUD.HUD.beth:render(temp_pos, false, scale)
 		temp_pos.X = temp_pos.X + offset.X
-		offset = coopHUD.HUD.t_beth:render(temp_pos,false,scale)
+		offset = coopHUD.HUD.t_beth:render(temp_pos, false, scale)
 		------ DEALS RENDER
 		if coopHUD.options.deals.show then
 			if not (coopHUD.options.deals.hide_in_battle and coopHUD.signals.on_battle) then
@@ -145,13 +146,15 @@ function coopHUD.HUD.render()
 		-- Code from TBoI Api by wofsauge
 		local timer_offset = Vector(1, 1)
 		local curTime = Game():GetFrameCount()
-		local msecs = curTime % 30 * (10 / 3) -- turns the millisecond value range from [0 to 30] to [0 to 100]
 		local secs = math.floor(curTime / 30) % 60
-		local mins = math.floor(curTime / 30 / 60) % 60
+		local min = math.floor(curTime / 30 / 60) % 60
 		local hours = math.floor(curTime / 30 / 60 / 60) % 60
 		--
-		local time_string = string.format('Time: %.2i:%.2i:%.2i', hours, mins, secs) -- formats
+		local time_string = string.format('Time: %.2i:%.2i:%.2i', hours, min, secs) -- formats
 		local f_col = KColor(0.5, 0.5, 0.5, 1) -- Default font color font color with 0.5 alpha
+		if coopHUD.signals.map then
+			f_col = KColor(1, 1, 1, 1)
+		end
 		if coopHUD.options.timer_always_on or coopHUD.signals.map then
 			coopHUD.HUD.fonts.pft:DrawStringScaled(time_string,
 			                                       middle_bot_anchor.X, 0,
