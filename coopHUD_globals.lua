@@ -27,6 +27,7 @@ coopHUD.options = {
 		hide_in_battle = true,
 		colorful       = true,
 		force_show     = true, -- Force to show stats on map button when battle
+		span           = 0,
 	},
 	deals                    = {
 		show             = true,

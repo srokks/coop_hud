@@ -336,8 +336,8 @@ end
 function coopHUD.Stat:getOffset(vertical)
 	local offset = Vector(0, 0)
 	if self.sprite then
-		offset.X = offset.X + 16 * coopHUD.options.hud_scale
-		offset.Y = offset.Y + 16 * coopHUD.options.hud_scale
+		offset.X = offset.X + (14 + coopHUD.options.stats.span) * coopHUD.options.hud_scale
+		offset.Y = offset.Y + (14 + coopHUD.options.stats.span) * coopHUD.options.hud_scale
 	end
 	if self.amount then
 		local amount_string = string.format("%.2f", self.amount)
