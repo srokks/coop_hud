@@ -127,16 +127,48 @@ function coopHUD.add_mcm_entries()
 			return "Timer toggle. Accesible by pressing 'T' on keyboard"
 		end
 	})
-	-- Show RunInfos
-	ModConfigMenu.AddSetting(mod_name, "General", {
-		Type           = ModConfigMenu.OptionType.BOOLEAN,
-		CurrentSetting = function()
-			return coopHUD.options.show_run_info
-		end,
-		Default        = coopHUD.options.show_run_info,
+		-- Timer trigger key
+		ModConfigMenu.AddSetting(mod_name, "General", {
+			Type           = ModConfigMenu.OptionType.KEYBIND_KEYBOARD,
+			CurrentSetting = function()
+				return coopHUD.options.timer_trigger
+			end,
+			Display        = function()
+				local key = "None"
+				if (hotkeyToString[coopHUD.options.timer_trigger]) then
+					key = hotkeyToString[coopHUD.options.timer_trigger]
+				end
+				return 'Toggle timer key' .. ": " .. key
+			end,
+			OnChange       = function(currentNum)
+				coopHUD.options.timer_trigger = currentNum or -1
+				coopHUD.save_options()
+			end,
+			PopupGfx       = ModConfigMenu.PopupGfx.WIDE_SMALL,
+			PopupWidth     = 280,
+			Popup          = function()
+				local currentValue = coopHUD.options.timer_trigger
+				local keepSettingString = ""
+				if currentValue > -1 then
+					local currentSettingString = hotkeyToString[currentValue]
+					keepSettingString = "This setting is currently set to \"" .. currentSettingString .. "\".$newlinePress this button to keep it unchanged.$newline$newline"
+				end
+				return "Press a button on your keyboard to change this setting.$newline$newline" .. keepSettingString .. "Press ESC to go back and clear this setting."
+			end,
+			Info           = function()
+				return "Press this key to toggle coopHUD"
+			end
+		})
+		-- Show RunInfos
+		ModConfigMenu.AddSetting(mod_name, "General", {
+			Type           = ModConfigMenu.OptionType.BOOLEAN,
+			CurrentSetting = function()
+				return coopHUD.options.show_run_info
+			end,
+			Default        = coopHUD.options.show_run_info,
 
-		Display        = function()
-			local onOff = "Off"
+			Display        = function()
+				local onOff = "Off"
 			if coopHUD.options.show_run_info then
 				onOff = "On"
 			end

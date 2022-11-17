@@ -13,7 +13,7 @@ function coopHUD.inputs_signals()
 		end
 	end
 	-- Trigger for turning on/off timer on `T` key
-	if Input.IsButtonTriggered(Keyboard.KEY_T, 0) then
+	if Input.IsButtonTriggered(coopHUD.options.timer_trigger, 0) then
 		if coopHUD.options.timer_always_on then
 			coopHUD.options.timer_always_on = false
 		else
