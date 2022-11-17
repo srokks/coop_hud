@@ -499,7 +499,15 @@ function coopHUD.Player.renderStats(self, mirrored)
 	if coopHUD.options.stats.colorful then
 		font_color = self.font_color
 	end
-	local temp_stat_pos = Vector(coopHUD.anchors.top_right.X, 82)
+	-- Y coord for stat
+	local stat_anchor = coopHUD.anchors.bot_left.Y / 2 -- gets screen height
+	if coopHUD.options.deals.vanilla_position then
+		-- in case of vanilla position
+		stat_anchor = stat_anchor - (4.5 * self.speed:getOffset().Y)
+	else
+		stat_anchor = stat_anchor - (3 * self.speed:getOffset().Y)
+	end
+	local temp_stat_pos = Vector(coopHUD.anchors.top_right.X, stat_anchor)
 	if mirrored then
 		temp_stat_pos.X = coopHUD.anchors.bot_right.X
 	else
