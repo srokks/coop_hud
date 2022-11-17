@@ -116,12 +116,9 @@ function coopHUD.Pocket.getName(self)
 			desc = name
 		end
 	elseif self.type == coopHUD.Pocket.COLLECTIBLE then
-		name = Isaac.GetItemConfig():GetCollectible(self.id).Name
-		desc = Isaac.GetItemConfig():GetCollectible(self.id).Description
-		name = string.sub(name, 2) --  get rid of # on front of
-		name = coopHUD.langAPI.getItemName(name)
-		desc = string.sub(desc, 2) --  get rid of # on front of
-		desc = coopHUD.langAPI.getItemName(desc)
+		local item = Isaac.GetItemConfig():GetCollectible(self.id)
+		name = coopHUD.langAPI.getItemName(item)
+		desc = coopHUD.langAPI.getItemDesc(item)
 	end
 	return name, desc
 end

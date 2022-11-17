@@ -13,17 +13,11 @@ function langAPI.setLangIndex()
 	langAPI.lang_index = tonumber(langAPI.table.languages[lang_codes[Options.Language]].index)
 end
 langAPI.setLangIndex()
----Returns pocket name/description based on code name
----@param code_name string
+---Returns item name/description based on ItemConfig
+---@param item ItemConfigItem
 ---@return string
-function langAPI.getItemName(code_name)
-	return langAPI.table.category.Items[code_name][langAPI.lang_index]
-end
----Returns item name based on given code id
----@param id number
----@return string
-function langAPI.getItemNameByID(id)
-	local name = Isaac.GetItemConfig():GetCollectible(id).Name
+function langAPI.getItemName(item)
+	local name = item.Name
 	if string.sub(name, 0, 1) == "#" then
 		-- if begins with # get name from api
 		name = string.sub(name, 2) --  get rid of # on front of
@@ -33,11 +27,18 @@ function langAPI.getItemNameByID(id)
 		return name
 	end
 end
----Returns item description based on given code id
+---Returns item name/description based on id
 ---@param id number
 ---@return string
-function langAPI.getItemDescByID(id)
-	local desc = Isaac.GetItemConfig():GetCollectible(id).Description
+function langAPI.getItemNameById(id)
+	local item = Isaac.GetItemConfig():GetCollectible(id)
+	return langAPI.getItemName(item)
+end
+---Returns item description based on ItemConfig
+---@param item ItemConfigItem
+---@return string
+function langAPI.getItemDesc(item)
+	local desc = item.Description
 	if string.sub(desc, 0, 1) == "#" then
 		-- if begins with # get name from api
 		desc = string.sub(desc, 2) --  get rid of # on front of
@@ -46,6 +47,13 @@ function langAPI.getItemDescByID(id)
 		-- else means modded item
 		return desc
 	end
+end
+---Returns item description based on id
+---@param id number
+---@return string
+function langAPI.getItemDescById(id)
+	local item = Isaac.GetItemConfig():GetCollectible(id)
+	return langAPI.getItemDesc(item)
 end
 ---Returns pocket name/description based on code name
 ---@private

@@ -278,8 +278,8 @@ function coopHUD.BoC.trackBagHolding(player)
 			end
 			--___Triggers streak info on item pickup
 			coopHUD.Streak(false, coopHUD.Streak.ITEM,
-			               coopHUD.langAPI.getItemNameByID(item_queue.ID),
-			               coopHUD.langAPI.getItemDescByID(item_queue.ID), true,
+			               coopHUD.langAPI.getItemName(item_queue),
+			               coopHUD.langAPI.getItemDesc(item_queue), true,
 			               player.font_color)
 		else
 			holdCounter = 0
