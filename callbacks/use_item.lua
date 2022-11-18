@@ -33,17 +33,7 @@ coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
                     function(_, collectible_type, rng, entPlayer, use_flags, slot, var_data)
 	                    local player = coopHUD.Player.getByEntityIndex(entPlayer.Index)
 	                    if player then
-		                    player.collectibles = {} -- resets players collectible table
-		                    for i = 1, Isaac.GetItemConfig():GetCollectibles().Size - 1 do
-			                    -- check if player has collectible
-			                    if player.entPlayer:HasCollectible(i) then
-				                    -- skips active items
-				                    if Isaac.GetItemConfig():GetCollectible(i).Type ~= ItemType.ITEM_ACTIVE then
-					                    table.insert(player.collectibles,
-					                                 coopHUD.Item(player, -1, i))
-				                    end
-			                    end
-		                    end
+		                    player:refreshCollectibles()
 	                    end
                     end, CollectibleType.COLLECTIBLE_D4)
 -- CollectibleType.COLLECTIBLE_JAR_OF_WISPS

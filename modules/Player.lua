@@ -677,23 +677,6 @@ function coopHUD.Player.addItem(player)
 	elseif player.temp_item.Type == ItemType.ITEM_TRINKET then
 	elseif player.entPlayer:HasCollectible(player.temp_item.ID) then
 		-- triggers only for passive items and familiars
-		-- holds non roll able items and adds it to gulped_trinkets
-		local non_roll = { [CollectibleType.COLLECTIBLE_KEY_PIECE_1]   = true,
-		                   [CollectibleType.COLLECTIBLE_KEY_PIECE_2]   = true,
-		                   [CollectibleType.COLLECTIBLE_MISSING_NO]    = true,
-		                   [CollectibleType.COLLECTIBLE_POLAROID]      = true,
-		                   [CollectibleType.COLLECTIBLE_NEGATIVE]      = true,
-		                   [CollectibleType.COLLECTIBLE_DAMOCLES]      = true,
-		                   [CollectibleType.COLLECTIBLE_KNIFE_PIECE_1] = true,
-		                   [CollectibleType.COLLECTIBLE_KNIFE_PIECE_2] = true,
-		                   [CollectibleType.COLLECTIBLE_DOGMA]         = true,
-		                   [CollectibleType.COLLECTIBLE_DADS_NOTE]     = true,
-		                   [CollectibleType.COLLECTIBLE_BIRTHRIGHT]    = true, }
-		if non_roll[player.temp_item.ID] then
-			table.insert(player.gulped_trinkets,
-			             coopHUD.Item(player, -1,
-			                          player.temp_item.ID))
-		else
 			if player.entPlayer:GetPlayerType() == PlayerType.PLAYER_ISAAC_B then
 				local max_collectibles = 8
 				if player.entPlayer:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
@@ -714,7 +697,30 @@ function coopHUD.Player.addItem(player)
 				             coopHUD.Item(player, -1,
 				                          player.temp_item.ID)) -- add picked up item to collectibles
 			end
-		end
 	end
 	player.temp_item = nil -- resets temp item
+end
+---Resets players collectibles and go throught all collectibles and check if player has it
+---@param self coopHUD.Player
+function coopHUD.Player.refreshCollectibles(self)
+	self.collectibles = {} -- resets players collectible table
+	for i = 1, Isaac.GetItemConfig():GetCollectibles().Size - 1 do
+		-- check if player has collectible
+		if self.entPlayer:HasCollectible(i) then
+			-- skips active items
+			if Isaac.GetItemConfig():GetCollectible(i).Type ~= ItemType.ITEM_ACTIVE then
+				table.insert(self.collectibles,
+				             coopHUD.Item(self, -1, i))
+			end
+		end
+	end
+end
+---Function reloads collectibles for all players
+function coopHUD.Player.refresh_all_collectibles()
+	for _, player in pairs(coopHUD.players) do
+		player:refreshCollectibles()
+		if player.essau then
+			player.essau:refreshCollectibles()
+		end
+	end
 end
