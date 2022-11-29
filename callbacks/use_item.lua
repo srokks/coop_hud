@@ -96,5 +96,11 @@ coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
 coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
                     function(_, collectible_type, rng, entPlayer, use_flags, slot, var_data)
 	                    local player_index = coopHUD.Player.getIndexByControllerIndex(entPlayer.ControllerIndex)
-						coopHUD.players[player_index].active_item:update_custom_charge()
+	                    coopHUD.players[player_index].active_item:update_custom_charge()
                     end, CollectibleType.COLLECTIBLE_BLANK_CARD)
+---COLLECTIBLE_GLOWING_HOUR_GLASS
+coopHUD:AddCallback(ModCallbacks.MC_USE_ITEM,
+                    function(_, collectible_type, rng, entPlayer, use_flags, slot, var_data)
+	                    local player_index = coopHUD.Player.getIndexByControllerIndex(entPlayer.ControllerIndex)
+	                    coopHUD.players[player_index].active_item:update_custom_charge()
+                    end, CollectibleType.COLLECTIBLE_GLOWING_HOUR_GLASS)

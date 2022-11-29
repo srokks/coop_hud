@@ -191,9 +191,15 @@ function coopHUD.Item.getFrameNum(self)
 			elseif self.entPlayer:NeedsCharge(self.slot) == false or (self.charge and (self.charge:getCurrentCharge() >= self.charge.max_charge)) then
 				--checks if item dont needs charges or item is overloaded
 				frame_num = 1 -- set frame to loaded
-				if self.id == CollectibleType.COLLECTIBLE_SMELTER or
-						self.id == CollectibleType.COLLECTIBLE_GLOWING_HOUR_GLASS then
+				if self.id == CollectibleType.COLLECTIBLE_SMELTER then
 					frame_num = 11
+				end
+				if self.id == CollectibleType.COLLECTIBLE_GLOWING_HOUR_GLASS then
+					if self.custom_max_charge then
+						frame_num = self.custom_max_charge
+					else
+						frame_num = 10
+					end
 				end
 			else
 				frame_num = 0  -- set frame to unloaded
@@ -213,9 +219,12 @@ function coopHUD.Item.update(self)
 				self.id == CollectibleType.COLLECTIBLE_BLANK_CARD or
 				self.id == CollectibleType.COLLECTIBLE_CLEAR_RUNE or
 				self.id == CollectibleType.COLLECTIBLE_D_INFINITY or
-				self.id == CollectibleType.COLLECTIBLE_JAR_OF_WISPS then
+				self.id == CollectibleType.COLLECTIBLE_JAR_OF_WISPS or
+				self.id == CollectibleType.COLLECTIBLE_GLOWING_HOUR_GLASS then
 			local var_data = self:get_custom_charge_and_reset()
 			if var_data then
+				coopHUD.debug_str('varData added to custom floor items ' .. var_data.id .. ':' .. var_data.max_charge,
+				                  1)
 				table.insert(coopHUD.floor_custom_items, var_data)
 			end
 		end
@@ -322,7 +331,7 @@ end
 ---@param mirrored boolean defines which side render true - right / false - left
 function coopHUD.Item.render_items_table(self, mirrored, scale, down_anchor)
 	if scale == nil then
-		scale = Vector(1,1)
+		scale = Vector(1, 1)
 	end
 	local items_table = { } -- saves parent collectibles to local temp
 	--combines trinkets and collectibles item tables
@@ -351,7 +360,7 @@ function coopHUD.Item.render_items_table(self, mirrored, scale, down_anchor)
 		-- prevention from showing too much items
 		collectibles_stop = #items_table - 51
 	end
-	local init_pos = Vector(0, 64 )
+	local init_pos = Vector(0, 64)
 	if mirrored then
 		init_pos.X = coopHUD.anchors.bot_right.X - 52 * scale.X
 	else
@@ -373,33 +382,42 @@ end
 ---Updates custom charge for item with it such as
 ---@param self coopHUD.Item
 function coopHUD.Item.update_custom_charge(self)
-	if self.id == CollectibleType.COLLECTIBLE_D_INFINITY then
-		local form_to_max_charge = { 4, 6, 6, 2, 3, 4, 1, 3, 6, 6 }
-		self.custom_max_charge = form_to_max_charge[self.d_infinity_charge + 1]
-	end
-	if self.id == CollectibleType.COLLECTIBLE_PLACEBO then
-		if self.parent.first_pocket.type == coopHUD.Pocket.PILL then
-			local item_pool = Game():GetItemPool()
-			local pill_effect = item_pool:GetPillEffect(self.parent.first_pocket.id, self.parent.entPlayer)
-			self.custom_max_charge = xml_data.pillMetadata[pill_effect].mimiccharge
+	if self.custom_max_charge then
+		if self.id == CollectibleType.COLLECTIBLE_D_INFINITY then
+			local form_to_max_charge = { 4, 6, 6, 2, 3, 4, 1, 3, 6, 6 }
+			self.custom_max_charge = form_to_max_charge[self.d_infinity_charge + 1]
 		end
-	end
-	if self.id == CollectibleType.COLLECTIBLE_CLEAR_RUNE then
-		if self.parent.first_pocket.type == coopHUD.Pocket.CARD then
-			local card_effect = self.parent.first_pocket.id
-			self.custom_max_charge = xml_data.cardMetadata[card_effect].mimiccharge
+		if self.id == CollectibleType.COLLECTIBLE_PLACEBO then
+			if self.parent.first_pocket.type == coopHUD.Pocket.PILL then
+				local item_pool = Game():GetItemPool()
+				local pill_effect = item_pool:GetPillEffect(self.parent.first_pocket.id, self.parent.entPlayer)
+				self.custom_max_charge = xml_data.pillMetadata[pill_effect].mimiccharge
+			end
 		end
-	end
-	if self.id == CollectibleType.COLLECTIBLE_BLANK_CARD then
-		if self.parent.first_pocket.type == coopHUD.Pocket.CARD then
-			local card_effect = self.parent.first_pocket.id
-			self.custom_max_charge = xml_data.cardMetadata[card_effect].mimiccharge
+		if self.id == CollectibleType.COLLECTIBLE_CLEAR_RUNE then
+			if self.parent.first_pocket.type == coopHUD.Pocket.CARD then
+				local card_effect = self.parent.first_pocket.id
+				self.custom_max_charge = xml_data.cardMetadata[card_effect].mimiccharge
+			end
 		end
-	end
-	if self.id == CollectibleType.COLLECTIBLE_JAR_OF_WISPS then
-		if self.custom_max_charge < 11 then
-			-- max charge 12
-			self.custom_max_charge = self.custom_max_charge + 1 --increase charge
+		if self.id == CollectibleType.COLLECTIBLE_BLANK_CARD then
+			if self.parent.first_pocket.type == coopHUD.Pocket.CARD then
+				local card_effect = self.parent.first_pocket.id
+				self.custom_max_charge = xml_data.cardMetadata[card_effect].mimiccharge
+			end
+		end
+		if self.id == CollectibleType.COLLECTIBLE_JAR_OF_WISPS then
+			if self.custom_max_charge < 11 then
+				-- max charge 12
+				self.custom_max_charge = self.custom_max_charge + 1 --increase charge
+			end
+		end
+		if self.id == CollectibleType.COLLECTIBLE_GLOWING_HOUR_GLASS then
+			self.custom_max_charge = self.custom_max_charge - 1
+			if self.custom_max_charge == 0 then
+				self.custom_max_charge = nil
+				self.charge = coopHUD.ChargeBar(self)
+			end
 		end
 	end
 end
@@ -432,7 +450,8 @@ function coopHUD.Item.getMaxCharge(self)
 			self.id == CollectibleType.COLLECTIBLE_BLANK_CARD or
 			self.id == CollectibleType.COLLECTIBLE_CLEAR_RUNE or
 			self.id == CollectibleType.COLLECTIBLE_D_INFINITY or
-			self.id == CollectibleType.COLLECTIBLE_JAR_OF_WISPS then
+			self.id == CollectibleType.COLLECTIBLE_JAR_OF_WISPS or
+			self.id == CollectibleType.COLLECTIBLE_GLOWING_HOUR_GLASS then
 		---Schoolbag prevention
 		if self.parent.schoolbag_item then
 			max_charge = self.parent.schoolbag_item.custom_max_charge
@@ -455,6 +474,9 @@ function coopHUD.Item.getMaxCharge(self)
 		if self.id == CollectibleType.COLLECTIBLE_JAR_OF_WISPS and max_charge == nil then
 			return 0
 		end
+		if self.id == CollectibleType.COLLECTIBLE_GLOWING_HOUR_GLASS and max_charge == nil then
+			return 3
+		end
 	end
 	return max_charge
 end
@@ -464,3 +486,13 @@ end
 ---@field d_infinity_charge number|nil
 ---@field floor number which floor entity was left
 ---@field room_idx number room index where entity was left
+function coopHUD.Item.glowing_hours_reset()
+	for i, item in pairs(coopHUD.Item.ref_table) do
+		if item.slot >= 0 then
+			if item.id == CollectibleType.COLLECTIBLE_GLOWING_HOUR_GLASS then
+				item.custom_max_charge = 3
+				item.charge = coopHUD.ChargeBar(item)
+			end
+		end
+	end
+end

@@ -118,6 +118,11 @@ function coopHUD.ChargeBar.getMaxCharge(self)
 			max_charges = self.parent_item.custom_max_charge
 		end
 	end
+	if self.parent_item.id == CollectibleType.COLLECTIBLE_GLOWING_HOUR_GLASS then
+		if self.parent_item.custom_max_charge then
+			max_charges = 0
+		end
+	end
 	return max_charges
 end
 ---@param self coopHUD.ChargeBar
